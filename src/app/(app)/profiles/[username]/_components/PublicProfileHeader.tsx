@@ -9,6 +9,7 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 
 import { ConnectButton } from "@/features/connections/components/connect-button";
 import { getConnectionStatus, getConnectionsCount, ConnectionStatusData } from "@/features/connections/server/actions";
+import { ContactButton } from "@/features/messaging/components/ContactButton";
 
 interface PublicProfileHeaderProps {
     profile: Profile;
@@ -58,13 +59,6 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                                 {profile.full_name || "User Name"}
                                 <CheckCircle2 className="h-5 w-5 text-[#C6A85E] fill-black" />
                             </h1>
-
-                            {/* Connect Button */}
-                            <ConnectButton
-                                targetUserId={profile.id}
-                                initialStatus={connectionStatus.status}
-                                requestId={connectionStatus.requestId}
-                            />
                         </div>
 
                         <div className="flex flex-col gap-1 mt-1">
@@ -88,8 +82,6 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                                 </div>
                             )}
 
-
-
                             {profile.country && (
                                 <div className="flex items-center gap-2 text-gray-400">
                                     <MapPin className="h-4 w-4" />
@@ -98,13 +90,17 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                                     </span>
                                 </div>
                             )}
-
-
-
-
                         </div>
+                    </div>
 
-
+                    {/* Actions */}
+                    <div className="flex shrink-0 mb-2 md:pb-2 gap-2">
+                        <ContactButton targetProfileId={profile.id} variant="secondary" />
+                        <ConnectButton
+                            targetUserId={profile.id}
+                            initialStatus={connectionStatus.status}
+                            requestId={connectionStatus.requestId}
+                        />
                     </div>
                 </div>
             </div>

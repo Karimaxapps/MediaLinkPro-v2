@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Check, Trash2, Mail } from "lucide-react";
+import { Bell, Check, Trash2, Mail, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { getUserNotifications, markNotificationAsRead, markAllNotificationsAsRead } from "@/features/notifications/server/actions";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { getProductById } from "@/features/products/server/actions";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
 export function NotificationsPopover() {
+    const router = useRouter();
     const [notifications, setNotifications] = useState<any[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +62,49 @@ export function NotificationsPopover() {
             }
         } catch (error) {
             toast.error("Failed to mark as read");
+        }
+    };
+
+    const handleNotificationClick = async (notification: any) => {
+        // Optimistically mark as read
+        if (!notification.is_read) {
+            handleMarkAsRead(notification.id);
+        }
+
+        if (notification.type === 'connection_request') {
+            const username = notification.data?.username;
+            if (username) {
+                setIsOpen(false);
+                router.push(`/profiles/${username}`);
+            } else {
+                toast.error("Profile link not available for this notification.");
+            }
+        } else if (notification.type === 'demo_request') {
+            const slug = notification.data?.product_slug;
+            if (slug) {
+                setIsOpen(false);
+                router.push(`/products/${slug}`);
+            } else {
+                const productId = notification.data?.product_id;
+                if (productId) {
+                    setIsLoading(true);
+                    try {
+                        const product = await getProductById(productId);
+                        if (product?.slug) {
+                            setIsOpen(false);
+                            router.push(`/products/${product.slug}`);
+                        } else {
+                            toast.error("Product no longer exists.");
+                        }
+                    } catch (e) {
+                        toast.error("Failed to load product details.");
+                    } finally {
+                        setIsLoading(false);
+                    }
+                } else {
+                    toast.error("Product link not available for this notification.");
+                }
+            }
         }
     };
 
@@ -120,24 +167,63 @@ export function NotificationsPopover() {
                             {notifications.map((notification) => (
                                 <div
                                     key={notification.id}
-                                    className={`flex flex-col gap-1 p-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors ${!notification.is_read ? 'bg-white/[0.02]' : ''}`}
+                                    onClick={() => handleNotificationClick(notification)}
+                                    className={cn(
+                                        "flex flex-col gap-1 p-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer",
+                                        !notification.is_read && notification.type === 'demo_request'
+                                            ? "bg-[#C6A85E] text-black"
+                                            : !notification.is_read
+                                                ? "bg-white/[0.02]"
+                                                : ""
+                                    )}
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex items-center gap-2">
-                                            {notification.type === 'demo_request' && (
-                                                <div className="bg-[#C6A85E]/10 p-1.5 rounded-full shrink-0">
-                                                    <Mail className="h-3 w-3 text-[#C6A85E]" />
+                                            {(notification.type === 'demo_request' || notification.type === 'connection_request') && (
+                                                <div className={cn(
+                                                    "p-1.5 rounded-full shrink-0",
+                                                    !notification.is_read && notification.type === 'demo_request'
+                                                        ? "bg-black/10"
+                                                        : "bg-[#C6A85E]/10"
+                                                )}>
+                                                    {notification.type === 'demo_request' ? (
+                                                        <Mail className={cn(
+                                                            "h-3 w-3",
+                                                            !notification.is_read && notification.type === 'demo_request'
+                                                                ? "text-black"
+                                                                : "text-[#C6A85E]"
+                                                        )} />
+                                                    ) : (
+                                                        <UserPlus className="h-3 w-3 text-[#C6A85E]" />
+                                                    )}
                                                 </div>
                                             )}
-                                            <p className={`text-sm font-medium ${!notification.is_read ? 'text-white' : 'text-gray-400'}`}>
+                                            <p className={cn(
+                                                "text-sm font-medium",
+                                                !notification.is_read && notification.type === 'demo_request'
+                                                    ? "text-black"
+                                                    : !notification.is_read
+                                                        ? "text-white"
+                                                        : "text-gray-400"
+                                            )}>
                                                 {notification.title}
                                             </p>
                                         </div>
-                                        <span className="text-[10px] text-gray-500 whitespace-nowrap">
+                                        <span className={cn(
+                                            "text-[10px] whitespace-nowrap",
+                                            !notification.is_read && notification.type === 'demo_request'
+                                                ? "text-black/60"
+                                                : "text-gray-500"
+                                        )}>
                                             {format(new Date(notification.created_at), 'MMM d, h:mm a')}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-gray-400 pl-8 line-clamp-2">
+                                    <p className={cn(
+                                        "text-xs pl-8 line-clamp-2",
+                                        !notification.is_read && notification.type === 'demo_request'
+                                            ? "text-black/80"
+                                            : "text-gray-400"
+                                    )}>
                                         {notification.message}
                                     </p>
                                     {!notification.is_read && (
@@ -145,8 +231,16 @@ export function NotificationsPopover() {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="h-6 text-[10px] text-gray-500 hover:text-white"
-                                                onClick={() => handleMarkAsRead(notification.id)}
+                                                className={cn(
+                                                    "h-6 text-[10px]",
+                                                    !notification.is_read && notification.type === 'demo_request'
+                                                        ? "text-black/60 hover:text-black hover:bg-black/5"
+                                                        : "text-gray-500 hover:text-white"
+                                                )}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleMarkAsRead(notification.id);
+                                                }}
                                             >
                                                 Mark read
                                             </Button>

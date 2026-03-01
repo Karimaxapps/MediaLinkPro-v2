@@ -3,6 +3,7 @@
 
 import { Building2, User, Sparkles, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +32,7 @@ export function DashboardSidebar({ latestCompanies, latestUsers }: DashboardSide
                     <CardTitle className="text-sm font-semibold flex items-center justify-between">
                         <span className="flex items-center">
                             <Building2 className="mr-2 h-4 w-4 text-[#C6A85E]" />
-                            Latest Companies
+                            Latest joined companies
                         </span>
                         <Link href="/connect/solution-providers" className="text-xs text-gray-500 hover:text-[#C6A85E]">
                             View all
@@ -41,12 +42,20 @@ export function DashboardSidebar({ latestCompanies, latestUsers }: DashboardSide
                 <CardContent className="space-y-4">
                     {latestCompanies.map((company) => (
                         <Link key={company.id} href={`/companies/${company.slug}`} className="flex items-center gap-3 group">
-                            <Avatar className="h-9 w-9 border border-white/10">
-                                <AvatarImage src={company.logo_url} alt={company.name} />
-                                <AvatarFallback className="bg-[#C6A85E]/10 text-[#C6A85E] text-xs">
-                                    {company.name.substring(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
+                            <div className="h-9 w-9 relative shrink-0 overflow-hidden">
+                                {company.logo_url ? (
+                                    <Image
+                                        src={company.logo_url}
+                                        alt={company.name}
+                                        fill
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-sm text-[#C6A85E] text-[10px] font-bold">
+                                        {company.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                )}
+                            </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate group-hover:text-[#C6A85E] transition-colors">{company.name}</p>
                                 <p className="text-xs text-gray-500 truncate capitalize">{company.type?.replace('-', ' ')}</p>

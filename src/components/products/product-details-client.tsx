@@ -129,8 +129,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
     const [isLoadingCommunity, setIsLoadingCommunity] = useState(true);
     const [isExpert, setIsExpert] = useState(false);
     const [animatingResources, setAnimatingResources] = useState<Record<string, boolean>>({});
-    const [viewCount, setViewCount] = useState(0);
-    const [qrScanCount, setQrScanCount] = useState(0);
+    const [viewCount, setViewCount] = useState(product.views_count || product.view_count || 0);
+    const [qrScanCount, setQrScanCount] = useState(product.qr_scans_count || product.qr_scan_count || 0);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isBookmarkLoading, setIsBookmarkLoading] = useState(true);
@@ -223,11 +223,9 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
             // Let's just set initial state from props if available or 0.
             // Actually increment returns the new count.
             // We might want a separate getStats action but for now let's leave it as 0 until interacted or add it later.
-            setQrScanCount(product.qr_scan_count || 0);
-            setViewCount(product.view_count || 0);
-
+            setQrScanCount(product.qr_scans_count || product.qr_scan_count || 0);
         }
-    }, [product.id, searchParams, product.qr_scan_count, product.view_count]);
+    }, [product.id, searchParams, product.qr_scan_count]);
 
     // Check bookmark status
     useEffect(() => {
@@ -565,18 +563,28 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
 
                         <div className="flex flex-wrap gap-4 pt-4">
                             {!isOwner && (
-                                <RequestDemoDialog
-                                    productId={product.id}
-                                    productName={product.name}
-                                    organizationId={product.organization_id}
-                                    user={user}
-                                    userProfile={userProfile}
-                                    trigger={
-                                        <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none">
-                                            Request Demo
-                                        </Button>
-                                    }
-                                />
+                                <>
+                                    <RequestDemoDialog
+                                        productId={product.id}
+                                        productName={product.name}
+                                        organizationId={product.organization_id}
+                                        user={user}
+                                        userProfile={userProfile}
+                                        trigger={
+                                            <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none">
+                                                Request Demo
+                                            </Button>
+                                        }
+                                    />
+                                    {product.organization_id && (
+                                        <ContactButton
+                                            targetOrganizationId={product.organization_id}
+                                            variant="secondary"
+                                            className="h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none"
+                                            text="Message Company"
+                                        />
+                                    )}
+                                </>
                             )}
 
                             <ProductShare
@@ -607,56 +615,46 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                         </div>
 
                         {isOwner && (
-                            <div className="grid grid-cols-4 gap-4 pt-4">
-                                <Card className="bg-white/5 border-white/10 h-[76px] flex items-center justify-center">
-                                    <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-1">
-                                        <div className="flex items-center gap-2 text-[#C6A85E]">
-                                            <Eye className="w-4 h-4" />
-                                            <span className="text-sm font-medium">Views</span>
-                                        </div>
-                                        <span className="text-xl font-bold text-white leading-none">{viewCount}</span>
-                                    </CardContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+                                <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-[#C6A85E]">
+                                        <Eye className="w-4 h-4 shrink-0" />
+                                        <span className="text-sm font-medium whitespace-nowrap">Views</span>
+                                    </div>
+                                    <span className="text-xl font-bold text-white leading-none">{viewCount}</span>
                                 </Card>
 
-
-
                                 <DemoRequestsDialog productId={product.id}>
-                                    <Card className="bg-white/5 border-white/10 h-[76px] flex items-center justify-center cursor-pointer transition-colors hover:border-[#C6A85E]/50">
-                                        <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-1">
-                                            <div className="flex items-center gap-2 text-[#C6A85E]">
-                                                <Mail className="w-4 h-4" />
-                                                <span className="text-sm font-medium">Requests</span>
-                                            </div>
-                                            <span className="text-xl font-bold text-white leading-none">{demoRequestCount}</span>
-                                        </CardContent>
+                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]/50">
+                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                            <Mail className="w-4 h-4 shrink-0" />
+                                            <span className="text-sm font-medium whitespace-nowrap">Requests</span>
+                                        </div>
+                                        <span className="text-xl font-bold text-white leading-none">{demoRequestCount}</span>
                                     </Card>
                                 </DemoRequestsDialog>
 
                                 <ProductBookmarksDialog productId={product.id}>
                                     <Card
                                         className={cn(
-                                            "bg-white/5 border-white/10 h-[76px] flex items-center justify-center cursor-pointer transition-colors hover:border-[#C6A85E]"
+                                            "bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]"
                                         )}
                                     >
-                                        <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-1">
-                                            <div className="flex items-center gap-2 text-[#C6A85E]">
-                                                <Bookmark className={cn("w-4 h-4", isBookmarked && "fill-current")} />
-                                                <span className="text-sm font-medium">Bookmarks</span>
-                                            </div>
-                                            <span className="text-xl font-bold text-white leading-none">{bookmarkCount}</span>
-                                        </CardContent>
+                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                            <Bookmark className={cn("w-4 h-4 shrink-0", isBookmarked && "fill-current")} />
+                                            <span className="text-sm font-medium whitespace-nowrap">Bookmarks</span>
+                                        </div>
+                                        <span className="text-xl font-bold text-white leading-none">{bookmarkCount}</span>
                                     </Card>
                                 </ProductBookmarksDialog>
 
                                 <ProductScansDialog productId={product.id}>
-                                    <Card className="bg-white/5 border-white/10 h-[76px] flex items-center justify-center cursor-pointer transition-colors hover:border-[#C6A85E]/50">
-                                        <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-1">
-                                            <div className="flex items-center gap-2 text-[#C6A85E]">
-                                                <Scan className="w-4 h-4" />
-                                                <span className="text-sm font-medium">QR scan</span>
-                                            </div>
-                                            <span className="text-xl font-bold text-white leading-none">{qrScanCount}</span>
-                                        </CardContent>
+                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]/50">
+                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                            <Scan className="w-4 h-4 shrink-0" />
+                                            <span className="text-sm font-medium whitespace-nowrap">QR scan</span>
+                                        </div>
+                                        <span className="text-xl font-bold text-white leading-none">{qrScanCount}</span>
                                     </Card>
                                 </ProductScansDialog>
                             </div>
@@ -733,7 +731,6 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                         <Tabs defaultValue="overview" className="w-full" id="product-tabs">
                             <TabsList className="bg-white/5 border border-white/10 w-full justify-start overflow-x-auto scrollbar-hide">
                                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Overview</TabsTrigger>
-                                <TabsTrigger value="commercial" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Commercial</TabsTrigger>
                                 <TabsTrigger value="training" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Official Resources</TabsTrigger>
                                 <TabsTrigger value="community" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Community Resources</TabsTrigger>
                                 <TabsTrigger value="users" className="hidden">Product Users</TabsTrigger>
@@ -899,50 +896,6 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                 </CardContent>
                                             </Card>
                                         )}
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="commercial" className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <Card className="bg-white/5 border-white/10 text-white">
-                                            <CardHeader>
-                                                <CardTitle className="text-[#C6A85E]">Pricing & Availability</CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="flex justify-between border-b border-white/10 pb-3">
-                                                    <span className="text-gray-400">Status</span>
-                                                    <span className="font-medium text-white">{product.availability_status || "Unknown"}</span>
-                                                </div>
-                                                <div className="flex justify-between border-b border-white/10 pb-3">
-                                                    <span className="text-gray-400">Pricing Model</span>
-                                                    <span className="font-medium text-white">{product.pricing_model || "Not specified"}</span>
-                                                </div>
-                                                <div className="flex justify-between items-center pt-2">
-                                                    <span className="text-gray-400">Price</span>
-                                                    <span className="text-2xl font-bold text-white">
-                                                        {product.price_upon_request ? (
-                                                            "Upon Request"
-                                                        ) : (
-                                                            `${product.price || 0} ${product.currency}`
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        <Card className="bg-gradient-to-br from-[#C6A85E]/20 to-black border-[#C6A85E]/30 text-white">
-                                            <CardHeader>
-                                                <CardTitle>Request Quote</CardTitle>
-                                                <CardDescription className="text-gray-400">
-                                                    Interested in {product.name}? Contact the organization directly.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <Button className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
-                                                    Contact Sales
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
                                     </div>
                                 </TabsContent>
 
@@ -1282,6 +1235,47 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         If you are a user of <span className="text-white font-medium">{product.name}</span>, Be the first to register!
                                     </div>
                                 )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Commercial / Pricing Info */}
+                        <Card className="bg-white/5 border-white/10 text-white">
+                            <CardHeader className="pb-3 border-b border-white/10">
+                                <CardTitle className="text-lg text-[#C6A85E]">Pricing & Availability</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4 pt-4">
+                                <div className="flex justify-between border-b border-white/10 pb-3 text-sm">
+                                    <span className="text-gray-400">Status</span>
+                                    <span className="font-medium text-white">{product.availability_status || "Unknown"}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-white/10 pb-3 text-sm">
+                                    <span className="text-gray-400">Pricing Model</span>
+                                    <span className="font-medium text-white">{product.pricing_model || "Not specified"}</span>
+                                </div>
+                                <div className="flex justify-between items-center pt-2">
+                                    <span className="text-gray-400 text-sm">Price</span>
+                                    <span className="text-xl font-bold text-white">
+                                        {product.price_upon_request ? (
+                                            "Upon Request"
+                                        ) : (
+                                            `${product.price || 0} ${product.currency}`
+                                        )}
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-gradient-to-br from-[#C6A85E]/20 to-black border-[#C6A85E]/30 text-white">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-lg">Request Quote</CardTitle>
+                                <CardDescription className="text-gray-400 text-xs mt-1">
+                                    Interested in {product.name}? Contact the organization directly.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="pt-0">
+                                <Button className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-10">
+                                    Contact Sales
+                                </Button>
                             </CardContent>
                         </Card>
 

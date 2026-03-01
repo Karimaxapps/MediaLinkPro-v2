@@ -4,8 +4,9 @@ import { MobileSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Inbox } from "lucide-react";
+import { Search } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
+import { InboxBadge } from "@/components/layout/inbox-badge";
 
 export function AppHeader({ organizations }: { organizations?: any[] }) {
     return (
@@ -27,9 +28,7 @@ export function AppHeader({ organizations }: { organizations?: any[] }) {
                 </form>
             </div>
             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5">
-                    <Inbox className="h-5 w-5" />
-                </Button>
+                <InboxBadge />
                 <NotificationsPopover />
             </div>
             <UserNav />

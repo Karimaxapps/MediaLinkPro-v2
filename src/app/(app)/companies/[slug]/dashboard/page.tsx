@@ -29,25 +29,20 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
     return (
         <div className="space-y-8 container mx-auto py-8">
             <PageHeader
-                title="Company Dashboard"
-                description="Overview of your company's performance and activity."
-                breadcrumbs={[
-                    { label: "Company", href: `/companies/${slug}` },
-                    { label: "Dashboard", href: `/companies/${slug}/dashboard`, active: true },
-                ]}
+                heading="Company Dashboard"
+                text="Overview of your company's performance and activity."
             />
 
             <Suspense fallback={<StatsSkeleton />}>
                 <StatsCards stats={stats} />
             </Suspense>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                    <Suspense fallback={<TableSkeleton />}>
-                        <ProductTable products={products} />
-                    </Suspense>
-                </div>
-                <div>
+            <div className="space-y-8">
+                <Suspense fallback={<TableSkeleton />}>
+                    <ProductTable products={products} />
+                </Suspense>
+
+                <div className="max-w-2xl">
                     <Suspense fallback={<FeedSkeleton />}>
                         <ActivityFeed activities={activities} />
                     </Suspense>

@@ -29,8 +29,8 @@ export function ProductTable({ products }: { products: ProductWithStats[] }) {
                 </CardAction>
             </CardHeader>
             <CardContent>
-                <div className="rounded-md border border-white/10">
-                    <table className="w-full text-sm text-left">
+                <div className="rounded-md border border-white/10 overflow-x-auto">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead className="text-xs uppercase bg-white/5 text-gray-400">
                             <tr>
                                 <th className="px-6 py-3">Name</th>

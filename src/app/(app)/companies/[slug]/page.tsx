@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { CompanyEditForm } from "@/features/organizations/components/company-edit-form";
+import { ContactButton } from "@/features/messaging/components/ContactButton";
 
 import { ProductList } from "@/features/products/components/product-list";
 
@@ -89,6 +90,11 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
             </div>
 
             {/* Actions Bar */}
+            {!canEdit && user && (
+                <div className="flex justify-end gap-4 mb-4">
+                    <ContactButton text="Message Company" targetOrganizationId={org.id} />
+                </div>
+            )}
 
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

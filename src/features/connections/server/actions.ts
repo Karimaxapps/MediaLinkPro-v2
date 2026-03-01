@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
@@ -13,6 +13,14 @@ export async function sendConnectionRequest(recipientId: string) {
 
     if (user.id === recipientId) return { error: 'Cannot connect to yourself', success: false };
 
+    const { data: senderProfile } = await supabase
+        .from('profiles')
+        .select('full_name, username')
+        .eq('id', user.id)
+        .single();
+
+    const senderName = senderProfile?.full_name || senderProfile?.username || 'Someone';
+
     const { error } = await supabase
         .from('connections')
         .insert({
@@ -23,12 +31,59 @@ export async function sendConnectionRequest(recipientId: string) {
 
     if (error) {
         console.error("Error sending connection request:", error);
-        return { error: 'Failed to send request', success: false };
+        return { error: `Failed to send request: ${error.message || JSON.stringify(error)}`, success: false };
+    }
+
+    // Create notification using admin client to bypass RLS
+    const adminSupabase = createAdminClient();
+    const { error: notificationError } = await adminSupabase.from('notifications').insert({
+        user_id: recipientId,
+        type: 'connection_request',
+        title: 'New Connection Request',
+        message: `${senderName} has sent you a connection request.`,
+        data: { requester_id: user.id, username: senderProfile?.username }
+    });
+
+    if (notificationError) {
+        console.error("Error creating notification:", notificationError);
     }
 
     revalidatePath('/profiles');
     revalidatePath('/connect');
     return { success: true, message: 'Connection request sent!' };
+}
+
+export async function cancelConnectionRequest(recipientId: string) {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Not authenticated', success: false };
+
+    const { error } = await supabase
+        .from('connections')
+        .delete()
+        .eq('requester_id', user.id)
+        .eq('recipient_id', recipientId)
+        .eq('status', 'pending');
+
+    if (error) {
+        console.error("Error cancelling connection request:", error);
+        return { error: 'Failed to cancel request', success: false };
+    }
+
+    // Attempt to delete the associated notification using admin client
+    const adminSupabase = createAdminClient();
+    await adminSupabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', recipientId)
+        .eq('type', 'connection_request')
+        .contains('data', { requester_id: user.id });
+
+    revalidatePath('/profiles');
+    revalidatePath('/connect');
+    return { success: true, message: 'Connection request cancelled' };
 }
 
 export async function acceptConnectionRequest(requestId: string) {

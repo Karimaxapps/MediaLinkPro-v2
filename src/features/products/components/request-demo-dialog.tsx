@@ -79,6 +79,11 @@ export function RequestDemoDialog({ productId, productName, organizationId, user
             if (result.success) {
                 toast.success("Request Sent", {
                     description: result.message,
+                    style: {
+                        background: '#C6A85E',
+                        color: 'black',
+                        border: 'none',
+                    },
                 });
                 setOpen(false);
                 form.reset();

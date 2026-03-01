@@ -320,7 +320,7 @@ export async function getLatestOrganizations(limit: number = 3) {
 
     const { data, error } = await supabase
         .from('organizations')
-        .select('id, name, slug, logo_url, tagline, type')
+        .select('id, name, slug, logo_url, tagline, type, main_activity')
         .order('created_at', { ascending: false })
         .limit(limit);
 

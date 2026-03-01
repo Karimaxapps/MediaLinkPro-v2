@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      conversation_participants: {
+        Row: {
+          id: string
+          conversation_id: string
+          profile_id: string | null
+          organization_id: string | null
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          profile_id?: string | null
+          organization_id?: string | null
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          profile_id?: string | null
+          organization_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_participants_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      messages: {
+        Row: {
+          id: string
+          conversation_id: string
+          sender_profile_id: string
+          sender_organization_id: string | null
+          content: string
+          created_at: string
+          is_read: boolean
+        }
+        Insert: {
+          id?: string
+          conversation_id: string
+          sender_profile_id: string
+          sender_organization_id?: string | null
+          content: string
+          created_at?: string
+          is_read?: boolean
+        }
+        Update: {
+          id?: string
+          conversation_id?: string
+          sender_profile_id?: string
+          sender_organization_id?: string | null
+          content?: string
+          created_at?: string
+          is_read?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_profile_id_fkey"
+            columns: ["sender_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_organization_id_fkey"
+            columns: ["sender_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       demo_requests: {
         Row: {
           created_at: string | null

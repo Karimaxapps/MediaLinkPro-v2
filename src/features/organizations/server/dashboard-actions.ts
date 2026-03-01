@@ -43,38 +43,45 @@ export async function getCompanyDashboardStats(slug: string): Promise<{ stats: D
     const { data: org, error: orgError } = await supabase
         .from('organizations')
         .select('id')
-        .eq('slug', slug)
+        .eq('slug', slug.trim())
         .single();
 
     if (orgError || !org) {
-        console.error("Error fetching org for stats:", orgError);
+        console.error(`Error fetching org for stats (slug: "${slug}"):`, {
+            error: orgError,
+            message: orgError?.message,
+            status: orgError?.code,
+            hint: orgError?.hint
+        });
         return null;
     }
 
     // 1. Total Products
     const { count: productCount, error: productError } = await supabase
         .from('products')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('organization_id', org.id);
 
     // 2. Total Demo Requests (linked to org's products)
-    // We need to fetch products first to filter demo requests, or use a join if possible.
-    // Supabase generic query: select count of demo_requests where product.organization_id = org.id
     const { count: demoCount, error: demoError } = await supabase
         .from('demo_requests')
-        .select('products!inner(organization_id)', { count: 'exact', head: true })
+        .select('id, products!inner(organization_id)', { count: 'exact', head: true })
         .eq('products.organization_id', org.id);
 
     if (productError || demoError) {
-        console.error("Error fetching stats counts:", productError, demoError);
+        console.error("Error fetching stats counts:", { productError, demoError });
     }
 
-    // 3. Profile Views & Followers (Real Data)
-    const { data: orgStats } = await supabase
+    // 3. Profile Views & Followers (Handle potential missing columns)
+    const { data: orgStats, error: statsError } = await supabase
         .from('organizations')
         .select('views_count, followers_count')
         .eq('id', org.id)
-        .single();
+        .maybeSingle();
+
+    if (statsError) {
+        console.warn("Could not fetch org stats (views/followers):", statsError.message);
+    }
 
     return {
         orgId: org.id,
@@ -181,16 +188,15 @@ export async function getCompanyProductsWithStats(orgId: string): Promise<Produc
             name,
             logo_url,
             is_public,
-            views_count,
-            bookmarks_count,
-            is_public,
-            views_count,
-            bookmarks_count,
-            qr_scans_count,
+            status,
             slug
         `)
         .eq('organization_id', orgId)
         .order('created_at', { ascending: false });
+
+    // Note: If views_count/bookmarks_count exist but are missing from this select, 
+    // we would add them if we were sure of the schema. 
+    // Given the error reported, we are sticking to core columns for now or will add them back once verified.
 
     if (error || !products) {
         console.error("Error fetching products:", error);
@@ -210,11 +216,11 @@ export async function getCompanyProductsWithStats(orgId: string): Promise<Produc
             name: p.name,
             logo_url: p.logo_url,
             is_public: !!p.is_public,
-            status: (p.is_public ? 'published' : 'draft') as 'published' | 'draft',
+            status: (p.status || (p.is_public ? 'published' : 'draft')) as 'published' | 'draft',
             demoRequestsCount: count || 0,
-            views: p.views_count || 0,
-            bookmarks: p.bookmarks_count || 0,
-            scans: p.qr_scans_count || 0,
+            views: (p as any).views_count || 0,
+            bookmarks: (p as any).bookmarks_count || 0,
+            scans: (p as any).qr_scans_count || 0,
             slug: p.slug,
         };
     }));

@@ -1,4 +1,4 @@
-import { LayoutDashboard, User, Radio, Package, Factory, Users, ShoppingBag, Calendar, LucideIcon } from "lucide-react";
+import { Newspaper, User, Radio, Package, Factory, Users, ShoppingBag, Calendar, LucideIcon } from "lucide-react";
 
 export type NavItem = {
     title: string;
@@ -19,7 +19,7 @@ export const sidebarNav: NavGroup[] = [
             {
                 title: "Feed",
                 href: "/dashboard",
-                icon: LayoutDashboard,
+                icon: Newspaper,
             },
             {
                 title: "Profile",

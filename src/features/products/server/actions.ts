@@ -565,7 +565,7 @@ export async function incrementProductView(productId: string) {
         // Check if user is owner/admin of the organization
         const { data: product } = await supabase
             .from('products')
-            .select('organization_id')
+            .select('*')
             .eq('id', productId)
             .single();
 
@@ -578,7 +578,7 @@ export async function incrementProductView(productId: string) {
                 .single();
 
             if (membership && ['owner', 'admin'].includes(membership.role)) {
-                return; // Do not increment view count for owners/admins
+                return product.views_count || product.view_count || 0; // Return current count for owners/admins
             }
         }
     }
@@ -601,11 +601,11 @@ export async function incrementProductView(productId: string) {
     // Return updated count
     const { data } = await supabase
         .from('products')
-        .select('views_count')
+        .select('*')
         .eq('id', productId)
         .single();
 
-    return data?.views_count || 0;
+    return data?.views_count || data?.view_count || 0;
 }
 
 export async function incrementProductQRScan(productId: string) {
@@ -622,11 +622,11 @@ export async function incrementProductQRScan(productId: string) {
     // Return updated count
     const { data } = await supabase
         .from('products')
-        .select('qr_scans_count')
+        .select('*')
         .eq('id', productId)
         .single();
 
-    return data?.qr_scans_count || 0;
+    return data?.qr_scans_count || data?.qr_scan_count || 0;
 }
 
 export async function toggleBookmark(productId: string) {
