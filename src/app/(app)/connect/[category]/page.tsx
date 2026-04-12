@@ -94,7 +94,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
                 {/* Main Content */}
                 <div className="lg:col-span-3 space-y-6">
                     {items.length > 0 ? (
-                        <div className={type === 'profile' ? "flex flex-col gap-4" : "grid grid-cols-1 md:grid-cols-2 gap-4"}>
+                        <div className="flex flex-col gap-4">
                             {items.map((item) => (
                                 <ConnectCard
                                     key={item.id}

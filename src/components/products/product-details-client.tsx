@@ -6,6 +6,7 @@ import Image from "next/image";
 import { AddResourceDialog } from "@/features/products/components/add-resource-dialog";
 import { EditResourceDialog } from "@/features/products/components/edit-resource-dialog";
 import { getProductOfficialResources, deleteProductResource, removeProductTrainingVideo } from "@/features/products/server/actions";
+import { ContactButton } from "@/features/messaging/components/ContactButton";
 import { format } from "date-fns";
 import {
     CheckCircle,
@@ -543,8 +544,20 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                             <div className="flex gap-3 items-center">
                                 {product.organizations?.name && (
                                     <Link href={`/companies/${product.organizations.slug}`}>
-                                        <Badge variant="outline" className="text-gray-300 border-white/10 bg-white/5 rounded-full px-3 py-1 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
-                                            <Building2 className="w-3 h-3 mr-2" />
+                                        <Badge variant="outline" className="text-gray-300 border-white/10 bg-white/5 rounded-full p-1 pr-3 hover:bg-white/10 hover:text-white transition-colors cursor-pointer flex items-center">
+                                            {product.organizations.logo_url ? (
+                                                <Image
+                                                    src={product.organizations.logo_url}
+                                                    alt={product.organizations.name}
+                                                    width={20}
+                                                    height={20}
+                                                    className="w-5 h-5 mr-2 rounded-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-5 h-5 mr-2 rounded-full bg-white/10 flex items-center justify-center">
+                                                    <Building2 className="w-3 h-3" />
+                                                </div>
+                                            )}
                                             {product.organizations.name}
                                         </Badge>
                                     </Link>
