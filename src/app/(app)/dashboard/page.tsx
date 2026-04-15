@@ -7,6 +7,7 @@ import { getLatestProducts } from "@/features/products/server/actions";
 import { getLatestOrganizations } from "@/features/organizations/server/actions";
 import { getLatestProfiles } from "@/features/profiles/server/actions";
 import { DashboardClient } from "./DashboardClient";
+import { RecommendedConnectionsWidget } from "@/features/connections/components/recommended-connections";
 
 export default async function DashboardPage() {
     const cookieStore = await cookies();
@@ -39,6 +40,7 @@ export default async function DashboardPage() {
             initialProducts={latestProducts}
             latestCompanies={latestCompanies}
             latestUsers={latestUsers}
+            sidebarExtras={<RecommendedConnectionsWidget limit={5} />}
         />
     );
 }

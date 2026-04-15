@@ -1,4 +1,4 @@
-import { Newspaper, User, Radio, Package, Factory, Users, ShoppingBag, Calendar, LucideIcon } from "lucide-react";
+import { Newspaper, User, Radio, Package, Factory, Users, ShoppingBag, Calendar, BookOpen, LucideIcon } from "lucide-react";
 
 export type NavItem = {
     title: string;
@@ -70,7 +70,11 @@ export const sidebarNav: NavGroup[] = [
                 title: "Events",
                 href: "/events",
                 icon: Calendar,
-                disabled: true, // Not in "PAGES TO CREATE" list, so distinct
+            },
+            {
+                title: "Blog",
+                href: "/blog",
+                icon: BookOpen,
             },
         ],
     },
