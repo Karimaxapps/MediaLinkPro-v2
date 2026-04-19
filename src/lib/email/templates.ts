@@ -2,7 +2,8 @@
  * Plain HTML email templates — minimal, dark-themed, dependency-free.
  */
 
-const wrap = (title: string, body: string, cta?: { url: string; label: string }) => `
+const wrap = (title: string, body: string, cta?: { url: string; label: string }) =>
+  `
 <!doctype html>
 <html>
 <body style="margin:0;padding:0;background:#0B0F14;color:#e5e7eb;font-family:Arial,sans-serif;">
@@ -26,36 +27,70 @@ const wrap = (title: string, body: string, cta?: { url: string; label: string })
 </html>`.trim();
 
 export const emailTemplates = {
-    connectionRequest: (actorName: string, profileUrl: string) => ({
-        subject: `${actorName} wants to connect`,
-        html: wrap(
-            "New connection request",
-            `<strong>${actorName}</strong> has sent you a connection request on MediaLinkPro.`,
-            { url: profileUrl, label: "View request" }
-        ),
+  connectionRequest: (actorName: string, profileUrl: string) => ({
+    subject: `${actorName} wants to connect`,
+    html: wrap(
+      "New connection request",
+      `<strong>${actorName}</strong> has sent you a connection request on MediaLinkPro.`,
+      { url: profileUrl, label: "View request" }
+    ),
+  }),
+  demoRequest: (actorName: string, productName: string, requestUrl: string) => ({
+    subject: `New demo request for ${productName}`,
+    html: wrap(
+      "New demo request",
+      `<strong>${actorName}</strong> requested a demo of <strong>${productName}</strong>.`,
+      { url: requestUrl, label: "Review request" }
+    ),
+  }),
+  eventInvite: (eventTitle: string, eventUrl: string) => ({
+    subject: `You're invited: ${eventTitle}`,
+    html: wrap("Event invitation", `You've been invited to <strong>${eventTitle}</strong>.`, {
+      url: eventUrl,
+      label: "View event",
     }),
-    demoRequest: (actorName: string, productName: string, requestUrl: string) => ({
-        subject: `New demo request for ${productName}`,
-        html: wrap(
-            "New demo request",
-            `<strong>${actorName}</strong> requested a demo of <strong>${productName}</strong>.`,
-            { url: requestUrl, label: "Review request" }
-        ),
+  }),
+  newMessage: (senderName: string, messageUrl: string) => ({
+    subject: `New message from ${senderName}`,
+    html: wrap("New direct message", `<strong>${senderName}</strong> sent you a message.`, {
+      url: messageUrl,
+      label: "Open conversation",
     }),
-    eventInvite: (eventTitle: string, eventUrl: string) => ({
-        subject: `You're invited: ${eventTitle}`,
-        html: wrap(
-            "Event invitation",
-            `You've been invited to <strong>${eventTitle}</strong>.`,
-            { url: eventUrl, label: "View event" }
-        ),
-    }),
-    newMessage: (senderName: string, messageUrl: string) => ({
-        subject: `New message from ${senderName}`,
-        html: wrap(
-            "New direct message",
-            `<strong>${senderName}</strong> sent you a message.`,
-            { url: messageUrl, label: "Open conversation" }
-        ),
-    }),
+  }),
+  jobApplication: (applicantName: string, jobTitle: string, reviewUrl: string) => ({
+    subject: `New application: ${jobTitle}`,
+    html: wrap(
+      "New job application",
+      `<strong>${applicantName}</strong> just applied to <strong>${jobTitle}</strong>.`,
+      { url: reviewUrl, label: "Review application" }
+    ),
+  }),
+  jobReply: (
+    companyName: string,
+    jobTitle: string,
+    statusLabel: string,
+    body: string,
+    jobUrl: string
+  ) => ({
+    subject: `${companyName} responded to your application`,
+    html: wrap(
+      `Update on ${jobTitle}`,
+      `<strong>${companyName}</strong> marked your application as <strong>${statusLabel}</strong>.<br/><br/>${body ? body.replace(/\n/g, "<br/>") : "Open MediaLinkPro for the full message."}`,
+      { url: jobUrl, label: "Open application" }
+    ),
+  }),
+  interviewScheduled: (
+    companyName: string,
+    jobTitle: string,
+    when: string,
+    where: string,
+    jobUrl: string
+  ) => ({
+    subject: `Interview scheduled: ${jobTitle}`,
+    html: wrap(
+      "Interview scheduled",
+      `<strong>${companyName}</strong> has scheduled an interview for <strong>${jobTitle}</strong>.<br/><br/><strong>When:</strong> ${when}<br/><strong>Where:</strong> ${where || "See application"}`,
+      { url: jobUrl, label: "Open application" }
+    ),
+  }),
 };

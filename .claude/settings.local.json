@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(ls -la /c/dev/MediaLinkPro-v2/.claude/worktrees/hungry-blackburn/.env*)",
+      "Read(//c/dev/MediaLinkPro-v2/**)",
+      "Bash(ls src/features/notifications/)",
+      "Bash(ls src/features/notifications/server/)",
+      "Bash(xargs -I{} grep -l \"notifications\" supabase/migrations/{})",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(where gh:*)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(cmd //c \"where gh\")",
+      "Bash(cmd //c \"set\")",
+      "Bash(gh --version)",
+      "Bash(cmd //c \"gh --version\")",
+      "Read(//c/Program Files/GitHub CLI//**)",
+      "Read(//c/Users/KARIMAX/AppData/Local/**)",
+      "Read(//c/Users/KARIMAX/scoop/apps/**)"
+    ]
+  }
+}
