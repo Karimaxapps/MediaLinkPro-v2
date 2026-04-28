@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getEventBySlug, getUserRegistration } from "@/features/events/server/actions";
+import {
+    getEventBySlug,
+    getUserRegistration,
+    listEventInterests,
+    getMyEventInterest,
+} from "@/features/events/server/actions";
 import { EventDetailsClient } from "@/features/events/components/event-details-client";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -25,7 +30,18 @@ export default async function EventDetailPage({ params }: Props) {
     const event = await getEventBySlug(slug);
     if (!event) notFound();
 
-    const registration = await getUserRegistration(event.id);
+    const [registration, interests, myInterest] = await Promise.all([
+        getUserRegistration(event.id),
+        listEventInterests(event.id, 20),
+        getMyEventInterest(event.id),
+    ]);
 
-    return <EventDetailsClient event={event} initialRegistration={registration} />;
+    return (
+        <EventDetailsClient
+            event={event}
+            initialRegistration={registration}
+            initialInterests={interests}
+            initialMyInterest={myInterest}
+        />
+    );
 }

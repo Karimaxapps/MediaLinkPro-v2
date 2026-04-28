@@ -50,21 +50,33 @@ export function Sidebar({ className, organizations }: SidebarProps) {
                                                 {isProfileItem && (
                                                     organizations && organizations.length > 0 ? (
                                                         <div className="mt-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="w-full justify-between text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9"
-                                                                onClick={() => setIsCompanyOpen(!isCompanyOpen)}
-                                                            >
-                                                                <div className="flex items-center truncate">
-                                                                    <Building2 className="mr-2 h-4 w-4 shrink-0" />
-                                                                    <span className="truncate text-sm font-medium">{organizations[0].name}</span>
-                                                                </div>
-                                                                {isCompanyOpen ? (
-                                                                    <ChevronDown className="h-4 w-4 shrink-0 ml-2" />
-                                                                ) : (
-                                                                    <ChevronRight className="h-4 w-4 shrink-0 ml-2" />
-                                                                )}
-                                                            </Button>
+                                                            <div className="flex items-center w-full">
+                                                                <Link href={`/companies/${organizations[0].slug}`} className="flex-1">
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        className={cn(
+                                                                            "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9",
+                                                                            pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
+                                                                        )}
+                                                                    >
+                                                                        <Building2 className="mr-2 h-4 w-4 shrink-0" />
+                                                                        <span className="truncate text-sm font-medium">{organizations[0].name}</span>
+                                                                    </Button>
+                                                                </Link>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="text-gray-400 hover:text-white hover:bg-white/5 h-9 w-8 shrink-0"
+                                                                    onClick={() => setIsCompanyOpen(!isCompanyOpen)}
+                                                                    aria-label="Toggle company section"
+                                                                >
+                                                                    {isCompanyOpen ? (
+                                                                        <ChevronDown className="h-4 w-4" />
+                                                                    ) : (
+                                                                        <ChevronRight className="h-4 w-4" />
+                                                                    )}
+                                                                </Button>
+                                                            </div>
 
                                                             {isCompanyOpen && (
                                                                 <div className="ml-4 border-l border-white/10 pl-2 space-y-1 mt-1">
@@ -181,21 +193,33 @@ export function MobileSidebar({ organizations }: { organizations?: any[] }) {
                                                     {isProfileItem && (
                                                         organizations && organizations.length > 0 ? (
                                                             <div className="mt-2">
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    className="w-full justify-between text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9"
-                                                                    onClick={() => setIsCompanyOpen(!isCompanyOpen)}
-                                                                >
-                                                                    <div className="flex items-center truncate">
-                                                                        <Building2 className="mr-2 h-4 w-4 shrink-0" />
-                                                                        <span className="truncate text-sm font-medium">{organizations[0].name}</span>
-                                                                    </div>
-                                                                    {isCompanyOpen ? (
-                                                                        <ChevronDown className="h-4 w-4 shrink-0 ml-2" />
-                                                                    ) : (
-                                                                        <ChevronRight className="h-4 w-4 shrink-0 ml-2" />
-                                                                    )}
-                                                                </Button>
+                                                                <div className="flex items-center w-full">
+                                                                    <Link href={`/companies/${organizations[0].slug}`} className="flex-1" onClick={() => setOpen(false)}>
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            className={cn(
+                                                                                "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9",
+                                                                                pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
+                                                                            )}
+                                                                        >
+                                                                            <Building2 className="mr-2 h-4 w-4 shrink-0" />
+                                                                            <span className="truncate text-sm font-medium">{organizations[0].name}</span>
+                                                                        </Button>
+                                                                    </Link>
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="text-gray-400 hover:text-white hover:bg-white/5 h-9 w-8 shrink-0"
+                                                                        onClick={() => setIsCompanyOpen(!isCompanyOpen)}
+                                                                        aria-label="Toggle company section"
+                                                                    >
+                                                                        {isCompanyOpen ? (
+                                                                            <ChevronDown className="h-4 w-4" />
+                                                                        ) : (
+                                                                            <ChevronRight className="h-4 w-4" />
+                                                                        )}
+                                                                    </Button>
+                                                                </div>
 
                                                                 {isCompanyOpen && (
                                                                     <div className="ml-4 border-l border-white/10 pl-2 space-y-1 mt-1">

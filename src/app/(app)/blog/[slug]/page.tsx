@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft, Eye, Package } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getPostBySlug } from "@/features/blog/server/actions";
 import type { Metadata } from "next";
@@ -83,9 +83,57 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
             )}
 
-            <div className="prose prose-invert max-w-none text-gray-200 whitespace-pre-wrap leading-relaxed">
-                {post.content}
-            </div>
+            <div
+                className="text-gray-200 leading-relaxed
+                  [&_p]:my-3
+                  [&_strong]:text-white [&_strong]:font-semibold
+                  [&_em]:italic
+                  [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-8 [&_h2]:mb-3
+                  [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-6 [&_h3]:mb-2
+                  [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
+                  [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
+                  [&_li]:marker:text-[#C6A85E]
+                  [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
+                  [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
+                  [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            {post.linked_product && (
+                <Link
+                    href={`/products/${post.linked_product.slug}`}
+                    className="block rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/10 to-white/5 p-5 hover:from-[#C6A85E]/20 transition-colors"
+                >
+                    <div className="flex items-start gap-4">
+                        <div className="h-14 w-14 shrink-0 rounded-lg border border-white/10 bg-black/20 overflow-hidden flex items-center justify-center">
+                            {post.linked_product.logo_url ? (
+                                <Image
+                                    src={post.linked_product.logo_url}
+                                    alt={post.linked_product.name}
+                                    width={56}
+                                    height={56}
+                                    className="object-cover w-full h-full"
+                                />
+                            ) : (
+                                <Package className="h-6 w-6 text-[#C6A85E]" />
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium mb-1">
+                                Featured product / service
+                            </div>
+                            <div className="text-base font-semibold text-white">
+                                {post.linked_product.name}
+                            </div>
+                            {post.linked_product.tagline && (
+                                <div className="text-sm text-gray-400 mt-0.5 line-clamp-2">
+                                    {post.linked_product.tagline}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Link>
+            )}
 
             {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-6 border-t border-white/10">

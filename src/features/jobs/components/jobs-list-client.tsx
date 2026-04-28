@@ -7,6 +7,14 @@ import { formatDistanceToNow } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Briefcase, Building2, MapPin, Search, Filter, X, Globe } from "lucide-react";
 import { JOB_TYPE_COLORS, JOB_TYPE_LABELS, type Job, type JobType } from "../types";
 
@@ -19,6 +27,7 @@ export function JobsListClient({ jobs, canPost }: Props) {
   const [search, setSearch] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<JobType[]>([]);
   const [remoteFilter, setRemoteFilter] = useState<boolean | null>(null);
+  const [needsCompanyOpen, setNeedsCompanyOpen] = useState(false);
 
   const toggleType = (t: JobType) =>
     setSelectedTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
@@ -83,15 +92,51 @@ export function JobsListClient({ jobs, canPost }: Props) {
               My applications
             </Button>
           </Link>
-          {canPost && (
+          {canPost ? (
             <Link href="/jobs/new">
               <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
                 Post a job
               </Button>
             </Link>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => setNeedsCompanyOpen(true)}
+              className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap"
+            >
+              Post a job
+            </Button>
           )}
         </div>
       </div>
+
+      <Dialog open={needsCompanyOpen} onOpenChange={setNeedsCompanyOpen}>
+        <DialogContent className="bg-[#1F1F1F] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Company profile required</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Posting jobs is available only to companies. Create your company profile first,
+              then come back to publish openings and review applications from your company
+              dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-transparent border-white/10 text-white hover:bg-white/10"
+              onClick={() => setNeedsCompanyOpen(false)}
+            >
+              Not now
+            </Button>
+            <Link href="/companies/new">
+              <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
+                Create company profile
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4">

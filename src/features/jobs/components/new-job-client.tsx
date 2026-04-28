@@ -6,8 +6,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ArrowLeft } from "lucide-react";
 import { createJob } from "../server/actions";
 import { JOB_TYPE_LABELS, type JobType } from "../types";
@@ -101,7 +101,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             <select
               value={form.organization_id}
               onChange={(e) => update("organization_id", e.target.value)}
-              className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none"
+              className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none [&>option]:bg-[#1F1F1F] [&>option]:text-white"
             >
               {organizations.map((o) => (
                 <option key={o.id} value={o.id}>
@@ -129,7 +129,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             <select
               value={form.job_type}
               onChange={(e) => update("job_type", e.target.value as JobType)}
-              className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none"
+              className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none [&>option]:bg-[#1F1F1F] [&>option]:text-white"
             >
               {Object.entries(JOB_TYPE_LABELS).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -230,13 +230,14 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
 
         <div className="space-y-2">
           <Label className="text-gray-300">Description</Label>
-          <Textarea
+          <RichTextEditor
             value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-            rows={8}
+            onChange={(value) => update("description", value)}
             placeholder="Responsibilities, requirements, team, perks..."
-            className="bg-black/20 border-white/10 text-white"
           />
+          <p className="text-xs text-gray-500">
+            Use the toolbar to format with headings, bold, italics, lists, and quotes.
+          </p>
         </div>
 
         <div className="flex gap-3 pt-2">

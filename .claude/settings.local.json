@@ -18,7 +18,10 @@
       "Bash(cmd //c \"gh --version\")",
       "Read(//c/Program Files/GitHub CLI//**)",
       "Read(//c/Users/KARIMAX/AppData/Local/**)",
-      "Read(//c/Users/KARIMAX/scoop/apps/**)"
+      "Read(//c/Users/KARIMAX/scoop/apps/**)",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__list_projects",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__apply_migration",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__execute_sql"
     ]
   }
 }

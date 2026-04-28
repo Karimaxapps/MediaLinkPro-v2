@@ -18,19 +18,74 @@ import {
     CheckCircle2,
     X,
 } from "lucide-react";
-import type { Event, EventRegistration } from "../types";
+import type { Event, EventInterest, EventInterestType, EventRegistration } from "../types";
 import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS, type EventType } from "../types";
-import { registerForEvent, cancelRegistration } from "../server/actions";
+import {
+    registerForEvent,
+    cancelRegistration,
+    setEventInterest,
+    clearEventInterest,
+} from "../server/actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function EventDetailsClient({
     event,
     initialRegistration,
+    initialInterests = [],
+    initialMyInterest = null,
 }: {
     event: Event;
     initialRegistration: EventRegistration | null;
+    initialInterests?: EventInterest[];
+    initialMyInterest?: EventInterest | null;
 }) {
     const [registration, setRegistration] = useState(initialRegistration);
+    const [interests, setInterests] = useState<EventInterest[]>(initialInterests);
+    const [myInterest, setMyInterest] = useState<EventInterest | null>(initialMyInterest);
     const [isPending, startTransition] = useTransition();
+    const [isInterestPending, startInterestTransition] = useTransition();
+
+    const interestCount = interests.length > (event.interest_count ?? 0)
+        ? interests.length
+        : (event.interest_count ?? 0);
+
+    const handleSetInterest = (next: EventInterestType) => {
+        // Toggle off if user clicks their current choice.
+        if (myInterest?.interest === next) {
+            startInterestTransition(async () => {
+                const result = await clearEventInterest(event.id);
+                if (result.success) {
+                    setMyInterest(null);
+                    setInterests((prev) => prev.filter((i) => i.user_id !== myInterest.user_id));
+                } else {
+                    toast.error(result.error ?? "Failed to update");
+                }
+            });
+            return;
+        }
+        startInterestTransition(async () => {
+            const result = await setEventInterest(event.id, next);
+            if (result.success) {
+                toast.success(next === "going" ? "You're going!" : "Marked as maybe");
+                const updated: EventInterest = {
+                    id: myInterest?.id ?? "temp",
+                    event_id: event.id,
+                    user_id: myInterest?.user_id ?? "self",
+                    interest: next,
+                    created_at: myInterest?.created_at ?? new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    profiles: myInterest?.profiles,
+                };
+                setMyInterest(updated);
+                setInterests((prev) => {
+                    const without = prev.filter((i) => i.user_id !== updated.user_id);
+                    return [updated, ...without];
+                });
+            } else {
+                toast.error(result.error ?? "Failed to update");
+            }
+        });
+    };
 
     const startDate = new Date(event.start_date);
     const endDate = new Date(event.end_date);
@@ -178,17 +233,76 @@ export function EventDetailsClient({
 
                         <div className="flex items-start gap-3">
                             <Users className="h-5 w-5 text-[#C6A85E] flex-shrink-0 mt-0.5" />
-                            <div>
-                                <div className="text-sm text-gray-400">Attendees</div>
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm text-gray-400">Interested</div>
                                 <div className="text-white font-medium">
-                                    {event.registration_count} registered
-                                    {event.max_attendees && ` / ${event.max_attendees}`}
+                                    {interestCount} {interestCount === 1 ? "person" : "people"}
                                 </div>
+                                {interests.length > 0 && (
+                                    <div className="flex items-center mt-2">
+                                        <div className="flex -space-x-2">
+                                            {interests.slice(0, 5).map((i) => (
+                                                <Link
+                                                    key={i.id}
+                                                    href={i.profiles?.username ? `/profiles/${i.profiles.username}` : "#"}
+                                                    title={i.profiles?.full_name ?? "Attendee"}
+                                                >
+                                                    <Avatar className="h-7 w-7 border-2 border-[#0B0F14] hover:ring-2 hover:ring-[#C6A85E] transition">
+                                                        <AvatarImage
+                                                            src={i.profiles?.avatar_url ?? undefined}
+                                                            alt={i.profiles?.full_name ?? "Attendee"}
+                                                        />
+                                                        <AvatarFallback className="bg-[#135bec]/20 text-[#135bec] text-[10px]">
+                                                            {(i.profiles?.full_name ?? "?")
+                                                                .substring(0, 2)
+                                                                .toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                        {interestCount > 5 && (
+                                            <span className="ml-2 text-xs text-gray-400">
+                                                +{interestCount - 5} more
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {!isPast && (
-                            <div className="pt-2 border-t border-white/10">
+                            <div className="pt-2 border-t border-white/10 space-y-3">
+                                {/* Interest buttons */}
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button
+                                        type="button"
+                                        onClick={() => handleSetInterest("going")}
+                                        disabled={isInterestPending}
+                                        className={
+                                            myInterest?.interest === "going"
+                                                ? "w-full bg-[#10b981] hover:bg-[#0e9f70] text-black font-medium"
+                                                : "w-full bg-transparent border border-white/10 text-white hover:bg-white/10"
+                                        }
+                                    >
+                                        <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                                        I&apos;ll go
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        onClick={() => handleSetInterest("maybe")}
+                                        disabled={isInterestPending}
+                                        className={
+                                            myInterest?.interest === "maybe"
+                                                ? "w-full bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                                                : "w-full bg-transparent border border-white/10 text-white hover:bg-white/10"
+                                        }
+                                    >
+                                        Maybe
+                                    </Button>
+                                </div>
+
+                                {/* Registration */}
                                 {registration ? (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-green-400">
@@ -199,12 +313,27 @@ export function EventDetailsClient({
                                             onClick={handleCancel}
                                             disabled={isPending}
                                             variant="outline"
-                                            className="w-full border-white/10 hover:bg-white/10"
+                                            className="w-full bg-transparent border-white/10 text-white hover:bg-white/10"
                                         >
                                             <X className="mr-1.5 h-4 w-4" />
                                             Cancel Registration
                                         </Button>
                                     </div>
+                                ) : event.registration_url ? (
+                                    <a
+                                        href={event.registration_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block"
+                                    >
+                                        <Button
+                                            type="button"
+                                            className="w-full bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                                        >
+                                            <ExternalLink className="mr-1.5 h-4 w-4" />
+                                            Register Now
+                                        </Button>
+                                    </a>
                                 ) : (
                                     <Button
                                         onClick={handleRegister}

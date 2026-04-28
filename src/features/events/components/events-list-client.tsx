@@ -270,8 +270,7 @@ function EventCard({ event }: { event: Event }) {
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
                     <div className="flex items-center text-xs text-gray-500">
                         <Users className="mr-1 h-3.5 w-3.5" />
-                        {event.registration_count} registered
-                        {event.max_attendees && ` / ${event.max_attendees}`}
+                        {event.interest_count ?? 0} interested
                     </div>
                     <span className="text-xs text-[#C6A85E] font-medium group-hover:underline">
                         View Details

@@ -220,6 +220,54 @@ export async function listRecentApplicationsForMyOrgs(
   return (data as unknown as JobApplication[]) ?? [];
 }
 
+export async function listJobsForOrg(orgId: string): Promise<Job[]> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data, error } = await supabase
+    .from("jobs" as never)
+    .select("*, organizations(id, name, slug, logo_url, tagline)")
+    .eq("organization_id", orgId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[jobs] listJobsForOrg error:", error.message);
+    return [];
+  }
+  return (data as unknown as Job[]) ?? [];
+}
+
+export async function listRecentApplicationsForOrg(
+  orgId: string,
+  limit: number = 10
+): Promise<JobApplication[]> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data: jobRows } = await supabase
+    .from("jobs" as never)
+    .select("id")
+    .eq("organization_id", orgId);
+
+  const jobIds = ((jobRows as unknown as { id: string }[]) ?? []).map((j) => j.id);
+  if (jobIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("job_applications" as never)
+    .select(
+      "*, profiles(id, full_name, username, avatar_url, headline), jobs(id, title, slug, organization_id, organizations(id, name, slug, logo_url))"
+    )
+    .in("job_id", jobIds)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[jobs] listRecentApplicationsForOrg error:", error.message);
+    return [];
+  }
+  return (data as unknown as JobApplication[]) ?? [];
+}
+
 export async function getMyApplicationForJob(jobId: string): Promise<JobApplication | null> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);

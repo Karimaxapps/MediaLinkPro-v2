@@ -6,7 +6,6 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
   Briefcase,
   Building2,
   Calendar,
@@ -41,15 +40,7 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
   const isOpen = job.status === "open";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Link
-        href="/jobs"
-        className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="mr-1.5 h-4 w-4" />
-        Back to jobs
-      </Link>
-
+    <div className="space-y-6">
       <div className="rounded-xl border border-white/10 bg-white/5 p-6 space-y-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
@@ -168,9 +159,21 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
       {job.description && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-lg font-semibold text-white mb-3">About this role</h2>
-          <div className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
-            {job.description}
-          </div>
+          <div
+            className="text-sm text-gray-300 leading-relaxed space-y-4
+              [&_p]:my-3
+              [&_strong]:text-white [&_strong]:font-semibold
+              [&_em]:italic
+              [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2
+              [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2
+              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
+              [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
+              [&_li]:marker:text-[#C6A85E]
+              [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
+              [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
+              [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
+            dangerouslySetInnerHTML={{ __html: job.description }}
+          />
         </div>
       )}
 

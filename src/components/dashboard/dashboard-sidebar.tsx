@@ -10,21 +10,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EventCard } from "@/components/events/event-card";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
+import type { Event } from "@/features/events/types";
+
 interface DashboardSidebarProps {
     latestCompanies: any[];
     latestUsers: any[];
+    upcomingEvent?: Event | null;
 }
 
-export function DashboardSidebar({ latestCompanies, latestUsers }: DashboardSidebarProps) {
+export function DashboardSidebar({ latestCompanies, latestUsers, upcomingEvent }: DashboardSidebarProps) {
     return (
         <aside className="space-y-6">
             {/* Upcoming Event */}
-            <EventCard
-                name="Global Media Expo 2026"
-                date="June 12-15, 2026"
-                location="Las Vegas, NV"
-                organizer="MediaLink Pro"
-            />
+            {upcomingEvent && <EventCard event={upcomingEvent} />}
 
             {/* Latest Joined Companies */}
             <Card className="bg-white/5 border-white/10 text-white">
@@ -80,7 +78,7 @@ export function DashboardSidebar({ latestCompanies, latestUsers }: DashboardSide
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {latestUsers.map((user) => (
-                        <Link key={user.id} href={`/profile/${user.username}`} className="flex items-center gap-3 group">
+                        <Link key={user.id} href={`/profiles/${user.username}`} className="flex items-center gap-3 group">
                             <Avatar className="h-9 w-9 border border-white/10">
                                 <AvatarImage src={user.avatar_url} alt={user.full_name} />
                                 <AvatarFallback className="bg-blue-500/10 text-blue-500 text-xs">

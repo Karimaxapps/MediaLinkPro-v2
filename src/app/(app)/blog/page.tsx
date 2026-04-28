@@ -3,7 +3,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { listPublishedPosts } from "@/features/blog/server/actions";
 import { Button } from "@/components/ui/button";
-import { PenSquare, Eye } from "lucide-react";
+import { PenSquare, Eye, Package } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default async function BlogPage() {
                 </div>
                 <div className="flex gap-2">
                     <Link href="/blog/my-posts">
-                        <Button variant="outline" className="border-white/10 hover:bg-white/10">
+                        <Button variant="outline" className="bg-transparent border-white/10 text-white hover:bg-white/10">
                             My Posts
                         </Button>
                     </Link>
@@ -76,6 +76,12 @@ export default async function BlogPage() {
                                 </h2>
                                 {post.excerpt && (
                                     <p className="text-sm text-gray-400 line-clamp-2">{post.excerpt}</p>
+                                )}
+                                {post.linked_product && (
+                                    <div className="inline-flex items-center gap-1.5 text-[10px] text-[#C6A85E] bg-[#C6A85E]/10 border border-[#C6A85E]/20 px-2 py-0.5 rounded-full">
+                                        <Package className="h-3 w-3" />
+                                        <span className="truncate max-w-[140px]">{post.linked_product.name}</span>
+                                    </div>
                                 )}
                                 <div className="flex items-center gap-3 pt-2 text-xs text-gray-500">
                                     <span>{post.author?.full_name ?? post.author?.username ?? "Author"}</span>

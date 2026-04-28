@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import type { Event, EventRegistration } from "../types";
+import type { Event, EventInterest, EventInterestType, EventRegistration } from "../types";
 
 // ─── READ ─────────────────────────────────────────
 
@@ -127,6 +127,7 @@ export async function createEvent(eventData: {
     online_url?: string;
     cover_image_url?: string;
     max_attendees?: number;
+    registration_url?: string;
 }): Promise<{ success: boolean; error?: string; slug?: string }> {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
@@ -235,5 +236,94 @@ export async function cancelRegistration(eventId: string): Promise<{ success: bo
         .update({ registration_count: Math.max(0, (event?.registration_count ?? 1) - 1) })
         .eq("id", eventId);
 
+    return { success: true };
+}
+
+// ─── Event interests ──────────────────────────────
+
+export async function listEventInterests(
+    eventId: string,
+    limit: number = 20
+): Promise<EventInterest[]> {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+        .from("event_interests" as never)
+        .select("*, profiles(id, full_name, username, avatar_url)")
+        .eq("event_id", eventId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+    if (error) {
+        console.error("[events] listEventInterests error:", error.message);
+        return [];
+    }
+    return (data as unknown as EventInterest[]) ?? [];
+}
+
+export async function getMyEventInterest(
+    eventId: string
+): Promise<EventInterest | null> {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+        .from("event_interests" as never)
+        .select("*")
+        .eq("event_id", eventId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (error) return null;
+    return (data as unknown as EventInterest) ?? null;
+}
+
+export async function setEventInterest(
+    eventId: string,
+    interest: EventInterestType
+): Promise<{ success: boolean; error?: string }> {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "You must be logged in." };
+
+    const { error } = await supabase
+        .from("event_interests" as never)
+        .upsert(
+            { event_id: eventId, user_id: user.id, interest },
+            { onConflict: "event_id,user_id" }
+        );
+
+    if (error) {
+        console.error("[events] setEventInterest error:", error.message);
+        return { success: false, error: "Failed to save your interest." };
+    }
+    return { success: true };
+}
+
+export async function clearEventInterest(
+    eventId: string
+): Promise<{ success: boolean; error?: string }> {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "You must be logged in." };
+
+    const { error } = await supabase
+        .from("event_interests" as never)
+        .delete()
+        .eq("event_id", eventId)
+        .eq("user_id", user.id);
+
+    if (error) {
+        console.error("[events] clearEventInterest error:", error.message);
+        return { success: false, error: "Failed to clear your interest." };
+    }
     return { success: true };
 }

@@ -1,9 +1,14 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { getJobBySlug, getMyApplicationForJob } from "@/features/jobs/server/actions";
 import { JobDetailsClient } from "@/features/jobs/components/job-details-client";
+import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
+import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
+import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
 type Props = { params: Promise<{ orgSlug: string; slug: string }> };
 
@@ -42,12 +47,34 @@ export default async function JobDetailPage({ params }: Props) {
     canManage = Boolean(membership && ["owner", "admin", "editor"].includes(membership.role));
   }
 
+  const sidebarAd = await getActiveAdForPlacement("job_details_sidebar");
+
   return (
-    <JobDetailsClient
-      job={job}
-      currentUserId={user?.id ?? null}
-      myApplication={myApplication}
-      canManage={canManage}
-    />
+    <div className="space-y-4">
+      <Link
+        href="/jobs"
+        className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
+      >
+        <ArrowLeft className="mr-1.5 h-4 w-4" />
+        Back to jobs
+      </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="lg:col-span-9 self-start">
+          <JobDetailsClient
+            job={job}
+            currentUserId={user?.id ?? null}
+            myApplication={myApplication}
+            canManage={canManage}
+          />
+        </div>
+        <aside className="lg:col-span-3 self-start lg:sticky lg:top-24">
+          {sidebarAd ? (
+            <SponsoredCard placement="job_details_sidebar" />
+          ) : (
+            <AdPlaceholder height={520} />
+          )}
+        </aside>
+      </div>
+    </div>
   );
 }

@@ -29,6 +29,7 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
         online_url: "",
         cover_image_url: "",
         max_attendees: "",
+        registration_url: "",
     });
 
     const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
@@ -55,6 +56,7 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
                 online_url: form.online_url || undefined,
                 cover_image_url: form.cover_image_url || undefined,
                 max_attendees: form.max_attendees ? Number(form.max_attendees) : undefined,
+                registration_url: form.registration_url.trim() || undefined,
             });
 
             if (result.success && result.slug) {
@@ -215,6 +217,21 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
                             className="bg-black/20 border-white/10 text-white"
                         />
                     </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-gray-300">External Registration Link</Label>
+                    <Input
+                        type="url"
+                        value={form.registration_url}
+                        onChange={(e) => update("registration_url", e.target.value)}
+                        placeholder="https://eventbrite.com/e/your-event"
+                        className="bg-black/20 border-white/10 text-white"
+                    />
+                    <p className="text-xs text-gray-500">
+                        Optional. If provided, the &quot;Register Now&quot; button on the event page
+                        will open this URL in a new tab instead of using in-app registration.
+                    </p>
                 </div>
 
                 <div className="flex gap-3 pt-2">

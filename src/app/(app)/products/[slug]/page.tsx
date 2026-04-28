@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { format } from "date-fns";
+import { Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { getProductBySlug } from "@/features/products/server/actions";
+import { listPostsForProduct } from "@/features/blog/server/actions";
 import { ProductDetailsClient } from "@/components/products/product-details-client";
 
 import { Metadata } from "next";
@@ -83,5 +88,72 @@ export default async function ProductDetailsPage({ params }: PageProps) {
         userProfile = profile;
     }
 
-    return <ProductDetailsClient product={product} user={user} userProfile={userProfile} isOwner={isOwner} />;
+    const relatedPosts = await listPostsForProduct(product.id, 6);
+
+    return (
+        <div className="space-y-8">
+            <ProductDetailsClient product={product} user={user} userProfile={userProfile} isOwner={isOwner} />
+
+            {relatedPosts.length > 0 && (
+                <section className="rounded-xl border border-white/10 bg-white/5 p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold text-white">From the blog</h2>
+                        <Link
+                            href="/blog"
+                            className="text-xs text-[#C6A85E] hover:underline"
+                        >
+                            View all posts
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {relatedPosts.map((post) => (
+                            <Link
+                                key={post.id}
+                                href={`/blog/${post.slug}`}
+                                className="group flex gap-3 p-3 rounded-lg border border-white/10 bg-black/20 hover:bg-white/5 transition-colors"
+                            >
+                                {post.cover_image_url ? (
+                                    <div className="relative h-16 w-20 shrink-0 rounded overflow-hidden">
+                                        <Image
+                                            src={post.cover_image_url}
+                                            alt={post.title}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-16 w-20 shrink-0 rounded bg-[#C6A85E]/10 border border-[#C6A85E]/20" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    {post.category && (
+                                        <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium">
+                                            {post.category}
+                                        </div>
+                                    )}
+                                    <h3 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[#C6A85E] transition-colors">
+                                        {post.title}
+                                    </h3>
+                                    <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-2">
+                                        {post.author?.full_name ?? post.author?.username ?? "Author"}
+                                        {post.published_at && (
+                                            <>
+                                                <span>·</span>
+                                                <span>{format(new Date(post.published_at), "MMM d, yyyy")}</span>
+                                            </>
+                                        )}
+                                        <span>·</span>
+                                        <span className="flex items-center gap-1">
+                                            <Eye className="h-2.5 w-2.5" />
+                                            {post.views_count}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
+        </div>
+    );
 }

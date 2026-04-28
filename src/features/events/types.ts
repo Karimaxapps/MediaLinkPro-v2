@@ -1,6 +1,22 @@
 export type EventType = "conference" | "webinar" | "workshop" | "meetup" | "trade_show";
 export type EventStatus = "draft" | "published" | "cancelled" | "completed";
 export type RegistrationStatus = "registered" | "waitlisted" | "cancelled";
+export type EventInterestType = "going" | "maybe";
+
+export type EventInterest = {
+    id: string;
+    event_id: string;
+    user_id: string;
+    interest: EventInterestType;
+    created_at: string;
+    updated_at: string;
+    profiles?: {
+        id: string;
+        full_name: string | null;
+        username: string | null;
+        avatar_url: string | null;
+    };
+};
 
 export type Event = {
     id: string;
@@ -18,6 +34,8 @@ export type Event = {
     cover_image_url: string | null;
     max_attendees: number | null;
     registration_count: number;
+    interest_count: number;
+    registration_url: string | null;
     created_at: string;
     updated_at: string;
     organizations?: {

@@ -7,6 +7,7 @@ import {
     getRecentActivity,
     getCompanyProductsWithStats
 } from "@/features/organizations/server/dashboard-actions";
+import { CompanyJobsWidget } from "@/features/jobs/components/company-jobs-widget";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,6 +41,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
             <div className="space-y-8">
                 <Suspense fallback={<TableSkeleton />}>
                     <ProductTable products={products} />
+                </Suspense>
+
+                <Suspense fallback={<TableSkeleton />}>
+                    <CompanyJobsWidget orgId={orgId} orgSlug={slug} />
                 </Suspense>
 
                 <div className="max-w-2xl">
