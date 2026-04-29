@@ -8,15 +8,21 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { FeedCompanyCard } from "@/features/organizations/components/feed-company-card";
 import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react";
+import type { Event } from "@/features/events/types";
 
 export function DashboardClient({
     initialProducts,
     latestCompanies,
-    latestUsers
+    latestUsers,
+    upcomingEvent,
+    sidebarExtras,
 }: {
     initialProducts: any[],
     latestCompanies: any[],
-    latestUsers: any[]
+    latestUsers: any[],
+    upcomingEvent?: Event | null,
+    sidebarExtras?: ReactNode,
 }) {
     const productsScrollRef = useRef<HTMLDivElement>(null);
     const companiesScrollRef = useRef<HTMLDivElement>(null);
@@ -153,10 +159,12 @@ export function DashboardClient({
             </div>
 
             {/* Right Column: Widgets */}
-            <div className="lg:col-span-4 sticky top-24">
+            <div className="lg:col-span-4 sticky top-24 space-y-6">
+                {sidebarExtras}
                 <DashboardSidebar
                     latestCompanies={latestCompanies}
                     latestUsers={latestUsers}
+                    upcomingEvent={upcomingEvent}
                 />
             </div>
         </div>

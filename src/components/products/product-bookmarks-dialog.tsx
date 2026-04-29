@@ -70,7 +70,7 @@ export function ProductBookmarksDialog({ productId, children }: ProductBookmarks
                             {bookmarks.map((bookmark) => (
                                 <div key={bookmark.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
                                     <div className="flex items-center gap-3">
-                                        <Link href={`/profile/${bookmark.user?.username || bookmark.user?.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                        <Link href={`/profiles/${bookmark.user?.username || bookmark.user?.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                             <Avatar className="h-9 w-9 border border-white/10">
                                                 <AvatarImage src={bookmark.user?.avatar_url} />
                                                 <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E]">
