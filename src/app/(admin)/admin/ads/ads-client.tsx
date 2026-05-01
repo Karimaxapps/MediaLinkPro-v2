@@ -17,6 +17,7 @@ import {
 import type { AdCampaign } from "@/features/advertising/server/actions";
 
 const PLACEMENTS: { value: AdCampaign["placement"]; label: string }[] = [
+    { value: "dashboard_hero_banner", label: "Dashboard hero banner" },
     { value: "jobs_sidebar", label: "Jobs sidebar" },
     { value: "job_details_sidebar", label: "Job detail sidebar" },
     { value: "events_sidebar", label: "Events sidebar" },

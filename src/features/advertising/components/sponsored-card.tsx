@@ -11,7 +11,7 @@ export async function SponsoredCard({
     placement,
     category,
 }: {
-    placement: "feed" | "sidebar" | "marketplace" | "jobs_sidebar" | "events_sidebar" | "job_details_sidebar";
+    placement: "feed" | "sidebar" | "marketplace" | "jobs_sidebar" | "events_sidebar" | "job_details_sidebar" | "dashboard_hero_banner";
     category?: string;
 }) {
     const ad = await getActiveAdForPlacement(placement, category);

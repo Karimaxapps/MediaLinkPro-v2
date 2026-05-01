@@ -6,6 +6,7 @@ import {
   Factory,
   Users,
   ShoppingBag,
+  Wrench,
   Calendar,
   BookOpen,
   Briefcase,
@@ -77,6 +78,11 @@ export const sidebarNav: NavGroup[] = [
         title: "Products",
         href: "/marketplace/products",
         icon: ShoppingBag,
+      },
+      {
+        title: "Production Services",
+        href: "/marketplace/services",
+        icon: Wrench,
       },
       {
         title: "Events",
