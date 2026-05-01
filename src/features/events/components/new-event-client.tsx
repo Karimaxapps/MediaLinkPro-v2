@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 import { EVENT_TYPE_LABELS, type EventType } from "../types";
@@ -114,13 +114,14 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
 
                 <div className="space-y-2">
                     <Label className="text-gray-300">Description</Label>
-                    <Textarea
+                    <RichTextEditor
                         value={form.description}
-                        onChange={(e) => update("description", e.target.value)}
-                        rows={5}
+                        onChange={(value) => update("description", value)}
                         placeholder="Tell attendees what to expect..."
-                        className="bg-black/20 border-white/10 text-white"
                     />
+                    <p className="text-xs text-gray-500">
+                        Use the toolbar to format with headings, bold, italics, lists, and quotes.
+                    </p>
                 </div>
 
                 <div className="space-y-2">

@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { MobileSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
 import { Input } from "@/components/ui/input";
@@ -9,7 +11,9 @@ import { Search } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 import { InboxBadge } from "@/components/layout/inbox-badge";
 
-export function AppHeader({ organizations }: { organizations?: any[] }) {
+type AppHeaderOrganization = { slug: string; name: string };
+
+export function AppHeader({ organizations }: { organizations?: AppHeaderOrganization[] }) {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -26,9 +30,20 @@ export function AppHeader({ organizations }: { organizations?: any[] }) {
 
     return (
         <header className="sticky top-2.5 z-30 flex h-16 items-center gap-4 border border-white/10 bg-[#1F1F1F] px-6 mx-2.5 rounded-[10px]">
-            <div className="hidden md:flex items-center gap-2 font-semibold text-lg text-[#C6A85E] mr-4 min-w-fit">
+            <Link
+                href="/dashboard"
+                className="hidden md:flex items-center gap-2 font-semibold text-lg text-[#C6A85E] mr-4 min-w-fit hover:opacity-90 transition-opacity"
+            >
+                <Image
+                    src="/brand/logo.png"
+                    alt="MediaLinkPro"
+                    width={32}
+                    height={32}
+                    priority
+                    className="h-8 w-8 object-contain"
+                />
                 MediaLinkPro
-            </div>
+            </Link>
             <MobileSidebar organizations={organizations} />
             <div className="w-full flex-1 md:flex md:justify-center">
                 <form onSubmit={handleSearch}>

@@ -142,7 +142,7 @@ export default function LandingPage() {
                     <Link href="/marketplace/products">
                         <Button
                             variant="outline"
-                            className="border-white/20 text-white hover:bg-white/5 px-8 py-6 text-lg rounded-full"
+                            className="bg-transparent border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
                         >
                             Browse Marketplace
                         </Button>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { ProductCard } from "@/features/products/components/product-card";
+import type { Product } from "@/features/products/types";
 import { PRODUCT_TYPES, MAIN_CATEGORIES } from "@/features/products/constants";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,17 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const ITEMS_PER_PAGE = 12;
 
-export function MarketplaceClient({ products }: { products: any[] }) {
+export function MarketplaceClient({
+    products,
+    title = "Marketplace",
+    description = "Discover cutting-edge media technology and solutions.",
+    itemNoun = "product",
+}: {
+    products: Product[];
+    title?: string;
+    description?: string;
+    itemNoun?: string;
+}) {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -111,11 +122,11 @@ export function MarketplaceClient({ products }: { products: any[] }) {
             {/* Header & Search */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-lg border border-white/10">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Marketplace</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{title}</h1>
                     <p className="text-sm text-gray-400">
-                        Discover cutting-edge media technology and solutions.
+                        {description}
                         <span className="text-gray-500 ml-2">
-                            {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+                            {filteredProducts.length} {itemNoun}{filteredProducts.length !== 1 ? "s" : ""}
                         </span>
                     </p>
                 </div>

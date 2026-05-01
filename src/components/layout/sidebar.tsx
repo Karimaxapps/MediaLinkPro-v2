@@ -4,14 +4,17 @@ import { cn } from "@/lib/utils";
 import { sidebarNav } from "@/config/nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, Building2, PlusCircle, LayoutDashboard, ChevronRight, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Footer } from "@/components/layout/footer";
 
+type SidebarOrganization = { slug: string; name: string };
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    organizations?: any[];
+    organizations?: SidebarOrganization[];
 }
 
 export function Sidebar({ className, organizations }: SidebarProps) {
@@ -138,13 +141,14 @@ export function Sidebar({ className, organizations }: SidebarProps) {
     );
 }
 
-export function MobileSidebar({ organizations }: { organizations?: any[] }) {
+export function MobileSidebar({ organizations }: { organizations?: SidebarOrganization[] }) {
     const [open, setOpen] = useState(false);
     const [isCompanyOpen, setIsCompanyOpen] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration guard
         setIsMounted(true);
     }, []);
 
@@ -162,7 +166,14 @@ export function MobileSidebar({ organizations }: { organizations?: any[] }) {
             <SheetContent side="left" className="bg-[#1F1F1F] border-r-white/10 text-white w-64 p-0">
                 <div className="space-y-4 py-4">
                     <div className="px-3 py-2">
-                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-[#C6A85E]">
+                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-[#C6A85E] flex items-center gap-2">
+                            <Image
+                                src="/brand/logo.png"
+                                alt="MediaLinkPro"
+                                width={28}
+                                height={28}
+                                className="h-7 w-7 object-contain"
+                            />
                             MediaLinkPro
                         </h2>
                         <div className="space-y-1">

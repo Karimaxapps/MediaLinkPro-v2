@@ -182,7 +182,10 @@ export function EventDetailsClient({
                     {event.description && (
                         <section className="rounded-xl border border-white/10 bg-white/5 p-6">
                             <h2 className="text-lg font-semibold text-white mb-3">About this event</h2>
-                            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{event.description}</p>
+                            <div
+                                className="text-sm text-gray-300 leading-relaxed [&_p]:my-3 [&_strong]:text-white [&_strong]:font-semibold [&_em]:italic [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1 [&_li]:marker:text-[#C6A85E] [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3 [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
+                                dangerouslySetInnerHTML={{ __html: event.description ?? "" }}
+                            />
                         </section>
                     )}
                 </div>
