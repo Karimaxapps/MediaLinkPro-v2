@@ -9,6 +9,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Globe, Linkedin, Twitter, Github, MapPin, Link as LinkIcon, User, Pencil, Building2, Instagram, Facebook } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ProfileEditSheet } from "@/components/profile/ProfileEditSheet";
+import { getExpertServices, getExpertReviews, getExpertReviewStats } from "@/features/profiles/server/expert-actions";
+import { ExpertServicesSection } from "@/features/profiles/components/expert-services-section";
+import { ExpertReviewsSection } from "@/features/profiles/components/expert-reviews-section";
+import {
+    getProfileExperiences,
+    getProfileEducation,
+    getProfilePortfolio,
+} from "@/features/profiles/server/profile-details-actions";
+import { computeProfileCompletion } from "@/features/profiles/completion";
+import {
+    ExperienceSection,
+    EducationSection,
+    PortfolioSection,
+    ProfileCompletionCard,
+} from "@/features/profiles/components/profile-sections";
 
 async function getProfileByUsername(username: string) {
     const cookieStore = await cookies();
@@ -42,6 +57,21 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
 
     const currentUserId = await getCurrentUserId();
     const isOwner = currentUserId === profile.id;
+
+    const [services, reviews, reviewStats, experiences, education, portfolio] = await Promise.all([
+        getExpertServices(profile.id),
+        getExpertReviews(profile.id),
+        getExpertReviewStats(profile.id),
+        getProfileExperiences(profile.id),
+        getProfileEducation(profile.id),
+        getProfilePortfolio(profile.id),
+    ]);
+
+    const completion = computeProfileCompletion(profile, {
+        experiences: experiences.length,
+        education: education.length,
+        portfolio: portfolio.length,
+    });
 
     return (
         <div className="container max-w-5xl py-10 space-y-8">
@@ -154,6 +184,8 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-6 space-y-8">
+                    {isOwner && <ProfileCompletionCard score={completion.score} fields={completion.fields} />}
+
                     {profile.bio && (
                         <section>
                             <h3 className="text-xl font-semibold text-white mb-3">Bio</h3>
@@ -180,18 +212,29 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
                             </div>
                         </section>
                     )}
+
+                    <ExperienceSection items={experiences} isOwner={isOwner} />
+                    <EducationSection items={education} isOwner={isOwner} />
+                    <PortfolioSection items={portfolio} isOwner={isOwner} />
                 </TabsContent>
 
                 <TabsContent value="services" className="mt-6">
-                    <div className="text-center py-12 bg-white/5 rounded-lg border border-dashed border-white/10">
-                        <p className="text-gray-400">Services listing coming soon...</p>
-                    </div>
+                    <ExpertServicesSection
+                        initialServices={services}
+                        hourlyRate={profile.hourly_rate ?? null}
+                        isOwner={isOwner}
+                    />
                 </TabsContent>
 
                 <TabsContent value="reviews" className="mt-6">
-                    <div className="text-center py-12 bg-white/5 rounded-lg border border-dashed border-white/10">
-                        <p className="text-gray-400">Reviews functionality coming soon...</p>
-                    </div>
+                    <ExpertReviewsSection
+                        expertId={profile.id}
+                        initialReviews={reviews}
+                        averageRating={reviewStats.average}
+                        reviewCount={reviewStats.count}
+                        isOwner={isOwner}
+                        isAuthenticated={!!currentUserId}
+                    />
                 </TabsContent>
             </Tabs>
         </div>

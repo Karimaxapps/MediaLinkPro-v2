@@ -77,7 +77,7 @@ export function ProductScansDialog({ productId, children }: ProductScansDialogPr
                                 <div key={scan.id} className="p-3 rounded-lg bg-white/5 border border-white/5 space-y-3">
                                     <div className="flex items-center justify-between">
                                         {scan.scanner ? (
-                                            <Link href={`/profile/${scan.scanner.username || scan.scanner.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                                            <Link href={`/profiles/${scan.scanner.username || scan.scanner.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                                 <Avatar className="h-9 w-9 border border-white/10">
                                                     <AvatarImage src={scan.scanner.avatar_url} />
                                                     <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E]">

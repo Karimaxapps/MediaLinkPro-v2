@@ -3,6 +3,8 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { notify } from "@/features/notifications/server/notify";
+import { emailTemplates } from "@/lib/email/templates";
 
 export async function sendConnectionRequest(recipientId: string) {
     const cookieStore = await cookies();
@@ -34,19 +36,17 @@ export async function sendConnectionRequest(recipientId: string) {
         return { error: `Failed to send request: ${error.message || JSON.stringify(error)}`, success: false };
     }
 
-    // Create notification using admin client to bypass RLS
-    const adminSupabase = createAdminClient();
-    const { error: notificationError } = await adminSupabase.from('notifications').insert({
-        user_id: recipientId,
-        type: 'connection_request',
-        title: 'New Connection Request',
+    // Create notification + optional email via central helper
+    const profileUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/profiles/${senderProfile?.username ?? user.id}`;
+    const tmpl = emailTemplates.connectionRequest(senderName, profileUrl);
+    await notify({
+        userId: recipientId,
+        type: "connection_request",
+        title: "New Connection Request",
         message: `${senderName} has sent you a connection request.`,
-        data: { requester_id: user.id, username: senderProfile?.username }
+        data: { requester_id: user.id, username: senderProfile?.username },
+        email: { subject: tmpl.subject, html: tmpl.html },
     });
-
-    if (notificationError) {
-        console.error("Error creating notification:", notificationError);
-    }
 
     revalidatePath('/profiles');
     revalidatePath('/connect');

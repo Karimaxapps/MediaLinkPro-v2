@@ -116,7 +116,7 @@ export async function updateProduct(productId: string, formData: FormData): Prom
 
     // 3. Prepare update data
     // We only update fields that are present in the form data to allow partial updates
-    const updates: any = {};
+    const updates: Record<string, unknown> = {};
     const fields = [
         'name', 'slug', 'description', 'logo_url', 'is_public', 'product_type',
         'main_category', 'sub_category', 'short_description', 'external_url',
@@ -237,7 +237,7 @@ export async function getProductResources(productId: string) {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    let query = supabase
+    const query = supabase
         .from('product_community_resources')
         .select(`
             *,
@@ -762,6 +762,38 @@ export async function getPublicProducts() {
     return data;
 }
 
+/**
+ * Returns all published, public products whose product_type is 'Service'.
+ * Powers the dedicated /marketplace/services (Production Services) page.
+ */
+export async function getPublicServices() {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+        .from("products")
+        .select(`
+            *,
+            organizations (
+                id,
+                name,
+                slug,
+                logo_url
+            )
+        `)
+        .eq("status", "published")
+        .eq("is_public", true)
+        .eq("product_type", "Service")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching public services:", error);
+        return [];
+    }
+
+    return data;
+}
+
 export async function deleteProduct(productId: string): Promise<ActionState> {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
@@ -877,7 +909,7 @@ export async function addProductResource(data: {
     }
 
     // Prepare insert data
-    const resourceData: any = {
+    const resourceData: Record<string, unknown> = {
         product_id: data.product_id,
         title: data.title,
         url: data.url,
@@ -1069,6 +1101,8 @@ export async function getLatestProducts(limit: number = 5) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Exclude `product_type = 'Service'` so services live in their own
+    // dashboard row. NULL-typed rows are kept (defensive for legacy data).
     const { data, error } = await supabase
         .from('products')
         .select(`
@@ -1082,6 +1116,7 @@ export async function getLatestProducts(limit: number = 5) {
         `)
         .eq('status', 'published')
         .eq('is_public', true)
+        .or('product_type.is.null,product_type.neq.Service')
         .order('created_at', { ascending: false })
         .limit(limit);
 
@@ -1090,6 +1125,32 @@ export async function getLatestProducts(limit: number = 5) {
         return [];
     }
 
+    return data;
+}
+
+/**
+ * Returns the latest published products whose product_type is 'Service'.
+ * Powers the Media Services row on the dashboard feed.
+ */
+export async function getLatestServices(limit: number = 10) {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+        .from("products")
+        .select(
+            `*, organizations ( id, name, slug, logo_url )`
+        )
+        .eq("status", "published")
+        .eq("is_public", true)
+        .eq("product_type", "Service")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+    if (error) {
+        console.error("Error fetching latest services:", error);
+        return [];
+    }
     return data;
 }
 

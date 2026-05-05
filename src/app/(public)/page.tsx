@@ -1,68 +1,230 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import {
+    Radio,
+    Tv,
+    Users,
+    Package,
+    Award,
+    Calendar,
+    MessageSquare,
+    Search,
+    ArrowRight,
+    Building2,
+    Briefcase,
+    Globe,
+    Check,
+    Sparkles,
+} from "lucide-react";
 import { PLANS, formatPrice } from "@/lib/stripe/plans";
-import { HeroSection } from "@/components/landing/hero-section";
-import { AudienceTabs } from "@/components/landing/audience-tabs";
-import { BentoGrid } from "@/components/landing/bento-grid";
 
+const features = [
+    {
+        icon: Package,
+        title: "Product Marketplace",
+        description: "Discover and compare media technology solutions — hardware, software, cloud, and services from top providers.",
+    },
+    {
+        icon: Users,
+        title: "Professional Networking",
+        description: "Connect with broadcasters, production companies, solution providers, and media associations worldwide.",
+    },
+    {
+        icon: Award,
+        title: "Expert Directory",
+        description: "Find certified experts with verified skills and product knowledge. Get the help you need from industry specialists.",
+    },
+    {
+        icon: Calendar,
+        title: "Industry Events",
+        description: "Discover conferences, webinars, workshops, and trade shows. RSVP and stay connected with the media community.",
+    },
+    {
+        icon: MessageSquare,
+        title: "Direct Messaging",
+        description: "Communicate directly with vendors, experts, and peers. Request demos, consultations, and collaborate in real-time.",
+    },
+    {
+        icon: Search,
+        title: "Smart Discovery",
+        description: "Search across products, companies, people, and experts. Filter by category, type, and relevance to find exactly what you need.",
+    },
+];
+
+const userTypes = [
+    {
+        icon: Radio,
+        label: "Solution Providers",
+        description: "Showcase your products, generate leads, and track engagement with detailed analytics.",
+        color: "#C6A85E",
+    },
+    {
+        icon: Tv,
+        label: "Broadcasters",
+        description: "Discover solutions, evaluate products side-by-side, and connect with the right vendors.",
+        color: "#135bec",
+    },
+    {
+        icon: Briefcase,
+        label: "Media Professionals",
+        description: "Build your professional profile, showcase expertise, and get discovered by top companies.",
+        color: "#10b981",
+    },
+    {
+        icon: Building2,
+        label: "Media Associations",
+        description: "Connect members, organize industry events, and provide valuable resources to your community.",
+        color: "#f59e0b",
+    },
+];
+
+const stats = [
+    { value: "16+", label: "Product Categories" },
+    { value: "5", label: "Solution Types" },
+    { value: "Real-time", label: "Messaging" },
+    { value: "Global", label: "Network" },
+];
 
 export default function LandingPage() {
     return (
-        <main className="min-h-screen bg-[#0B0B0B] text-white overflow-hidden">
+        <main className="min-h-screen bg-[#0B0F14] text-white overflow-hidden">
+            {/* Background elements */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#C6A85E]/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#135bec]/5 rounded-full blur-3xl" />
+                <div className="absolute top-3/4 left-1/2 w-64 h-64 bg-[#10b981]/3 rounded-full blur-3xl" />
+            </div>
 
             {/* Nav */}
-            <nav className="sticky top-0 z-30 backdrop-blur-md bg-[#0B0B0B]/70 border-b border-white/5">
-                <div className="relative flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
-                    <Link href="/" className="text-xl font-bold text-[#C6A85E]">MediaLinkPro</Link>
-
-                    {/* Center nav links */}
-                    <div className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
-                        {[
-                            { label: "For You",      href: "#for-you"      },
-                            { label: "Features",     href: "#features"     },
-                            { label: "How it Works", href: "#how-it-works" },
-                            { label: "Pricing",      href: "#pricing"      },
-                        ].map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-sm font-medium text-gray-400 hover:text-[#C6A85E] transition-colors"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* Right CTAs */}
-                    <div className="flex items-center gap-4">
-                        <Link href="/auth" className="text-sm text-gray-400 hover:text-white transition-colors">
-                            Sign In
-                        </Link>
-                        <Link href="/auth">
-                            <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
-                                Get Started
-                            </Button>
-                        </Link>
-                    </div>
+            <nav className="relative z-10 flex items-center justify-between px-6 md:px-12 py-5 max-w-7xl mx-auto">
+                <span className="text-xl font-bold text-[#C6A85E]">MediaLinkPro</span>
+                <div className="flex items-center gap-4">
+                    <Link href="#pricing" className="hidden sm:inline text-sm text-gray-400 hover:text-white transition-colors">
+                        Pricing
+                    </Link>
+                    <Link href="/auth" className="text-sm text-gray-400 hover:text-white transition-colors">
+                        Sign In
+                    </Link>
+                    <Link href="/auth">
+                        <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
+                            Get Started
+                        </Button>
+                    </Link>
                 </div>
             </nav>
 
-            {/* ── NEW HERO ─────────────────────────────────────── */}
-            <HeroSection />
+            {/* Hero */}
+            <section className="relative z-10 flex flex-col items-center justify-center text-center px-4 pt-16 pb-24 max-w-4xl mx-auto">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-sm text-gray-300 mb-8">
+                    <Globe className="h-4 w-4 text-[#C6A85E]" />
+                    The Professional Network for Media
+                </div>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+                    <span className="bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
+                        Connect, Discover
+                    </span>
+                    <br />
+                    <span className="bg-gradient-to-r from-[#C6A85E] to-[#E8D5A3] bg-clip-text text-transparent">
+                        & Collaborate
+                    </span>
+                </h1>
+                <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-10">
+                    The platform where broadcasters, solution providers, production companies, and media
+                    professionals connect to discover products, share expertise, and grow their networks.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <Link href="/auth">
+                        <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-8 py-6 text-lg rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(198,168,94,0.3)] hover:shadow-[0_0_30px_rgba(198,168,94,0.5)]">
+                            Join the Network
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
+                    </Link>
+                    <Link href="/marketplace/products">
+                        <Button
+                            variant="outline"
+                            className="bg-transparent border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+                        >
+                            Browse Marketplace
+                        </Button>
+                    </Link>
+                </div>
+            </section>
 
-            {/* ── AUDIENCE TABS ─────────────────────────────────── */}
-            <div id="for-you" className="scroll-mt-20">
-                <AudienceTabs />
-            </div>
+            {/* Stats bar */}
+            <section className="relative z-10 max-w-5xl mx-auto px-4 pb-20">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {stats.map((stat) => (
+                        <div
+                            key={stat.label}
+                            className="text-center p-5 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
+                        >
+                            <div className="text-2xl md:text-3xl font-bold text-[#C6A85E]">{stat.value}</div>
+                            <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
-            {/* ── BENTO GRID ───────────────────────────────────── */}
-            <div id="features" className="scroll-mt-20">
-                <BentoGrid />
-            </div>
+            {/* Who it's for */}
+            <section className="relative z-10 max-w-6xl mx-auto px-4 pb-24">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Built for Every Role in Media</h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                        Whether you build the technology, use it, or connect the industry — MediaLinkPro has tools designed for you.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {userTypes.map((type) => {
+                        const Icon = type.icon;
+                        return (
+                            <div
+                                key={type.label}
+                                className="relative p-6 rounded-xl border border-white/10 bg-white/5 hover:bg-white/[0.07] transition-colors group"
+                            >
+                                <div
+                                    className="h-12 w-12 rounded-lg flex items-center justify-center mb-4"
+                                    style={{ backgroundColor: `${type.color}15` }}
+                                >
+                                    <Icon className="h-6 w-6" style={{ color: type.color }} />
+                                </div>
+                                <h3 className="text-lg font-semibold text-white mb-2">{type.label}</h3>
+                                <p className="text-sm text-gray-400 leading-relaxed">{type.description}</p>
+                                <ArrowRight className="absolute top-6 right-6 h-5 w-5 text-gray-600 group-hover:text-white transition-colors" />
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
+
+            {/* Features grid */}
+            <section className="relative z-10 max-w-6xl mx-auto px-4 pb-24">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Everything You Need</h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                        A comprehensive platform with tools for discovery, collaboration, and professional growth.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {features.map((feature) => {
+                        const Icon = feature.icon;
+                        return (
+                            <div
+                                key={feature.title}
+                                className="p-6 rounded-xl border border-white/10 bg-white/5 hover:border-[#C6A85E]/20 transition-colors"
+                            >
+                                <div className="h-10 w-10 rounded-lg bg-[#C6A85E]/10 flex items-center justify-center mb-4">
+                                    <Icon className="h-5 w-5 text-[#C6A85E]" />
+                                </div>
+                                <h3 className="text-base font-semibold text-white mb-2">{feature.title}</h3>
+                                <p className="text-sm text-gray-400 leading-relaxed">{feature.description}</p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
 
             {/* How it works */}
-            <section id="how-it-works" className="relative z-10 max-w-4xl mx-auto px-4 pb-24 scroll-mt-20">
+            <section className="relative z-10 max-w-4xl mx-auto px-4 pb-24">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Get Started in 3 Steps</h2>
                 </div>
@@ -84,7 +246,7 @@ export default function LandingPage() {
             </section>
 
             {/* Pricing */}
-            <section id="pricing" className="relative z-10 max-w-6xl mx-auto px-4 pb-24 scroll-mt-20">
+            <section id="pricing" className="relative z-10 max-w-6xl mx-auto px-4 pb-24">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         Simple, Transparent Pricing

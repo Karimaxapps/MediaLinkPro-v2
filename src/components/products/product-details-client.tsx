@@ -76,6 +76,8 @@ import { RequestDemoDialog } from "@/features/products/components/request-demo-d
 import { DemoRequestsDialog } from "@/components/products/demo-requests-dialog";
 import { ProductBookmarksDialog } from "@/components/products/product-bookmarks-dialog";
 import { ProductScansDialog } from "@/components/products/product-scans-dialog";
+import { ProductReviews } from "@/features/products/components/product-reviews";
+import { ProductDiscussions } from "@/features/discussions/components/product-discussions";
 
 interface ProductDetailsProps {
     product: any;
@@ -746,6 +748,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Overview</TabsTrigger>
                                 <TabsTrigger value="training" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Official Resources</TabsTrigger>
                                 <TabsTrigger value="community" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Community Resources</TabsTrigger>
+                                <TabsTrigger value="reviews" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Reviews</TabsTrigger>
+                                <TabsTrigger value="discussions" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Discussions</TabsTrigger>
                                 <TabsTrigger value="users" className="hidden">Product Users</TabsTrigger>
                             </TabsList>
 
@@ -1107,7 +1111,17 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                     </div>
                                 </TabsContent>
 
+                                <TabsContent value="reviews" className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                                    <ProductReviews
+                                        productId={product.id}
+                                        isAuthenticated={!!user}
+                                        isOwner={isOwner}
+                                    />
+                                </TabsContent>
 
+                                <TabsContent value="discussions" className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                                    <ProductDiscussions productId={product.id} canPost={!!user} />
+                                </TabsContent>
 
 
                             </div>

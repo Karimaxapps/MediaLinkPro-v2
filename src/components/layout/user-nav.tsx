@@ -97,6 +97,9 @@ export function UserNav() {
                         Bookmarks
                         <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
                     </DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.push("/billing")}>
+                        Billing & Plans
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.push("/settings/profile")}>
                         Settings
                         <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>

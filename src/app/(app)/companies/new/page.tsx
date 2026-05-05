@@ -3,6 +3,7 @@ import { CompanyWizard } from "@/features/organizations/components/company-wizar
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { getOrganizations } from "@/features/organizations/server/actions";
 
 export const metadata: Metadata = {
     title: "Create Company | MediaLinkPro",
@@ -17,6 +18,13 @@ export default async function CreateCompanyPage() {
 
     if (!user) {
         redirect("/auth/login");
+    }
+
+    // If the user already has a company, redirect to their company profile
+    // instead of letting them create another one.
+    const orgs = await getOrganizations();
+    if (orgs.length > 0) {
+        redirect(`/companies/${orgs[0].slug}`);
     }
 
     return (
