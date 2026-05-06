@@ -2,13 +2,14 @@
 
 import { ConnectButton } from "@/features/connections/components/connect-button";
 import { ConnectionStatus } from "@/features/connections/server/actions";
+import { FollowButton } from "@/features/organizations/components/follow-button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Briefcase } from "lucide-react";
 
 interface ConnectCardProps {
-    id: string; // This is the profile ID for profiles
+    id: string; // Profile ID for profiles, organization ID for organizations
     title: string;
     subtitle?: string | null;
     description?: string | null;
@@ -19,6 +20,10 @@ interface ConnectCardProps {
     badges?: string[];
     connectionStatus?: ConnectionStatus; // Optional, only for profiles
     requestId?: string; // Optional, only for profiles
+    /** Whether the current viewer is following this organization. Org cards only. */
+    isFollowing?: boolean;
+    /** Follower count for the organization. Org cards only. */
+    followerCount?: number;
 }
 
 export function ConnectCard({
@@ -32,7 +37,9 @@ export function ConnectCard({
     type,
     badges = [],
     connectionStatus = 'none',
-    requestId
+    requestId,
+    isFollowing = false,
+    followerCount = 0,
 
 }: ConnectCardProps) {
     const href = type === 'organization' ? `/companies/${slug}` : `/profiles/${slug}`;
@@ -59,14 +66,14 @@ export function ConnectCard({
                         </div>
 
                         {/* Content Section - Right Side */}
-                        <div className="flex-1 min-w-0 pr-24">
+                        <div className={`flex-1 min-w-0 ${type === "profile" ? "pr-28" : "pr-28"}`}>
                             <div className="flex justify-between items-start">
-                                <div>
+                                <div className="min-w-0 w-full">
                                     <h3 className="text-white font-medium text-base group-hover:text-[#C6A85E] transition-colors truncate">
                                         {title}
                                     </h3>
                                     {subtitle && (
-                                        <p className="text-[#C6A85E] text-xs font-medium truncate mt-0.5">
+                                        <p className="text-[#C6A85E] text-xs font-medium line-clamp-2 mt-0.5 leading-snug">
                                             {subtitle}
                                         </p>
                                     )}
@@ -103,6 +110,17 @@ export function ConnectCard({
                         initialStatus={connectionStatus}
                         requestId={requestId}
                         className="h-8 px-3 text-xs"
+                    />
+                </div>
+            )}
+
+            {type === 'organization' && (
+                <div className="absolute bottom-4 right-4 z-10" onClick={(e) => e.preventDefault()}>
+                    <FollowButton
+                        organizationId={id}
+                        initialFollowing={isFollowing}
+                        initialCount={followerCount}
+                        showCount
                     />
                 </div>
             )}

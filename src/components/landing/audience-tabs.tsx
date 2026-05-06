@@ -608,7 +608,7 @@ export function AudienceTabs() {
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
                         className="flex flex-col justify-center gap-5 lg:pr-4"
                     >
                         {/* Role icon */}
@@ -647,7 +647,7 @@ export function AudienceTabs() {
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as const, delay: 0.05 }}
                         className="rounded-2xl p-5 backdrop-blur-sm"
                         style={{
                             background: "rgba(15,15,15,0.7)",

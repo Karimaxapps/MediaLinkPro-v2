@@ -52,13 +52,14 @@ export async function getAdminStats(): Promise<AdminStats> {
     const countQuery = (table: string) =>
         admin.from(table).select("id", { count: "exact", head: true });
 
-    const [users, orgs, products, events, reviews, connections] = await Promise.all([
+    const [users, orgs, products, events, reviews, connections, hiddenReviews] = await Promise.all([
         countQuery("profiles"),
         countQuery("organizations"),
         countQuery("products"),
         countQuery("events"),
         countQuery("product_reviews"),
         countQuery("connections"),
+        admin.from("product_reviews").select("id", { count: "exact", head: true }).eq("is_visible", false),
     ]);
 
     return {
@@ -68,7 +69,7 @@ export async function getAdminStats(): Promise<AdminStats> {
         events: events.count ?? 0,
         reviews: reviews.count ?? 0,
         connections: connections.count ?? 0,
-        pendingReviews: 0,
+        pendingReviews: hiddenReviews.count ?? 0,
     };
 }
 
@@ -163,5 +164,71 @@ export async function deleteReviewAsAdmin(reviewId: string) {
     const { error } = await admin.from("product_reviews").delete().eq("id", reviewId);
     if (error) return { success: false, error: error.message };
     revalidatePath("/admin/reviews");
+    return { success: true };
+}
+
+export async function listAdminOrganizations(search: string = "", limit: number = 50) {
+    await requireSiteAdmin();
+    const admin = createAdminClient();
+
+    let query = admin
+        .from("organizations")
+        .select("id, name, slug, logo_url, created_at, type, country")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+    if (search.trim()) {
+        query = query.ilike("name", `%${search}%`);
+    }
+
+    const { data } = await query;
+    return (data ?? []) as Array<{
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+        created_at: string | null;
+        type: string | null;
+        country: string | null;
+    }>;
+}
+
+export async function deleteOrganizationAsAdmin(orgId: string) {
+    await requireSiteAdmin();
+    const admin = createAdminClient();
+    const { error } = await admin.from("organizations").delete().eq("id", orgId);
+    if (error) return { success: false, error: error.message };
+    revalidatePath("/admin/companies");
+    return { success: true };
+}
+
+export async function listAdminEvents(limit: number = 50) {
+    await requireSiteAdmin();
+    const admin = createAdminClient();
+    const { data } = await admin
+        .from("events")
+        .select("id, title, slug, status, event_type, start_date, end_date, registration_count, organization_id, created_at")
+        .order("created_at", { ascending: false })
+        .limit(limit);
+    return (data ?? []) as Array<{
+        id: string;
+        title: string;
+        slug: string;
+        status: string;
+        event_type: string;
+        start_date: string | null;
+        end_date: string | null;
+        registration_count: number;
+        organization_id: string | null;
+        created_at: string | null;
+    }>;
+}
+
+export async function deleteEventAsAdmin(eventId: string) {
+    await requireSiteAdmin();
+    const admin = createAdminClient();
+    const { error } = await admin.from("events").delete().eq("id", eventId);
+    if (error) return { success: false, error: error.message };
+    revalidatePath("/admin/events");
     return { success: true };
 }

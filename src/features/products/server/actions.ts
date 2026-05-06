@@ -739,6 +739,9 @@ export async function getPublicProducts() {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Exclude `product_type = 'Service'` — services have a dedicated
+    // marketplace page at /marketplace/services. NULL-typed rows are kept
+    // (defensive for legacy data that pre-dates the product_type column).
     const { data, error } = await supabase
         .from('products')
         .select(`
@@ -752,6 +755,7 @@ export async function getPublicProducts() {
         `)
         .eq('status', 'published')
         .eq('is_public', true)
+        .or('product_type.is.null,product_type.neq.Service')
         .order('created_at', { ascending: false });
 
     if (error) {

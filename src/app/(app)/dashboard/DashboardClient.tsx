@@ -164,7 +164,7 @@ export function DashboardClient({
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-white">Media Services</h2>
                         <Link
-                            href="/marketplace/products?type=Service"
+                            href="/marketplace/services"
                             className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors"
                         >
                             View all

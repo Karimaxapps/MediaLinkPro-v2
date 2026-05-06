@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { MarqueeText } from "@/components/ui/marquee-text";
 import { Menu, Building2, PlusCircle, LayoutDashboard, ChevronRight, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Footer } from "@/components/layout/footer";
@@ -22,8 +23,8 @@ export function Sidebar({ className, organizations }: SidebarProps) {
     const [isCompanyOpen, setIsCompanyOpen] = useState(true);
 
     return (
-        <div className={cn("hidden md:flex flex-col w-64 border border-white/10 bg-[#1F1F1F] rounded-[10px]", className)}>
-            <div className="space-y-4 py-4 flex-1 overflow-y-auto">
+        <div className={cn("hidden md:flex flex-col w-64 border border-white/10 bg-[#1F1F1F] rounded-[10px] overflow-hidden", className)}>
+            <div className="space-y-4 py-4 flex-1 overflow-y-auto overflow-x-hidden">
                 <div className="px-3 py-2">
                     <div className="space-y-1">
                         {sidebarNav.map((group) => (
@@ -54,16 +55,19 @@ export function Sidebar({ className, organizations }: SidebarProps) {
                                                     organizations && organizations.length > 0 ? (
                                                         <div className="mt-2">
                                                             <div className="flex items-center w-full">
-                                                                <Link href={`/companies/${organizations[0].slug}`} className="flex-1">
+                                                                <Link href={`/companies/${organizations[0].slug}`} className="flex-1 min-w-0">
                                                                     <Button
                                                                         variant="ghost"
                                                                         className={cn(
-                                                                            "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9",
+                                                                            "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9 min-w-0",
                                                                             pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
                                                                         )}
                                                                     >
                                                                         <Building2 className="mr-2 h-4 w-4 shrink-0" />
-                                                                        <span className="truncate text-sm font-medium">{organizations[0].name}</span>
+                                                                        <MarqueeText
+                                                                            text={organizations[0].name}
+                                                                            className="text-sm font-medium flex-1"
+                                                                        />
                                                                     </Button>
                                                                 </Link>
                                                                 <Button
@@ -104,7 +108,7 @@ export function Sidebar({ className, organizations }: SidebarProps) {
                                                                             )}
                                                                         >
                                                                             <Building2 className="mr-2 h-4 w-4" />
-                                                                            Profile
+                                                                            Company profile
                                                                         </Button>
                                                                     </Link>
                                                                 </div>
@@ -163,7 +167,7 @@ export function MobileSidebar({ organizations }: { organizations?: SidebarOrgani
                     <Menu />
                 </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-[#1F1F1F] border-r-white/10 text-white w-64 p-0">
+            <SheetContent side="left" className="bg-[#1F1F1F] border-r-white/10 text-white w-64 p-0 overflow-x-hidden">
                 <div className="space-y-4 py-4">
                     <div className="px-3 py-2">
                         <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-[#C6A85E] flex items-center gap-2">
@@ -205,16 +209,19 @@ export function MobileSidebar({ organizations }: { organizations?: SidebarOrgani
                                                         organizations && organizations.length > 0 ? (
                                                             <div className="mt-2">
                                                                 <div className="flex items-center w-full">
-                                                                    <Link href={`/companies/${organizations[0].slug}`} className="flex-1" onClick={() => setOpen(false)}>
+                                                                    <Link href={`/companies/${organizations[0].slug}`} className="flex-1 min-w-0" onClick={() => setOpen(false)}>
                                                                         <Button
                                                                             variant="ghost"
                                                                             className={cn(
-                                                                                "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9",
+                                                                                "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9 min-w-0",
                                                                                 pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
                                                                             )}
                                                                         >
                                                                             <Building2 className="mr-2 h-4 w-4 shrink-0" />
-                                                                            <span className="truncate text-sm font-medium">{organizations[0].name}</span>
+                                                                            <MarqueeText
+                                                                                text={organizations[0].name}
+                                                                                className="text-sm font-medium flex-1"
+                                                                            />
                                                                         </Button>
                                                                     </Link>
                                                                     <Button
@@ -255,7 +262,7 @@ export function MobileSidebar({ organizations }: { organizations?: SidebarOrgani
                                                                                 )}
                                                                             >
                                                                                 <Building2 className="mr-2 h-4 w-4" />
-                                                                                Profile
+                                                                                Company profile
                                                                             </Button>
                                                                         </Link>
                                                                     </div>

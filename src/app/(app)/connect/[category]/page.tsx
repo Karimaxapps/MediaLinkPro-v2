@@ -1,14 +1,12 @@
-import { ConnectCard } from "@/features/organizations/components/connect-card";
 import { getPublicProfiles } from "@/features/profiles/server/actions";
 import { getOrganizationsByType } from "@/features/organizations/server/actions";
 import { getConnectionStatus } from "@/features/connections/server/actions";
-import { EmptyState } from "@/components/ui/empty-state";
+import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
-import { Search } from "lucide-react";
 import { notFound } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { ConnectListClient, type ConnectListItem } from "./connect-list-client";
 
 // Map URL slugs to DB types
 const categoryToDbType: Record<string, string> = {
@@ -39,7 +37,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     }
 
     const title = categoryTitles[category];
-    let items: any[] = [];
+    let items: ConnectListItem[] = [];
     let type: 'organization' | 'profile' = 'organization';
 
     if (category === 'media-professionals') {
@@ -66,68 +64,44 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     } else {
         const dbType = categoryToDbType[category];
         if (dbType) {
-            items = await getOrganizationsByType(dbType);
+            const orgs = await getOrganizationsByType(dbType);
             type = 'organization';
+
+            // Bulk-fetch follower counts and the current user's follow set so
+            // every card has accurate state with just two queries instead of
+            // N round-trips.
+            const orgIds = orgs.map((o) => o.id);
+            const cookieStore = await cookies();
+            const supabase = createClient(cookieStore);
+            const [followedSet, countsResult] = await Promise.all([
+                getFollowedOrganizationIds(orgIds),
+                orgIds.length > 0
+                    ? supabase
+                          .from("organization_followers")
+                          .select("organization_id")
+                          .in("organization_id", orgIds)
+                    : Promise.resolve({ data: [] as { organization_id: string }[] }),
+            ]);
+
+            const counts = new Map<string, number>();
+            for (const row of (countsResult.data ?? []) as { organization_id: string }[]) {
+                counts.set(row.organization_id, (counts.get(row.organization_id) ?? 0) + 1);
+            }
+
+            items = orgs.map((o) => ({
+                ...o,
+                isFollowing: followedSet.has(o.id),
+                followerCount: counts.get(o.id) ?? 0,
+            }));
         }
     }
 
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            {/* Header & Search Bar */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-lg border border-white/10">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{title}</h1>
-                    <p className="text-sm text-gray-400">
-                        Connect with leading {title.toLowerCase()} in the industry
-                    </p>
-                </div>
-                <div className="relative w-full md:w-auto">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                    <Input
-                        placeholder={`Search ${title.toLowerCase()}...`}
-                        className="bg-black/20 border-white/10 text-white pl-8 focus:border-[#C6A85E]/50 w-full md:w-[300px]"
-                    />
-                </div>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Main Content */}
+                {/* Main Content (header + search + list, all client-side filtered) */}
                 <div className="lg:col-span-3 space-y-6">
-                    {items.length > 0 ? (
-                        <div className="flex flex-col gap-4">
-                            {items.map((item) => (
-                                <ConnectCard
-                                    key={item.id}
-                                    id={item.id}
-                                    title={type === 'organization' ? item.name : (item.full_name || item.username)}
-                                    subtitle={
-                                        type === 'organization'
-                                            ? item.main_activity
-                                            : (item.job_title && item.company
-                                                ? `${item.job_title} @ ${item.company}`
-                                                : (item.job_title || item.company))
-                                    }
-                                    description={type === 'organization' ? item.tagline : item.bio}
-                                    imageUrl={type === 'organization' ? item.logo_url : item.avatar_url}
-                                    location={item.country}
-                                    slug={type === 'organization' ? item.slug : item.username}
-                                    type={type}
-                                    badges={type === 'organization' && item.type ? [item.type] : []}
-                                    connectionStatus={item.connectionStatus}
-                                    requestId={item.requestId}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="min-h-[400px] flex items-center justify-center">
-                            <EmptyState
-                                icon={Search}
-                                title={`No ${title.toLowerCase()} found`}
-                                description="Try adjusting your search or check back later."
-                                actionLabel="View All"
-                            />
-                        </div>
-                    )}
+                    <ConnectListClient items={items} type={type} title={title} />
                 </div>
 
                 {/* Sidebar */}

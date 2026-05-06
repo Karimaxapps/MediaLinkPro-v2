@@ -47,6 +47,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 
   --animate-upvote-pop: upvote-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animate-marquee: marquee var(--marquee-duration, 12s) linear infinite;
 
   @keyframes upvote-pop {
     0% {
@@ -59,6 +60,16 @@
 
     100% {
       transform: translateY(0);
+    }
+  }
+
+  /* Loop with a gap: travel 100% (the duplicated content + gap) */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
     }
   }
 }

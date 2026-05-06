@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import {
     ShoppingBag, Users, Zap, Calendar,
     QrCode, MessageSquare, BadgeCheck,
@@ -18,7 +18,7 @@ const CARD_BASE  = "relative overflow-hidden rounded-2xl border border-[#C6A85E]
 
 const cardVariants = {
     rest:  { y: 0,  boxShadow: "0 0 30px rgba(198,168,94,0.04)" },
-    hover: { y: -4, boxShadow: "0 0 36px rgba(198,168,94,0.20)", borderColor: "rgba(198,168,94,0.35)", transition: { duration: 0.25, ease: "easeOut" } },
+    hover: { y: -4, boxShadow: "0 0 36px rgba(198,168,94,0.20)", borderColor: "rgba(198,168,94,0.35)", transition: { duration: 0.25, ease: [0, 0, 0.58, 1] as const } },
 };
 
 // ─── 1. Product Marketplace (col-span-7) ──────────────────────────────────────
@@ -231,7 +231,7 @@ function SmartDiscoveryTile() {
                         className="absolute rounded-full border"
                         style={{ borderColor: `rgba(198,168,94,${0.20 - i * 0.06})` }}
                         animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
-                        transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.5, ease: "easeInOut" }}
+                        transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.5, ease: [0.42, 0, 0.58, 1] as const }}
                         initial={{ width: 56 + i * 32, height: 56 + i * 32 }}
                     />
                 ))}
@@ -251,7 +251,7 @@ function SmartDiscoveryTile() {
                         className="absolute w-2 h-2 rounded-full"
                         style={{ ...pos, background: GOLD } as React.CSSProperties}
                         animate={{ scale: [0.8, 1.4, 0.8], opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: pos.delay, ease: "easeInOut" }}
+                        transition={{ duration: 2, repeat: Infinity, delay: pos.delay, ease: [0.42, 0, 0.58, 1] as const }}
                     />
                 ))}
             </div>
@@ -398,7 +398,7 @@ function QrToolsTile() {
                             className="absolute left-[6px] right-[6px] h-[1.5px] rounded-full"
                             style={{ background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)` }}
                             animate={{ top: ["16%", "84%", "16%"] }}
-                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: [0.42, 0, 0.58, 1] as const }}
                         />
                     </div>
                 </div>

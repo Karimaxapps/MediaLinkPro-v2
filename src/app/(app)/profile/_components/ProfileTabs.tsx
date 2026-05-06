@@ -8,19 +8,33 @@ import { formatDate, formatNumber } from "@/lib/formatters";
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 import { getConnectionsCount } from "@/features/connections/server/actions";
+import { getProfileExperiences } from "@/features/profiles/server/profile-details-actions";
+import { ExperienceTimeline } from "@/features/profiles/components/experience-timeline";
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 interface OverviewTabContentProps {
     profile: Profile;
 }
 
 export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
-    const connectionCount = await getConnectionsCount(profile.id);
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+    const isOwner = user?.id === profile.id;
+
+    const [connectionCount, experiences] = await Promise.all([
+        getConnectionsCount(profile.id),
+        getProfileExperiences(profile.id),
+    ]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: About */}
+            {/* Left Column: About + Experience */}
             <div className="lg:col-span-2 space-y-6">
-                <Card className="bg-white/5 border-white/10 h-full">
+                <Card className="bg-white/5 border-white/10">
                     <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-[#C6A85E]/10 rounded-lg">
@@ -35,6 +49,8 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                         </p>
                     </CardContent>
                 </Card>
+
+                <ExperienceTimeline experiences={experiences} isOwner={isOwner} />
             </div>
 
             {/* Right Column: Profile Information */}

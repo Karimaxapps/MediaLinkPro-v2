@@ -16,6 +16,7 @@ export default async function ProductionServicesPage() {
             title="Production Services"
             description="Production, post-production, and media support services from agencies, vendors, and freelancers."
             itemNoun="service"
+            availableTypes={["Service"]}
         />
     );
 }

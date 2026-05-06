@@ -311,7 +311,7 @@ export function HeroSection() {
     };
     const itemVariants = {
         hidden:   { opacity: 0, y: 28 },
-        visible:  { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+        visible:  { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
     };
 
     return (
@@ -451,7 +451,7 @@ export function HeroSection() {
                     className="order-1 lg:order-2 h-[400px] md:h-[500px] lg:h-[580px]"
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] as const }}
                 >
                     <IsoDashboard />
                 </motion.div>

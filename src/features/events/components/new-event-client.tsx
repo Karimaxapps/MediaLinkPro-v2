@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -8,13 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, X } from "lucide-react";
+import { useImageUpload } from "@/hooks/use-image-upload";
 import { EVENT_TYPE_LABELS, type EventType } from "../types";
 import { createEvent } from "../server/actions";
 
 type Org = { id: string; name: string; slug: string };
 
-export function NewEventClient({ organizations }: { organizations: Org[] }) {
+const MAX_COVER_MB = 5;
+
+export function NewEventClient({
+    organizations,
+    userId,
+}: {
+    organizations: Org[];
+    userId: string;
+}) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState({
@@ -34,6 +44,21 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
 
     const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
         setForm((f) => ({ ...f, [key]: value }));
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { uploadImage, isUploading } = useImageUpload({
+        userId,
+        bucket: "events",
+        onSuccess: (url) => update("cover_image_url", url),
+    });
+
+    const handleCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        // Reset input so re-selecting the same file still triggers onChange
+        e.target.value = "";
+        if (!file) return;
+        await uploadImage(file, "covers");
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -197,27 +222,92 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-gray-300">Cover Image URL</Label>
-                        <Input
-                            value={form.cover_image_url}
-                            onChange={(e) => update("cover_image_url", e.target.value)}
-                            placeholder="https://..."
-                            className="bg-black/20 border-white/10 text-white"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-gray-300">Max Attendees</Label>
-                        <Input
-                            type="number"
-                            min="1"
-                            value={form.max_attendees}
-                            onChange={(e) => update("max_attendees", e.target.value)}
-                            placeholder="Unlimited if blank"
-                            className="bg-black/20 border-white/10 text-white"
-                        />
-                    </div>
+                <div className="space-y-2">
+                    <Label className="text-gray-300">Cover Image</Label>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        className="hidden"
+                        onChange={handleCoverFile}
+                        disabled={isUploading}
+                    />
+
+                    {form.cover_image_url ? (
+                        <div className="relative group rounded-lg overflow-hidden border border-white/10 bg-black/20">
+                            <div className="relative w-full aspect-[16/6]">
+                                <Image
+                                    src={form.cover_image_url}
+                                    alt="Event cover"
+                                    fill
+                                    className="object-cover"
+                                    unoptimized
+                                />
+                            </div>
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploading}
+                                    className="bg-black/60 border-white/20 text-white hover:bg-black/80"
+                                >
+                                    {isUploading ? (
+                                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                                    ) : (
+                                        <ImagePlus className="h-3.5 w-3.5 mr-1.5" />
+                                    )}
+                                    Replace
+                                </Button>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => update("cover_image_url", "")}
+                                    disabled={isUploading}
+                                    className="bg-black/60 border-white/20 text-white hover:bg-red-500/20 hover:border-red-500/40"
+                                >
+                                    <X className="h-3.5 w-3.5 mr-1.5" />
+                                    Remove
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            className="w-full aspect-[16/6] rounded-lg border-2 border-dashed border-white/10 bg-black/20 hover:border-[#C6A85E]/50 hover:bg-black/30 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isUploading ? (
+                                <>
+                                    <Loader2 className="h-6 w-6 animate-spin text-[#C6A85E]" />
+                                    <span className="text-sm">Uploading…</span>
+                                </>
+                            ) : (
+                                <>
+                                    <ImagePlus className="h-6 w-6 text-[#C6A85E]" />
+                                    <span className="text-sm font-medium">Upload cover image</span>
+                                    <span className="text-xs text-gray-500">
+                                        PNG, JPG, WEBP or GIF · max {MAX_COVER_MB} MB · 16:6 recommended
+                                    </span>
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-gray-300">Max Attendees</Label>
+                    <Input
+                        type="number"
+                        min="1"
+                        value={form.max_attendees}
+                        onChange={(e) => update("max_attendees", e.target.value)}
+                        placeholder="Unlimited if blank"
+                        className="bg-black/20 border-white/10 text-white md:max-w-xs"
+                    />
                 </div>
 
                 <div className="space-y-2">
@@ -238,10 +328,10 @@ export function NewEventClient({ organizations }: { organizations: Org[] }) {
                 <div className="flex gap-3 pt-2">
                     <Button
                         type="submit"
-                        disabled={isPending}
+                        disabled={isPending || isUploading}
                         className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
                     >
-                        {isPending ? "Creating..." : "Create Event"}
+                        {isPending ? "Creating..." : isUploading ? "Uploading image…" : "Create Event"}
                     </Button>
                     <Link href="/events">
                         <Button type="button" variant="outline" className="border-white/10 hover:bg-white/10">

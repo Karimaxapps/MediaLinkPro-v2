@@ -32,12 +32,16 @@ export function MarketplaceClient({
     title = "Marketplace",
     description = "Discover cutting-edge media technology and solutions.",
     itemNoun = "product",
+    availableTypes,
 }: {
     products: Product[];
     title?: string;
     description?: string;
     itemNoun?: string;
+    /** Subset of PRODUCT_TYPES to show as filter chips. Defaults to all. */
+    availableTypes?: readonly string[];
 }) {
+    const typeChips = availableTypes ?? PRODUCT_TYPES;
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -153,7 +157,7 @@ export function MarketplaceClient({
 
                 {/* Product type filters */}
                 <div className="flex flex-wrap gap-2">
-                    {PRODUCT_TYPES.map((type) => (
+                    {typeChips.map((type) => (
                         <button
                             key={type}
                             onClick={() => toggleType(type)}

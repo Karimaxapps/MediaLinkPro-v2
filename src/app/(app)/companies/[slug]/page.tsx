@@ -14,6 +14,12 @@ import { notFound } from "next/navigation";
 import { format } from "date-fns";
 import { CompanyEditForm } from "@/features/organizations/components/company-edit-form";
 import { ContactButton } from "@/features/messaging/components/ContactButton";
+import { FollowButton } from "@/features/organizations/components/follow-button";
+import {
+    isFollowingOrganization,
+    getOrganizationFollowerCount,
+} from "@/features/organizations/server/follow-actions";
+import { Users } from "lucide-react";
 
 import { ProductList } from "@/features/products/components/product-list";
 
@@ -51,6 +57,12 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         }
     }
 
+    // Follow state — orgs can be followed by anyone except their own members.
+    const [isFollowing, followerCount] = await Promise.all([
+        isFollowingOrganization(org.id),
+        getOrganizationFollowerCount(org.id),
+    ]);
+
     return (
         <div className="space-y-8">
             {/* Hero Section */}
@@ -75,8 +87,13 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                     <p className="text-gray-500 max-w-2xl text-sm">
                         {org.main_activity}
                     </p>
-                    <div className="flex items-center justify-center md:justify-start gap-2">
+                    <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
                         <Badge variant="secondary" className="bg-[#C6A85E] text-black hover:bg-[#B5964A]">{org.type || "Company"}</Badge>
+                        <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
+                            <Users className="h-3.5 w-3.5 text-[#C6A85E]" />
+                            <span className="font-semibold text-white">{followerCount.toLocaleString()}</span>
+                            {followerCount === 1 ? "follower" : "followers"}
+                        </span>
                     </div>
 
 
@@ -91,7 +108,13 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
             {/* Actions Bar */}
             {!canEdit && user && (
-                <div className="flex justify-end gap-4 mb-4">
+                <div className="flex justify-end gap-3 mb-4">
+                    <FollowButton
+                        organizationId={org.id}
+                        initialFollowing={isFollowing}
+                        initialCount={followerCount}
+                        size="default"
+                    />
                     <ContactButton text="Message Company" targetOrganizationId={org.id} />
                 </div>
             )}
