@@ -82,5 +82,9 @@ export default function AuthPage() {
                 </div>
             </div>
         </div>
-    );
+
+        <AuthTabs />
+      </div>
+    </div>
+  );
 }
