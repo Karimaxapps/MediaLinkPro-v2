@@ -4,55 +4,39 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Briefcase, Building2, MapPin, Search, Filter, X, Globe } from "lucide-react";
+import { Briefcase, Building2, MapPin, Filter, X, Globe } from "lucide-react";
 import { JOB_TYPE_COLORS, JOB_TYPE_LABELS, type Job, type JobType } from "../types";
+import { CreateGate } from "@/components/subscription/create-gate";
+import type { Quota } from "@/features/billing/server/usage";
 
 type Props = {
   jobs: Job[];
   canPost: boolean;
+  hasOrg?: boolean;
+  jobsQuota?: Quota | null;
 };
 
-export function JobsListClient({ jobs, canPost }: Props) {
-  const [search, setSearch] = useState("");
+export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null }: Props) {
   const [selectedTypes, setSelectedTypes] = useState<JobType[]>([]);
   const [remoteFilter, setRemoteFilter] = useState<boolean | null>(null);
-  const [needsCompanyOpen, setNeedsCompanyOpen] = useState(false);
+  // `canPost` is kept for backward compat but the unified gate below drives
+  // both the no-org and quota states.
+  void canPost;
 
   const toggleType = (t: JobType) =>
     setSelectedTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
 
   const clear = () => {
-    setSearch("");
     setSelectedTypes([]);
     setRemoteFilter(null);
   };
 
-  const hasFilters = Boolean(search) || selectedTypes.length > 0 || remoteFilter !== null;
+  const hasFilters = selectedTypes.length > 0 || remoteFilter !== null;
 
   const filtered = useMemo(() => {
     let result = [...jobs];
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (j) =>
-          j.title.toLowerCase().includes(q) ||
-          j.description?.toLowerCase().includes(q) ||
-          j.department?.toLowerCase().includes(q) ||
-          j.location?.toLowerCase().includes(q) ||
-          j.organizations?.name?.toLowerCase().includes(q)
-      );
-    }
     if (selectedTypes.length) {
       result = result.filter((j) => selectedTypes.includes(j.job_type));
     }
@@ -60,7 +44,7 @@ export function JobsListClient({ jobs, canPost }: Props) {
       result = result.filter((j) => Boolean(j.is_remote) === remoteFilter);
     }
     return result;
-  }, [jobs, search, selectedTypes, remoteFilter]);
+  }, [jobs, selectedTypes, remoteFilter]);
 
   const jobTypes = Object.entries(JOB_TYPE_LABELS) as [JobType, string][];
 
@@ -78,65 +62,21 @@ export function JobsListClient({ jobs, canPost }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-initial">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search jobs, skills, companies..."
-              className="bg-black/20 border-white/10 text-white pl-8 focus:border-[#C6A85E]/50 w-full md:w-[320px]"
-            />
-          </div>
           <Link href="/jobs/my-applications">
             <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
               My applications
             </Button>
           </Link>
-          {canPost ? (
-            <Link href="/jobs/new">
-              <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
-                Post a job
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              type="button"
-              onClick={() => setNeedsCompanyOpen(true)}
-              className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap"
-            >
-              Post a job
-            </Button>
-          )}
+          <CreateGate
+            noun="job"
+            nounPlural="jobs"
+            href="/jobs/new"
+            label="Post a job"
+            hasOrg={hasOrg}
+            quota={jobsQuota}
+          />
         </div>
       </div>
-
-      <Dialog open={needsCompanyOpen} onOpenChange={setNeedsCompanyOpen}>
-        <DialogContent className="bg-[#1F1F1F] border-white/10 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-white">Company profile required</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Posting jobs is available only to companies. Create your company profile first,
-              then come back to publish openings and review applications from your company
-              dashboard.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-transparent border-white/10 text-white hover:bg-white/10"
-              onClick={() => setNeedsCompanyOpen(false)}
-            >
-              Not now
-            </Button>
-            <Link href="/companies/new">
-              <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
-                Create company profile
-              </Button>
-            </Link>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4">

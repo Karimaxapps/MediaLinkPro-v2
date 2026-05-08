@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
 
 export type BlogPost = {
   id: string;
@@ -122,6 +123,7 @@ export async function listMyPosts(): Promise<BlogPost[]> {
 }
 
 export async function createPost(input: {
+  organization_id: string;
   title: string;
   excerpt?: string;
   content: string;
@@ -140,12 +142,42 @@ export async function createPost(input: {
   if (!input.title.trim() || !input.content.trim()) {
     return { success: false, error: "Title and content required" };
   }
+  if (!input.organization_id) {
+    return {
+      success: false,
+      error: "Blog posts must be published under a company profile.",
+    };
+  }
+
+  // Verify the user is a member of the org with publishing rights.
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("organization_id", input.organization_id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+    return {
+      success: false,
+      error: "You don't have permission to publish under this company.",
+    };
+  }
+
+  const gate = await checkOrgPlanLimit(input.organization_id, "blog_post");
+  if (!gate.allowed) {
+    return {
+      success: false,
+      error: blockedFeatureMessage("blog_post", gate.requiredPlan!),
+    };
+  }
 
   const baseSlug = slugify(input.title);
   const slug = `${baseSlug}-${Date.now().toString(36)}`;
 
   const { error } = await supabase.from("blog_posts" as never).insert({
     author_id: user.id,
+    organization_id: input.organization_id,
     title: input.title.trim(),
     slug,
     excerpt: input.excerpt?.trim() ?? null,

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { notify } from "@/features/notifications/server/notify";
 import { emailTemplates } from "@/lib/email/templates";
+import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
 import {
   APPLICATION_STATUS_LABELS,
   type Job,
@@ -323,6 +324,14 @@ export async function createJob(input: {
 
   if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
     return { success: false, error: "Only company admins can post jobs." };
+  }
+
+  const gate = await checkOrgPlanLimit(input.organization_id, "post_job");
+  if (!gate.allowed) {
+    return {
+      success: false,
+      error: blockedFeatureMessage("post_job", gate.requiredPlan!),
+    };
   }
 
   const base = slugify(input.title);

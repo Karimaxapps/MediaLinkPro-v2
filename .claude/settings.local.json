@@ -21,7 +21,24 @@
       "Read(//c/Users/KARIMAX/scoop/apps/**)",
       "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__list_projects",
       "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__apply_migration",
-      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__execute_sql"
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__execute_sql",
+      "Bash(Remove-Item -Path \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\\\\app\\\\api\\\\debug-experts-insert\" -Recurse -Force)",
+      "Bash(Remove-Item -Path \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\\\\app\\\\api\\\\debug-experts-list\" -Recurse -Force)",
+      "Bash(Write-Output \"Deleted\")",
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(pkill -f \"eslint\")",
+      "Bash(pkill -f \"lint-staged\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\\\\app\\\\\\(public\\)\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X POST http://localhost:3000/api/webhooks/stripe -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s -o /dev/null -w \"billing=%{http_code}\\\\n\" http://localhost:3000/billing)",
+      "Bash(curl -s -o /dev/null -w \"pricing=%{http_code}\\\\n\" http://localhost:3000/pricing)",
+      "Bash(curl -s -o /dev/null -w \"messages=%{http_code}\\\\n\" http://localhost:3000/messages)",
+      "mcp__0a84355f-613b-4a38-b46e-c8f26086ef9d__get_stripe_account_info",
+      "mcp__0a84355f-613b-4a38-b46e-c8f26086ef9d__list_products",
+      "Bash(git check-ignore *)",
+      "Bash(tasklist)"
     ]
   }
 }

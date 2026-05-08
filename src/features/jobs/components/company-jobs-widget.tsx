@@ -4,22 +4,22 @@ import { Briefcase, ExternalLink, Plus, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  listJobsForOrg,
-  listRecentApplicationsForOrg,
-} from "@/features/jobs/server/actions";
+import { listJobsForOrg, listRecentApplicationsForOrg } from "@/features/jobs/server/actions";
 import {
   APPLICATION_STATUS_COLORS,
   APPLICATION_STATUS_LABELS,
   JOB_STATUS_LABELS,
 } from "@/features/jobs/types";
+import { UsagePill } from "@/components/subscription/usage-pill";
+import type { Quota } from "@/features/billing/server/usage";
 
 type Props = {
   orgId: string;
   orgSlug: string;
+  jobsQuota?: Quota;
 };
 
-export async function CompanyJobsWidget({ orgId, orgSlug }: Props) {
+export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
   const [jobs, applications] = await Promise.all([
     listJobsForOrg(orgId),
     listRecentApplicationsForOrg(orgId, 8),
@@ -50,12 +50,23 @@ export async function CompanyJobsWidget({ orgId, orgSlug }: Props) {
               Manage all
             </Button>
           </Link>
-          <Link href="/jobs/new">
-            <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium text-xs">
+          {jobsQuota && <UsagePill quota={jobsQuota} noun="job" />}
+          {jobsQuota?.exhausted ? (
+            <Button
+              disabled
+              className="bg-[#C6A85E] text-black font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Plus className="h-3.5 w-3.5 mr-1" />
               Post a job
             </Button>
-          </Link>
+          ) : (
+            <Link href="/jobs/new">
+              <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium text-xs">
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Post a job
+              </Button>
+            </Link>
+          )}
         </div>
       </CardHeader>
 
@@ -114,9 +125,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug }: Props) {
             Recent applications
           </h3>
           {applications.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">
-              No applications received yet.
-            </p>
+            <p className="text-sm text-gray-400 py-4 text-center">No applications received yet.</p>
           ) : (
             <div className="space-y-2">
               {applications.map((app) => {
@@ -129,7 +138,10 @@ export async function CompanyJobsWidget({ orgId, orgSlug }: Props) {
                     className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-black/20 hover:bg-white/5 transition-colors group"
                   >
                     <Avatar className="h-9 w-9 border border-white/10 shrink-0">
-                      <AvatarImage src={profile?.avatar_url ?? undefined} alt={profile?.full_name ?? "Applicant"} />
+                      <AvatarImage
+                        src={profile?.avatar_url ?? undefined}
+                        alt={profile?.full_name ?? "Applicant"}
+                      />
                       <AvatarFallback className="bg-[#135bec]/20 text-[#135bec] text-xs">
                         {(profile?.full_name ?? "?").substring(0, 2).toUpperCase()}
                       </AvatarFallback>

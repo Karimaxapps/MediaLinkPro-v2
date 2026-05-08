@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { listOpenJobs } from "@/features/jobs/server/actions";
-import { getOrganizations } from "@/features/organizations/server/actions";
+import { getMyPrimaryOrg } from "@/features/organizations/server/actions";
+import { getOrgUsage } from "@/features/billing/server/usage";
 import { JobsListClient } from "@/features/jobs/components/jobs-list-client";
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
@@ -12,24 +13,25 @@ export const metadata: Metadata = {
 };
 
 export default async function JobsPage() {
-  const [jobs, orgs, sidebarAd] = await Promise.all([
+  const [jobs, org, sidebarAd] = await Promise.all([
     listOpenJobs({ limit: 100 }),
-    getOrganizations(),
+    getMyPrimaryOrg(),
     getActiveAdForPlacement("jobs_sidebar"),
   ]);
-  const canPost = orgs.some((o: { role: string }) => ["owner", "admin", "editor"].includes(o.role));
+  const usage = org ? await getOrgUsage(org.id) : null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       <div className="lg:col-span-9">
-        <JobsListClient jobs={jobs} canPost={canPost} />
+        <JobsListClient
+          jobs={jobs}
+          canPost={!!org}
+          hasOrg={!!org}
+          jobsQuota={usage?.jobsThisMonth ?? null}
+        />
       </div>
       <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
-        {sidebarAd ? (
-          <SponsoredCard placement="jobs_sidebar" />
-        ) : (
-          <AdPlaceholder height={260} />
-        )}
+        {sidebarAd ? <SponsoredCard placement="jobs_sidebar" /> : <AdPlaceholder height={260} />}
         <AdPlaceholder height={200} />
       </aside>
     </div>

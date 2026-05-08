@@ -1,18 +1,56 @@
 import { format } from "date-fns";
 import { Gift } from "lucide-react";
-import { getMySubscription } from "@/features/billing/server/actions";
+import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
+import { getSubscriptionForOrg } from "@/features/billing/server/actions";
 import { getPlanById } from "@/lib/stripe/plans";
-import { BillingActions } from "./billing-actions";
-import { PlanSelector } from "./plan-selector";
+import { BillingActions } from "@/app/(app)/billing/billing-actions";
+import { PlanSelector } from "@/app/(app)/billing/plan-selector";
 
 type Props = {
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ success?: string; canceled?: string }>;
 };
 
-export default async function BillingPage({ searchParams }: Props) {
-  const { success, canceled } = await searchParams;
-  const sub = await getMySubscription();
+export default async function CompanyBillingPage({ params, searchParams }: Props) {
+  const [{ slug }, { success, canceled }] = await Promise.all([params, searchParams]);
 
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/auth");
+
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id, name, slug, logo_url")
+    .eq("slug", slug.trim())
+    .maybeSingle();
+  if (!org) notFound();
+
+  // Only org owners can access billing
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("organization_id", org.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!membership || membership.role !== "owner") {
+    return (
+      <div className="max-w-3xl mx-auto py-20 text-center">
+        <h1 className="text-2xl font-bold text-white">Owner access only</h1>
+        <p className="text-gray-400 mt-2">
+          Billing for {org.name} is only visible to the organization owner.
+        </p>
+      </div>
+    );
+  }
+
+  const sub = await getSubscriptionForOrg(org.id);
   const plan = getPlanById(sub.plan);
   const isGifted =
     // eslint-disable-next-line react-hooks/purity
@@ -20,16 +58,16 @@ export default async function BillingPage({ searchParams }: Props) {
   const intervalLabel = sub.billing_interval === "year" ? "Annual" : "Monthly";
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8 container py-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Billing & Plans</h1>
+        <h1 className="text-3xl font-bold text-white">{org.name} — Billing</h1>
         <p className="text-sm text-gray-400 mt-1">
-          Choose the plan that fits your workflow. Switch or cancel anytime.
+          Manage this organization&apos;s subscription. Each company has its own plan, separate from
+          your personal subscription.
         </p>
       </div>
 
-      {/* Status banners */}
       {success && (
         <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-300">
           ✓ Subscription updated. Thank you!
@@ -48,7 +86,7 @@ export default async function BillingPage({ searchParams }: Props) {
             <div className="text-xs uppercase tracking-wider text-[#C6A85E]">Current plan</div>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-2xl font-bold text-white">{plan.name}</span>
-              {sub.plan !== "free" && (
+              {sub.plan !== "org_free" && (
                 <span className="text-xs rounded-full px-2 py-0.5 border border-white/15 bg-white/5 text-gray-300">
                   {intervalLabel}
                 </span>
@@ -91,17 +129,21 @@ export default async function BillingPage({ searchParams }: Props) {
 
           {sub.stripe_customer_id && (
             <div className="flex flex-wrap gap-2">
-              <BillingActions showManage label="Manage subscription" />
-              <BillingActions showManage label="View invoices" />
+              <BillingActions showManage label="Manage subscription" organizationId={org.id} />
+              <BillingActions showManage label="View invoices" organizationId={org.id} />
             </div>
           )}
         </div>
       </div>
 
-      {/* Plan selector (toggles + grid) */}
-      <PlanSelector currentPlan={sub.plan} currentInterval={sub.billing_interval} />
+      {/* Plan selector — locked to org track */}
+      <PlanSelector
+        currentPlan={sub.plan}
+        currentInterval={sub.billing_interval}
+        organizationId={org.id}
+      />
 
-      {/* Footer notes */}
+      {/* Footer */}
       <div className="text-center text-xs text-gray-500 space-y-1 pt-4">
         <p>
           Need help choosing? Contact us at{" "}
