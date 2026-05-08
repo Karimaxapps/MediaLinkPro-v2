@@ -145,8 +145,15 @@ export async function getMyPrimaryOrg(): Promise<{
 
   if (error || !data) return null;
 
-  const org = (data as { organizations: { id: string; name: string; slug: string } | null })
-    .organizations;
+  const organizations = (
+    data as {
+      organizations:
+        | { id: string; name: string; slug: string }
+        | { id: string; name: string; slug: string }[]
+        | null;
+    }
+  ).organizations;
+  const org = Array.isArray(organizations) ? organizations[0] : organizations;
   if (!org) return null;
   return { id: org.id, name: org.name, slug: org.slug };
 }

@@ -87,7 +87,6 @@ export async function fetchConversations() {
     // Order by updated_at on the conversations table
     .order("updated_at", { ascending: false })
     // Limit last_message to 1
-    // @ts-expect-error - complex nested limit
     .limit(1, { foreignTable: "messages" })
     .order("created_at", { ascending: false, foreignTable: "messages" });
 
