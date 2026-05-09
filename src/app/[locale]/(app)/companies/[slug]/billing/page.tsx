@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getSubscriptionForOrg } from "@/features/billing/server/actions";
 import { getPlanById } from "@/lib/stripe/plans";
-import { BillingActions } from "@/app/(app)/billing/billing-actions";
-import { PlanSelector } from "@/app/(app)/billing/plan-selector";
+import { BillingActions } from "@/app/[locale]/(app)/billing/billing-actions";
+import { PlanSelector } from "@/app/[locale]/(app)/billing/plan-selector";
 
 type Props = {
   params: Promise<{ slug: string }>;

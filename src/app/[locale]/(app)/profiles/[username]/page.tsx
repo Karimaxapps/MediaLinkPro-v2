@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProfileByUsername } from "@/features/profiles/server/actions";
 import { PublicProfileHeader } from "./_components/PublicProfileHeader";
-import { ProfileTabs } from "@/app/(app)/profile/_components/ProfileTabs";
+import { ProfileTabs } from "@/app/[locale]/(app)/profile/_components/ProfileTabs";
 import { Metadata } from "next";
 
 interface PublicProfilePageProps {

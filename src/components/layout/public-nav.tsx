@@ -1,15 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-const NAV_LINKS = [
-  { label: "For You", href: "/#for-you" },
-  { label: "Features", href: "/#features" },
-  { label: "How it Works", href: "/#how-it-works" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Blog", href: "/blog" },
-];
+import { useTranslations } from "next-intl";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 
 export function PublicNav({ activePath }: { activePath?: string }) {
+  const t = useTranslations("nav");
+
+  const NAV_LINKS = [
+    { label: t("forYou"), href: "/#for-you" },
+    { label: t("features"), href: "/#features" },
+    { label: t("howItWorks"), href: "/#how-it-works" },
+    { label: t("pricing"), href: "/pricing" },
+    { label: t("blog"), href: "/blog" },
+  ];
+
   return (
     <nav className="sticky top-0 z-30 backdrop-blur-md bg-[#0B0B0B]/70 border-b border-white/5">
       <div className="relative flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
@@ -33,13 +39,14 @@ export function PublicNav({ activePath }: { activePath?: string }) {
           ))}
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <LocaleSwitcher />
           <Link href="/auth" className="text-sm text-gray-400 hover:text-white transition-colors">
-            Sign In
+            {t("signIn")}
           </Link>
           <Link href="/auth">
             <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
-              Get Started
+              {t("getStarted")}
             </Button>
           </Link>
         </div>

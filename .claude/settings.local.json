@@ -38,7 +38,16 @@
       "mcp__0a84355f-613b-4a38-b46e-c8f26086ef9d__get_stripe_account_info",
       "mcp__0a84355f-613b-4a38-b46e-c8f26086ef9d__list_products",
       "Bash(git check-ignore *)",
-      "Bash(tasklist)"
+      "Bash(tasklist)",
+      "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\" -Recurse -Filter \"page.tsx\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const p=JSON.parse\\(d\\); console.log\\(JSON.stringify\\(Object.keys\\(p.exports||{}\\).slice\\(0,20\\), null,2\\)\\)\")",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\dev\\\\MediaLinkPro-v2\\\\.next\")",
+      "Bash(git rm *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)"
     ]
   }
 }

@@ -26,7 +26,7 @@ export default async function BookmarkedPage() {
                     My Bookmarks
                 </h1>
                 <p className="text-gray-400">
-                    Quickly access the products and solutions you've saved.
+                    Quickly access the products and solutions you&apos;ve saved.
                 </p>
             </div>
 

@@ -11,9 +11,10 @@ import { LikeButton } from "@/features/blog/components/like-button";
 import { ViewTracker } from "@/features/blog/components/view-tracker";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { useTranslations } from "next-intl";
 import type { Metadata } from "next";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string; locale: string }> };
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
@@ -72,6 +73,8 @@ export default async function PublicBlogPostPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const t = useTranslations("blog");
+
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const {
@@ -114,7 +117,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
           className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="mr-1.5 h-4 w-4" />
-          Back to blog
+          {t("backToBlog")}
         </Link>
 
         {/* Post header */}
@@ -137,7 +140,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
             </Avatar>
             <div className="flex-1">
               <div className="text-sm font-medium text-white">
-                {post.author?.full_name ?? post.author?.username ?? "Author"}
+                {post.author?.full_name ?? post.author?.username ?? t("author")}
               </div>
               <div className="text-xs text-gray-500 flex items-center gap-2">
                 {post.published_at && format(new Date(post.published_at), "MMMM d, yyyy")}
@@ -166,10 +169,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
         {/* Article content — full for signed-in users, gated for guests */}
         {user ? (
           <>
-            <div
-              className={articleClasses}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <div className={articleClasses} dangerouslySetInnerHTML={{ __html: post.content }} />
 
             {/* Linked product */}
             {post.linked_product && (
@@ -193,7 +193,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium mb-1">
-                      Featured product / service
+                      {t("featuredProduct")}
                     </div>
                     <div className="text-base font-semibold text-white">
                       {post.linked_product.name}
@@ -210,7 +210,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
 
             {/* Like CTA */}
             <div className="flex flex-col items-center gap-3 py-8 border-t border-white/10">
-              <p className="text-sm text-gray-400">Found this useful? Give it a like.</p>
+              <p className="text-sm text-gray-400">{t("foundUseful")}</p>
               <LikeButton
                 postId={post.id}
                 initialLiked={isLiked}
@@ -235,13 +235,12 @@ export default async function PublicBlogPostPage({ params }: Props) {
           </>
         ) : (
           <>
-            {/* Partial preview — ~1/3 of the article */}
+            {/* Partial preview */}
             <div className="relative">
               <div
                 className={`${articleClasses} max-h-[320px] overflow-hidden`}
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
-              {/* Gradient fade */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0B0B0B] via-[#0B0B0B]/80 to-transparent pointer-events-none" />
             </div>
 
@@ -251,26 +250,21 @@ export default async function PublicBlogPostPage({ params }: Props) {
                 <Lock className="h-5 w-5 text-[#C6A85E]" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-white">
-                  Sign in to read the full article
-                </h3>
-                <p className="text-sm text-gray-400 max-w-sm mx-auto">
-                  Join MediaLinkPro to access the full post, like articles, and connect with the
-                  global media community.
-                </p>
+                <h3 className="text-xl font-semibold text-white">{t("signInTitle")}</h3>
+                <p className="text-sm text-gray-400 max-w-sm mx-auto">{t("signInDesc")}</p>
               </div>
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <Link
                   href={`/auth?redirect=/blog/${post.slug}`}
                   className="inline-flex items-center gap-2 bg-[#C6A85E] hover:bg-[#B5964A] text-black text-sm font-semibold px-6 py-2.5 rounded-full transition-colors"
                 >
-                  Sign In to Continue
+                  {t("signInContinue")}
                 </Link>
                 <Link
                   href={`/auth?redirect=/blog/${post.slug}`}
                   className="inline-flex items-center gap-2 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white text-sm px-6 py-2.5 rounded-full transition-colors"
                 >
-                  Create free account
+                  {t("createAccount")}
                 </Link>
               </div>
             </div>

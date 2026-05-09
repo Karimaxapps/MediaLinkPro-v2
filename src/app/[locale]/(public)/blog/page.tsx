@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { PenSquare, Eye, Heart } from "lucide-react";
 import { PublicNav } from "@/components/layout/public-nav";
 import { listPublishedPosts } from "@/features/blog/server/actions";
+import { useTranslations } from "next-intl";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default async function PublicBlogPage() {
   const posts = await listPublishedPosts(30);
+  const t = useTranslations("blog");
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
@@ -23,18 +25,16 @@ export default async function PublicBlogPage() {
         {/* Header */}
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-widest text-[#C6A85E] font-semibold">
-            MediaLinkPro Blog
+            {t("label")}
           </p>
-          <h1 className="text-4xl font-bold text-white">Industry Insights</h1>
-          <p className="text-gray-400 max-w-xl">
-            Product news, thought leadership, and stories from the global media community.
-          </p>
+          <h1 className="text-4xl font-bold text-white">{t("heading")}</h1>
+          <p className="text-gray-400 max-w-xl">{t("description")}</p>
         </div>
 
         {posts.length === 0 ? (
           <div className="rounded-xl border border-white/10 bg-white/5 p-16 text-center">
             <PenSquare className="h-10 w-10 text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No posts published yet. Check back soon.</p>
+            <p className="text-gray-400">{t("noPosts")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -72,7 +72,7 @@ export default async function PublicBlogPage() {
                     <p className="text-sm text-gray-400 line-clamp-2">{post.excerpt}</p>
                   )}
                   <div className="flex items-center gap-3 pt-2 text-xs text-gray-500">
-                    <span>{post.author?.full_name ?? post.author?.username ?? "Author"}</span>
+                    <span>{post.author?.full_name ?? post.author?.username ?? t("author")}</span>
                     {post.published_at && (
                       <span>· {format(new Date(post.published_at), "MMM d, yyyy")}</span>
                     )}
@@ -95,14 +95,12 @@ export default async function PublicBlogPage() {
 
         {/* Footer CTA */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500">
-            Join MediaLinkPro to write and engage with the community.
-          </p>
+          <p className="text-sm text-gray-500">{t("joinCTA")}</p>
           <Link
             href="/auth"
             className="inline-flex items-center gap-2 bg-[#C6A85E] hover:bg-[#B5964A] text-black text-sm font-semibold px-5 py-2 rounded-full transition-colors"
           >
-            Get Started
+            {t("getStarted")}
           </Link>
         </div>
       </div>

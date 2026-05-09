@@ -18,6 +18,8 @@ import {
   type PlanTrack,
   type BillingInterval,
 } from "@/lib/stripe/plans";
+import { useTranslations } from "next-intl";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 
 const GOLD = "#C6A85E";
 
@@ -57,6 +59,8 @@ const AD_PLACEMENTS = [
 ];
 
 export default function PricingPage() {
+  const t = useTranslations("pricing");
+
   const [track, setTrack] = useState<PlanTrack>("individual");
   const [interval, setInterval] = useState<BillingInterval>("month");
   const [comparisonOpen, setComparisonOpen] = useState(false);
@@ -88,13 +92,14 @@ export default function PricingPage() {
               </Link>
             ))}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <LocaleSwitcher />
             <Link href="/auth" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Sign In
+              {t("signIn")}
             </Link>
             <Link href="/auth">
               <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
-                Get Started
+                {t("getStarted")}
               </Button>
             </Link>
           </div>
@@ -104,17 +109,17 @@ export default function PricingPage() {
       {/* Hero */}
       <section className="px-6 md:px-12 pt-20 pb-10 max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-          Simple, transparent <span className="text-[#C6A85E]">pricing</span>
+          {t("title")} <span className="text-[#C6A85E]">{t("titleHighlight")}</span>
         </h1>
-        <p className="mt-4 text-lg text-gray-400">Start free. Scale when you&apos;re ready.</p>
+        <p className="mt-4 text-lg text-gray-400">{t("subtitle")}</p>
 
         {/* Track toggle */}
         <div className="mt-10 inline-flex items-center rounded-full border border-white/10 bg-white/5 p-1">
           <TrackToggleButton active={track === "individual"} onClick={() => setTrack("individual")}>
-            For Professionals
+            {t("forProfessionals")}
           </TrackToggleButton>
           <TrackToggleButton active={track === "org"} onClick={() => setTrack("org")}>
-            For Organizations
+            {t("forOrganizations")}
           </TrackToggleButton>
         </div>
       </section>
@@ -123,15 +128,15 @@ export default function PricingPage() {
       <section className="px-6 md:px-12 pb-12 flex items-center justify-center gap-4">
         <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 p-1">
           <IntervalButton active={interval === "month"} onClick={() => setInterval("month")}>
-            Monthly
+            {t("monthly")}
           </IntervalButton>
           <IntervalButton active={interval === "year"} onClick={() => setInterval("year")}>
-            Annually
+            {t("annually")}
           </IntervalButton>
         </div>
         {interval === "year" && (
           <span className="inline-flex items-center rounded-full bg-emerald-500/15 text-emerald-400 px-3 py-1 text-xs font-semibold border border-emerald-500/20">
-            Save up to 20%
+            {t("saveUpTo")}
           </span>
         )}
       </section>
@@ -147,7 +152,7 @@ export default function PricingPage() {
           }
         >
           {visiblePlans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} interval={interval} />
+            <PlanCard key={plan.id} plan={plan} interval={interval} t={t} />
           ))}
         </div>
       </section>
@@ -161,7 +166,7 @@ export default function PricingPage() {
               onClick={() => setComparisonOpen((v) => !v)}
               className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-6 py-4 hover:bg-white/[0.07] transition-colors"
             >
-              <span className="text-lg font-semibold">Compare organization plans</span>
+              <span className="text-lg font-semibold">{t("compareOrgs")}</span>
               {comparisonOpen ? (
                 <ChevronUp className="size-5 text-gray-400" />
               ) : (
@@ -174,7 +179,7 @@ export default function PricingPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10 text-left">
-                      <th className="px-6 py-4 text-gray-400 font-medium">Feature</th>
+                      <th className="px-6 py-4 text-gray-400 font-medium">{t("feature")}</th>
                       {orgPlans.map((p) => (
                         <th key={p.id} className="px-6 py-4 text-white font-semibold">
                           {p.name.replace(/^Org\s+/, "")}
@@ -189,37 +194,43 @@ export default function PricingPage() {
                     />
                     <ComparisonRow
                       label="Products in Marketplace"
-                      values={orgPlans.map((p) => fmtLimit(p.limits.products))}
+                      values={orgPlans.map((p) => fmtLimit(p.limits.products, t("unlimited")))}
                     />
                     <ComparisonRow
                       label="Demo/quote requests per product / month"
                       values={orgPlans.map((p) =>
-                        fmtLimit(p.limits.demoQuoteRequestsPerProductPerMonth)
+                        fmtLimit(p.limits.demoQuoteRequestsPerProductPerMonth, t("unlimited"))
                       )}
                     />
                     <ComparisonRow
                       label="Job posts per month"
-                      values={orgPlans.map((p) => fmtLimit(p.limits.jobPostsPerMonth))}
+                      values={orgPlans.map((p) =>
+                        fmtLimit(p.limits.jobPostsPerMonth, t("unlimited"))
+                      )}
                     />
                     <ComparisonRow
                       label="Events per month"
-                      values={orgPlans.map((p) => fmtLimit(p.limits.eventsPerMonth))}
+                      values={orgPlans.map((p) =>
+                        fmtLimit(p.limits.eventsPerMonth, t("unlimited"))
+                      )}
                     />
                     <ComparisonRow
                       label="Blog posts per month"
-                      values={orgPlans.map((p) => fmtLimit(p.limits.blogPostsPerMonth))}
+                      values={orgPlans.map((p) =>
+                        fmtLimit(p.limits.blogPostsPerMonth, t("unlimited"))
+                      )}
                     />
                     <ComparisonRow
                       label="Team seats"
-                      values={orgPlans.map((p) => fmtLimit(p.limits.teamSeats))}
+                      values={orgPlans.map((p) => fmtLimit(p.limits.teamSeats, t("unlimited")))}
                     />
                     <ComparisonRow
                       label="Analytics"
                       values={orgPlans.map((p) =>
                         p.limits.analyticsLevel === "advanced"
-                          ? "Advanced"
+                          ? t("advanced")
                           : p.limits.analyticsLevel === "standard"
-                            ? "Standard"
+                            ? t("standard")
                             : "—"
                       )}
                     />
@@ -268,11 +279,8 @@ export default function PricingPage() {
               <div className="flex items-start gap-3 mb-4">
                 <Sparkles className="size-6 text-[#C6A85E] shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-2xl font-bold">Advertise to the industry</h3>
-                  <p className="mt-2 text-gray-400 max-w-2xl">
-                    Reach broadcasters, production companies, and creative professionals across
-                    seven targeted placement zones throughout MediaLinkPro.
-                  </p>
+                  <h3 className="text-2xl font-bold">{t("advertiseTitle")}</h3>
+                  <p className="mt-2 text-gray-400 max-w-2xl">{t("advertiseDesc")}</p>
                 </div>
               </div>
 
@@ -291,7 +299,7 @@ export default function PricingPage() {
               <div className="mt-8">
                 <Link href="/advertising">
                   <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full px-6">
-                    View advertising options
+                    {t("viewAdOptions")}
                   </Button>
                 </Link>
               </div>
@@ -302,9 +310,7 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <section className="px-6 md:px-12 pb-24 max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
-          Frequently asked questions
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">{t("faqTitle")}</h2>
         <Accordion type="single" collapsible className="w-full">
           {FAQS.map((faq, i) => (
             <AccordionItem key={i} value={`faq-${i}`} className="border-white/10 px-2">
@@ -366,14 +372,24 @@ function IntervalButton({
   );
 }
 
-function PlanCard({ plan, interval }: { plan: Plan; interval: BillingInterval }) {
+type TranslationFn = ReturnType<typeof useTranslations<"pricing">>;
+
+function PlanCard({
+  plan,
+  interval,
+  t,
+}: {
+  plan: Plan;
+  interval: BillingInterval;
+  t: TranslationFn;
+}) {
   const isFree = plan.id === "free";
   const isAnnual = interval === "year" && !isFree;
   const monthlyDisplayCents = isAnnual ? plan.priceAnnualMonthly : plan.priceMonthly;
   const savings = isAnnual ? getAnnualSavings(plan) : 0;
 
   const ctaHref = isFree ? "/auth" : `/auth?plan=${plan.id}`;
-  const ctaLabel = isFree ? "Get started free" : `Start with ${plan.name}`;
+  const ctaLabel = isFree ? t("getStartedFree") : t("startWith", { name: plan.name });
 
   const highlighted = !!plan.highlighted;
 
@@ -400,21 +416,21 @@ function PlanCard({ plan, interval }: { plan: Plan; interval: BillingInterval })
 
       <div className="mt-6 min-h-[88px]">
         {isFree ? (
-          <div className="text-4xl font-bold">Free</div>
+          <div className="text-4xl font-bold">{t("free")}</div>
         ) : (
           <>
             <div className="flex items-baseline gap-1">
               <span className="text-4xl font-bold">{formatPrice(monthlyDisplayCents)}</span>
-              <span className="text-gray-400">/mo</span>
+              <span className="text-gray-400">{t("perMonth")}</span>
             </div>
             {isAnnual && (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="text-sm text-gray-400">
-                  billed {formatPrice(plan.priceAnnual)}/yr
+                  {t("billedYearly", { price: formatPrice(plan.priceAnnual) })}
                 </span>
                 {savings > 0 && (
                   <span className="inline-flex items-center rounded-full bg-emerald-500/15 text-emerald-400 px-2 py-0.5 text-xs font-semibold border border-emerald-500/20">
-                    Save ${savings}/yr
+                    {t("savePerYear", { savings })}
                   </span>
                 )}
               </div>
@@ -463,8 +479,8 @@ function ComparisonRow({ label, values }: { label: string; values: string[] }) {
   );
 }
 
-function fmtLimit(v: number | "unlimited"): string {
-  if (v === "unlimited") return "Unlimited";
+function fmtLimit(v: number | "unlimited", unlimitedLabel: string): string {
+  if (v === "unlimited") return unlimitedLabel;
   if (v === 0) return "—";
   return String(v);
 }
