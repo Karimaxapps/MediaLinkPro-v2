@@ -11,7 +11,7 @@ import { LikeButton } from "@/features/blog/components/like-button";
 import { ViewTracker } from "@/features/blog/components/view-tracker";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
@@ -73,7 +73,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
-  const t = useTranslations("blog");
+  const t = await getTranslations("blog");
 
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);

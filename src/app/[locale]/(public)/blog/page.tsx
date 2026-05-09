@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { PenSquare, Eye, Heart } from "lucide-react";
 import { PublicNav } from "@/components/layout/public-nav";
 import { listPublishedPosts } from "@/features/blog/server/actions";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function PublicBlogPage() {
   const posts = await listPublishedPosts(30);
-  const t = useTranslations("blog");
+  const t = await getTranslations("blog");
 
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
