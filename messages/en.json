@@ -71,7 +71,19 @@
     "feature": "Feature",
     "unlimited": "Unlimited",
     "advanced": "Advanced",
-    "standard": "Standard"
+    "standard": "Standard",
+    "faq1q": "Can I switch between monthly and annual billing?",
+    "faq1a": "Yes, you can switch at any time from your billing settings. Annual billing activates immediately; prorated credits apply.",
+    "faq2q": "What happens when I hit a plan limit (e.g. job posts)?",
+    "faq2a": "You'll see an upgrade prompt. Your existing listings remain live.",
+    "faq3q": "Do Individual and Organization plans stack?",
+    "faq3a": "No. If you represent a company, purchase an Org plan under your company account. Personal Pro is for individual media professionals.",
+    "faq4q": "Is there a free trial?",
+    "faq4a": "All paid plans have a 14-day free trial. No credit card required to start.",
+    "faq5q": "How do ad credits work?",
+    "faq5a": "Credits are added to your account monthly and can be used on any placement zone via the self-serve advertising dashboard. Unused credits expire at month end.",
+    "faq6q": "How do I manage or cancel my subscription?",
+    "faq6a": "Go to Settings → Billing. You can upgrade, downgrade, or cancel at any time through the Stripe billing portal."
   },
   "localeSwitcher": {
     "label": "Language"

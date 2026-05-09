@@ -71,7 +71,19 @@
     "feature": "Función",
     "unlimited": "Ilimitado",
     "advanced": "Avanzado",
-    "standard": "Estándar"
+    "standard": "Estándar",
+    "faq1q": "¿Puedo cambiar entre facturación mensual y anual?",
+    "faq1a": "Sí, puedes cambiar en cualquier momento desde tu configuración de facturación. La facturación anual se activa de inmediato; se aplican créditos prorrateados.",
+    "faq2q": "¿Qué ocurre cuando alcanzo el límite de mi plan (p. ej., publicaciones de empleo)?",
+    "faq2a": "Verás una solicitud de mejora. Tus anuncios existentes seguirán activos.",
+    "faq3q": "¿Se pueden combinar los planes Individual y Organizacional?",
+    "faq3a": "No. Si representas a una empresa, adquiere un plan Org bajo la cuenta de tu empresa. Personal Pro es para profesionales de medios individuales.",
+    "faq4q": "¿Hay una prueba gratuita?",
+    "faq4a": "Todos los planes de pago tienen una prueba gratuita de 14 días. No se requiere tarjeta de crédito para comenzar.",
+    "faq5q": "¿Cómo funcionan los créditos publicitarios?",
+    "faq5a": "Los créditos se añaden a tu cuenta mensualmente y se pueden usar en cualquier zona de ubicación a través del panel de publicidad de autoservicio. Los créditos no utilizados vencen al final del mes.",
+    "faq6q": "¿Cómo administro o cancelo mi suscripción?",
+    "faq6a": "Ve a Configuración → Facturación. Puedes mejorar, degradar o cancelar en cualquier momento a través del portal de facturación de Stripe."
   },
   "localeSwitcher": {
     "label": "Idioma"

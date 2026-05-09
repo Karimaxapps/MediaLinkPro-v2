@@ -23,10 +23,12 @@ import { Globe, Check, Loader2 } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { routing, type Locale } from "@/i18n/routing";
 import { Database } from "@/types/supabase";
+import { fetchActiveLanguages, saveUserLanguagePreference } from "@/features/languages/server/actions";
+import type { Language } from "@/features/languages/server/queries";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
-const LOCALE_COUNTRY: Record<Locale, string> = {
+const LOCALE_COUNTRY: Record<string, string> = {
   en: "GB",
   es: "ES",
   fr: "FR",
@@ -34,7 +36,7 @@ const LOCALE_COUNTRY: Record<Locale, string> = {
   zh: "CN",
 };
 
-const LOCALE_LABEL: Record<Locale, string> = {
+const LOCALE_LABEL: Record<string, string> = {
   en: "English",
   es: "Español",
   fr: "Français",
@@ -52,12 +54,16 @@ export function UserNav() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  // Active languages loaded from DB (admin-controlled)
+  const [activeLanguages, setActiveLanguages] = useState<Language[]>([]);
+
   // Loading overlay state for locale switching
   const [switchingLocale, setSwitchingLocale] = useState(false);
   const [targetLocaleLabel, setTargetLocaleLabel] = useState("");
 
   useEffect(() => {
     setMounted(true);
+
     const getUser = async () => {
       const {
         data: { user },
@@ -72,8 +78,31 @@ export function UserNav() {
         if (data) setProfile(data);
       }
     };
+
+    const getLanguages = async () => {
+      try {
+        const langs = await fetchActiveLanguages();
+        setActiveLanguages(langs);
+      } catch {
+        // Fallback: all locales from routing config
+        setActiveLanguages(
+          routing.locales.map((code, i) => ({
+            code,
+            name: LOCALE_LABEL[code] ?? code,
+            native_name: LOCALE_LABEL[code] ?? code,
+            country_code: LOCALE_COUNTRY[code] ?? "GB",
+            is_active: true,
+            is_default: code === "en",
+            sort_order: i,
+          }))
+        );
+      }
+    };
+
     getUser();
-  }, [supabase]);
+    getLanguages();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -81,15 +110,18 @@ export function UserNav() {
     router.refresh();
   };
 
-  function handleLocaleSwitch(next: Locale) {
+  async function handleLocaleSwitch(next: string) {
     if (next === currentLocale) return;
 
-    // Show the loading overlay immediately so the user sees feedback right away
-    setTargetLocaleLabel(LOCALE_LABEL[next]);
+    // Show the loading overlay immediately
+    setTargetLocaleLabel(LOCALE_LABEL[next] ?? next);
     setSwitchingLocale(true);
 
-    // Persist explicit user choice — takes priority over Accept-Language header
+    // Persist explicit user choice
     document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`;
+
+    // Save preference to profile in background (non-blocking)
+    saveUserLanguagePreference(next).catch(() => {});
 
     // Strip any existing locale prefix from the current path
     const strippedPath =
@@ -101,8 +133,7 @@ export function UserNav() {
     const newPath =
       next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
-    // Show the overlay for at least 3 seconds so the user can read the message,
-    // then navigate. React needs ~1 frame to paint before the browser unloads.
+    // 3-second overlay then navigate
     setTimeout(() => {
       window.location.href = newPath;
     }, 3000);
@@ -217,24 +248,24 @@ export function UserNav() {
               <Globe className="mr-2 h-4 w-4 text-gray-400" />
               <span>Language</span>
               <span className="ml-auto mr-5 text-xs text-gray-500">
-                {LOCALE_LABEL[currentLocale]}
+                {LOCALE_LABEL[currentLocale] ?? currentLocale}
               </span>
             </DropdownMenuSubTrigger>
 
             <DropdownMenuSubContent className="bg-[#0B0F14] border-white/10 text-white w-44">
-              {routing.locales.map((loc) => (
+              {activeLanguages.map((lang) => (
                 <DropdownMenuItem
-                  key={loc}
-                  onClick={() => handleLocaleSwitch(loc)}
+                  key={lang.code}
+                  onClick={() => handleLocaleSwitch(lang.code)}
                   className="flex items-center gap-2.5 cursor-pointer focus:bg-white/10 focus:text-white"
                 >
                   <ReactCountryFlag
-                    countryCode={LOCALE_COUNTRY[loc]}
+                    countryCode={lang.country_code}
                     svg
                     style={{ width: 18, height: 18, borderRadius: 2, display: "block", flexShrink: 0 }}
                   />
-                  <span className="text-sm">{LOCALE_LABEL[loc]}</span>
-                  {loc === currentLocale && (
+                  <span className="text-sm">{lang.name}</span>
+                  {lang.code === currentLocale && (
                     <Check className="ml-auto h-3.5 w-3.5 text-[#C6A85E]" />
                   )}
                 </DropdownMenuItem>

@@ -71,7 +71,19 @@
     "feature": "Funktion",
     "unlimited": "Unbegrenzt",
     "advanced": "Erweitert",
-    "standard": "Standard"
+    "standard": "Standard",
+    "faq1q": "Kann ich zwischen monatlicher und jährlicher Abrechnung wechseln?",
+    "faq1a": "Ja, Sie können jederzeit in Ihren Abrechnungseinstellungen wechseln. Die jährliche Abrechnung wird sofort aktiviert; anteilige Gutschriften werden angewendet.",
+    "faq2q": "Was passiert, wenn ich ein Planlimit erreiche (z. B. Stellenanzeigen)?",
+    "faq2a": "Sie sehen eine Upgrade-Aufforderung. Ihre bestehenden Anzeigen bleiben aktiv.",
+    "faq3q": "Können Individual- und Organisationspläne kombiniert werden?",
+    "faq3a": "Nein. Wenn Sie ein Unternehmen vertreten, erwerben Sie einen Org-Plan unter Ihrem Unternehmenskonto. Personal Pro ist für einzelne Medienfachleute.",
+    "faq4q": "Gibt es eine kostenlose Testphase?",
+    "faq4a": "Alle kostenpflichtigen Pläne haben eine 14-tägige kostenlose Testphase. Keine Kreditkarte erforderlich.",
+    "faq5q": "Wie funktionieren Werbekredite?",
+    "faq5a": "Kredite werden monatlich Ihrem Konto gutgeschrieben und können in jeder Platzierungszone über das Self-Service-Werbedashboard verwendet werden. Nicht verwendete Kredite verfallen am Monatsende.",
+    "faq6q": "Wie verwalte oder kündige ich mein Abonnement?",
+    "faq6a": "Gehen Sie zu Einstellungen → Abrechnung. Sie können jederzeit über das Stripe-Abrechnungsportal upgraden, downgraden oder kündigen."
   },
   "localeSwitcher": {
     "label": "Sprache"

@@ -71,7 +71,19 @@
     "feature": "Fonctionnalité",
     "unlimited": "Illimité",
     "advanced": "Avancé",
-    "standard": "Standard"
+    "standard": "Standard",
+    "faq1q": "Puis-je passer de la facturation mensuelle à la facturation annuelle ?",
+    "faq1a": "Oui, vous pouvez changer à tout moment depuis vos paramètres de facturation. La facturation annuelle s'active immédiatement ; des crédits au prorata s'appliquent.",
+    "faq2q": "Que se passe-t-il lorsque j'atteins la limite d'un plan (ex. offres d'emploi) ?",
+    "faq2a": "Vous verrez une invite de mise à niveau. Vos annonces existantes restent actives.",
+    "faq3q": "Les plans Individuel et Organisation sont-ils cumulables ?",
+    "faq3a": "Non. Si vous représentez une entreprise, souscrivez un plan Org sous le compte de votre entreprise. Personal Pro est destiné aux professionnels des médias individuels.",
+    "faq4q": "Y a-t-il un essai gratuit ?",
+    "faq4a": "Tous les plans payants bénéficient d'un essai gratuit de 14 jours. Aucune carte bancaire requise pour démarrer.",
+    "faq5q": "Comment fonctionnent les crédits publicitaires ?",
+    "faq5a": "Les crédits sont ajoutés à votre compte chaque mois et peuvent être utilisés sur n'importe quelle zone de placement via le tableau de bord publicitaire en libre-service. Les crédits inutilisés expirent en fin de mois.",
+    "faq6q": "Comment gérer ou annuler mon abonnement ?",
+    "faq6a": "Rendez-vous dans Paramètres → Facturation. Vous pouvez mettre à niveau, rétrograder ou annuler à tout moment via le portail de facturation Stripe."
   },
   "localeSwitcher": {
     "label": "Langue"

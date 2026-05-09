@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe } from "lucide-react";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -10,6 +10,7 @@ const NAV = [
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/reviews", label: "Reviews", icon: Star },
     { href: "/admin/ads", label: "Ad Campaigns", icon: Megaphone },
+    { href: "/admin/languages", label: "Languages", icon: Globe },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

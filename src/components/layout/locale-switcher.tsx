@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 /** Maps next-intl locale codes → ISO 3166-1 alpha-2 country codes */
-const LOCALE_COUNTRY: Record<Locale, string> = {
+const LOCALE_COUNTRY: Record<string, string> = {
   en: "GB",
   es: "ES",
   fr: "FR",
@@ -22,7 +22,7 @@ const LOCALE_COUNTRY: Record<Locale, string> = {
 };
 
 /** Human-readable labels shown as tooltip / aria-label */
-const LOCALE_LABEL: Record<Locale, string> = {
+const LOCALE_LABEL: Record<string, string> = {
   en: "English",
   es: "Español",
   fr: "Français",
@@ -41,17 +41,24 @@ function Flag({ countryCode, size = 22 }: { countryCode: string; size?: number }
   );
 }
 
-export function LocaleSwitcher() {
+type Props = {
+  /** Optional subset of locales to display. Defaults to all routing.locales. */
+  locales?: string[];
+};
+
+export function LocaleSwitcher({ locales }: Props) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
 
-  function switchLocale(next: Locale) {
+  // Use the provided locales or fall back to all configured locales
+  const displayLocales = locales && locales.length > 0 ? locales : [...routing.locales];
+
+  function switchLocale(next: string) {
     if (next === locale) return;
 
     // Persist the user's explicit choice in the NEXT_LOCALE cookie so the
     // middleware honours it over the browser's Accept-Language header.
-    // Without this, navigating to the default-locale path (/pricing) would
-    // be redirected back to the detected locale (/fr/pricing) immediately.
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`;
 
     // Strip the current locale prefix (if any) from the pathname
@@ -65,7 +72,7 @@ export function LocaleSwitcher() {
     const newPath =
       next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
-    // Full navigation so the new locale's server context loads cleanly
+    // eslint-disable-next-line react-hooks/immutability
     window.location.href = newPath;
   }
 
@@ -76,9 +83,9 @@ export function LocaleSwitcher() {
           variant="ghost"
           size="sm"
           className="px-2 bg-transparent hover:bg-white/10 text-white"
-          aria-label={`Language: ${LOCALE_LABEL[locale]}`}
+          aria-label={`Language: ${LOCALE_LABEL[locale] ?? locale}`}
         >
-          <Flag countryCode={LOCALE_COUNTRY[locale]} size={20} />
+          <Flag countryCode={LOCALE_COUNTRY[locale] ?? "GB"} size={20} />
         </Button>
       </DropdownMenuTrigger>
 
@@ -86,18 +93,18 @@ export function LocaleSwitcher() {
         align="end"
         className="bg-[#1a1a1a] border-white/10 min-w-0 w-14 p-1.5 flex flex-col gap-1"
       >
-        {routing.locales.map((loc) => (
+        {displayLocales.map((loc) => (
           <DropdownMenuItem
             key={loc}
             onClick={() => switchLocale(loc)}
-            title={LOCALE_LABEL[loc]}
+            title={LOCALE_LABEL[loc] ?? loc}
             className={`justify-center cursor-pointer rounded-md px-1.5 py-1.5 hover:bg-white/10 focus:bg-white/10 text-white ${
               loc === locale
                 ? "ring-1 ring-[#C6A85E]/70 bg-white/5"
                 : ""
             }`}
           >
-            <Flag countryCode={LOCALE_COUNTRY[loc]} size={22} />
+            <Flag countryCode={LOCALE_COUNTRY[loc] ?? loc.toUpperCase()} size={22} />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -1,12 +1,15 @@
-"use client";
-
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { getActiveLanguages } from "@/features/languages/server/queries";
 
-export function PublicNav({ activePath }: { activePath?: string }) {
-  const t = useTranslations("nav");
+export async function PublicNav({ activePath }: { activePath?: string }) {
+  const t = await getTranslations("nav");
+
+  // Fetch only the admin-enabled languages so the switcher reflects active ones
+  const activeLanguages = await getActiveLanguages();
+  const activeLocales = activeLanguages.map((l) => l.code);
 
   const NAV_LINKS = [
     { label: t("forYou"), href: "/#for-you" },
@@ -40,7 +43,7 @@ export function PublicNav({ activePath }: { activePath?: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <LocaleSwitcher />
+          <LocaleSwitcher locales={activeLocales} />
           <Link href="/auth" className="text-sm text-gray-400 hover:text-white transition-colors">
             {t("signIn")}
           </Link>
