@@ -101,10 +101,11 @@ export function UserNav() {
     const newPath =
       next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
-    // Small delay so React can paint the overlay before the browser navigates
+    // Show the overlay for at least 3 seconds so the user can read the message,
+    // then navigate. React needs ~1 frame to paint before the browser unloads.
     setTimeout(() => {
       window.location.href = newPath;
-    }, 80);
+    }, 3000);
   }
 
   if (!mounted) {
