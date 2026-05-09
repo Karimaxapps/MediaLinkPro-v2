@@ -1,8 +1,7 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
-import { Globe } from "lucide-react";
 import { routing, type Locale } from "@/i18n/routing";
 import {
   DropdownMenu,
@@ -12,16 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const LOCALE_LABELS: Record<Locale, { label: string; flag: string }> = {
-  en: { label: "English", flag: "🇬🇧" },
-  es: { label: "Español", flag: "🇪🇸" },
-  fr: { label: "Français", flag: "🇫🇷" },
-  de: { label: "Deutsch", flag: "🇩🇪" },
-  zh: { label: "中文", flag: "🇨🇳" },
+const LOCALE_FLAGS: Record<Locale, string> = {
+  en: "🇬🇧",
+  es: "🇪🇸",
+  fr: "🇫🇷",
+  de: "🇩🇪",
+  zh: "🇨🇳",
 };
 
 export function LocaleSwitcher() {
-  const t = useTranslations("localeSwitcher");
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -29,18 +27,17 @@ export function LocaleSwitcher() {
   function switchLocale(next: Locale) {
     if (next === locale) return;
 
-    // Strip the current locale prefix (if any) from the path, then prepend the new one.
-    // With localePrefix:'as-needed', English has no prefix, others do (/es/..., /fr/..., etc.)
-    const strippedPath = pathname.replace(
-      new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`),
-      ""
-    ) || "/";
+    const strippedPath =
+      pathname.replace(
+        new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`),
+        ""
+      ) || "/";
 
-    const newPath = next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
+    const newPath =
+      next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
+
     router.push(newPath);
   }
-
-  const current = LOCALE_LABELS[locale];
 
   return (
     <DropdownMenu>
@@ -48,34 +45,27 @@ export function LocaleSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-gray-400 hover:text-white bg-transparent hover:bg-white/10 px-3"
-          aria-label={t("label")}
+          className="text-lg px-2 bg-transparent hover:bg-white/10 leading-none"
+          aria-label="Select language"
         >
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline text-sm">{current?.flag} {current?.label}</span>
-          <span className="sm:hidden text-sm">{current?.flag}</span>
+          {LOCALE_FLAGS[locale]}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="bg-[#1a1a1a] border-white/10 text-white min-w-[140px]"
+        className="bg-[#1a1a1a] border-white/10 min-w-0 w-12 p-1"
       >
-        {routing.locales.map((loc) => {
-          const { label, flag } = LOCALE_LABELS[loc];
-          return (
-            <DropdownMenuItem
-              key={loc}
-              onClick={() => switchLocale(loc)}
-              className={`gap-2 cursor-pointer hover:bg-white/10 focus:bg-white/10 ${
-                loc === locale ? "text-[#C6A85E]" : "text-gray-300"
-              }`}
-            >
-              <span>{flag}</span>
-              <span>{label}</span>
-              {loc === locale && <span className="ml-auto text-xs">✓</span>}
-            </DropdownMenuItem>
-          );
-        })}
+        {routing.locales.map((loc) => (
+          <DropdownMenuItem
+            key={loc}
+            onClick={() => switchLocale(loc)}
+            className={`justify-center text-lg cursor-pointer rounded px-2 py-1.5 hover:bg-white/10 focus:bg-white/10 ${
+              loc === locale ? "ring-1 ring-[#C6A85E]/60" : ""
+            }`}
+          >
+            {LOCALE_FLAGS[loc]}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
