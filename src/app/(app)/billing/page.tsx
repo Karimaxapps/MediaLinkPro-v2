@@ -105,8 +105,8 @@ export default async function BillingPage({ searchParams }: Props) {
       <div className="text-center text-xs text-gray-500 space-y-1 pt-4">
         <p>
           Need help choosing? Contact us at{" "}
-          <a href="mailto:hello@medialinkpro.com" className="text-[#C6A85E] hover:underline">
-            hello@medialinkpro.com
+          <a href="mailto:hello@medialinkpro.net" className="text-[#C6A85E] hover:underline">
+            hello@medialinkpro.net
           </a>
         </p>
         <p>Powered by Stripe — secure, PCI-compliant billing.</p>

@@ -28,10 +28,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const title = `${product.name} | MediaLinkPro`;
     const description = product.short_description || product.description?.substring(0, 160) || 'View this product on MediaLinkPro';
 
-    const images = [];
-    if (product.logo_url) images.push(product.logo_url);
-    if (product.gallery_urls && product.gallery_urls.length > 0) images.push(product.gallery_urls[0]);
-    if (product.organizations?.logo_url) images.push(product.organizations.logo_url);
+    // Prefer a gallery/banner image (landscape) for large card; fall back to logo (square → summary card)
+    type OGImage = { url: string; width: number; height: number; alt: string };
+    const images: OGImage[] = [];
+    if (product.gallery_urls && product.gallery_urls.length > 0) {
+        images.push({ url: product.gallery_urls[0], width: 1200, height: 630, alt: product.name });
+    } else if (product.logo_url) {
+        images.push({ url: product.logo_url, width: 400, height: 400, alt: product.name });
+    } else if (product.organizations?.logo_url) {
+        images.push({ url: product.organizations.logo_url, width: 400, height: 400, alt: product.name });
+    }
+
+    const twitterCard = images.length > 0 && product.gallery_urls?.length ? 'summary_large_image' : 'summary';
 
     return {
         title,
@@ -44,10 +52,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             siteName: 'MediaLinkPro',
         },
         twitter: {
-            card: 'summary_large_image',
+            card: twitterCard,
             title,
             description,
-            images,
+            images: images.map((i) => i.url),
         },
     };
 }

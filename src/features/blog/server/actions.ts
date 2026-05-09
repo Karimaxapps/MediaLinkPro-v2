@@ -19,6 +19,7 @@ export type BlogPost = {
   status: "draft" | "published" | "archived";
   published_at: string | null;
   views_count: number;
+  likes_count: number;
   linked_product_id: string | null;
   created_at: string;
   updated_at: string;
@@ -92,14 +93,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   if (error) {
     console.error("[blog] getPostBySlug error:", error.message);
     return null;
-  }
-
-  if (data) {
-    // Increment views (fire and forget)
-    await supabase
-      .from("blog_posts" as never)
-      .update({ views_count: ((data as unknown as BlogPost).views_count ?? 0) + 1 })
-      .eq("slug", slug);
   }
 
   return (data ?? null) as unknown as BlogPost | null;
@@ -267,6 +260,70 @@ export async function listLinkableProductsForCurrentUser(): Promise<LinkableProd
     organization_id: p.organization_id,
     organization_name: orgMap.get(p.organization_id) ?? "",
   }));
+}
+
+/**
+ * Increments the view count for a post via a SECURITY DEFINER RPC so it works
+ * regardless of RLS. Called client-side after mount — not during SSR — to avoid
+ * counting bot/crawler traffic.
+ */
+export async function incrementPostView(postId: string): Promise<void> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  await supabase.rpc("increment_blog_post_view" as never, {
+    p_post_id: postId,
+  } as never);
+}
+
+/**
+ * Toggles like/unlike for the current user on a blog post. Returns the new
+ * liked state and the authoritative likes_count from the DB after the trigger runs.
+ */
+export async function togglePostLike(
+  postId: string
+): Promise<{ success: boolean; liked: boolean; likes_count: number; error?: string }> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, liked: false, likes_count: 0, error: "Sign in to like posts" };
+
+  // Check if already liked
+  const { data: existing } = await supabase
+    .from("blog_post_likes" as never)
+    .select("id")
+    .eq("post_id", postId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  let liked: boolean;
+  if (existing) {
+    await supabase
+      .from("blog_post_likes" as never)
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", user.id);
+    liked = false;
+  } else {
+    await supabase
+      .from("blog_post_likes" as never)
+      .insert({ post_id: postId, user_id: user.id } as never);
+    liked = true;
+  }
+
+  // Fetch authoritative count after trigger has updated it
+  const { data: post } = await supabase
+    .from("blog_posts" as never)
+    .select("likes_count")
+    .eq("id", postId)
+    .single();
+
+  return {
+    success: true,
+    liked,
+    likes_count: (post as unknown as { likes_count: number })?.likes_count ?? 0,
+  };
 }
 
 /**

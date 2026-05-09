@@ -77,7 +77,7 @@ export default async function CompanySettingsPage() {
                 <div className="p-4 bg-white/5 rounded-lg border border-white/10">
                     <h5 className="text-sm font-medium text-white mb-1">Company Slug</h5>
                     <p className="text-xs text-gray-400 mb-4">The unique identifier for your company URL.</p>
-                    <code className="text-[10px] bg-black/50 p-1 rounded text-[#C6A85E]">medialinkpro.com/companies/{primaryOrg.slug}</code>
+                    <code className="text-[10px] bg-black/50 p-1 rounded text-[#C6A85E]">medialinkpro.net/companies/{primaryOrg.slug}</code>
                 </div>
             </div>
         </div>

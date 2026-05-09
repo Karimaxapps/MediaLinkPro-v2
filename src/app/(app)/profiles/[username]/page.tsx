@@ -20,9 +20,28 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
         };
     }
 
+    const name = profile.full_name || profile.username;
+    const description = profile.bio || `View ${name}'s profile on MediaLinkPro`;
+    const ogImage = profile.avatar_url
+        ? [{ url: profile.avatar_url, width: 400, height: 400, alt: name }]
+        : undefined;
+
     return {
-        title: `${profile.full_name || profile.username} | MediaLinkPro`,
-        description: profile.bio || `View ${profile.full_name || profile.username}'s profile on MediaLinkPro`,
+        title: `${name} | MediaLinkPro`,
+        description,
+        openGraph: {
+            title: `${name} | MediaLinkPro`,
+            description,
+            type: "profile",
+            siteName: "MediaLinkPro",
+            images: ogImage,
+        },
+        twitter: {
+            card: "summary",
+            title: `${name} | MediaLinkPro`,
+            description,
+            images: profile.avatar_url ? [profile.avatar_url] : undefined,
+        },
     };
 }
 

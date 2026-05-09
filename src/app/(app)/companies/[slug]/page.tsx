@@ -20,9 +20,55 @@ import {
     getOrganizationFollowerCount,
 } from "@/features/organizations/server/follow-actions";
 import { Users } from "lucide-react";
+import type { Metadata } from "next";
 
 import { ProductList } from "@/features/products/components/product-list";
 
+const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data: org } = await supabase
+        .from("organizations")
+        .select("name, tagline, description, logo_url, slug, type")
+        .eq("slug", slug)
+        .single();
+
+    if (!org) return { title: "Company Not Found" };
+
+    const title = org.name;
+    const description =
+        org.tagline ||
+        (org.description ? org.description.slice(0, 160) : `${org.name} on MediaLinkPro`);
+    const url = `${SITE_URL}/companies/${org.slug}`;
+
+    const ogImage = org.logo_url
+        ? [{ url: org.logo_url, width: 400, height: 400, alt: org.name }]
+        : undefined;
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+            siteName: "MediaLinkPro",
+            images: ogImage,
+        },
+        twitter: {
+            card: "summary",
+            title,
+            description,
+            images: org.logo_url ? [org.logo_url] : undefined,
+        },
+    };
+}
 
 export default async function CompanyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;

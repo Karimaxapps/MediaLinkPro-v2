@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.com";
+  process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

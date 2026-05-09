@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://medialinkpro.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://medialinkpro.net";
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

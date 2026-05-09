@@ -9,11 +9,20 @@ import { ProfileOnboarding } from "@/features/profiles/components/ProfileOnboard
 
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-    const profile = await getProfile();
-    const organizations = await getOrganizations();
+    // DEV BYPASS: set NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local to skip auth when Supabase is down
+    const devBypass =
+        process.env.NODE_ENV === "development" &&
+        process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true";
 
-    // Check if profile exists and has required fields
-    const isProfileComplete = profile && profile.full_name && profile.username;
+    let profile = null;
+    let organizations: Awaited<ReturnType<typeof getOrganizations>> = [];
+
+    if (!devBypass) {
+        profile = await getProfile();
+        organizations = await getOrganizations();
+    }
+
+    const isProfileComplete = devBypass || (profile && profile.full_name && profile.username);
 
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-[#121212] gap-2">
