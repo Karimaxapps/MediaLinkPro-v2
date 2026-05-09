@@ -48,6 +48,12 @@ export function LocaleSwitcher() {
   function switchLocale(next: Locale) {
     if (next === locale) return;
 
+    // Persist the user's explicit choice in the NEXT_LOCALE cookie so the
+    // middleware honours it over the browser's Accept-Language header.
+    // Without this, navigating to the default-locale path (/pricing) would
+    // be redirected back to the detected locale (/fr/pricing) immediately.
+    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; SameSite=Lax`;
+
     // Strip the current locale prefix (if any) from the pathname
     const strippedPath =
       pathname.replace(
@@ -59,7 +65,7 @@ export function LocaleSwitcher() {
     const newPath =
       next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
-    // Use a full navigation so the new locale's server context loads cleanly
+    // Full navigation so the new locale's server context loads cleanly
     window.location.href = newPath;
   }
 
