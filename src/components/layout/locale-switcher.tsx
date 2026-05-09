@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import ReactCountryFlag from "react-country-flag";
 import { routing, type Locale } from "@/i18n/routing";
 import {
@@ -43,22 +43,24 @@ function Flag({ countryCode, size = 22 }: { countryCode: string; size?: number }
 
 export function LocaleSwitcher() {
   const locale = useLocale() as Locale;
-  const router = useRouter();
   const pathname = usePathname();
 
   function switchLocale(next: Locale) {
     if (next === locale) return;
 
+    // Strip the current locale prefix (if any) from the pathname
     const strippedPath =
       pathname.replace(
         new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`),
         ""
       ) || "/";
 
+    // English (default) has no prefix; all other locales get /{locale}/...
     const newPath =
       next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
-    router.push(newPath);
+    // Use a full navigation so the new locale's server context loads cleanly
+    window.location.href = newPath;
   }
 
   return (
