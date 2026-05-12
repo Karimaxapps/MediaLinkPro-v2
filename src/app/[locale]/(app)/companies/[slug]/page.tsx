@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Globe, Mail, Phone, ExternalLink, Linkedin, Facebook, Youtube, Twitter, Instagram } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { getOrgVerifiedPlan } from "@/lib/subscription";
 import { CardListItem } from "@/components/ui/card-list-item";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
@@ -103,10 +105,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         }
     }
 
-    // Follow state — orgs can be followed by anyone except their own members.
-    const [isFollowing, followerCount] = await Promise.all([
+    const [isFollowing, followerCount, orgPlan] = await Promise.all([
         isFollowingOrganization(org.id),
         getOrganizationFollowerCount(org.id),
+        getOrgVerifiedPlan(org.id),
     ]);
 
     return (
@@ -124,7 +126,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 </Avatar>
 
                 <div className="flex-1 text-center md:text-left space-y-2">
-                    <h1 className="text-3xl font-bold text-white">{org.name}</h1>
+                    <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+                        {org.name}
+                        <VerifiedBadge plan={orgPlan} size="lg" />
+                    </h1>
                     {org.tagline && (
                         <p className="text-gray-400 max-w-2xl text-lg font-medium">
                             {org.tagline}

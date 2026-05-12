@@ -3,7 +3,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Pencil, Users, Briefcase, Building2, Image as ImageIcon, Loader2, Camera } from "lucide-react";
+import { Pencil, Users, Briefcase, Building2, Image as ImageIcon, Loader2, Camera } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { cn } from "@/lib/utils";
 import { ProfileEditSheet } from "@/components/profile/ProfileEditSheet";
 import { Database } from "@/types/supabase";
@@ -13,9 +14,10 @@ type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface ProfileHeaderProps {
     profile: Profile;
+    plan?: string | null;
 }
 
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
+export function ProfileHeader({ profile, plan }: ProfileHeaderProps) {
     const { uploadImage, isUploading } = useProfileUpload({
         currentUserId: profile.id,
     });
@@ -107,7 +109,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                         <div className="flex flex-wrap items-center gap-3">
                             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                                 {profile.full_name || "User Name"}
-                                <CheckCircle2 className="h-5 w-5 text-[#C6A85E] fill-black" />
+                                <VerifiedBadge plan={plan} />
                             </h1>
                         </div>
 

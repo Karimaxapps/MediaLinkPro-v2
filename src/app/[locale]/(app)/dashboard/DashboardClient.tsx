@@ -20,6 +20,7 @@ type FeedCompany = {
     logo_url?: string | null;
     slug: string;
     main_activity?: string | null;
+    plan?: string | null;
 };
 
 export function DashboardClient({
@@ -137,6 +138,7 @@ export function DashboardClient({
                                             logo_url={company.logo_url}
                                             slug={company.slug}
                                             main_activity={company.main_activity}
+                                            plan={company.plan}
                                         />
                                     </div>
                                 ))}

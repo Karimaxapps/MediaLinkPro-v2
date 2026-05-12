@@ -2,32 +2,41 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2 } from "lucide-react";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
+    { href: "/admin/companies", label: "Companies", icon: Building2 },
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/reviews", label: "Reviews", icon: Star },
+    { href: "/admin/blog", label: "Blog Posts", icon: PenSquare },
     { href: "/admin/ads", label: "Ad Campaigns", icon: Megaphone },
     { href: "/admin/languages", label: "Languages", icon: Globe },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/auth");
+    // DEV BYPASS: skip Supabase auth when NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local
+    const devBypass =
+        process.env.NODE_ENV === "development" &&
+        process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true";
 
-    const admin = createAdminClient();
-    const { data: adminProfile } = await admin
-        .from("profiles")
-        .select("is_admin" as never)
-        .eq("id", user.id)
-        .maybeSingle();
+    if (!devBypass) {
+        const cookieStore = await cookies();
+        const supabase = createClient(cookieStore);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) redirect("/auth");
 
-    if (!(adminProfile as { is_admin?: boolean } | null)?.is_admin) {
-        redirect("/dashboard");
+        const admin = createAdminClient();
+        const { data: adminProfile } = await admin
+            .from("profiles")
+            .select("is_admin" as never)
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (!(adminProfile as { is_admin?: boolean } | null)?.is_admin) {
+            redirect("/dashboard");
+        }
     }
 
     return (

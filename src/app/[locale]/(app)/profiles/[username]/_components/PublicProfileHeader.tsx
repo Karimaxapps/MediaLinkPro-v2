@@ -2,7 +2,9 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Users, Briefcase, Building2, Globe, MapPin } from "lucide-react";
+import { Users, Briefcase, Building2, MapPin } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { getUserVerifiedPlan } from "@/lib/subscription";
 import { Database } from "@/types/supabase";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -17,10 +19,12 @@ interface PublicProfileHeaderProps {
 
 export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps) {
     const primaryRole = profile.job_function || "Role not set";
-    // Department is not in current schema
     const department = null;
-    const connectionStatus = await getConnectionStatus(profile.id);
-    const connectionCount = await getConnectionsCount(profile.id);
+    const [connectionStatus, connectionCount, plan] = await Promise.all([
+        getConnectionStatus(profile.id),
+        getConnectionsCount(profile.id),
+        getUserVerifiedPlan(profile.id),
+    ]);
 
     return (
         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 group/header">
@@ -57,7 +61,7 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                                 {profile.full_name || "User Name"}
-                                <CheckCircle2 className="h-5 w-5 text-[#C6A85E] fill-black" />
+                                <VerifiedBadge plan={plan} />
                             </h1>
                         </div>
 

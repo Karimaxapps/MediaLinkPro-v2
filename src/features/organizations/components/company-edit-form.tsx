@@ -2,13 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { companyWizardSchema, CompanyWizardValues } from "@/features/organizations/schema"
+import { companyWizardSchema, CompanyWizardValues, ORG_TYPES, BROADCASTER_TYPES } from "@/features/organizations/schema"
 import { updateOrganization } from "@/features/organizations/server/actions"
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -33,7 +32,8 @@ import { CountrySelect } from "@/components/ui/country-select"
 import { AvatarUpload } from "@/features/profile/components/avatar-upload"
 
 interface CompanyEditFormProps {
-    org: any; // Using any for simplicity as it matches database row
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    org: Record<string, any>;
     currentUserId: string;
 }
 
@@ -78,7 +78,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
             } else {
                 toast.error(result.error || "Failed to update profile");
             }
-        } catch (error) {
+        } catch {
             toast.error("An error occurred");
         } finally {
             setIsLoading(false);
@@ -148,14 +148,20 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-300">Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select
+                                                onValueChange={(val) => {
+                                                    field.onChange(val);
+                                                    if (val !== "Broadcaster") form.setValue("broadcaster_type", undefined);
+                                                }}
+                                                defaultValue={field.value}
+                                            >
                                                 <FormControl>
                                                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
                                                         <SelectValue placeholder="Select type" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="bg-black border-white/10 text-white">
-                                                    {['Broadcaster', 'Production / Post-prod', 'Solution Provider', 'Media Association', 'Training Center'].map((type) => (
+                                                    {ORG_TYPES.map((type) => (
                                                         <SelectItem key={type} value={type}>{type}</SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -178,6 +184,35 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     )}
                                 />
                             </div>
+
+                            {/* Broadcaster sub-type — shown only when type = Broadcaster */}
+                            {form.watch("type") === "Broadcaster" && (
+                                <FormField
+                                    control={form.control}
+                                    name="broadcaster_type"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-300">
+                                                Broadcaster Type <span className="text-red-500">*</span>
+                                            </FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                        <SelectValue placeholder="Television or Radio?" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="bg-black border-white/10 text-white">
+                                                    {BROADCASTER_TYPES.map((bt) => (
+                                                        <SelectItem key={bt} value={bt}>{bt}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+
                             <FormField
                                 control={form.control}
                                 name="tagline"

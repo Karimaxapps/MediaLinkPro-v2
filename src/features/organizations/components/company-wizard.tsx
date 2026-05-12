@@ -25,7 +25,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CountrySelect } from "@/components/ui/country-select"
 import { CompanyLogoUpload } from "./company-logo-upload"
-import { companyWizardSchema, type CompanyWizardValues } from "../schema"
+import { companyWizardSchema, type CompanyWizardValues, ORG_TYPES, BROADCASTER_TYPES } from "../schema"
 import { createCompanyWizardAction } from "../server/actions"
 import { cn } from "@/lib/utils"
 
@@ -70,7 +70,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
             slug: "",
             logo_url: "",
             tagline: "",
-            // @ts-ignore zod enum issue
+            // @ts-expect-error zod enum issue
             type: undefined,
             main_activity: "",
             description: "",
@@ -88,7 +88,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
         }
     })
 
-    const { register, handleSubmit, formState: { errors, isValid }, trigger, setValue, watch, getValues } = form
+    const { register, handleSubmit, formState: { errors }, trigger, setValue, watch } = form
 
     // Watch values for preview or conditional logic if needed
     const companyName = watch("name");
@@ -289,20 +289,18 @@ export function CompanyWizard({ userId }: { userId: string }) {
                                 <div className="space-y-2">
                                     <Label htmlFor="type">Company Type <span className="text-red-500">*</span></Label>
                                     <Select
-                                        onValueChange={(val: any) => setValue("type", val, { shouldValidate: true })}
+                                        onValueChange={(val: string) => {
+                                            setValue("type", val as typeof ORG_TYPES[number], { shouldValidate: true });
+                                            // Clear broadcaster_type when switching away from Broadcaster
+                                            if (val !== "Broadcaster") setValue("broadcaster_type", undefined);
+                                        }}
                                         defaultValue={watch("type")}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10">
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
-                                            {[
-                                                "Broadcaster",
-                                                "Production / Post-prod",
-                                                "Solution Provider",
-                                                "Media Association",
-                                                "Training Center"
-                                            ].map(type => (
+                                            {ORG_TYPES.map(type => (
                                                 <SelectItem key={type} value={type} className="focus:bg-white/10 focus:text-white cursor-pointer">
                                                     {type}
                                                 </SelectItem>
@@ -311,6 +309,33 @@ export function CompanyWizard({ userId }: { userId: string }) {
                                     </Select>
                                     {errors.type && <p className="text-red-500 text-xs">{errors.type.message}</p>}
                                 </div>
+
+                                {/* Broadcaster sub-type — shown only when type = Broadcaster */}
+                                {watch("type") === "Broadcaster" && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="broadcaster_type">
+                                            Broadcaster Type <span className="text-red-500">*</span>
+                                        </Label>
+                                        <Select
+                                            onValueChange={(val: string) => setValue("broadcaster_type", val as typeof BROADCASTER_TYPES[number], { shouldValidate: true })}
+                                            defaultValue={watch("broadcaster_type")}
+                                        >
+                                            <SelectTrigger className="bg-black/20 border-white/10">
+                                                <SelectValue placeholder="Television or Radio?" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
+                                                {BROADCASTER_TYPES.map(bt => (
+                                                    <SelectItem key={bt} value={bt} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                                                        {bt}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.broadcaster_type && (
+                                            <p className="text-red-500 text-xs">{errors.broadcaster_type.message}</p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
 

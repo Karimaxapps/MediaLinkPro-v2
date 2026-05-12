@@ -9,6 +9,15 @@ export async function updateSession(request: NextRequest) {
         },
     });
 
+    // DEV BYPASS: skip Supabase auth entirely when connectivity is unavailable
+    // Set NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local to enable
+    if (
+        process.env.NODE_ENV === "development" &&
+        process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true"
+    ) {
+        return response;
+    }
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

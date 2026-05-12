@@ -30,6 +30,7 @@ export type ConnectListItem = {
     // Organization-only follow state
     isFollowing?: boolean;
     followerCount?: number;
+    plan?: string | null;
 };
 
 interface ConnectListClientProps {
@@ -133,6 +134,7 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                             requestId={item.requestId}
                             isFollowing={item.isFollowing}
                             followerCount={item.followerCount}
+                            plan={item.plan}
                         />
                     ))}
                 </div>
