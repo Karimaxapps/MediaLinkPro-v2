@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -202,6 +202,7 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
     logo_url,
     tagline,
     type,
+    broadcaster_type,
     main_activity,
     description,
     website,
@@ -236,6 +237,7 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
       logo_url,
       tagline,
       type,
+      broadcaster_type: type === "Broadcaster" ? (broadcaster_type ?? null) : null,
       main_activity,
       description,
       website,
@@ -314,6 +316,7 @@ export async function updateOrganization(
     logo_url,
     tagline,
     type,
+    broadcaster_type,
     main_activity,
     description,
     website,
@@ -357,6 +360,7 @@ export async function updateOrganization(
       logo_url,
       tagline,
       type,
+      broadcaster_type: type === "Broadcaster" ? (broadcaster_type ?? null) : null,
       main_activity,
       description,
       website,
@@ -387,36 +391,51 @@ export async function updateOrganization(
 export async function getOrganizationsByType(typeSlug: string) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-
-  // Filter by type
-  // Note: 'media-associations' might map to a specific type value in the DB if not exact match.
-  // Assuming type column stores slug-like values or we simply strictly match.
-  // Based on requirements, we should trust the slug passed or map it.
-
-  // For now, let's assume strict match or simple mapping if needed.
-  // If the DB types are proper case (e.g. "Broadcaster"), we might need ILIKE or specific mapping.
-  // Let's use ILIKE for flexibility on "type" column.
-
-  // Also handling the "production-companies" -> "Production Company" mapping if necessary,
-  // but the prompt implies fetching "category of item".
-  // Let's try to match the slug directly first, or the formatted title.
+  const admin = createAdminClient();
 
   const { data, error } = await supabase
     .from("organizations")
     .select("id, name, slug, logo_url, tagline, main_activity, country, description, type")
-    .eq("type", typeSlug); // Trying exact match with slug first (e.g. 'broadcasters')
+    .eq("type", typeSlug);
 
-  if (error) {
-    console.error("Error fetching orgs by type:", error);
+  if (error || !data?.length) {
+    if (error) console.error("Error fetching orgs by type:", error);
     return [];
   }
 
-  return data;
+  const orgIds = data.map((o) => o.id);
+
+  const { data: ownerRows } = await admin
+    .from("organization_members")
+    .select("organization_id, user_id")
+    .in("organization_id", orgIds)
+    .eq("role", "owner");
+
+  if (!ownerRows?.length) return data.map((o) => ({ ...o, plan: null }));
+
+  const ownerMap = new Map(ownerRows.map((r) => [r.organization_id, r.user_id]));
+  const ownerIds = [...new Set(ownerRows.map((r) => r.user_id))];
+
+  type SubRow = { user_id: string; plan: string | null; status: string | null };
+  const { data: subs } = await (admin
+    .from("subscriptions" as never)
+    .select("user_id, plan, status")
+    .in("user_id", ownerIds) as unknown as Promise<{ data: SubRow[] | null }>);
+
+  const subMap = new Map((subs ?? []).map((s) => [s.user_id, s]));
+
+  return data.map((org) => {
+    const ownerId = ownerMap.get(org.id);
+    const sub = ownerId ? subMap.get(ownerId) : null;
+    const isActive = sub?.status === "active" || sub?.status === "trialing";
+    return { ...org, plan: sub?.plan && isActive ? sub.plan : null };
+  });
 }
 
 export async function getLatestOrganizations(limit: number = 3) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+  const admin = createAdminClient();
 
   const { data, error } = await supabase
     .from("organizations")
@@ -424,10 +443,36 @@ export async function getLatestOrganizations(limit: number = 3) {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) {
-    console.error("Error fetching latest organizations:", error);
+  if (error || !data?.length) {
+    if (error) console.error("Error fetching latest organizations:", error);
     return [];
   }
 
-  return data;
+  const orgIds = data.map((o) => o.id);
+
+  const { data: ownerRows } = await admin
+    .from("organization_members")
+    .select("organization_id, user_id")
+    .in("organization_id", orgIds)
+    .eq("role", "owner");
+
+  if (!ownerRows?.length) return data.map((o) => ({ ...o, plan: null }));
+
+  const ownerMap = new Map(ownerRows.map((r) => [r.organization_id, r.user_id]));
+  const ownerIds = [...new Set(ownerRows.map((r) => r.user_id))];
+
+  type SubRow = { user_id: string; plan: string | null; status: string | null };
+  const { data: subs } = await (admin
+    .from("subscriptions" as never)
+    .select("user_id, plan, status")
+    .in("user_id", ownerIds) as unknown as Promise<{ data: SubRow[] | null }>);
+
+  const subMap = new Map((subs ?? []).map((s) => [s.user_id, s]));
+
+  return data.map((org) => {
+    const ownerId = ownerMap.get(org.id);
+    const sub = ownerId ? subMap.get(ownerId) : null;
+    const isActive = sub?.status === "active" || sub?.status === "trialing";
+    return { ...org, plan: sub?.plan && isActive ? sub.plan : null };
+  });
 }

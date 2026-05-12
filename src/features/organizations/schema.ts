@@ -1,18 +1,31 @@
 import { z } from "zod";
 
+/** Single source of truth for company types — used in wizard, edit form, and admin panel. */
+export const ORG_TYPES = [
+    "Broadcaster",
+    "Production / Post-prod",
+    "Solution Provider",
+    "Media Association",
+    "Training Center",
+] as const;
+
+export type OrgType = typeof ORG_TYPES[number];
+
+/** Sub-types shown only when company type is "Broadcaster". */
+export const BROADCASTER_TYPES = ["Television", "Radio"] as const;
+export type BroadcasterType = typeof BROADCASTER_TYPES[number];
+
 export const companyIdentitySchema = z.object({
     name: z.string().min(2, "Company name must be at least 2 characters"),
     slug: z.string().min(3, "Slug must be at least 3 characters").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
     logo_url: z.string().optional(),
     tagline: z.string().optional(),
-    type: z.enum([
-        "Broadcaster",
-        "Production / Post-prod",
-        "Solution Provider",
-        "Media Association",
-        "Training Center"
-    ]),
-});
+    type: z.enum(ORG_TYPES),
+    broadcaster_type: z.enum(BROADCASTER_TYPES).optional(),
+}).refine(
+    (data) => data.type !== "Broadcaster" || !!data.broadcaster_type,
+    { message: "Please select a broadcaster type (Television or Radio)", path: ["broadcaster_type"] }
+);
 
 export const companyActivitySchema = z.object({
     main_activity: z.string().min(3, "Main activity is required"),

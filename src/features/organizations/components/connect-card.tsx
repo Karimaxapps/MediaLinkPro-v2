@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Briefcase } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 interface ConnectCardProps {
     id: string; // Profile ID for profiles, organization ID for organizations
@@ -24,6 +25,7 @@ interface ConnectCardProps {
     isFollowing?: boolean;
     /** Follower count for the organization. Org cards only. */
     followerCount?: number;
+    plan?: string | null;
 }
 
 export function ConnectCard({
@@ -40,7 +42,7 @@ export function ConnectCard({
     requestId,
     isFollowing = false,
     followerCount = 0,
-
+    plan,
 }: ConnectCardProps) {
     const href = type === 'organization' ? `/companies/${slug}` : `/profiles/${slug}`;
 
@@ -69,8 +71,9 @@ export function ConnectCard({
                         <div className={`flex-1 min-w-0 ${type === "profile" ? "pr-28" : "pr-28"}`}>
                             <div className="flex justify-between items-start">
                                 <div className="min-w-0 w-full">
-                                    <h3 className="text-white font-medium text-base group-hover:text-[#C6A85E] transition-colors truncate">
+                                    <h3 className="text-white font-medium text-base group-hover:text-[#C6A85E] transition-colors truncate flex items-center gap-1.5">
                                         {title}
+                                        <VerifiedBadge plan={plan} size="sm" />
                                     </h3>
                                     {subtitle && (
                                         <p className="text-[#C6A85E] text-xs font-medium line-clamp-2 mt-0.5 leading-snug">

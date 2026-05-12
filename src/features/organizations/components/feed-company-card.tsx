@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Briefcase } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 interface FeedCompanyCardProps {
     id: string;
@@ -12,6 +13,7 @@ interface FeedCompanyCardProps {
     logo_url?: string | null;
     slug: string;
     main_activity?: string | null;
+    plan?: string | null;
 }
 
 export function FeedCompanyCard({
@@ -20,7 +22,8 @@ export function FeedCompanyCard({
     tagline,
     logo_url,
     slug,
-    main_activity
+    main_activity,
+    plan,
 }: FeedCompanyCardProps) {
     const href = `/companies/${slug}`;
 
@@ -47,8 +50,9 @@ export function FeedCompanyCard({
 
                         {/* Content Section */}
                         <div className="flex-1 min-w-0 w-full flex flex-col items-center">
-                            <h3 className="text-white font-medium text-lg leading-tight group-hover:text-[#C6A85E] transition-colors line-clamp-2">
+                            <h3 className="text-white font-medium text-lg leading-tight group-hover:text-[#C6A85E] transition-colors line-clamp-2 flex items-center justify-center gap-1.5">
                                 {name}
+                                <VerifiedBadge plan={plan} size="sm" />
                             </h3>
 
                             {tagline && (
