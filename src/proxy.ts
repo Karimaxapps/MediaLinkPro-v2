@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { updateSession } from "./lib/supabase/middleware";
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const handleI18n = createMiddleware(routing);
 
@@ -18,7 +18,27 @@ export async function proxy(request: NextRequest) {
   // 2. Apply next-intl locale routing (browser Accept-Language detection + URL prefix)
   const intlResponse = handleI18n(request);
 
-  // 3. Forward any Supabase session cookies to the intl response so auth stays valid
+  // 3. Strip the internal Node.js port (3000) from redirect Location headers.
+  //    Hostinger runs Next.js on :3000 behind nginx; if the proxy does not
+  //    rewrite the Host header the redirect URL leaks :3000 to the browser.
+  if (intlResponse.status >= 300 && intlResponse.status < 400) {
+    const location = intlResponse.headers.get("Location");
+    if (location) {
+      try {
+        const url = new URL(location);
+        if (url.port === "3000") {
+          url.port = "";
+          return NextResponse.redirect(url.toString(), {
+            status: intlResponse.status,
+          });
+        }
+      } catch {
+        // location is a relative URL — no port to strip
+      }
+    }
+  }
+
+  // 4. Forward any Supabase session cookies to the intl response so auth stays valid
   supabaseResponse.cookies.getAll().forEach((cookie) => {
     intlResponse.cookies.set(cookie.name, cookie.value, cookie);
   });
