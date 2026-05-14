@@ -2,13 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge } from "lucide-react";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/companies", label: "Companies", icon: Building2 },
     { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/admin/ownership-requests", label: "Ownership Claims", icon: GitMerge },
     { href: "/admin/reviews", label: "Reviews", icon: Star },
     { href: "/admin/blog", label: "Blog Posts", icon: PenSquare },
     { href: "/admin/ads", label: "Ad Campaigns", icon: Megaphone },

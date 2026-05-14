@@ -1,9 +1,8 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { Briefcase } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 interface FeedCompanyCardProps {
@@ -17,7 +16,6 @@ interface FeedCompanyCardProps {
 }
 
 export function FeedCompanyCard({
-    id,
     name,
     tagline,
     logo_url,
@@ -27,52 +25,59 @@ export function FeedCompanyCard({
 }: FeedCompanyCardProps) {
     const href = `/companies/${slug}`;
 
+    const activities = main_activity
+        ? main_activity.split(",").map((a) => a.trim()).filter(Boolean).slice(0, 3)
+        : [];
+
     return (
-        <div className="relative group h-full w-full">
-            <Link href={href} className="block h-full">
-                <Card className="bg-[#1A1A1A] border-white/10 overflow-hidden hover:border-[#C6A85E]/50 transition-colors h-full flex flex-col justify-center">
-                    <CardContent className="p-6 flex flex-col items-center text-center gap-3 h-full">
-                        {/* Image Section */}
-                        <div className="w-20 h-20 relative shrink-0 mb-1">
-                            {logo_url ? (
-                                <Image
-                                    src={logo_url}
-                                    alt={name}
-                                    fill
-                                    className="object-contain" // Changed to object-contain to ensure the whole logo is visible without cropping
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-white/5 text-white/20">
-                                    <Briefcase className="w-8 h-8" />
-                                </div>
-                            )}
+        <Link href={href} className="group block w-full h-full">
+            <div className="bg-[#1A1A1A] border border-white/10 rounded-xl overflow-hidden hover:border-[#C6A85E]/40 transition-all duration-200 flex flex-col h-full">
+                {/* Logo / Image area */}
+                <div className="relative w-full aspect-square bg-[#111] flex items-center justify-center overflow-hidden">
+                    {logo_url ? (
+                        <Image
+                            src={logo_url}
+                            alt={name}
+                            fill
+                            className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                        />
+                    ) : (
+                        <Building2 className="w-10 h-10 text-white/15" />
+                    )}
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col flex-1 p-3 gap-2">
+                    {/* Name + badge */}
+                    <div className="flex items-start gap-1">
+                        <h3 className="text-white font-semibold text-sm leading-tight line-clamp-2 group-hover:text-[#C6A85E] transition-colors flex-1">
+                            {name}
+                        </h3>
+                        <VerifiedBadge plan={plan} size="sm" className="mt-0.5 shrink-0" />
+                    </div>
+
+                    {/* Tagline */}
+                    {tagline && (
+                        <p className="text-gray-500 text-[11px] leading-snug line-clamp-1">
+                            {tagline}
+                        </p>
+                    )}
+
+                    {/* Activity tags */}
+                    {activities.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-auto pt-1">
+                            {activities.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[10px] text-gray-400 leading-tight"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
                         </div>
-
-                        {/* Content Section */}
-                        <div className="flex-1 min-w-0 w-full flex flex-col items-center">
-                            <h3 className="text-white font-medium text-lg leading-tight group-hover:text-[#C6A85E] transition-colors line-clamp-2 flex items-center justify-center gap-1.5">
-                                {name}
-                                <VerifiedBadge plan={plan} size="sm" />
-                            </h3>
-
-                            {tagline && (
-                                <p className="text-gray-400 text-xs mt-1.5 line-clamp-2 leading-snug max-w-[200px]">
-                                    {tagline}
-                                </p>
-                            )}
-
-                            {/* Badges / Activity */}
-                            {main_activity && (
-                                <div className="mt-4 flex flex-wrap justify-center gap-1.5">
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] text-[#C6A85E] font-medium tracking-wide shadow-sm">
-                                        {main_activity}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </Link>
-        </div>
+                    )}
+                </div>
+            </div>
+        </Link>
     );
 }

@@ -10,7 +10,6 @@ import {
   Calendar,
   BookOpen,
   Briefcase,
-  LifeBuoy,
   LucideIcon,
 } from "lucide-react";
 
@@ -32,7 +31,6 @@ export const sidebarNav: NavGroup[] = [
     items: [
       { titleKey: "feed",    href: "/dashboard", icon: Newspaper },
       { titleKey: "profile", href: "/profile",   icon: User },
-      { titleKey: "support", href: "/support",   icon: LifeBuoy },
     ],
   },
   {

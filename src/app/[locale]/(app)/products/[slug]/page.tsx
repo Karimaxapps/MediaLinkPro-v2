@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import { getProductBySlug } from "@/features/products/server/actions";
 import { listPostsForProduct } from "@/features/blog/server/actions";
 import { ProductDetailsClient } from "@/components/products/product-details-client";
+import { getOwnershipRequestStatus } from "@/features/ownership-requests/server/actions";
 
 import { Metadata } from "next";
 
@@ -96,11 +97,40 @@ export default async function ProductDetailsPage({ params }: PageProps) {
         userProfile = profile;
     }
 
+    // Platform product claim detection
+    const productOrganization = product.organizations as { is_platform_org?: boolean } | null;
+    const isPlatformProduct = !!productOrganization?.is_platform_org;
+    let claimRequest = null;
+    let userOrgId: string | null = null;
+
+    if (user && isPlatformProduct && !isOwner) {
+        const { data: membership } = await supabase
+            .from('organization_members')
+            .select('organization_id, role, organizations(is_platform_org)')
+            .eq('user_id', user.id)
+            .in('role', ['owner', 'admin'])
+            .maybeSingle();
+
+        const memberOrg = membership?.organizations as { is_platform_org?: boolean } | null;
+        if (membership && !memberOrg?.is_platform_org) {
+            userOrgId = membership.organization_id;
+            claimRequest = await getOwnershipRequestStatus(product.id, membership.organization_id);
+        }
+    }
+
     const relatedPosts = await listPostsForProduct(product.id, 6);
 
     return (
         <div className="space-y-8">
-            <ProductDetailsClient product={product} user={user} userProfile={userProfile} isOwner={isOwner} />
+            <ProductDetailsClient
+                product={product}
+                user={user}
+                userProfile={userProfile}
+                isOwner={isOwner}
+                isPlatformProduct={isPlatformProduct}
+                userOrgId={userOrgId}
+                claimRequest={claimRequest}
+            />
 
             {relatedPosts.length > 0 && (
                 <section className="rounded-xl border border-white/10 bg-white/5 p-6 space-y-4">

@@ -130,7 +130,7 @@ export function DashboardClient({
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 {latestCompanies.map((company) => (
-                                    <div key={company.id} className="w-[240px] snap-start shrink-0">
+                                    <div key={company.id} className="w-[180px] snap-start shrink-0">
                                         <FeedCompanyCard
                                             id={company.id}
                                             name={company.name}

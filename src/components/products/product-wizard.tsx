@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { insertProductSchema, InsertProduct } from '@/features/products/schema';
@@ -22,11 +22,19 @@ import { ProductMediaUpload } from './product-media-upload';
 import { updateProduct } from '@/features/products/server/actions';
 import { Switch } from '@/components/ui/switch';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import type { ActionState } from '@/features/types';
+
+type ProductWizardInitialData = Partial<InsertProduct> & { id?: string };
 
 interface ProductWizardProps {
     organizations: { id: string; name: string; slug: string }[];
     userId: string; // Needed for image upload
-    initialData?: any; // Existing product data
+    initialData?: ProductWizardInitialData; // Existing product data
+    // Admin overrides: pass admin server actions to bypass membership checks
+    createAction?: (prevState: ActionState, formData: FormData) => Promise<ActionState>;
+    updateAction?: (productId: string, formData: FormData) => Promise<ActionState>;
+    cancelHref?: string;    // Where Cancel navigates (default: org dashboard)
+    afterSaveHref?: string; // Where Save Draft navigates (default: org dashboard)
 }
 
 const steps = [
@@ -68,7 +76,7 @@ const steps = [
     }
 ];
 
-export function ProductWizard({ organizations, userId, initialData }: ProductWizardProps) {
+export function ProductWizard({ organizations, userId, initialData, createAction, updateAction, cancelHref, afterSaveHref }: ProductWizardProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
     const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -77,7 +85,7 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
     const defaultOrgId = organizations.length === 1 ? organizations[0].id : '';
 
     const form = useForm<InsertProduct>({
-        resolver: zodResolver(insertProductSchema) as any,
+        resolver: zodResolver(insertProductSchema) as unknown as Resolver<InsertProduct>,
         mode: "onChange",
         defaultValues: initialData ? {
             ...initialData,
@@ -91,10 +99,6 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
             description: '',
             logo_url: '',
             is_public: true,
-            // @ts-ignore
-            product_type: undefined,
-            // @ts-ignore
-            main_category: undefined,
             sub_category: '',
             short_description: '',
             external_url: '',
@@ -162,7 +166,8 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                 let result;
                 if (currentStep === 0 && !productId) {
                     // First step creation
-                    result = await createProduct({}, formData);
+                    const create = createAction ?? createProduct;
+                    result = await create({}, formData);
                     if (result.success && result.data) {
                         setProductId(result.data.id);
                         toast.success("Draft created");
@@ -176,9 +181,9 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                         toast.error("Error: No product ID found. Please restart.");
                         return;
                     }
-                    result = await updateProduct(productId, formData);
+                    const update = updateAction ?? updateProduct;
+                    result = await update(productId, formData);
                     if (result.success) {
-                        // toast.success("Saved"); // Optional: minimize noise
                         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
                     } else {
                         toast.error(result.error || "Failed to save progress");
@@ -258,24 +263,26 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
             formData.append('status', 'draft');
 
             let result;
+            const create = createAction ?? createProduct;
+            const update = updateAction ?? updateProduct;
             if (!productId) {
-                result = await createProduct({}, formData);
+                result = await create({}, formData);
                 if (result.success && result.data) {
                     setProductId(result.data.id);
                     toast.success("Draft saved successfully!");
-                    // Redirect
-                    router.push(`/companies/${organizations.find(o => o.id === values.organization_id)?.slug || 'dashboard'}/dashboard`);
+                    const redirect = afterSaveHref ?? `/companies/${organizations.find(o => o.id === values.organization_id)?.slug || 'dashboard'}/dashboard`;
+                    router.push(redirect);
                 } else {
                     toast.error(result.error || "Failed to save draft");
                 }
             } else {
-                result = await updateProduct(productId, formData);
+                result = await update(productId, formData);
                 if (result.success) {
                     toast.success("Draft saved successfully!");
-                    // Redirect
                     const orgId = values.organization_id;
                     const org = organizations.find(o => o.id === orgId);
-                    router.push(`/companies/${org?.slug || 'dashboard'}/dashboard`);
+                    const redirect = afterSaveHref ?? `/companies/${org?.slug || 'dashboard'}/dashboard`;
+                    router.push(redirect);
                 } else {
                     toast.error(result.error || "Failed to save draft");
                 }
@@ -289,12 +296,15 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
     };
 
     const handleConfirmCancel = () => {
+        if (cancelHref) {
+            router.push(cancelHref);
+            return;
+        }
         const orgId = getValues('organization_id');
         const org = organizations.find(o => o.id === orgId);
         if (org) {
             router.push(`/companies/${org.slug}/dashboard`);
         } else {
-            // Fallback if no org selected or found (shouldn't happen given the check at start)
             router.push('/dashboard');
         }
     };
@@ -448,7 +458,7 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                                 <div className="space-y-2">
                                     <Label htmlFor="product_type" className="text-gray-300">Product Type <span className="text-red-500">*</span></Label>
                                     <Select
-                                        onValueChange={(value: any) => setValue("product_type", value, { shouldValidate: true })}
+                                        onValueChange={(value) => setValue("product_type", value as InsertProduct["product_type"], { shouldValidate: true })}
                                         defaultValue={getValues("product_type")}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white">
@@ -471,7 +481,7 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                                 <div className="space-y-2">
                                     <Label htmlFor="main_category" className="text-gray-300">Main Category <span className="text-red-500">*</span></Label>
                                     <Select
-                                        onValueChange={(value: any) => setValue("main_category", value, { shouldValidate: true })}
+                                        onValueChange={(value) => setValue("main_category", value as InsertProduct["main_category"], { shouldValidate: true })}
                                         defaultValue={getValues("main_category")}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white">
@@ -730,7 +740,7 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                                     <Label htmlFor="availability_status" className="text-gray-300">Availability Status</Label>
                                     <Select
                                         value={watch("availability_status")}
-                                        onValueChange={(value: any) => setValue("availability_status", value, { shouldValidate: true })}
+                                        onValueChange={(value) => setValue("availability_status", value as InsertProduct["availability_status"], { shouldValidate: true })}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
                                             <SelectValue placeholder="Select status" />
@@ -796,7 +806,7 @@ export function ProductWizard({ organizations, userId, initialData }: ProductWiz
                                     <Label htmlFor="pricing_model" className="text-gray-300">Pricing Model</Label>
                                     <Select
                                         value={watch("pricing_model")}
-                                        onValueChange={(value: any) => setValue("pricing_model", value)}
+                                        onValueChange={(value) => setValue("pricing_model", value as InsertProduct["pricing_model"])}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
                                             <SelectValue placeholder="Select pricing model" />
