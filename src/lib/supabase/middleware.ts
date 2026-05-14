@@ -47,25 +47,36 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // Protected routes
-    if (
-        request.nextUrl.pathname.startsWith("/dashboard") ||
-        request.nextUrl.pathname.startsWith("/onboarding")
-    ) {
-        if (!user) {
-            const url = request.nextUrl.clone();
-            url.pathname = "/auth";
-            return NextResponse.redirect(url);
-        }
+    // Strip non-default locale prefix (es, fr, de, zh) so path comparisons
+    // work regardless of which locale is active. English has no prefix ("as-needed").
+    const { pathname } = request.nextUrl;
+    const localeMatch = pathname.match(/^\/(es|fr|de|zh)(\/|$)/);
+    const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
+    const cleanPath = localeMatch ? pathname.slice(localeMatch[1].length + 1) || "/" : pathname;
+
+    // All routes that live inside src/app/[locale]/(app)/ — require authentication
+    const APP_ROUTES = [
+        "/advertising", "/billing", "/bookmarks", "/companies", "/connect",
+        "/dashboard", "/events", "/experts", "/jobs", "/marketplace",
+        "/messages", "/products", "/profile", "/profiles", "/search",
+        "/settings", "/onboarding",
+    ];
+
+    const isAppRoute = APP_ROUTES.some(
+        (r) => cleanPath === r || cleanPath.startsWith(r + "/")
+    );
+
+    if (isAppRoute && !user) {
+        const url = request.nextUrl.clone();
+        url.pathname = `${localePrefix}/auth`;
+        return NextResponse.redirect(url);
     }
 
-    // Auth routes (redirect to dashboard if already logged in)
-    if (request.nextUrl.pathname.startsWith("/auth")) {
-        if (user) {
-            const url = request.nextUrl.clone();
-            url.pathname = "/dashboard";
-            return NextResponse.redirect(url);
-        }
+    // Auth route — redirect to dashboard if already signed in
+    if ((cleanPath === "/auth" || cleanPath.startsWith("/auth/")) && user) {
+        const url = request.nextUrl.clone();
+        url.pathname = `${localePrefix}/dashboard`;
+        return NextResponse.redirect(url);
     }
 
     return response;

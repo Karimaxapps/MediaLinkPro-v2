@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { AuthTabs } from "./auth-tabs";
+import { getTranslations } from "next-intl/server";
 
-export default function AuthPage() {
+export default async function AuthPage() {
+    const t = await getTranslations("auth");
     return (
         <div className="flex min-h-screen bg-[#0B0F14]">
             {/* Left Panel — Branding */}
@@ -43,17 +45,17 @@ export default function AuthPage() {
 
                     <div className="space-y-4">
                         <h1 className="text-5xl font-bold text-white leading-tight tracking-tight">
-                            Connect Your<br />
-                            <span className="text-[#C6A85E]">Vision</span>
+                            {t("connectVision")}<br />
+                            <span className="text-[#C6A85E]">{t("vision")}</span>
                         </h1>
                         <p className="text-gray-400 text-lg leading-relaxed max-w-sm">
-                            The professional network where media talent, production companies, and brands converge.
+                            {t("tagline")}
                         </p>
                     </div>
 
                     {/* Feature pills */}
                     <div className="flex flex-wrap gap-2 pt-2">
-                        {["Talent Discovery", "Brand Deals", "Live Events", "Analytics"].map((tag) => (
+                        {([t("featureTalent"), t("featureBrands"), t("featureEvents"), t("featureAnalytics")] as string[]).map((tag) => (
                             <span
                                 key={tag}
                                 className="px-3 py-1 rounded-full text-xs font-medium border border-[#C6A85E]/20 text-[#C6A85E]/80 bg-[#C6A85E]/5"
@@ -67,7 +69,7 @@ export default function AuthPage() {
                 {/* Bottom quote */}
                 <div className="relative z-10">
                     <p className="text-gray-600 text-sm italic">
-                        "Where media professionals build careers."
+                        &ldquo;{t("quote")}&rdquo;
                     </p>
                 </div>
             </div>

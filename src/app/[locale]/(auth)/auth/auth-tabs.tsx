@@ -2,10 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : "An unexpected error occurred";
+}
 
 export function AuthTabs() {
     const [tab, setTab] = useState<"signup" | "login">("signup");
@@ -16,6 +21,7 @@ export function AuthTabs() {
     const [showConfirm, setShowConfirm] = useState(false);
     const router = useRouter();
     const supabase = createClient();
+    const t = useTranslations("auth");
 
     // Sign up state
     const [fullName, setFullName] = useState("");
@@ -45,8 +51,8 @@ export function AuthTabs() {
             if (authError) { setError(authError.message); return; }
             router.push("/dashboard");
             router.refresh();
-        } catch (err: any) {
-            setError(err.message || "An unexpected error occurred");
+        } catch (err) {
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -55,7 +61,7 @@ export function AuthTabs() {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         if (signupPassword !== confirmPassword) {
-            setError("Passwords do not match");
+            setError(t("passwordsMismatch"));
             return;
         }
         setIsLoading(true);
@@ -75,10 +81,10 @@ export function AuthTabs() {
                 router.push("/onboarding");
                 router.refresh();
             } else if (data.user && !data.session) {
-                setMessage("Account created! Check your email to confirm your account.");
+                setMessage(t("emailConfirm"));
             }
-        } catch (err: any) {
-            setError(err.message || "An unexpected error occurred");
+        } catch (err) {
+            setError(getErrorMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -111,7 +117,7 @@ export function AuthTabs() {
                                 : "text-gray-400 hover:text-white"
                         }`}
                     >
-                        Sign Up
+                        {t("signUp")}
                     </button>
                     <button
                         onClick={() => switchTab("login")}
@@ -121,7 +127,7 @@ export function AuthTabs() {
                                 : "text-gray-400 hover:text-white"
                         }`}
                     >
-                        Log In
+                        {t("logIn")}
                     </button>
                 </div>
             </div>
@@ -129,12 +135,10 @@ export function AuthTabs() {
             {/* Heading */}
             <div className="text-center space-y-1">
                 <h2 className="text-3xl font-bold text-white tracking-tight">
-                    {tab === "signup" ? "Create An Account" : "Welcome Back"}
+                    {tab === "signup" ? t("createAccount") : t("welcomeBack")}
                 </h2>
                 <p className="text-gray-500 text-sm">
-                    {tab === "signup"
-                        ? "Join the media professional network"
-                        : "Sign in to your MediaLinkPro account"}
+                    {tab === "signup" ? t("joinNetwork") : t("signInAccount")}
                 </p>
             </div>
 
@@ -158,7 +162,7 @@ export function AuthTabs() {
                         <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type="text"
-                            placeholder="Full Name"
+                            placeholder={t("fullName")}
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             required
@@ -171,7 +175,7 @@ export function AuthTabs() {
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type="email"
-                            placeholder="Enter Your Email"
+                            placeholder={t("enterEmail")}
                             value={signupEmail}
                             onChange={(e) => setSignupEmail(e.target.value)}
                             required
@@ -184,7 +188,7 @@ export function AuthTabs() {
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Password"
+                            placeholder={t("password")}
                             value={signupPassword}
                             onChange={(e) => setSignupPassword(e.target.value)}
                             required
@@ -204,7 +208,7 @@ export function AuthTabs() {
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type={showConfirm ? "text" : "password"}
-                            placeholder="Confirm Password"
+                            placeholder={t("confirmPassword")}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
@@ -224,7 +228,7 @@ export function AuthTabs() {
                         disabled={isLoading}
                         className="w-full h-12 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl mt-2 transition-colors"
                     >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create an Account"}
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("createBtn")}
                     </Button>
                 </form>
             )}
@@ -236,7 +240,7 @@ export function AuthTabs() {
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type="email"
-                            placeholder="Enter Your Email"
+                            placeholder={t("enterEmail")}
                             value={loginEmail}
                             onChange={(e) => setLoginEmail(e.target.value)}
                             required
@@ -248,7 +252,7 @@ export function AuthTabs() {
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                         <Input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Password"
+                            placeholder={t("password")}
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
                             required
@@ -265,7 +269,7 @@ export function AuthTabs() {
 
                     <div className="text-right">
                         <span className="text-xs text-[#C6A85E] cursor-pointer hover:underline">
-                            Forgot password?
+                            {t("forgotPassword")}
                         </span>
                     </div>
 
@@ -274,7 +278,7 @@ export function AuthTabs() {
                         disabled={isLoading}
                         className="w-full h-12 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl transition-colors"
                     >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("signInBtn")}
                     </Button>
                 </form>
             )}
@@ -282,7 +286,7 @@ export function AuthTabs() {
             {/* Social Divider */}
             <div className="flex items-center gap-4">
                 <div className="flex-1 h-px bg-white/8" />
-                <span className="text-gray-600 text-xs">Or</span>
+                <span className="text-gray-600 text-xs">{t("or")}</span>
                 <div className="flex-1 h-px bg-white/8" />
             </div>
 
@@ -320,15 +324,15 @@ export function AuthTabs() {
             {/* Switch tab hint */}
             <p className="text-center text-sm text-gray-600">
                 {tab === "signup" ? (
-                    <>Already have an account?{" "}
+                    <>{t("alreadyHaveAccount")}{" "}
                         <button onClick={() => switchTab("login")} className="text-[#C6A85E] hover:underline font-medium">
-                            Log In
+                            {t("logIn")}
                         </button>
                     </>
                 ) : (
-                    <>Don&apos;t have an account?{" "}
+                    <>{t("dontHaveAccount")}{" "}
                         <button onClick={() => switchTab("signup")} className="text-[#C6A85E] hover:underline font-medium">
-                            Sign Up
+                            {t("signUp")}
                         </button>
                     </>
                 )}

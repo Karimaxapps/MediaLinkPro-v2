@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/browser";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Globe, Check, Loader2 } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { routing, type Locale } from "@/i18n/routing";
@@ -49,6 +49,7 @@ export function UserNav() {
   const pathname = usePathname();
   const supabase = createClient();
   const currentLocale = useLocale() as Locale;
+  const t = useTranslations("userNav");
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -167,10 +168,10 @@ export function UserNav() {
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0B0B0B]/90 backdrop-blur-sm">
           <Loader2 className="h-10 w-10 text-[#C6A85E] animate-spin mb-5" />
           <p className="text-white text-lg font-semibold mb-1">
-            Switching to {targetLocaleLabel}…
+            {t("switchingTo", { lang: targetLocaleLabel })}
           </p>
           <p className="text-gray-400 text-sm">
-            Please wait a moment while the app reloads.
+            {t("pleaseWait")}
           </p>
         </div>
       )}
@@ -215,27 +216,27 @@ export function UserNav() {
               className="focus:bg-white/10 focus:text-white cursor-pointer"
               onClick={() => router.push("/profile")}
             >
-              Profile
+              {t("profile")}
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem
               className="focus:bg-white/10 focus:text-white cursor-pointer"
               onClick={() => router.push("/bookmarks")}
             >
-              Bookmarks
+              {t("bookmarks")}
               <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem
               className="focus:bg-white/10 focus:text-white cursor-pointer"
               onClick={() => router.push("/billing")}
             >
-              Billing &amp; Plans
+              {t("billingPlans")}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="focus:bg-white/10 focus:text-white cursor-pointer"
               onClick={() => router.push("/settings/profile")}
             >
-              Settings
+              {t("settings")}
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -246,7 +247,7 @@ export function UserNav() {
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="focus:bg-white/10 focus:text-white cursor-pointer data-[state=open]:bg-white/10">
               <Globe className="mr-2 h-4 w-4 text-gray-400" />
-              <span>Language</span>
+              <span>{t("language")}</span>
               <span className="ml-auto mr-5 text-xs text-gray-500">
                 {LOCALE_LABEL[currentLocale] ?? currentLocale}
               </span>
@@ -279,7 +280,7 @@ export function UserNav() {
             className="focus:bg-white/10 text-red-400 focus:text-red-400 cursor-pointer"
             onClick={handleSignOut}
           >
-            Log out
+            {t("logOut")}
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

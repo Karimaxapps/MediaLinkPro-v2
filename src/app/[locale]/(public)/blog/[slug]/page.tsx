@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
@@ -169,7 +170,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
         {/* Article content — full for signed-in users, gated for guests */}
         {user ? (
           <>
-            <div className={articleClasses} dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div className={articleClasses} dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
 
             {/* Linked product */}
             {post.linked_product && (
@@ -239,7 +240,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
             <div className="relative">
               <div
                 className={`${articleClasses} max-h-[320px] overflow-hidden`}
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
               />
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#0B0B0B] via-[#0B0B0B]/80 to-transparent pointer-events-none" />
             </div>

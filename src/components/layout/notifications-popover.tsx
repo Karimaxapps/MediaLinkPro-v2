@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Bell, Check, Trash2, Mail, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -19,9 +20,24 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
+type NotificationItem = {
+    id: string;
+    title: string;
+    message: string;
+    type: "connection_request" | "demo_request" | string;
+    is_read: boolean;
+    created_at: string;
+    data?: {
+        username?: string;
+        product_slug?: string;
+        product_id?: string;
+    } | null;
+};
+
 export function NotificationsPopover() {
     const router = useRouter();
-    const [notifications, setNotifications] = useState<any[]>([]);
+    const t = useTranslations("notifications");
+    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +47,9 @@ export function NotificationsPopover() {
         try {
             const data = await getUserNotifications();
             if (data) {
-                setNotifications(data);
-                setUnreadCount(data.filter((n: any) => !n.is_read).length);
+                const nextNotifications = data as NotificationItem[];
+                setNotifications(nextNotifications);
+                setUnreadCount(nextNotifications.filter((n) => !n.is_read).length);
             }
         } catch (error) {
             console.error("Failed to fetch notifications", error);
@@ -65,7 +82,7 @@ export function NotificationsPopover() {
         }
     };
 
-    const handleNotificationClick = async (notification: any) => {
+    const handleNotificationClick = async (notification: NotificationItem) => {
         // Optimistically mark as read
         if (!notification.is_read) {
             handleMarkAsRead(notification.id);
@@ -144,7 +161,7 @@ export function NotificationsPopover() {
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0 bg-[#1F1F1F] border-white/10 text-white" align="end">
                 <div className="flex items-center justify-between p-4 border-b border-white/10">
-                    <h4 className="font-semibold text-white">Notifications</h4>
+                    <h4 className="font-semibold text-white">{t("title")}</h4>
                     {unreadCount > 0 && (
                         <Button
                             variant="ghost"
@@ -152,7 +169,7 @@ export function NotificationsPopover() {
                             className="h-auto px-2 text-xs text-[#C6A85E] hover:text-[#B5964A] hover:bg-transparent"
                             onClick={handleMarkAllAsRead}
                         >
-                            Mark all read
+                            {t("markAllRead")}
                         </Button>
                     )}
                 </div>
@@ -160,7 +177,7 @@ export function NotificationsPopover() {
                     {notifications.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full p-4 text-center text-gray-500 gap-2">
                             <Bell className="h-8 w-8 opacity-20" />
-                            <p className="text-sm">No notifications yet</p>
+                            <p className="text-sm">{t("none")}</p>
                         </div>
                     ) : (
                         <div className="flex flex-col">
@@ -242,7 +259,7 @@ export function NotificationsPopover() {
                                                     handleMarkAsRead(notification.id);
                                                 }}
                                             >
-                                                Mark read
+                                                {t("markRead")}
                                             </Button>
                                         </div>
                                     )}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -173,7 +174,6 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                     getProductExperts(product.id),
                     getProductResources(product.id)
                 ]);
-                console.log("Client expertsData:", JSON.stringify(expertsData, null, 2));
                 setExperts(expertsData || []);
                 setResources(resourcesData || []);
 
