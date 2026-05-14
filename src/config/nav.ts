@@ -10,95 +10,49 @@ import {
   Calendar,
   BookOpen,
   Briefcase,
+  LifeBuoy,
   LucideIcon,
 } from "lucide-react";
 
 export type NavItem = {
-  title: string;
+  titleKey: string;
   href: string;
   icon: LucideIcon;
   disabled?: boolean;
 };
 
 export type NavGroup = {
-  title: string;
+  titleKey: string;
   items: NavItem[];
 };
 
 export const sidebarNav: NavGroup[] = [
   {
-    title: "Main",
+    titleKey: "main",
     items: [
-      {
-        title: "Feed",
-        href: "/dashboard",
-        icon: Newspaper,
-      },
-      {
-        title: "Profile",
-        href: "/profile",
-        icon: User,
-      },
+      { titleKey: "feed",    href: "/dashboard", icon: Newspaper },
+      { titleKey: "profile", href: "/profile",   icon: User },
+      { titleKey: "support", href: "/support",   icon: LifeBuoy },
     ],
   },
   {
-    title: "Connect with",
+    titleKey: "connectWith",
     items: [
-      {
-        title: "Broadcasters",
-        href: "/connect/broadcasters",
-        icon: Radio,
-      },
-      {
-        title: "Solution Providers",
-        href: "/connect/solution-providers",
-        icon: Package,
-      },
-      {
-        title: "Production Companies",
-        href: "/connect/production-companies",
-        icon: Factory,
-      },
-      {
-        title: "Media Associations",
-        href: "/connect/media-associations",
-        icon: Users,
-      },
-      {
-        title: "Media Professionals",
-        href: "/connect/media-professionals",
-        icon: User,
-      },
+      { titleKey: "broadcasters",       href: "/connect/broadcasters",        icon: Radio },
+      { titleKey: "solutionProviders",  href: "/connect/solution-providers",  icon: Package },
+      { titleKey: "productionCompanies",href: "/connect/production-companies",icon: Factory },
+      { titleKey: "mediaAssociations",  href: "/connect/media-associations",  icon: Users },
+      { titleKey: "mediaProfessionals", href: "/connect/media-professionals", icon: User },
     ],
   },
   {
-    title: "Discover",
+    titleKey: "discover",
     items: [
-      {
-        title: "Products",
-        href: "/marketplace/products",
-        icon: ShoppingBag,
-      },
-      {
-        title: "Production Services",
-        href: "/marketplace/services",
-        icon: Clapperboard,
-      },
-      {
-        title: "Events",
-        href: "/events",
-        icon: Calendar,
-      },
-      {
-        title: "Jobs",
-        href: "/jobs",
-        icon: Briefcase,
-      },
-      {
-        title: "Blog",
-        href: "/blog",
-        icon: BookOpen,
-      },
+      { titleKey: "products",           href: "/marketplace/products",  icon: ShoppingBag },
+      { titleKey: "productionServices", href: "/marketplace/services",  icon: Clapperboard },
+      { titleKey: "events",             href: "/events",                icon: Calendar },
+      { titleKey: "jobs",               href: "/jobs",                  icon: Briefcase },
+      { titleKey: "blog",               href: "/blog",                  icon: BookOpen },
     ],
   },
 ];

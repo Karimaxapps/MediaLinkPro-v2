@@ -23,6 +23,9 @@ import {
   Zap,
   Shield,
   Award,
+  Film,
+  Mic2,
+  Video,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -368,92 +371,127 @@ function ProfessionalsPreview() {
   );
 }
 
-// ─── Preview: Production Companies — Gantt + Crew Grid ───────────────────────
+// ─── Preview: Production Companies — Service Marketplace ─────────────────────
+type ProdServiceType = "post" | "audio" | "equip" | "shoot";
+
+const PROD_TYPE_CONFIG: Record<
+  ProdServiceType,
+  {
+    icon: React.ElementType;
+    color: string;
+    labelKey: "serv_post_prod" | "serv_audio_studio" | "serv_equip_rental" | "serv_shoot_studio";
+  }
+> = {
+  post:  { icon: Film,    color: GOLD,      labelKey: "serv_post_prod"    },
+  audio: { icon: Mic2,    color: "#00FFFF", labelKey: "serv_audio_studio" },
+  equip: { icon: Package, color: "#22c55e", labelKey: "serv_equip_rental" },
+  shoot: { icon: Video,   color: "#a78bfa", labelKey: "serv_shoot_studio" },
+};
+
+const PROD_SERVICES: Array<{
+  name: string;
+  type: ProdServiceType;
+  location: string;
+  rating: number;
+  price: string;
+  available: boolean;
+}> = [
+  { name: "Falcon Post Suite A",    type: "post",  location: "London, UK",   rating: 4.9, price: "$320", available: true  },
+  { name: "SoundBox Audio Studio",  type: "audio", location: "Paris, FR",    rating: 4.8, price: "$180", available: true  },
+  { name: "ARRI Alexa LF Package",  type: "equip", location: "Berlin, DE",   rating: 4.7, price: "$450", available: false },
+  { name: "Stage One Studio",       type: "shoot", location: "New York, US", rating: 4.9, price: "$680", available: true  },
+];
+
 function ProductionPreview() {
   const t = useTranslations("audienceTabs");
-  const tasks = [
-    { nameKey: "task_pre_prod" as const, start: 0, width: 30, color: GOLD },
-    { nameKey: "task_crew_sched" as const, start: 20, width: 25, color: "#00FFFF" },
-    { nameKey: "task_equip" as const, start: 30, width: 35, color: GOLD_30 },
-    { nameKey: "task_on_site" as const, start: 50, width: 30, color: GOLD },
-    { nameKey: "task_post" as const, start: 75, width: 25, color: "#00FFFF" },
-  ];
-  const crew = [
-    { roleKey: "role_director" as const, avail: [1, 1, 0, 1, 1, 0, 1] },
-    { roleKey: "role_dop" as const, avail: [1, 0, 1, 1, 0, 1, 1] },
-    { roleKey: "role_sound" as const, avail: [0, 1, 1, 0, 1, 1, 1] },
-    { roleKey: "role_broadcast" as const, avail: [1, 1, 1, 0, 0, 1, 0] },
-  ];
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
 
   return (
-    <div className="space-y-4">
-      {/* Gantt */}
-      <div className="p-3 rounded-xl bg-white/[0.04] border border-white/8">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[11px] font-semibold text-white">
-            {t("prod_timeline")} — Q1 2026
-          </span>
-          <span
-            className="text-[10px] px-2 py-0.5 rounded-full"
-            style={{ color: GOLD, background: GOLD_10 }}
-          >
-            {t("milestones", { count: 5 })}
-          </span>
-        </div>
-        <div className="space-y-2">
-          {tasks.map((task, i) => (
-            <div key={task.nameKey} className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-500 w-32 truncate shrink-0">
-                {t(task.nameKey)}
-              </span>
-              <div className="flex-1 h-5 bg-white/5 rounded-full relative overflow-hidden">
-                <motion.div
-                  className="absolute top-0 h-full rounded-full"
-                  style={{ left: `${task.start}%`, background: task.color }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${task.width}%` }}
-                  transition={{ delay: i * 0.1 + 0.2, duration: 0.6, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-semibold text-white">{t("prod_featured_header")}</span>
+        <span
+          className="text-[10px] px-2 py-0.5 rounded-full"
+          style={{ color: GOLD, background: GOLD_10 }}
+        >
+          {t("prod_services_count", { count: "1,240+" })}
+        </span>
       </div>
 
-      {/* Crew availability grid */}
-      <div className="p-3 rounded-xl bg-white/[0.04] border border-white/8">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[11px] font-semibold text-white">{t("crew_avail")}</span>
-          <span className="text-[10px] text-gray-500">Jan 13–19</span>
-        </div>
-        <div className="grid grid-cols-8 gap-1 mb-1">
-          <div />
-          {days.map((d, i) => (
-            <div key={i} className="text-center text-[9px] text-gray-500">
-              {d}
-            </div>
-          ))}
-        </div>
-        {crew.map((c) => (
-          <div key={c.roleKey} className="grid grid-cols-8 gap-1 mb-1 items-center">
-            <span className="text-[10px] text-gray-400 truncate">{t(c.roleKey)}</span>
-            {c.avail.map((a, i) => (
+      {/* Service type chips */}
+      <div className="flex gap-1.5 flex-wrap">
+        {(["post", "audio", "equip", "shoot"] as const).map((type) => {
+          const cfg = PROD_TYPE_CONFIG[type];
+          return (
+            <span
+              key={type}
+              className="px-2.5 py-0.5 rounded-full text-[10px] font-medium"
+              style={{
+                color: cfg.color,
+                background: `${cfg.color}15`,
+                border: `1px solid ${cfg.color}35`,
+              }}
+            >
+              {t(cfg.labelKey)}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Service listings */}
+      <div className="space-y-2">
+        {PROD_SERVICES.map((svc, i) => {
+          const cfg = PROD_TYPE_CONFIG[svc.type];
+          const Icon = cfg.icon;
+          return (
+            <motion.div
+              key={svc.name}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.07, duration: 0.4 }}
+              className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/8 hover:border-white/15 transition-colors cursor-pointer"
+            >
               <div
-                key={i}
-                className="h-5 rounded flex items-center justify-center"
-                style={{
-                  background: a ? GOLD_20 : "rgba(255,255,255,0.04)",
-                  border: a ? `1px solid ${GOLD_30}` : "1px solid transparent",
-                }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: `${cfg.color}15`, border: `1px solid ${cfg.color}35` }}
               >
-                {a ? (
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: GOLD }} />
-                ) : null}
+                <Icon className="w-4 h-4" style={{ color: cfg.color }} />
               </div>
-            ))}
-          </div>
-        ))}
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-white truncate block">{svc.name}</span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span
+                    className="text-[10px] px-1.5 rounded-full"
+                    style={{ color: cfg.color, background: `${cfg.color}12` }}
+                  >
+                    {t(cfg.labelKey)}
+                  </span>
+                  <span className="text-[10px] text-gray-500">{svc.location}</span>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-1 shrink-0">
+                <div className="flex items-center gap-1 text-[10px]">
+                  <Star className="w-2.5 h-2.5" style={{ color: GOLD, fill: GOLD }} />
+                  <span className="text-gray-300">{svc.rating}</span>
+                </div>
+                <div className="text-[11px] font-bold" style={{ color: GOLD }}>
+                  {svc.price}
+                  <span className="text-[9px] text-gray-500 font-normal">{t("prod_per_day")}</span>
+                </div>
+              </div>
+              <span
+                className="text-[10px] px-2 py-0.5 rounded-full font-medium shrink-0"
+                style={
+                  svc.available
+                    ? { color: "#22c55e", background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.30)" }
+                    : { color: "#9ca3af", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }
+                }
+              >
+                {svc.available ? t("prod_avail_now") : t("prod_booked")}
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

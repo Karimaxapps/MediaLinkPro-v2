@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { MobileSidebar } from "./sidebar";
@@ -16,6 +17,7 @@ type AppHeaderOrganization = { slug: string; name: string };
 export function AppHeader({ organizations }: { organizations?: AppHeaderOrganization[] }) {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
+    const t = useTranslations("appHeader");
 
     const handleSearch = useCallback(
         (e: React.FormEvent) => {
@@ -51,7 +53,7 @@ export function AppHeader({ organizations }: { organizations?: AppHeaderOrganiza
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                         <Input
                             type="search"
-                            placeholder="Search products, companies, people..."
+                            placeholder={t("searchPlaceholder")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-black/20 pl-8 md:w-[300px] lg:w-[400px] border-white/10 text-white focus:border-[#C6A85E]/50"

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/browser";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -31,20 +32,23 @@ import { ProfessionalInfoFields } from "@/features/profile/components/profession
 import { ContactInfoFields } from "@/features/profile/components/contact-info-fields";
 import { updateMyProfile } from "@/features/profile/server/actions";
 
-const STEPS = [
-  { id: 0, title: "Basic Info", description: "Let's get to know you" },
-  { id: 1, title: "Professional", description: "Your career details" },
-  { id: 2, title: "Contact", description: "How can people reach you?" },
-  { id: 3, title: "Welcome", description: "All set!" },
-];
+const STEP_COUNT = 4;
 
 export function OnboardingWizard() {
   const router = useRouter();
+  const t = useTranslations("onboarding");
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string>("");
   const [userName, setUserName] = useState("");
   const supabase = createClient();
+
+  const steps = [
+    { title: t("step0Title"), description: t("step0Desc") },
+    { title: t("step1Title"), description: t("step1Desc") },
+    { title: t("step2Title"), description: t("step2Desc") },
+    { title: t("step3Title"), description: t("step3Desc") },
+  ];
 
   useEffect(() => {
     const getUser = async () => {
@@ -204,15 +208,15 @@ export function OnboardingWizard() {
     <div className="w-full max-w-2xl mx-auto p-4 py-8">
       <div className="mb-8 text-center space-y-2">
         <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-          Welcome to MediaLinkPro
+          {t("title")}
         </h1>
-        <p className="text-gray-400">Let&apos;s set up your profile in just a few steps.</p>
+        <p className="text-gray-400">{t("subtitle")}</p>
       </div>
 
       {currentStep < 3 && (
         <div className="mb-8">
           <div className="flex justify-between text-sm mb-2 text-gray-400">
-            <span>Step {currentStep + 1} of 3</span>
+            <span>{t("stepOf", { current: currentStep + 1, total: 3 })}</span>
             <span>{Math.round(((currentStep + 1) / 3) * 100)}%</span>
           </div>
           <Progress
@@ -233,10 +237,10 @@ export function OnboardingWizard() {
                 {currentStep + 1}
               </div>
             )}
-            {STEPS[currentStep].title}
+            {steps[currentStep].title}
           </CardTitle>
           <CardDescription className="text-gray-400">
-            {STEPS[currentStep].description}
+            {steps[currentStep].description}
           </CardDescription>
         </CardHeader>
 
@@ -282,10 +286,9 @@ export function OnboardingWizard() {
               <div className="w-20 h-20 bg-[#C6A85E]/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="h-10 w-10 text-[#C6A85E]" />
               </div>
-              <h2 className="text-2xl font-bold text-white">Welcome, {userName}!</h2>
+              <h2 className="text-2xl font-bold text-white">{t("welcomeUser", { name: userName })}</h2>
               <p className="text-gray-400 max-w-md mx-auto">
-                Your profile has been successfully created. You can now access your dashboard and
-                verify your account.
+                {t("profileCreated")}
               </p>
               <div className="pt-4">
                 <Button
@@ -293,7 +296,7 @@ export function OnboardingWizard() {
                   size="lg"
                   className="bg-[#C6A85E] text-black hover:bg-[#b5964a] w-full sm:w-auto min-w-[200px]"
                 >
-                  Go to Dashboard
+                  {t("goToDashboard")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -310,7 +313,7 @@ export function OnboardingWizard() {
               className="text-gray-400 hover:text-white hover:bg-white/10"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
+              {t("back")}
             </Button>
 
             {currentStep === 2 ? (
@@ -320,12 +323,12 @@ export function OnboardingWizard() {
                 className="bg-[#C6A85E] text-black hover:bg-[#b5964a]"
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Complete Setup
+                {t("completeSetup")}
                 {!isSubmitting && <CheckCircle2 className="ml-2 h-4 w-4" />}
               </Button>
             ) : (
               <Button onClick={handleNext} className="bg-white text-black hover:bg-gray-200">
-                Next Step
+                {t("nextStep")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             )}
