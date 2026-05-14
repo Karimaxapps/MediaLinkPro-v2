@@ -19,7 +19,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Globe, Check, Loader2 } from "lucide-react";
+import { Globe, Check, Loader2, HelpCircle } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { routing, type Locale } from "@/i18n/routing";
 import { Database } from "@/types/supabase";
@@ -238,6 +238,13 @@ export function UserNav() {
             >
               {t("settings")}
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="focus:bg-white/10 focus:text-white cursor-pointer"
+              onClick={() => router.push("/support")}
+            >
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Help & Support
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
