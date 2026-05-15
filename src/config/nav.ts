@@ -10,6 +10,7 @@ import {
   Calendar,
   BookOpen,
   Briefcase,
+  Sparkles,
   LucideIcon,
 } from "lucide-react";
 
@@ -48,6 +49,7 @@ export const sidebarNav: NavGroup[] = [
     items: [
       { titleKey: "products",           href: "/marketplace/products",  icon: ShoppingBag },
       { titleKey: "productionServices", href: "/marketplace/services",  icon: Clapperboard },
+      { titleKey: "aiTools",            href: "/ai-tools",              icon: Sparkles },
       { titleKey: "events",             href: "/events",                icon: Calendar },
       { titleKey: "jobs",               href: "/jobs",                  icon: Briefcase },
       { titleKey: "blog",               href: "/blog",                  icon: BookOpen },

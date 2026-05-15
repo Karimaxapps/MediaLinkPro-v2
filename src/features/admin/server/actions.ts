@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import type { PlanId } from "@/lib/stripe/plans";
 import { insertProductSchema } from "@/features/products/schema";
+import { insertAiToolSchema, insertAiToolCategorySchema, aiToolResourceSchema } from "@/features/ai-tools/schema";
 import type { ActionState } from "@/features/types";
 import type { AdminOwnershipRequest } from "@/features/ownership-requests/types";
 
@@ -1005,5 +1006,240 @@ export async function resolveOwnershipRequest(
   }
 
   revalidatePath("/admin/ownership-requests");
+  return { success: true };
+}
+
+// ── AI Production Tools ──────────────────────────────────────────────────────
+
+export async function listAdminAiTools(limit: number = 100) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tools" as never)
+    .select(
+      "id, name, slug, status, is_featured, views_count, bookmarks_count, created_at, category_id"
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as unknown as Array<{
+    id: string;
+    name: string;
+    slug: string;
+    status: string;
+    is_featured: boolean;
+    views_count: number | null;
+    bookmarks_count: number | null;
+    created_at: string | null;
+    category_id: string | null;
+  }>;
+}
+
+export async function listAdminAiToolCategories() {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tool_categories" as never)
+    .select("*")
+    .order("name", { ascending: true });
+  return (data ?? []) as unknown as Array<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    created_at: string;
+  }>;
+}
+
+export async function getAdminAiToolById(id: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tools" as never)
+    .select("*, ai_tool_resources ( id, ai_tool_id, resource_type, title, url, created_at )")
+    .eq("id", id)
+    .maybeSingle();
+  return data as unknown as Record<string, unknown> | null;
+}
+
+function parseAiToolFormData(formData: FormData) {
+  const categoryId = formData.get("category_id");
+  const pricingModel = formData.get("pricing_model");
+  return {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    tagline: formData.get("tagline") || "",
+    description: formData.get("description") || "",
+    logo_url: formData.get("logo_url") || "",
+    cover_image_url: formData.get("cover_image_url") || "",
+    gallery_urls: (formData.getAll("gallery_urls") as string[]).filter(Boolean),
+    category_id: categoryId ? String(categoryId) : "",
+    main_link: formData.get("main_link"),
+    pricing_model: pricingModel ? String(pricingModel) : "",
+    pricing_url: formData.get("pricing_url") || "",
+    platforms: (formData.getAll("platforms") as string[]).filter(Boolean),
+    tags: (formData.getAll("tags") as string[]).filter(Boolean),
+    is_featured: formData.get("is_featured") === "on" || formData.get("is_featured") === "true",
+    status: formData.get("status") || "draft",
+  };
+}
+
+function parseAiToolResources(formData: FormData) {
+  const raw = formData.get("resources");
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(String(raw));
+    if (!Array.isArray(parsed)) return [];
+    const valid: { resource_type: string; title: string; url: string }[] = [];
+    for (const item of parsed) {
+      const result = aiToolResourceSchema.safeParse(item);
+      if (result.success) valid.push(result.data);
+    }
+    return valid;
+  } catch {
+    return [];
+  }
+}
+
+export async function createAiToolAsAdmin(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolSchema.safeParse(parseAiToolFormData(formData));
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { category_id, ...rest } = validated.data;
+  const insertData = {
+    ...rest,
+    category_id: category_id || null,
+    pricing_model: rest.pricing_model || null,
+  };
+
+  const { data: tool, error: insertError } = await admin
+    .from("ai_tools" as never)
+    .insert(insertData as never)
+    .select()
+    .single();
+
+  if (insertError) {
+    return { success: false, error: "AI tool creation failed: " + insertError.message };
+  }
+
+  const toolId = (tool as { id: string }).id;
+  const resources = parseAiToolResources(formData);
+  if (resources.length > 0) {
+    await admin
+      .from("ai_tool_resources" as never)
+      .insert(resources.map((r) => ({ ...r, ai_tool_id: toolId })) as never);
+  }
+
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true, message: "AI tool created successfully!", data: tool };
+}
+
+export async function updateAiToolAsAdmin(
+  toolId: string,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolSchema.safeParse(parseAiToolFormData(formData));
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { category_id, ...rest } = validated.data;
+  const updateData = {
+    ...rest,
+    category_id: category_id || null,
+    pricing_model: rest.pricing_model || null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data: tool, error: updateError } = await admin
+    .from("ai_tools" as never)
+    .update(updateData as never)
+    .eq("id", toolId)
+    .select()
+    .single();
+
+  if (updateError) {
+    return { success: false, error: "AI tool update failed: " + updateError.message };
+  }
+
+  // Replace resources wholesale
+  const resources = parseAiToolResources(formData);
+  await admin.from("ai_tool_resources" as never).delete().eq("ai_tool_id", toolId);
+  if (resources.length > 0) {
+    await admin
+      .from("ai_tool_resources" as never)
+      .insert(resources.map((r) => ({ ...r, ai_tool_id: toolId })) as never);
+  }
+
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true, message: "AI tool updated successfully!", data: tool };
+}
+
+export async function deleteAiToolAsAdmin(toolId: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin.from("ai_tools" as never).delete().eq("id", toolId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true };
+}
+
+export async function createAiToolCategory(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolCategorySchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    description: formData.get("description") || "",
+  });
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { error } = await admin
+    .from("ai_tool_categories" as never)
+    .insert({
+      name: validated.data.name,
+      slug: validated.data.slug,
+      description: validated.data.description || null,
+    } as never);
+
+  if (error) {
+    return { success: false, error: "Category creation failed: " + error.message };
+  }
+
+  revalidatePath("/admin/ai-tools");
+  return { success: true, message: "Category created!" };
+}
+
+export async function deleteAiToolCategory(categoryId: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("ai_tool_categories" as never)
+    .delete()
+    .eq("id", categoryId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/ai-tools");
   return { success: true };
 }

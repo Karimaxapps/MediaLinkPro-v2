@@ -7,6 +7,7 @@ import { getLatestOrganizations } from "@/features/organizations/server/actions"
 import { getLatestProfiles } from "@/features/profiles/server/actions";
 import { getUpcomingEvents } from "@/features/events/server/actions";
 import { listPublishedPosts } from "@/features/blog/server/actions";
+import { getFeaturedAiTools } from "@/features/ai-tools/server/actions";
 import { DashboardClient } from "./DashboardClient";
 import { RecommendedConnectionsWidget } from "@/features/connections/components/recommended-connections";
 import { DashboardJobApplicationsWidget } from "@/features/jobs/components/dashboard-applications-widget";
@@ -32,13 +33,14 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for the feed
-  const [latestProducts, latestServices, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts] = await Promise.all([
+  const [latestProducts, latestServices, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools] = await Promise.all([
     getLatestProducts(10),
     getLatestServices(10),
     getLatestOrganizations(3),
     getLatestProfiles(3),
     getUpcomingEvents(1),
     listPublishedPosts(10),
+    getFeaturedAiTools(10),
   ]);
   const upcomingEvent = upcomingEvents[0] ?? null;
 
@@ -50,6 +52,7 @@ export default async function DashboardPage() {
       latestUsers={latestUsers}
       upcomingEvent={upcomingEvent}
       latestBlogPosts={latestBlogPosts}
+      featuredAiTools={featuredAiTools}
       heroBanner={<DashboardHeroBanner />}
       sidebarExtras={
         <>
