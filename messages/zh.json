@@ -284,14 +284,18 @@
     "step1Desc": "您的职业详情",
     "step2Title": "联系方式",
     "step2Desc": "人们如何联系您？",
-    "step3Title": "欢迎",
-    "step3Desc": "一切就绪！",
+    "step3Title": "全部完成！",
+    "step3Desc": "档案已创建",
     "welcomeUser": "欢迎您，{name}！",
     "profileCreated": "您的档案已成功创建。您现在可以访问仪表盘并验证您的账户。",
     "goToDashboard": "前往仪表盘",
     "back": "返回",
     "nextStep": "下一步",
-    "completeSetup": "完成设置"
+    "completeSetup": "完成设置",
+    "companyPromptHeading": "您是否代表一家公司或品牌？",
+    "companyPromptDesc": "创建公司档案，在 MediaLinkPro 上列出产品、管理团队并建立品牌形象。",
+    "createCompanyButton": "创建公司档案",
+    "skipToDashboard": "暂时跳过"
   },
   "settings": {
     "title": "设置",

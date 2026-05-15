@@ -284,14 +284,18 @@
     "step1Desc": "Tus datos de carrera",
     "step2Title": "Contacto",
     "step2Desc": "¿Cómo pueden contactarte?",
-    "step3Title": "Bienvenido",
-    "step3Desc": "¡Todo listo!",
+    "step3Title": "¡Todo listo!",
+    "step3Desc": "Perfil creado",
     "welcomeUser": "¡Bienvenido/a, {name}!",
     "profileCreated": "Tu perfil ha sido creado exitosamente. Ahora puedes acceder a tu panel y verificar tu cuenta.",
     "goToDashboard": "Ir al Panel",
     "back": "Atrás",
     "nextStep": "Siguiente Paso",
-    "completeSetup": "Completar Configuración"
+    "completeSetup": "Completar Configuración",
+    "companyPromptHeading": "¿Representas una empresa o marca?",
+    "companyPromptDesc": "Crea un perfil de empresa para listar productos, gestionar tu equipo y construir la presencia de tu marca en MediaLinkPro.",
+    "createCompanyButton": "Crear Perfil de Empresa",
+    "skipToDashboard": "Omitir por ahora"
   },
   "settings": {
     "title": "Configuración",
