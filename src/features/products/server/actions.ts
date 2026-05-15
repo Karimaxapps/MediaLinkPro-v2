@@ -228,7 +228,8 @@ export async function getProductBySlug(slug: string) {
                 id,
                 name,
                 slug,
-                logo_url
+                logo_url,
+                is_platform_org
             )
         `
     )

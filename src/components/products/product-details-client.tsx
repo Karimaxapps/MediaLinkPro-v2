@@ -79,12 +79,17 @@ import { ProductBookmarksDialog } from "@/components/products/product-bookmarks-
 import { ProductScansDialog } from "@/components/products/product-scans-dialog";
 import { ProductReviews } from "@/features/products/components/product-reviews";
 import { ProductDiscussions } from "@/features/discussions/components/product-discussions";
+import { ClaimProductButton } from "@/features/ownership-requests/components/claim-product-button";
+import type { OwnershipRequest } from "@/features/ownership-requests/types";
 
 interface ProductDetailsProps {
     product: any;
     user: any;
     userProfile?: any;
     isOwner?: boolean;
+    isPlatformProduct?: boolean;
+    userOrgId?: string | null;
+    claimRequest?: OwnershipRequest | null;
 }
 
 function getYouTubeId(url: string) {
@@ -93,7 +98,7 @@ function getYouTubeId(url: string) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-export function ProductDetailsClient({ product, user, userProfile, isOwner = false }: ProductDetailsProps) {
+export function ProductDetailsClient({ product, user, userProfile, isOwner = false, isPlatformProduct = false, userOrgId = null, claimRequest = null }: ProductDetailsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [activeImage, setActiveImage] = useState<string | null>(product.promo_video_url ? 'video' : null);
@@ -599,6 +604,12 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                             text="Message Company"
                                         />
                                     )}
+                                    <ClaimProductButton
+                                        productId={product.id}
+                                        userOrgId={userOrgId}
+                                        existingRequest={claimRequest}
+                                        isPlatformProduct={isPlatformProduct}
+                                    />
                                 </>
                             )}
 

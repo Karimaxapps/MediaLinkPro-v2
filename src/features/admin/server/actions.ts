@@ -4,6 +4,10 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import type { PlanId } from "@/lib/stripe/plans";
+import { insertProductSchema } from "@/features/products/schema";
+import { insertAiToolSchema, insertAiToolCategorySchema, aiToolResourceSchema } from "@/features/ai-tools/schema";
+import type { ActionState } from "@/features/types";
+import type { AdminOwnershipRequest } from "@/features/ownership-requests/types";
 
 /**
  * Verify the current user is a site admin. Throws an error (which
@@ -741,5 +745,501 @@ export async function deleteBlogPostAsAdmin(postId: string): Promise<{ success: 
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
+  return { success: true };
+}
+
+async function getPlatformOrgId(): Promise<string | null> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("organizations")
+    .select("id")
+    .eq("is_platform_org" as never, true)
+    .maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
+export async function createProductAsAdmin(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const platformOrgId = await getPlatformOrgId();
+  if (!platformOrgId) {
+    return { success: false, error: "Platform organization not found. Run the migration first." };
+  }
+
+  const rawData = {
+    organization_id: platformOrgId,
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    description: formData.get("description"),
+    logo_url: formData.get("logo_url") || undefined,
+    is_public: formData.get("is_public") === "on" || formData.get("is_public") === "true",
+    product_type: formData.get("product_type"),
+    main_category: formData.get("main_category"),
+    sub_category: formData.get("sub_category") || undefined,
+    short_description: formData.get("short_description"),
+    external_url: formData.get("external_url") || undefined,
+    documentation_url: formData.get("documentation_url") || undefined,
+    certification_url: formData.get("certification_url") || undefined,
+    gallery_urls: formData.getAll("gallery_urls") as string[],
+    promo_video_url: formData.get("promo_video_url") || undefined,
+    support_url: formData.get("support_url") || undefined,
+    course_url: formData.get("course_url") || undefined,
+    training_video_urls: formData.getAll("training_video_urls") as string[],
+    availability_status: formData.get("availability_status") || undefined,
+    price: formData.get("price") ? Number(formData.get("price")) : undefined,
+    currency: formData.get("currency") || "USD",
+    price_upon_request:
+      formData.get("price_upon_request") === "on" || formData.get("price_upon_request") === "true",
+    pricing_model: formData.get("pricing_model") || undefined,
+    status: formData.get("status") || "draft",
+  };
+
+  const validated = insertProductSchema.safeParse(rawData);
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { data: product, error: insertError } = await admin
+    .from("products")
+    .insert(validated.data)
+    .select()
+    .single();
+
+  if (insertError) {
+    return { success: false, error: "Product creation failed: " + insertError.message };
+  }
+
+  revalidatePath("/admin/products");
+  return { success: true, message: "Product created successfully!", data: product };
+}
+
+export async function updateProductAsAdmin(
+  productId: string,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const fields = [
+    "name", "slug", "description", "logo_url", "is_public", "product_type",
+    "main_category", "sub_category", "short_description", "external_url",
+    "documentation_url", "certification_url", "promo_video_url", "support_url",
+    "course_url", "availability_status", "price", "currency", "price_upon_request",
+    "pricing_model", "status",
+  ];
+
+  const updates: Record<string, unknown> = {};
+  fields.forEach((field) => {
+    if (formData.has(field)) {
+      if (field === "is_public" || field === "price_upon_request") {
+        updates[field] = formData.get(field) === "on" || formData.get(field) === "true";
+      } else if (field === "price") {
+        const val = formData.get(field);
+        updates[field] = val ? Number(val) : null;
+      } else {
+        updates[field] = formData.get(field);
+      }
+    }
+  });
+
+  if (formData.has("gallery_urls")) updates.gallery_urls = formData.getAll("gallery_urls");
+  if (formData.has("training_video_urls")) updates.training_video_urls = formData.getAll("training_video_urls");
+
+  const { data: updatedProduct, error: updateError } = await admin
+    .from("products")
+    .update(updates)
+    .eq("id", productId)
+    .select()
+    .single();
+
+  if (updateError) {
+    return { success: false, error: "Product update failed: " + updateError.message };
+  }
+
+  return { success: true, message: "Product updated successfully!", data: updatedProduct };
+}
+
+export async function listAdminOwnershipRequests(
+  status?: "pending" | "approved" | "rejected"
+): Promise<AdminOwnershipRequest[]> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  let query = admin
+    .from("content_ownership_requests" as never)
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data: requests } = await query;
+  if (!requests?.length) return [];
+
+  type RawRequest = {
+    id: string; content_type: string; content_id: string; requesting_org_id: string;
+    status: string; message: string | null; admin_note: string | null;
+    created_at: string; resolved_at: string | null; resolved_by: string | null;
+  };
+  const rows = requests as unknown as RawRequest[];
+
+  const orgIds = Array.from(new Set(rows.map((r) => r.requesting_org_id)));
+  const productIds = Array.from(new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id)));
+
+  const [{ data: orgs }, { data: products }] = await Promise.all([
+    admin.from("organizations").select("id, name, slug").in("id", orgIds),
+    admin.from("products").select("id, name, slug").in("id", productIds),
+  ]);
+
+  const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
+  const productMap = new Map((products ?? []).map((p) => [p.id, p]));
+
+  return rows.map((r) => {
+    const org = orgMap.get(r.requesting_org_id);
+    const product = productMap.get(r.content_id);
+    return {
+      id: r.id,
+      content_type: r.content_type as "product" | "event" | "blog_post",
+      content_id: r.content_id,
+      requesting_org_id: r.requesting_org_id,
+      status: r.status as "pending" | "approved" | "rejected",
+      message: r.message,
+      admin_note: r.admin_note,
+      created_at: r.created_at,
+      resolved_at: r.resolved_at,
+      resolved_by: r.resolved_by,
+      requesting_org_name: org?.name ?? "Unknown",
+      requesting_org_slug: org?.slug ?? "",
+      product_name: product?.name ?? "Unknown",
+      product_slug: product?.slug ?? "",
+    };
+  });
+}
+
+export async function resolveOwnershipRequest(
+  requestId: string,
+  decision: "approved" | "rejected",
+  adminNote?: string
+): Promise<{ success: boolean; error?: string }> {
+  const { userId } = await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const { data: request } = await admin
+    .from("content_ownership_requests" as never)
+    .select("*")
+    .eq("id", requestId)
+    .maybeSingle();
+
+  if (!request) return { success: false, error: "Request not found." };
+
+  type ReqRow = {
+    content_type: string; content_id: string; requesting_org_id: string; status: string;
+  };
+  const req = request as unknown as ReqRow;
+
+  if (req.status !== "pending") {
+    return { success: false, error: "This request has already been resolved." };
+  }
+
+  const resolvedAt = new Date().toISOString();
+  const resolvedBy = userId === "dev-bypass" ? null : userId;
+
+  if (decision === "approved") {
+    // Transfer product ownership
+    const { error: transferError } = await admin
+      .from("products")
+      .update({ organization_id: req.requesting_org_id })
+      .eq("id", req.content_id);
+
+    if (transferError) {
+      return { success: false, error: "Ownership transfer failed: " + transferError.message };
+    }
+
+    // Mark this request as approved
+    await admin
+      .from("content_ownership_requests" as never)
+      .update({
+        status: "approved",
+        resolved_at: resolvedAt,
+        resolved_by: resolvedBy,
+        admin_note: adminNote ?? null,
+      } as never)
+      .eq("id", requestId);
+
+    // Auto-reject all other pending claims on the same content
+    await admin
+      .from("content_ownership_requests" as never)
+      .update({
+        status: "rejected",
+        resolved_at: resolvedAt,
+        resolved_by: resolvedBy,
+        admin_note: "Auto-rejected: another claim was approved.",
+      } as never)
+      .eq("content_type", req.content_type)
+      .eq("content_id", req.content_id)
+      .eq("status", "pending")
+      .neq("id", requestId);
+
+    // Fetch slug for path revalidation
+    const { data: product } = await admin
+      .from("products")
+      .select("slug")
+      .eq("id", req.content_id)
+      .maybeSingle();
+    if (product?.slug) revalidatePath(`/products/${product.slug}`);
+  } else {
+    await admin
+      .from("content_ownership_requests" as never)
+      .update({
+        status: "rejected",
+        resolved_at: resolvedAt,
+        resolved_by: resolvedBy,
+        admin_note: adminNote ?? null,
+      } as never)
+      .eq("id", requestId);
+  }
+
+  revalidatePath("/admin/ownership-requests");
+  return { success: true };
+}
+
+// ── AI Production Tools ──────────────────────────────────────────────────────
+
+export async function listAdminAiTools(limit: number = 100) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tools" as never)
+    .select(
+      "id, name, slug, status, is_featured, views_count, bookmarks_count, created_at, category_id"
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []) as unknown as Array<{
+    id: string;
+    name: string;
+    slug: string;
+    status: string;
+    is_featured: boolean;
+    views_count: number | null;
+    bookmarks_count: number | null;
+    created_at: string | null;
+    category_id: string | null;
+  }>;
+}
+
+export async function listAdminAiToolCategories() {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tool_categories" as never)
+    .select("*")
+    .order("name", { ascending: true });
+  return (data ?? []) as unknown as Array<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    created_at: string;
+  }>;
+}
+
+export async function getAdminAiToolById(id: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("ai_tools" as never)
+    .select("*, ai_tool_resources ( id, ai_tool_id, resource_type, title, url, created_at )")
+    .eq("id", id)
+    .maybeSingle();
+  return data as unknown as Record<string, unknown> | null;
+}
+
+function parseAiToolFormData(formData: FormData) {
+  const categoryId = formData.get("category_id");
+  const pricingModel = formData.get("pricing_model");
+  return {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    tagline: formData.get("tagline") || "",
+    description: formData.get("description") || "",
+    logo_url: formData.get("logo_url") || "",
+    cover_image_url: formData.get("cover_image_url") || "",
+    gallery_urls: (formData.getAll("gallery_urls") as string[]).filter(Boolean),
+    category_id: categoryId ? String(categoryId) : "",
+    main_link: formData.get("main_link"),
+    pricing_model: pricingModel ? String(pricingModel) : "",
+    pricing_url: formData.get("pricing_url") || "",
+    platforms: (formData.getAll("platforms") as string[]).filter(Boolean),
+    tags: (formData.getAll("tags") as string[]).filter(Boolean),
+    is_featured: formData.get("is_featured") === "on" || formData.get("is_featured") === "true",
+    status: formData.get("status") || "draft",
+  };
+}
+
+function parseAiToolResources(formData: FormData) {
+  const raw = formData.get("resources");
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(String(raw));
+    if (!Array.isArray(parsed)) return [];
+    const valid: { resource_type: string; title: string; url: string }[] = [];
+    for (const item of parsed) {
+      const result = aiToolResourceSchema.safeParse(item);
+      if (result.success) valid.push(result.data);
+    }
+    return valid;
+  } catch {
+    return [];
+  }
+}
+
+export async function createAiToolAsAdmin(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolSchema.safeParse(parseAiToolFormData(formData));
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { category_id, ...rest } = validated.data;
+  const insertData = {
+    ...rest,
+    category_id: category_id || null,
+    pricing_model: rest.pricing_model || null,
+  };
+
+  const { data: tool, error: insertError } = await admin
+    .from("ai_tools" as never)
+    .insert(insertData as never)
+    .select()
+    .single();
+
+  if (insertError) {
+    return { success: false, error: "AI tool creation failed: " + insertError.message };
+  }
+
+  const toolId = (tool as { id: string }).id;
+  const resources = parseAiToolResources(formData);
+  if (resources.length > 0) {
+    await admin
+      .from("ai_tool_resources" as never)
+      .insert(resources.map((r) => ({ ...r, ai_tool_id: toolId })) as never);
+  }
+
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true, message: "AI tool created successfully!", data: tool };
+}
+
+export async function updateAiToolAsAdmin(
+  toolId: string,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolSchema.safeParse(parseAiToolFormData(formData));
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { category_id, ...rest } = validated.data;
+  const updateData = {
+    ...rest,
+    category_id: category_id || null,
+    pricing_model: rest.pricing_model || null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data: tool, error: updateError } = await admin
+    .from("ai_tools" as never)
+    .update(updateData as never)
+    .eq("id", toolId)
+    .select()
+    .single();
+
+  if (updateError) {
+    return { success: false, error: "AI tool update failed: " + updateError.message };
+  }
+
+  // Replace resources wholesale
+  const resources = parseAiToolResources(formData);
+  await admin.from("ai_tool_resources" as never).delete().eq("ai_tool_id", toolId);
+  if (resources.length > 0) {
+    await admin
+      .from("ai_tool_resources" as never)
+      .insert(resources.map((r) => ({ ...r, ai_tool_id: toolId })) as never);
+  }
+
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true, message: "AI tool updated successfully!", data: tool };
+}
+
+export async function deleteAiToolAsAdmin(toolId: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin.from("ai_tools" as never).delete().eq("id", toolId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/ai-tools");
+  revalidatePath("/ai-tools");
+  return { success: true };
+}
+
+export async function createAiToolCategory(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const validated = insertAiToolCategorySchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    description: formData.get("description") || "",
+  });
+  if (!validated.success) {
+    const errorMessage = validated.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: "Invalid data: " + errorMessage };
+  }
+
+  const { error } = await admin
+    .from("ai_tool_categories" as never)
+    .insert({
+      name: validated.data.name,
+      slug: validated.data.slug,
+      description: validated.data.description || null,
+    } as never);
+
+  if (error) {
+    return { success: false, error: "Category creation failed: " + error.message };
+  }
+
+  revalidatePath("/admin/ai-tools");
+  return { success: true, message: "Category created!" };
+}
+
+export async function deleteAiToolCategory(categoryId: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("ai_tool_categories" as never)
+    .delete()
+    .eq("id", categoryId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/ai-tools");
   return { success: true };
 }

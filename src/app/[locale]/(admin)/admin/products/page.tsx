@@ -1,15 +1,25 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { listAdminProducts } from "@/features/admin/server/actions";
 import { AdminProductRow } from "./product-row";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminProductsPage() {
     const products = await listAdminProducts();
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold">Products</h1>
-                <p className="text-sm text-gray-400 mt-1">{products.length} most recent</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold">Products</h1>
+                    <p className="text-sm text-gray-400 mt-1">{products.length} most recent</p>
+                </div>
+                <Link href="/admin/products/new">
+                    <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add Platform Product
+                    </Button>
+                </Link>
             </div>
 
             <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">

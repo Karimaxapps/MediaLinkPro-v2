@@ -8,7 +8,8 @@ import Image from "next/image";
 import { MobileSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, HelpCircle } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 import { InboxBadge } from "@/components/layout/inbox-badge";
 
@@ -64,6 +65,11 @@ export function AppHeader({ organizations }: { organizations?: AppHeaderOrganiza
             <div className="flex items-center gap-2">
                 <InboxBadge />
                 <NotificationsPopover />
+                <Link href="/support">
+                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5" aria-label="Help & Support">
+                        <HelpCircle className="h-5 w-5" />
+                    </Button>
+                </Link>
             </div>
             <UserNav />
         </header>

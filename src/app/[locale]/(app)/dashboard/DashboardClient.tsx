@@ -12,6 +12,8 @@ import type { ReactNode } from "react";
 import type { Event } from "@/features/events/types";
 import type { BlogPost } from "@/features/blog/server/actions";
 import type { Product } from "@/features/products/types";
+import type { AiTool } from "@/features/ai-tools/types";
+import { FeaturedAiTools } from "@/features/ai-tools/components/featured-ai-tools";
 
 type FeedCompany = {
     id: string;
@@ -30,6 +32,7 @@ export function DashboardClient({
     latestUsers,
     upcomingEvent,
     latestBlogPosts = [],
+    featuredAiTools = [],
     heroBanner,
     sidebarExtras,
 }: {
@@ -39,6 +42,7 @@ export function DashboardClient({
     latestUsers: unknown[],
     upcomingEvent?: Event | null,
     latestBlogPosts?: BlogPost[],
+    featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
     sidebarExtras?: ReactNode,
 }) {
@@ -130,7 +134,7 @@ export function DashboardClient({
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 {latestCompanies.map((company) => (
-                                    <div key={company.id} className="w-[240px] snap-start shrink-0">
+                                    <div key={company.id} className="w-[180px] snap-start shrink-0">
                                         <FeedCompanyCard
                                             id={company.id}
                                             name={company.name}
@@ -206,6 +210,9 @@ export function DashboardClient({
                         </div>
                     )}
                 </div>
+
+                {/* Featured AI Tools Section */}
+                <FeaturedAiTools tools={featuredAiTools} />
 
                 {/* Latest Blog Posts Section */}
                 <div className="space-y-4">
