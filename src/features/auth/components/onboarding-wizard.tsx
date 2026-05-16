@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowRight, ArrowLeft, Building2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -282,23 +282,44 @@ export function OnboardingWizard() {
           )}
 
           {currentStep === 3 && (
-            <div className="text-center py-8 space-y-4 animate-in zoom-in duration-300">
-              <div className="w-20 h-20 bg-[#C6A85E]/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="h-10 w-10 text-[#C6A85E]" />
+            <div className="space-y-6 animate-in zoom-in duration-300">
+              <div className="text-center py-4 space-y-3">
+                <div className="w-16 h-16 bg-[#C6A85E]/20 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="h-8 w-8 text-[#C6A85E]" />
+                </div>
+                <h2 className="text-2xl font-bold text-white">{t("welcomeUser", { name: userName })}</h2>
+                <p className="text-gray-400 max-w-md mx-auto text-sm">
+                  {t("profileCreated")}
+                </p>
               </div>
-              <h2 className="text-2xl font-bold text-white">{t("welcomeUser", { name: userName })}</h2>
-              <p className="text-gray-400 max-w-md mx-auto">
-                {t("profileCreated")}
-              </p>
-              <div className="pt-4">
-                <Button
-                  onClick={() => router.push("/dashboard")}
-                  size="lg"
-                  className="bg-[#C6A85E] text-black hover:bg-[#b5964a] w-full sm:w-auto min-w-[200px]"
-                >
-                  {t("goToDashboard")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+
+              <div className="border border-white/10 rounded-xl p-5 bg-white/[0.03] space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#C6A85E]/15 flex items-center justify-center shrink-0">
+                    <Building2 className="h-4 w-4 text-[#C6A85E]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{t("companyPromptHeading")}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t("companyPromptDesc")}</p>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <Button
+                    onClick={() => router.push("/companies/new")}
+                    className="bg-[#C6A85E] text-black hover:bg-[#b5964a] flex-1"
+                  >
+                    <Building2 className="mr-2 h-4 w-4" />
+                    {t("createCompanyButton")}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => router.push("/dashboard")}
+                    className="text-gray-400 hover:text-white hover:bg-white/10 flex-1"
+                  >
+                    {t("skipToDashboard")}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           )}

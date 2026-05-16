@@ -284,14 +284,18 @@
     "step1Desc": "Your career details",
     "step2Title": "Contact",
     "step2Desc": "How can people reach you?",
-    "step3Title": "Welcome",
-    "step3Desc": "All set!",
+    "step3Title": "You're all set!",
+    "step3Desc": "Profile created",
     "welcomeUser": "Welcome, {name}!",
     "profileCreated": "Your profile has been successfully created. You can now access your dashboard and verify your account.",
     "goToDashboard": "Go to Dashboard",
     "back": "Back",
     "nextStep": "Next Step",
-    "completeSetup": "Complete Setup"
+    "completeSetup": "Complete Setup",
+    "companyPromptHeading": "Do you represent a company or brand?",
+    "companyPromptDesc": "Create a company profile to list products, manage your team, and build your brand's presence on MediaLinkPro.",
+    "createCompanyButton": "Create Company Profile",
+    "skipToDashboard": "Skip for now"
   },
   "settings": {
     "title": "Settings",

@@ -284,14 +284,18 @@
     "step1Desc": "Ihre Karrieredetails",
     "step2Title": "Kontakt",
     "step2Desc": "Wie können Sie erreicht werden?",
-    "step3Title": "Willkommen",
-    "step3Desc": "Alles bereit!",
+    "step3Title": "Alles fertig!",
+    "step3Desc": "Profil erstellt",
     "welcomeUser": "Willkommen, {name}!",
     "profileCreated": "Ihr Profil wurde erfolgreich erstellt. Sie können jetzt auf Ihr Dashboard zugreifen und Ihr Konto verifizieren.",
     "goToDashboard": "Zum Dashboard",
     "back": "Zurück",
     "nextStep": "Nächster Schritt",
-    "completeSetup": "Einrichtung abschließen"
+    "completeSetup": "Einrichtung abschließen",
+    "companyPromptHeading": "Vertreten Sie ein Unternehmen oder eine Marke?",
+    "companyPromptDesc": "Erstellen Sie ein Unternehmensprofil, um Produkte aufzulisten, Ihr Team zu verwalten und Ihre Marke auf MediaLinkPro aufzubauen.",
+    "createCompanyButton": "Unternehmensprofil erstellen",
+    "skipToDashboard": "Jetzt überspringen"
   },
   "settings": {
     "title": "Einstellungen",
