@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getMyProfile } from "@/features/profile/server/actions";
 import { getLatestProducts, getLatestServices } from "@/features/products/server/actions";
-import { getLatestOrganizations } from "@/features/organizations/server/actions";
+import { getLatestOrganizations, getFeaturedOrganizations } from "@/features/organizations/server/actions";
 import { getLatestProfiles } from "@/features/profiles/server/actions";
 import { getUpcomingEvents } from "@/features/events/server/actions";
 import { listPublishedPosts } from "@/features/blog/server/actions";
@@ -33,9 +33,10 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for the feed
-  const [latestProducts, latestServices, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools] = await Promise.all([
+  const [latestProducts, latestServices, featuredCompanies, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools] = await Promise.all([
     getLatestProducts(10),
     getLatestServices(10),
+    getFeaturedOrganizations(10),
     getLatestOrganizations(3),
     getLatestProfiles(3),
     getUpcomingEvents(1),
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
     <DashboardClient
       initialProducts={latestProducts}
       latestServices={latestServices}
+      featuredCompanies={featuredCompanies}
       latestCompanies={latestCompanies}
       latestUsers={latestUsers}
       upcomingEvent={upcomingEvent}

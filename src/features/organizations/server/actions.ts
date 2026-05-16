@@ -432,6 +432,52 @@ export async function getOrganizationsByType(typeSlug: string) {
   });
 }
 
+export async function getFeaturedOrganizations(limit: number = 10) {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const admin = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("organizations")
+    .select("id, name, slug, logo_url, tagline, type, main_activity")
+    .eq("is_featured" as never, true)
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data?.length) {
+    if (error) console.error("Error fetching featured organizations:", error);
+    return [];
+  }
+
+  const orgIds = data.map((o) => o.id);
+
+  const { data: ownerRows } = await admin
+    .from("organization_members")
+    .select("organization_id, user_id")
+    .in("organization_id", orgIds)
+    .eq("role", "owner");
+
+  if (!ownerRows?.length) return data.map((o) => ({ ...o, plan: null }));
+
+  const ownerMap = new Map(ownerRows.map((r) => [r.organization_id, r.user_id]));
+  const ownerIds = [...new Set(ownerRows.map((r) => r.user_id))];
+
+  type SubRow = { user_id: string; plan: string | null; status: string | null };
+  const { data: subs } = await (admin
+    .from("subscriptions" as never)
+    .select("user_id, plan, status")
+    .in("user_id", ownerIds) as unknown as Promise<{ data: SubRow[] | null }>);
+
+  const subMap = new Map((subs ?? []).map((s) => [s.user_id, s]));
+
+  return data.map((org) => {
+    const ownerId = ownerMap.get(org.id);
+    const sub = ownerId ? subMap.get(ownerId) : null;
+    const isActive = sub?.status === "active" || sub?.status === "trialing";
+    return { ...org, plan: sub?.plan && isActive ? sub.plan : null };
+  });
+}
+
 export async function getLatestOrganizations(limit: number = 3) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
