@@ -157,7 +157,7 @@ export function DashboardSidebar({
       {/* Ads Banner */}
       <AdPlaceholder height={200} />
 
-      <div className="pt-4 text-center space-y-1">
+      <div className="pt-4 text-center">
         <p className="text-[10px] text-gray-600">
           © {new Date().getFullYear()} Copyright Reserved MediaLink Pro.
           <br />
@@ -170,13 +170,6 @@ export function DashboardSidebar({
           >
             LazaarWorks
           </a>
-        </p>
-        <p className="text-[10px] text-gray-500">
-          {(() => {
-            const raw = process.env.NEXT_PUBLIC_APP_VERSION ?? "1.2026.1";
-            const [major, year, build] = raw.split(".");
-            return `v${major}.${year}.${String(Number(build)).padStart(2, "0")}`;
-          })()}
         </p>
       </div>
     </aside>
