@@ -4,8 +4,16 @@ import { useState, useTransition, useEffect } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
-  Gift, AlertTriangle, Package, Calendar, PenSquare,
-  Users, Trash2, ExternalLink, Pencil,
+  Gift,
+  AlertTriangle,
+  Package,
+  Calendar,
+  PenSquare,
+  Users,
+  Trash2,
+  ExternalLink,
+  Pencil,
+  Star,
 } from "lucide-react";
 import {
   Sheet,
@@ -225,6 +233,34 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
     });
   };
 
+  // ── Toggle featured ─────────────────────────────────────────────────────────
+  const handleToggleFeatured = () => {
+    const next = !company.is_featured;
+    startTransition(async () => {
+      const result = await toggleOrgFeatured(company.id, next);
+      if (result.success) {
+        onUpdated({ id: company.id, is_featured: next });
+        toast.success(next ? "Added to featured" : "Removed from featured");
+      } else {
+        toast.error(result.error ?? "Failed to update featured status");
+      }
+    });
+  };
+
+  // ── Save edited details ─────────────────────────────────────────────────────
+  const handleEditSave = () => {
+    startTransition(async () => {
+      const result = await updateOrganizationAsAdmin(company.id, editFields);
+      if (result.success) {
+        onUpdated({ id: company.id, ...editFields });
+        toast.success("Company details updated");
+        setEditOpen(false);
+      } else {
+        toast.error(result.error ?? "Failed to update details");
+      }
+    });
+  };
+
   // ── Convert to stub ─────────────────────────────────────────────────────────
   const handleConvertToStub = () => {
     startTransition(async () => {
@@ -289,7 +325,6 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         </SheetHeader>
 
         <div className="px-4 py-5 space-y-6">
-
           {/* ── Unclaimed stub banner ── */}
           {(company.is_stub || (company.source !== "user" && !company.claimed_at)) && (
             <div className="rounded-lg border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-4 flex items-center justify-between gap-3">
@@ -613,7 +648,8 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               </h3>
               <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 space-y-3">
                 <p className="text-xs text-gray-400">
-                  This company has no owner. Convert it to an admin-managed stub to unlock full profile editing and the claim flow.
+                  This company has no owner. Convert it to an admin-managed stub to unlock full
+                  profile editing and the claim flow.
                 </p>
                 <Button
                   variant="outline"

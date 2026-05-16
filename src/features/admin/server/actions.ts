@@ -471,6 +471,18 @@ export type AdminOrganization = {
   broadcaster_type: string | null;
   country: string | null;
   is_featured: boolean;
+  tagline: string | null;
+  description: string | null;
+  website: string | null;
+  contact_email: string | null;
+  phone: string | null;
+  address: string | null;
+  linkedin_url: string | null;
+  x_url: string | null;
+  facebook_url: string | null;
+  instagram_url: string | null;
+  youtube_url: string | null;
+  tiktok_url: string | null;
   is_stub: boolean;
   claimed_at: string | null;
   merged_into_id: string | null;
@@ -500,7 +512,7 @@ export async function listAdminOrganizations(
   let query = admin
     .from("organizations")
     .select(
-      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_featured, is_stub, claimed_at, merged_into_id, source" as "id, name, slug, logo_url, created_at, type, broadcaster_type, country"
+      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_featured, tagline, description, website, contact_email, phone, address, linkedin_url, x_url, facebook_url, instagram_url, youtube_url, tiktok_url, is_stub, claimed_at, merged_into_id, source" as "id, name, slug, logo_url, created_at, type, broadcaster_type, country"
     )
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -617,6 +629,18 @@ export async function listAdminOrganizations(
       broadcaster_type: (o as { broadcaster_type?: string | null }).broadcaster_type ?? null,
       country: o.country,
       is_featured: (o as { is_featured?: boolean }).is_featured ?? false,
+      tagline: (o as { tagline?: string | null }).tagline ?? null,
+      description: (o as { description?: string | null }).description ?? null,
+      website: (o as { website?: string | null }).website ?? null,
+      contact_email: (o as { contact_email?: string | null }).contact_email ?? null,
+      phone: (o as { phone?: string | null }).phone ?? null,
+      address: (o as { address?: string | null }).address ?? null,
+      linkedin_url: (o as { linkedin_url?: string | null }).linkedin_url ?? null,
+      x_url: (o as { x_url?: string | null }).x_url ?? null,
+      facebook_url: (o as { facebook_url?: string | null }).facebook_url ?? null,
+      instagram_url: (o as { instagram_url?: string | null }).instagram_url ?? null,
+      youtube_url: (o as { youtube_url?: string | null }).youtube_url ?? null,
+      tiktok_url: (o as { tiktok_url?: string | null }).tiktok_url ?? null,
       is_stub: (o as { is_stub?: boolean }).is_stub ?? false,
       claimed_at: (o as { claimed_at?: string | null }).claimed_at ?? null,
       merged_into_id: (o as { merged_into_id?: string | null }).merged_into_id ?? null,
