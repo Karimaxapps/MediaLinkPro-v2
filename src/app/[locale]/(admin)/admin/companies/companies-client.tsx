@@ -4,17 +4,33 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Settings, Building2, Users, Search, Plus, Upload, Pencil } from "lucide-react";
-import { type AdminOrganization } from "@/features/admin/server/actions";
+import {
+  ExternalLink,
+  Settings,
+  Building2,
+  Users,
+  Search,
+  Plus,
+  Upload,
+  Pencil,
+  Star,
+} from "lucide-react";
+import { type AdminOrganization, toggleOrgFeatured } from "@/features/admin/server/actions";
 import { ManageCompanySheet } from "./manage-company-sheet";
 
 const PLAN_CONFIG: Record<string, { label: string; className: string }> = {
-  free:           { label: "Free",       className: "text-gray-400 bg-gray-400/10 border-gray-400/20" },
-  org_free:       { label: "Org Free",   className: "text-gray-400 bg-gray-400/10 border-gray-400/20" },
-  org_starter:    { label: "Starter",    className: "text-blue-400 bg-blue-400/10 border-blue-400/20" },
-  individual_pro: { label: "Pro",        className: "text-purple-400 bg-purple-400/10 border-purple-400/20" },
-  org_growth:     { label: "Growth",     className: "text-[#C6A85E] bg-[#C6A85E]/10 border-[#C6A85E]/20" },
-  org_enterprise: { label: "Enterprise", className: "text-green-400 bg-green-400/10 border-green-400/20" },
+  free: { label: "Free", className: "text-gray-400 bg-gray-400/10 border-gray-400/20" },
+  org_free: { label: "Org Free", className: "text-gray-400 bg-gray-400/10 border-gray-400/20" },
+  org_starter: { label: "Starter", className: "text-blue-400 bg-blue-400/10 border-blue-400/20" },
+  individual_pro: {
+    label: "Pro",
+    className: "text-purple-400 bg-purple-400/10 border-purple-400/20",
+  },
+  org_growth: { label: "Growth", className: "text-[#C6A85E] bg-[#C6A85E]/10 border-[#C6A85E]/20" },
+  org_enterprise: {
+    label: "Enterprise",
+    className: "text-green-400 bg-green-400/10 border-green-400/20",
+  },
 };
 
 function PlanBadge({ plan, gifted }: { plan: string | null; gifted?: boolean }) {
@@ -22,12 +38,12 @@ function PlanBadge({ plan, gifted }: { plan: string | null; gifted?: boolean }) 
   const cfg = PLAN_CONFIG[key] ?? PLAN_CONFIG.free;
   return (
     <div className="flex items-center gap-1.5">
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-xs font-medium ${cfg.className}`}>
+      <span
+        className={`inline-flex items-center px-2 py-0.5 rounded-full border text-xs font-medium ${cfg.className}`}
+      >
         {cfg.label}
       </span>
-      {gifted && (
-        <span className="text-xs text-emerald-400 font-medium">Gift</span>
-      )}
+      {gifted && <span className="text-xs text-emerald-400 font-medium">Gift</span>}
     </div>
   );
 }
@@ -54,8 +70,8 @@ export function AdminCompaniesClient({
       const result = await toggleOrgFeatured(c.id, next);
       setPendingId(null);
       if (result.success) {
-        setCompanies((prev) => prev.map((o) => o.id === c.id ? { ...o, is_featured: next } : o));
-        setSelected((prev) => prev?.id === c.id ? { ...prev, is_featured: next } : prev);
+        setCompanies((prev) => prev.map((o) => (o.id === c.id ? { ...o, is_featured: next } : o)));
+        setSelected((prev) => (prev?.id === c.id ? { ...prev, is_featured: next } : prev));
         toast.success(next ? `"${c.name}" added to featured` : `"${c.name}" removed from featured`);
       } else {
         toast.error(result.error ?? "Failed to update");
@@ -83,7 +99,7 @@ export function AdminCompaniesClient({
 
   // Seeded = admin_seed or bulk_import regardless of current claimed state
   const seeded = companies.filter((c) => c.source === "admin_seed" || c.source === "bulk_import");
-  const unclaimedStubs = seeded.filter((c) => c.is_stub).length;           // is_stub still true → not yet claimed
+  const unclaimedStubs = seeded.filter((c) => c.is_stub).length; // is_stub still true → not yet claimed
   const claimedStubs = seeded.filter((c) => !c.is_stub && !!c.claimed_at).length; // seeded → now claimed
   const totalSeeded = seeded.length;
   const ownedCompanies = companies.filter((c) => c.source === "user" && c.owner_id !== null).length;
@@ -100,9 +116,7 @@ export function AdminCompaniesClient({
   };
 
   const handleUpdated = (update: Partial<AdminOrganization> & { id: string }) => {
-    setCompanies((prev) =>
-      prev.map((c) => (c.id === update.id ? { ...c, ...update } : c))
-    );
+    setCompanies((prev) => prev.map((c) => (c.id === update.id ? { ...c, ...update } : c)));
     setSelected((prev) => (prev?.id === update.id ? { ...prev, ...update } : prev));
   };
 
@@ -139,9 +153,9 @@ export function AdminCompaniesClient({
         {/* Stat cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { key: "all",        label: "Total",      count: companies.length },
-            { key: "paid",       label: "Paid Plans",  count: paid },
-            { key: "org_growth", label: "Growth",      count: growth },
+            { key: "all", label: "Total", count: companies.length },
+            { key: "paid", label: "Paid Plans", count: paid },
+            { key: "org_growth", label: "Growth", count: growth },
             { key: "org_enterprise", label: "Enterprise", count: enterprise },
           ].map((s) => (
             <button
@@ -180,7 +194,9 @@ export function AdminCompaniesClient({
               <p className="text-[11px] text-gray-400 mt-0.5">Unclaimed stubs</p>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
-              <p className="text-xl font-bold text-white">{totalSeeded > 0 ? `${claimRate}%` : "—"}</p>
+              <p className="text-xl font-bold text-white">
+                {totalSeeded > 0 ? `${claimRate}%` : "—"}
+              </p>
               <p className="text-[11px] text-gray-400 mt-0.5">Claim rate</p>
             </div>
           </div>
@@ -239,22 +255,43 @@ export function AdminCompaniesClient({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 bg-white/[0.03]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Company</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden md:table-cell">Plan</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Owner</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Members</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">Products</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">Events</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Created</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Featured</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Company
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden md:table-cell">
+                    Plan
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
+                    Owner
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
+                    Members
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">
+                    Products
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">
+                    Events
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
+                    Type
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
+                    Created
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
+                    Featured
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {filtered.map((c) => {
                   // eslint-disable-next-line react-hooks/purity
-                  const gifted = !!c.gifted_until && new Date(c.gifted_until).getTime() > Date.now();
+                  const gifted =
+                    !!c.gifted_until && new Date(c.gifted_until).getTime() > Date.now();
                   return (
                     <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Company */}
@@ -268,7 +305,9 @@ export function AdminCompaniesClient({
                           </Avatar>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-white truncate">{c.name}</span>
+                              <span className="text-sm font-medium text-white truncate">
+                                {c.name}
+                              </span>
                               {c.is_stub && (
                                 <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C6A85E]/15 text-[#C6A85E] border border-[#C6A85E]/30">
                                   Stub
@@ -293,7 +332,8 @@ export function AdminCompaniesClient({
                       {/* Members */}
                       <td className="px-4 py-3 hidden sm:table-cell">
                         <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
-                          <Users className="h-3.5 w-3.5" />{c.member_count}
+                          <Users className="h-3.5 w-3.5" />
+                          {c.member_count}
                         </span>
                       </td>
 
@@ -339,13 +379,19 @@ export function AdminCompaniesClient({
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
                           <Link href={`/companies/${c.slug}`} target="_blank">
-                            <button className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors" title="View company">
+                            <button
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                              title="View company"
+                            >
                               <ExternalLink className="h-4 w-4" />
                             </button>
                           </Link>
                           {c.is_stub && (
                             <Link href={`/admin/companies/stubs/edit/${c.slug}`}>
-                              <button className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors" title="Edit stub profile">
+                              <button
+                                className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+                                title="Edit stub profile"
+                              >
                                 <Pencil className="h-4 w-4" />
                               </button>
                             </Link>
