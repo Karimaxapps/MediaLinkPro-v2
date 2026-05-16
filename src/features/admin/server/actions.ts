@@ -470,6 +470,7 @@ export type AdminOrganization = {
   type: string | null;
   broadcaster_type: string | null;
   country: string | null;
+  is_featured: boolean;
   is_stub: boolean;
   claimed_at: string | null;
   merged_into_id: string | null;
@@ -498,7 +499,9 @@ export async function listAdminOrganizations(
 
   let query = admin
     .from("organizations")
-    .select("id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_stub, claimed_at, merged_into_id, source" as "id, name, slug, logo_url, created_at, type, broadcaster_type, country")
+    .select(
+      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_featured, is_stub, claimed_at, merged_into_id, source" as "id, name, slug, logo_url, created_at, type, broadcaster_type, country"
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -613,6 +616,7 @@ export async function listAdminOrganizations(
       type: o.type,
       broadcaster_type: (o as { broadcaster_type?: string | null }).broadcaster_type ?? null,
       country: o.country,
+      is_featured: (o as { is_featured?: boolean }).is_featured ?? false,
       is_stub: (o as { is_stub?: boolean }).is_stub ?? false,
       claimed_at: (o as { claimed_at?: string | null }).claimed_at ?? null,
       merged_into_id: (o as { merged_into_id?: string | null }).merged_into_id ?? null,
@@ -647,7 +651,10 @@ export async function convertToAdminStub(orgId: string): Promise<ActionState> {
     .maybeSingle();
 
   if (member) {
-    return { error: "This company already has an owner and cannot be converted to a stub.", success: false };
+    return {
+      error: "This company already has an owner and cannot be converted to a stub.",
+      success: false,
+    };
   }
 
   const { error } = await admin
@@ -1061,32 +1068,48 @@ export async function listAdminOwnershipRequests(
   if (!requests?.length) return [];
 
   type RawRequest = {
-    id: string; content_type: string; content_id: string; requesting_org_id: string | null;
+    id: string;
+    content_type: string;
+    content_id: string;
+    requesting_org_id: string | null;
     requesting_user_id: string | null;
-    status: string; message: string | null; admin_note: string | null;
-    created_at: string; resolved_at: string | null; resolved_by: string | null;
+    status: string;
+    message: string | null;
+    admin_note: string | null;
+    created_at: string;
+    resolved_at: string | null;
+    resolved_by: string | null;
   };
   const rows = requests as unknown as RawRequest[];
 
-  const orgIds = Array.from(new Set(rows.map((r) => r.requesting_org_id).filter((v): v is string => !!v)));
-  const productIds = Array.from(new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id)));
-  const stubOrgIds = Array.from(new Set(rows.filter((r) => r.content_type === "organization").map((r) => r.content_id)));
-  const userIds = Array.from(new Set(rows.map((r) => r.requesting_user_id).filter((v): v is string => !!v)));
+  const orgIds = Array.from(
+    new Set(rows.map((r) => r.requesting_org_id).filter((v): v is string => !!v))
+  );
+  const productIds = Array.from(
+    new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id))
+  );
+  const stubOrgIds = Array.from(
+    new Set(rows.filter((r) => r.content_type === "organization").map((r) => r.content_id))
+  );
+  const userIds = Array.from(
+    new Set(rows.map((r) => r.requesting_user_id).filter((v): v is string => !!v))
+  );
 
-  const [{ data: orgs }, { data: products }, { data: stubs }, { data: userProfiles }] = await Promise.all([
-    orgIds.length
-      ? admin.from("organizations").select("id, name, slug").in("id", orgIds)
-      : Promise.resolve({ data: [] }),
-    productIds.length
-      ? admin.from("products").select("id, name, slug").in("id", productIds)
-      : Promise.resolve({ data: [] }),
-    stubOrgIds.length
-      ? admin.from("organizations").select("id, name, slug").in("id", stubOrgIds)
-      : Promise.resolve({ data: [] }),
-    userIds.length
-      ? admin.from("profiles").select("id, full_name, username").in("id", userIds)
-      : Promise.resolve({ data: [] }),
-  ]);
+  const [{ data: orgs }, { data: products }, { data: stubs }, { data: userProfiles }] =
+    await Promise.all([
+      orgIds.length
+        ? admin.from("organizations").select("id, name, slug").in("id", orgIds)
+        : Promise.resolve({ data: [] }),
+      productIds.length
+        ? admin.from("products").select("id, name, slug").in("id", productIds)
+        : Promise.resolve({ data: [] }),
+      stubOrgIds.length
+        ? admin.from("organizations").select("id, name, slug").in("id", stubOrgIds)
+        : Promise.resolve({ data: [] }),
+      userIds.length
+        ? admin.from("profiles").select("id, full_name, username").in("id", userIds)
+        : Promise.resolve({ data: [] }),
+    ]);
 
   const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
   const productMap = new Map((products ?? []).map((p) => [p.id, p]));
@@ -1118,7 +1141,7 @@ export async function listAdminOwnershipRequests(
       stub_org_name: stub?.name,
       stub_org_slug: stub?.slug,
       requesting_user_name: r.requesting_user_id
-        ? userMap.get(r.requesting_user_id) ?? null
+        ? (userMap.get(r.requesting_user_id) ?? null)
         : null,
       requesting_user_email: null,
     };
