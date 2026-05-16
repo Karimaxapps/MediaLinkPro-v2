@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import {
   Gift, AlertTriangle, Package, Calendar, PenSquare,
-  Users, Trash2, ExternalLink,
+  Users, Trash2, ExternalLink, Pencil,
 } from "lucide-react";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
@@ -23,6 +23,7 @@ import {
   revokeOrgGift,
   updateOrgType,
   deleteOrganizationAsAdmin,
+  convertToAdminStub,
   type AdminOrganization,
 } from "@/features/admin/server/actions";
 import type { PlanId } from "@/lib/stripe/plans";
@@ -163,6 +164,19 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
     });
   };
 
+  // ── Convert to stub ─────────────────────────────────────────────────────────
+  const handleConvertToStub = () => {
+    startTransition(async () => {
+      const result = await convertToAdminStub(company.id);
+      if (result.success) {
+        onUpdated({ id: company.id, is_stub: true, source: "admin_seed" });
+        toast.success("Company converted to admin stub. Edit button now available.");
+      } else {
+        toast.error(result.error ?? "Failed to convert.");
+      }
+    });
+  };
+
   // ── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = () => {
     if (deleteConfirm !== company.name) {
@@ -214,6 +228,25 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         </SheetHeader>
 
         <div className="px-4 py-5 space-y-6">
+
+          {/* ── Unclaimed stub banner ── */}
+          {(company.is_stub || (company.source !== "user" && !company.claimed_at)) && (
+            <div className="rounded-lg border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-[#C6A85E]">Unclaimed stub</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Seeded by admin — not yet claimed by an owner.
+                </p>
+              </div>
+              <a
+                href={`/admin/companies/stubs/edit/${company.slug}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#C6A85E] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#B5964A] transition-colors shrink-0"
+              >
+                <Pencil className="h-3 w-3" />
+                Edit profile
+              </a>
+            </div>
+          )}
 
           {/* ── Stats ── */}
           <section>
@@ -396,6 +429,31 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               </div>
             )}
           </section>
+
+          {/* ── Convert to admin stub ── */}
+          {!company.is_stub && !company.owner_id && (
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-1.5">
+                <Pencil className="h-3.5 w-3.5" />
+                Admin control
+              </h3>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 space-y-3">
+                <p className="text-xs text-gray-400">
+                  This company has no owner. Convert it to an admin-managed stub to unlock full profile editing and the claim flow.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isPending}
+                  onClick={handleConvertToStub}
+                  className="bg-transparent border-[#C6A85E]/40 text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                >
+                  <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                  Convert to admin stub
+                </Button>
+              </div>
+            </section>
+          )}
 
           {/* ── Danger zone ── */}
           <section>

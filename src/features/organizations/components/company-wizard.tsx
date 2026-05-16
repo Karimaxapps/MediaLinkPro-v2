@@ -31,6 +31,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CountrySelect } from "@/components/ui/country-select";
 import { CompanyLogoUpload } from "./company-logo-upload";
+import { MainActivitySelect } from "./main-activity-select";
 import {
   companyWizardSchema,
   type CompanyWizardValues,
@@ -388,11 +389,14 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   <Label htmlFor="main_activity">
                     Main Activity <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    id="main_activity"
-                    placeholder="e.g. Video Production, Broadcast Technology, etc."
-                    className="bg-black/20"
-                    {...register("main_activity")}
+                  <MainActivitySelect
+                    orgType={watch("type")}
+                    value={watch("main_activity")}
+                    onChange={(v) => setValue("main_activity", v, { shouldValidate: true })}
+                    triggerClassName="bg-black/20 border-white/10"
+                    contentClassName="bg-[#1A1F26] border-white/10 text-white"
+                    itemClassName="focus:bg-white/10 focus:text-white cursor-pointer"
+                    inputClassName="bg-black/20"
                   />
                   {errors.main_activity && (
                     <p className="text-red-500 text-xs">{errors.main_activity.message}</p>

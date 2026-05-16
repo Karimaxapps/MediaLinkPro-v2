@@ -251,6 +251,11 @@ export function AdminUsersClient({
                           <div className="text-xs text-gray-500">
                             @{u.username ?? u.id.slice(0, 8)}
                           </div>
+                          {u.email && (
+                            <div className="text-xs text-gray-600 truncate max-w-[180px]">
+                              {u.email}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>

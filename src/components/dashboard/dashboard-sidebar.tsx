@@ -117,7 +117,7 @@ export function DashboardSidebar({
               className="flex items-center gap-3 group"
             >
               <Avatar className="h-9 w-9 border border-white/10">
-                <AvatarImage src={user.avatar_url} alt={user.full_name} />
+                <AvatarImage src={user.avatar_url ?? undefined} alt={user.full_name ?? undefined} />
                 <AvatarFallback className="bg-blue-500/10 text-blue-500 text-xs">
                   {user.full_name?.substring(0, 2).toUpperCase() || "UN"}
                 </AvatarFallback>

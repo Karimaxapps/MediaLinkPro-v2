@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Settings, Building2, Users, Search } from "lucide-react";
+import { ExternalLink, Settings, Building2, Users, Search, Plus, Upload, Pencil } from "lucide-react";
 import { type AdminOrganization } from "@/features/admin/server/actions";
 import { ManageCompanySheet } from "./manage-company-sheet";
 
@@ -62,6 +62,14 @@ export function AdminCompaniesClient({
   const growth = companies.filter((c) => c.plan === "org_growth").length;
   const enterprise = companies.filter((c) => c.plan === "org_enterprise").length;
 
+  // Seeded = admin_seed or bulk_import regardless of current claimed state
+  const seeded = companies.filter((c) => c.source === "admin_seed" || c.source === "bulk_import");
+  const unclaimedStubs = seeded.filter((c) => c.is_stub).length;           // is_stub still true → not yet claimed
+  const claimedStubs = seeded.filter((c) => !c.is_stub && !!c.claimed_at).length; // seeded → now claimed
+  const totalSeeded = seeded.length;
+  const ownedCompanies = companies.filter((c) => c.source === "user" && c.owner_id !== null).length;
+  const claimRate = totalSeeded > 0 ? Math.round((claimedStubs / totalSeeded) * 100) : 0;
+
   const openSheet = (c: AdminOrganization) => {
     setSelected(c);
     setSheetOpen(true);
@@ -83,14 +91,30 @@ export function AdminCompaniesClient({
     <>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-[#C6A85E]" />
-            Companies
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {companies.length} organizations · plans, content counts, and full management
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Building2 className="h-6 w-6 text-[#C6A85E]" />
+              Companies
+            </h1>
+            <p className="text-sm text-gray-400 mt-1">
+              {companies.length} organizations · plans, content counts, and full management
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href="/admin/companies/stubs/new"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#C6A85E] px-3 py-2 text-sm font-semibold text-black hover:bg-[#B5964A] transition-colors"
+            >
+              <Plus className="h-4 w-4" /> New stub
+            </Link>
+            <Link
+              href="/admin/companies/stubs/import"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-transparent border border-white/20 px-3 py-2 text-sm font-medium text-gray-200 hover:bg-white/5 transition-colors"
+            >
+              <Upload className="h-4 w-4" /> Bulk import
+            </Link>
+          </div>
         </div>
 
         {/* Stat cards */}
@@ -114,6 +138,48 @@ export function AdminCompaniesClient({
               <p className="text-xs text-gray-400 mt-0.5">{s.label}</p>
             </button>
           ))}
+        </div>
+
+        {/* Ownership stats card */}
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-300">Company Ownership</p>
+            <span className="text-xs text-gray-500">{companies.length} total</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
+              <p className="text-xl font-bold text-white">{ownedCompanies}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">User-created</p>
+            </div>
+            <div className="rounded-lg bg-[#C6A85E]/10 border border-[#C6A85E]/30 px-3 py-2">
+              <p className="text-xl font-bold text-[#C6A85E]">{claimedStubs}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Claimed stubs</p>
+            </div>
+            <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
+              <p className="text-xl font-bold text-red-400">{unclaimedStubs}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Unclaimed stubs</p>
+            </div>
+            <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
+              <p className="text-xl font-bold text-white">{totalSeeded > 0 ? `${claimRate}%` : "—"}</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Claim rate</p>
+            </div>
+          </div>
+
+          {totalSeeded > 0 && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-[11px] text-gray-500">
+                <span>{claimedStubs} claimed</span>
+                <span>{unclaimedStubs} unclaimed</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#C6A85E] transition-all duration-500"
+                  style={{ width: `${claimRate}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Filters */}
@@ -181,7 +247,14 @@ export function AdminCompaniesClient({
                             </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
-                            <div className="text-sm font-medium text-white truncate">{c.name}</div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-white truncate">{c.name}</span>
+                              {c.is_stub && (
+                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C6A85E]/15 text-[#C6A85E] border border-[#C6A85E]/30">
+                                  Stub
+                                </span>
+                              )}
+                            </div>
                             <div className="text-xs text-gray-500">/{c.slug}</div>
                           </div>
                         </div>
@@ -234,6 +307,13 @@ export function AdminCompaniesClient({
                               <ExternalLink className="h-4 w-4" />
                             </button>
                           </Link>
+                          {c.is_stub && (
+                            <Link href={`/admin/companies/stubs/edit/${c.slug}`}>
+                              <button className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors" title="Edit stub profile">
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            </Link>
+                          )}
                           <button
                             onClick={() => openSheet(c)}
                             className="p-1.5 rounded-lg text-gray-400 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"

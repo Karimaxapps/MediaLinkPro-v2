@@ -12,9 +12,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { format } from "date-fns";
 import { CompanyEditForm } from "@/features/organizations/components/company-edit-form";
+import { StubClaimBanner } from "@/features/organizations/components/StubClaimBanner";
 import { ContactButton } from "@/features/messaging/components/ContactButton";
 import { FollowButton } from "@/features/organizations/components/follow-button";
 import {
@@ -81,11 +82,44 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         .from('organizations')
         .select('*')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
     if (error || !org) {
+        // Check for a slug redirect (stub merged into another org)
+        const { data: redirectRow } = await supabase
+            .from('organization_slug_redirects' as never)
+            .select('org_id')
+            .eq('old_slug', slug)
+            .maybeSingle();
+        const orgId = (redirectRow as { org_id?: string } | null)?.org_id;
+        if (orgId) {
+            const { data: target } = await supabase
+                .from('organizations')
+                .select('slug')
+                .eq('id', orgId)
+                .maybeSingle();
+            if (target?.slug) {
+                permanentRedirect(`/companies/${target.slug}`);
+            }
+        }
         notFound();
     }
+
+    // Org was merged into another org — redirect to canonical slug
+    const mergedIntoId = (org as { merged_into_id?: string | null }).merged_into_id;
+    if (mergedIntoId) {
+        const { data: target } = await supabase
+            .from('organizations')
+            .select('slug')
+            .eq('id', mergedIntoId)
+            .maybeSingle();
+        if (target?.slug) {
+            permanentRedirect(`/companies/${target.slug}`);
+        }
+    }
+
+    const isStub = (org as { is_stub?: boolean | null }).is_stub === true
+        && !(org as { claimed_at?: string | null }).claimed_at;
 
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -111,8 +145,32 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         getOrgVerifiedPlan(org.id),
     ]);
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: org.name,
+        url: `${SITE_URL}/companies/${org.slug}`,
+        ...(org.logo_url ? { logo: org.logo_url } : {}),
+        ...(org.description ? { description: org.description } : {}),
+        ...(org.country ? { address: { "@type": "PostalAddress", addressCountry: org.country } } : {}),
+        sameAs: [
+            org.website,
+            org.linkedin_url,
+            org.x_url,
+            org.facebook_url,
+            org.instagram_url,
+            org.tiktok_url,
+            org.youtube_url,
+        ].filter(Boolean),
+    };
+
     return (
         <div className="space-y-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            {isStub && !canEdit && <StubClaimBanner slug={org.slug} />}
             {/* Hero Section */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                 {/* Visual Background */}
