@@ -5,7 +5,11 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import type { PlanId } from "@/lib/stripe/plans";
 import { insertProductSchema } from "@/features/products/schema";
-import { insertAiToolSchema, insertAiToolCategorySchema, aiToolResourceSchema } from "@/features/ai-tools/schema";
+import {
+  insertAiToolSchema,
+  insertAiToolCategorySchema,
+  aiToolResourceSchema,
+} from "@/features/ai-tools/schema";
 import type { ActionState } from "@/features/types";
 import type { AdminOwnershipRequest } from "@/features/ownership-requests/types";
 
@@ -334,7 +338,10 @@ export async function giftSubscription(
     .maybeSingle();
 
   const { error } = existing
-    ? await admin.from("subscriptions" as never).update(payload).eq("user_id", userId)
+    ? await admin
+        .from("subscriptions" as never)
+        .update(payload)
+        .eq("user_id", userId)
     : await admin.from("subscriptions" as never).insert(payload);
 
   if (error) {
@@ -449,6 +456,18 @@ export type AdminOrganization = {
   type: string | null;
   broadcaster_type: string | null;
   country: string | null;
+  tagline: string | null;
+  description: string | null;
+  website: string | null;
+  contact_email: string | null;
+  phone: string | null;
+  address: string | null;
+  linkedin_url: string | null;
+  x_url: string | null;
+  facebook_url: string | null;
+  instagram_url: string | null;
+  youtube_url: string | null;
+  tiktok_url: string | null;
   member_count: number;
   product_count: number;
   event_count: number;
@@ -464,13 +483,18 @@ export type AdminOrganization = {
   gifted_by_name: string | null;
 };
 
-export async function listAdminOrganizations(search: string = "", limit: number = 100): Promise<AdminOrganization[]> {
+export async function listAdminOrganizations(
+  search: string = "",
+  limit: number = 100
+): Promise<AdminOrganization[]> {
   await requireSiteAdmin();
   const admin = createAdminClient();
 
   let query = admin
     .from("organizations")
-    .select("id, name, slug, logo_url, created_at, type, broadcaster_type, country")
+    .select(
+      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, tagline, description, website, contact_email, phone, address, linkedin_url, x_url, facebook_url, instagram_url, youtube_url, tiktok_url"
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -484,17 +508,22 @@ export async function listAdminOrganizations(search: string = "", limit: number 
   const orgIds = orgs.map((o) => o.id);
 
   // Parallel: members + product/event/blog counts
-  const [
-    { data: members },
-    { data: products },
-    { data: events },
-    { data: blogPosts },
-  ] = await Promise.all([
-    admin.from("organization_members").select("organization_id, user_id, role").in("organization_id", orgIds),
-    admin.from("products").select("organization_id").in("organization_id", orgIds),
-    admin.from("events").select("organization_id").in("organization_id", orgIds as never),
-    admin.from("blog_posts" as never).select("organization_id").in("organization_id", orgIds as never),
-  ]);
+  const [{ data: members }, { data: products }, { data: events }, { data: blogPosts }] =
+    await Promise.all([
+      admin
+        .from("organization_members")
+        .select("organization_id, user_id, role")
+        .in("organization_id", orgIds),
+      admin.from("products").select("organization_id").in("organization_id", orgIds),
+      admin
+        .from("events")
+        .select("organization_id")
+        .in("organization_id", orgIds as never),
+      admin
+        .from("blog_posts" as never)
+        .select("organization_id")
+        .in("organization_id", orgIds as never),
+    ]);
 
   type MemberRow = { organization_id: string; user_id: string; role: string };
   const memberRows = (members ?? []) as MemberRow[];
@@ -506,7 +535,10 @@ export async function listAdminOrganizations(search: string = "", limit: number 
     memberCountMap.set(m.organization_id, (memberCountMap.get(m.organization_id) ?? 0) + 1);
     if (m.role === "owner") ownerMap.set(m.organization_id, m.user_id);
   }
-  const countByOrg = (rows: { organization_id?: string; [key: string]: unknown }[] | null, key = "organization_id") => {
+  const countByOrg = (
+    rows: { organization_id?: string; [key: string]: unknown }[] | null,
+    key = "organization_id"
+  ) => {
     const map = new Map<string, number>();
     for (const r of rows ?? []) {
       const v = r[key] as string | undefined;
@@ -522,9 +554,13 @@ export async function listAdminOrganizations(search: string = "", limit: number 
   const ownerIds = Array.from(new Set(Array.from(ownerMap.values())));
   let profileMap = new Map<string, string>();
   type SubRow = {
-    user_id: string; plan: string | null; status: string | null;
-    billing_interval: string | null; gifted_until: string | null;
-    gifted_note: string | null; gifted_by: string | null;
+    user_id: string;
+    plan: string | null;
+    status: string | null;
+    billing_interval: string | null;
+    gifted_until: string | null;
+    gifted_note: string | null;
+    gifted_by: string | null;
   };
   let subMap = new Map<string, SubRow>();
   let gifterMap = new Map<string, string>();
@@ -538,13 +574,26 @@ export async function listAdminOrganizations(search: string = "", limit: number 
         .in("user_id", ownerIds),
     ]);
 
-    profileMap = new Map((profiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "Unknown"]));
+    profileMap = new Map(
+      (profiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "Unknown"])
+    );
     subMap = new Map(((subs ?? []) as unknown as SubRow[]).map((s) => [s.user_id, s]));
 
-    const gifterIds = Array.from(new Set(((subs ?? []) as unknown as SubRow[]).map((s) => s.gifted_by).filter((v): v is string => !!v)));
+    const gifterIds = Array.from(
+      new Set(
+        ((subs ?? []) as unknown as SubRow[])
+          .map((s) => s.gifted_by)
+          .filter((v): v is string => !!v)
+      )
+    );
     if (gifterIds.length) {
-      const { data: gifterProfiles } = await admin.from("profiles").select("id, full_name, username").in("id", gifterIds);
-      gifterMap = new Map((gifterProfiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "Admin"]));
+      const { data: gifterProfiles } = await admin
+        .from("profiles")
+        .select("id, full_name, username")
+        .in("id", gifterIds);
+      gifterMap = new Map(
+        (gifterProfiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "Admin"])
+      );
     }
   }
 
@@ -560,6 +609,18 @@ export async function listAdminOrganizations(search: string = "", limit: number 
       type: o.type,
       broadcaster_type: (o as { broadcaster_type?: string | null }).broadcaster_type ?? null,
       country: o.country,
+      tagline: (o as { tagline?: string | null }).tagline ?? null,
+      description: (o as { description?: string | null }).description ?? null,
+      website: (o as { website?: string | null }).website ?? null,
+      contact_email: (o as { contact_email?: string | null }).contact_email ?? null,
+      phone: (o as { phone?: string | null }).phone ?? null,
+      address: (o as { address?: string | null }).address ?? null,
+      linkedin_url: (o as { linkedin_url?: string | null }).linkedin_url ?? null,
+      x_url: (o as { x_url?: string | null }).x_url ?? null,
+      facebook_url: (o as { facebook_url?: string | null }).facebook_url ?? null,
+      instagram_url: (o as { instagram_url?: string | null }).instagram_url ?? null,
+      youtube_url: (o as { youtube_url?: string | null }).youtube_url ?? null,
+      tiktok_url: (o as { tiktok_url?: string | null }).tiktok_url ?? null,
       member_count: memberCountMap.get(o.id) ?? 0,
       product_count: productCountMap.get(o.id) ?? 0,
       event_count: eventCountMap.get(o.id) ?? 0,
@@ -583,10 +644,19 @@ export async function deleteOrganizationAsAdmin(orgId: string) {
 
   // Best-effort cascade: delete child records first in case DB doesn't have CASCADE
   await Promise.allSettled([
-    admin.from("blog_posts" as never).delete().eq("organization_id", orgId),
-    admin.from("events").delete().eq("organization_id", orgId as never),
+    admin
+      .from("blog_posts" as never)
+      .delete()
+      .eq("organization_id", orgId),
+    admin
+      .from("events")
+      .delete()
+      .eq("organization_id", orgId as never),
     admin.from("products").delete().eq("organization_id", orgId),
-    admin.from("organization_members").delete().eq("organization_id", orgId as never),
+    admin
+      .from("organization_members")
+      .delete()
+      .eq("organization_id", orgId as never),
   ]);
 
   const { error } = await admin.from("organizations").delete().eq("id", orgId);
@@ -608,6 +678,38 @@ export async function updateOrgType(
       type,
       broadcaster_type: type === "Broadcaster" ? (broadcasterType ?? null) : null,
     } as never)
+    .eq("id", orgId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/companies");
+  return { success: true };
+}
+
+export type AdminOrgEditFields = {
+  name?: string;
+  tagline?: string | null;
+  description?: string | null;
+  website?: string | null;
+  contact_email?: string | null;
+  phone?: string | null;
+  country?: string | null;
+  address?: string | null;
+  linkedin_url?: string | null;
+  x_url?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_url?: string | null;
+};
+
+export async function updateOrganizationAsAdmin(
+  orgId: string,
+  data: AdminOrgEditFields
+): Promise<{ success: boolean; error?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("organizations")
+    .update({ ...data, updated_at: new Date().toISOString() } as never)
     .eq("id", orgId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/companies");
@@ -686,13 +788,27 @@ export async function listAdminBlogPosts(limit: number = 100): Promise<AdminBlog
 
   const { data: posts } = await admin
     .from("blog_posts" as never)
-    .select("id, title, slug, status, category, views_count, likes_count, published_at, created_at, author_id, organization_id")
+    .select(
+      "id, title, slug, status, category, views_count, likes_count, published_at, created_at, author_id, organization_id"
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (!posts?.length) return [];
 
-  type RawPost = { id: string; title: string; slug: string; status: string; category: string | null; views_count: number | null; likes_count: number | null; published_at: string | null; created_at: string | null; author_id: string; organization_id: string | null };
+  type RawPost = {
+    id: string;
+    title: string;
+    slug: string;
+    status: string;
+    category: string | null;
+    views_count: number | null;
+    likes_count: number | null;
+    published_at: string | null;
+    created_at: string | null;
+    author_id: string;
+    organization_id: string | null;
+  };
   const typedPosts = posts as unknown as RawPost[];
   const authorIds = Array.from(new Set(typedPosts.map((p) => p.author_id).filter(Boolean)));
   let authorMap = new Map<string, string>();
@@ -730,7 +846,10 @@ export async function updateBlogPostStatusAsAdmin(
   const admin = createAdminClient();
   const { error } = await admin
     .from("blog_posts" as never)
-    .update({ status, ...(status === "published" ? { published_at: new Date().toISOString() } : {}) } as never)
+    .update({
+      status,
+      ...(status === "published" ? { published_at: new Date().toISOString() } : {}),
+    } as never)
     .eq("id", postId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/blog");
@@ -738,10 +857,15 @@ export async function updateBlogPostStatusAsAdmin(
   return { success: true };
 }
 
-export async function deleteBlogPostAsAdmin(postId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteBlogPostAsAdmin(
+  postId: string
+): Promise<{ success: boolean; error?: string }> {
   await requireSiteAdmin();
   const admin = createAdminClient();
-  const { error } = await admin.from("blog_posts" as never).delete().eq("id", postId);
+  const { error } = await admin
+    .from("blog_posts" as never)
+    .delete()
+    .eq("id", postId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
@@ -826,11 +950,27 @@ export async function updateProductAsAdmin(
   const admin = createAdminClient();
 
   const fields = [
-    "name", "slug", "description", "logo_url", "is_public", "product_type",
-    "main_category", "sub_category", "short_description", "external_url",
-    "documentation_url", "certification_url", "promo_video_url", "support_url",
-    "course_url", "availability_status", "price", "currency", "price_upon_request",
-    "pricing_model", "status",
+    "name",
+    "slug",
+    "description",
+    "logo_url",
+    "is_public",
+    "product_type",
+    "main_category",
+    "sub_category",
+    "short_description",
+    "external_url",
+    "documentation_url",
+    "certification_url",
+    "promo_video_url",
+    "support_url",
+    "course_url",
+    "availability_status",
+    "price",
+    "currency",
+    "price_upon_request",
+    "pricing_model",
+    "status",
   ];
 
   const updates: Record<string, unknown> = {};
@@ -848,7 +988,8 @@ export async function updateProductAsAdmin(
   });
 
   if (formData.has("gallery_urls")) updates.gallery_urls = formData.getAll("gallery_urls");
-  if (formData.has("training_video_urls")) updates.training_video_urls = formData.getAll("training_video_urls");
+  if (formData.has("training_video_urls"))
+    updates.training_video_urls = formData.getAll("training_video_urls");
 
   const { data: updatedProduct, error: updateError } = await admin
     .from("products")
@@ -883,14 +1024,23 @@ export async function listAdminOwnershipRequests(
   if (!requests?.length) return [];
 
   type RawRequest = {
-    id: string; content_type: string; content_id: string; requesting_org_id: string;
-    status: string; message: string | null; admin_note: string | null;
-    created_at: string; resolved_at: string | null; resolved_by: string | null;
+    id: string;
+    content_type: string;
+    content_id: string;
+    requesting_org_id: string;
+    status: string;
+    message: string | null;
+    admin_note: string | null;
+    created_at: string;
+    resolved_at: string | null;
+    resolved_by: string | null;
   };
   const rows = requests as unknown as RawRequest[];
 
   const orgIds = Array.from(new Set(rows.map((r) => r.requesting_org_id)));
-  const productIds = Array.from(new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id)));
+  const productIds = Array.from(
+    new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id))
+  );
 
   const [{ data: orgs }, { data: products }] = await Promise.all([
     admin.from("organizations").select("id, name, slug").in("id", orgIds),
@@ -939,7 +1089,10 @@ export async function resolveOwnershipRequest(
   if (!request) return { success: false, error: "Request not found." };
 
   type ReqRow = {
-    content_type: string; content_id: string; requesting_org_id: string; status: string;
+    content_type: string;
+    content_id: string;
+    requesting_org_id: string;
+    status: string;
   };
   const req = request as unknown as ReqRow;
 
@@ -1177,7 +1330,10 @@ export async function updateAiToolAsAdmin(
 
   // Replace resources wholesale
   const resources = parseAiToolResources(formData);
-  await admin.from("ai_tool_resources" as never).delete().eq("ai_tool_id", toolId);
+  await admin
+    .from("ai_tool_resources" as never)
+    .delete()
+    .eq("ai_tool_id", toolId);
   if (resources.length > 0) {
     await admin
       .from("ai_tool_resources" as never)
@@ -1192,7 +1348,10 @@ export async function updateAiToolAsAdmin(
 export async function deleteAiToolAsAdmin(toolId: string) {
   await requireSiteAdmin();
   const admin = createAdminClient();
-  const { error } = await admin.from("ai_tools" as never).delete().eq("id", toolId);
+  const { error } = await admin
+    .from("ai_tools" as never)
+    .delete()
+    .eq("id", toolId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/ai-tools");
   revalidatePath("/ai-tools");
@@ -1216,13 +1375,11 @@ export async function createAiToolCategory(
     return { success: false, error: "Invalid data: " + errorMessage };
   }
 
-  const { error } = await admin
-    .from("ai_tool_categories" as never)
-    .insert({
-      name: validated.data.name,
-      slug: validated.data.slug,
-      description: validated.data.description || null,
-    } as never);
+  const { error } = await admin.from("ai_tool_categories" as never).insert({
+    name: validated.data.name,
+    slug: validated.data.slug,
+    description: validated.data.description || null,
+  } as never);
 
   if (error) {
     return { success: false, error: "Category creation failed: " + error.message };

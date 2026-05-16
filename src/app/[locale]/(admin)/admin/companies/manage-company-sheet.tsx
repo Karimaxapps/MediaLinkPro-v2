@@ -4,26 +4,42 @@ import { useState, useTransition, useEffect } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
-  Gift, AlertTriangle, Package, Calendar, PenSquare,
-  Users, Trash2, ExternalLink,
+  Gift,
+  AlertTriangle,
+  Package,
+  Calendar,
+  PenSquare,
+  Users,
+  Trash2,
+  ExternalLink,
 } from "lucide-react";
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   giftOrgSubscription,
   revokeOrgGift,
   updateOrgType,
+  updateOrganizationAsAdmin,
   deleteOrganizationAsAdmin,
   type AdminOrganization,
+  type AdminOrgEditFields,
 } from "@/features/admin/server/actions";
 import type { PlanId } from "@/lib/stripe/plans";
 import { ORG_TYPES, BROADCASTER_TYPES } from "@/features/organizations/schema";
@@ -50,7 +66,15 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-function StatCard({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: number }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: number;
+}) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 flex items-center gap-3">
       <div className="p-2 rounded-lg bg-[#C6A85E]/10">
@@ -81,33 +105,69 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
   const [deleteConfirm, setDeleteConfirm] = useState("");
   // Local type/broadcaster_type state for reactive sub-dropdown
   const [localType, setLocalType] = useState<string | null>(company?.type ?? null);
-  const [localBroadcasterType, setLocalBroadcasterType] = useState<string | null>(company?.broadcaster_type ?? null);
+  const [localBroadcasterType, setLocalBroadcasterType] = useState<string | null>(
+    company?.broadcaster_type ?? null
+  );
+  // Edit details form
+  const [editFields, setEditFields] = useState<AdminOrgEditFields>({});
+  const [editOpen, setEditOpen] = useState(false);
 
   // Sync when the sheet is opened for a different company
   useEffect(() => {
     setLocalType(company?.type ?? null);
     setLocalBroadcasterType(company?.broadcaster_type ?? null);
+    setEditOpen(false);
+    setEditFields({
+      name: company?.name ?? "",
+      tagline: company?.tagline ?? "",
+      description: company?.description ?? "",
+      website: company?.website ?? "",
+      contact_email: company?.contact_email ?? "",
+      phone: company?.phone ?? "",
+      country: company?.country ?? "",
+      address: company?.address ?? "",
+      linkedin_url: company?.linkedin_url ?? "",
+      x_url: company?.x_url ?? "",
+      facebook_url: company?.facebook_url ?? "",
+      instagram_url: company?.instagram_url ?? "",
+      youtube_url: company?.youtube_url ?? "",
+      tiktok_url: company?.tiktok_url ?? "",
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [company?.id]);
 
   if (!company) return null;
 
-   
-  const isGifted =
-    !!company.gifted_until && new Date(company.gifted_until).getTime() > Date.now();
+  const isGifted = !!company.gifted_until && new Date(company.gifted_until).getTime() > Date.now();
 
   // ── Gift ────────────────────────────────────────────────────────────────────
   const handleGift = () => {
-    if (!company.owner_id) { toast.error("No owner found for this company."); return; }
-    const days = unit === "months" ? Math.round(Number(duration) * 30) : Math.round(Number(duration));
-    if (!Number.isFinite(days) || days <= 0) { toast.error("Duration must be a positive number"); return; }
-    if (!note.trim()) { toast.error("Internal note is required"); return; }
+    if (!company.owner_id) {
+      toast.error("No owner found for this company.");
+      return;
+    }
+    const days =
+      unit === "months" ? Math.round(Number(duration) * 30) : Math.round(Number(duration));
+    if (!Number.isFinite(days) || days <= 0) {
+      toast.error("Duration must be a positive number");
+      return;
+    }
+    if (!note.trim()) {
+      toast.error("Internal note is required");
+      return;
+    }
 
     startTransition(async () => {
       const result = await giftOrgSubscription(company.owner_id!, planChoice, days, note.trim());
       if (result.success) {
         const giftedUntil = new Date(Date.now() + days * 86400_000).toISOString();
-        onUpdated({ id: company.id, plan: planChoice, plan_status: "active", gifted_until: giftedUntil, gifted_note: note.trim() });
+        onUpdated({
+          id: company.id,
+          plan: planChoice,
+          plan_status: "active",
+          gifted_until: giftedUntil,
+          gifted_note: note.trim(),
+        });
         toast.success("Gift granted");
         setNote("");
         onClose();
@@ -123,7 +183,13 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
     startTransition(async () => {
       const result = await revokeOrgGift(company.owner_id!);
       if (result.success) {
-        onUpdated({ id: company.id, plan: "free", plan_status: null, gifted_until: null, gifted_note: null });
+        onUpdated({
+          id: company.id,
+          plan: "free",
+          plan_status: null,
+          gifted_until: null,
+          gifted_note: null,
+        });
         toast.success("Gift revoked");
         onClose();
       } else {
@@ -159,6 +225,24 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         toast.success("Broadcaster type updated");
       } else {
         toast.error(result.error ?? "Failed to update broadcaster type");
+      }
+    });
+  };
+
+  // ── Edit details ────────────────────────────────────────────────────────────
+  const handleEditSave = () => {
+    startTransition(async () => {
+      const payload: AdminOrgEditFields = {};
+      for (const [k, v] of Object.entries(editFields)) {
+        (payload as Record<string, string | null>)[k] = (v as string).trim() || null;
+      }
+      const result = await updateOrganizationAsAdmin(company.id, payload);
+      if (result.success) {
+        onUpdated({ id: company.id, ...payload });
+        toast.success("Company details updated");
+        setEditOpen(false);
+      } else {
+        toast.error(result.error ?? "Failed to update");
       }
     });
   };
@@ -214,17 +298,16 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         </SheetHeader>
 
         <div className="px-4 py-5 space-y-6">
-
           {/* ── Stats ── */}
           <section>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
               Content
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              <StatCard icon={Users}      label="Members"   value={company.member_count} />
-              <StatCard icon={Package}    label="Products"  value={company.product_count} />
-              <StatCard icon={Calendar}   label="Events"    value={company.event_count} />
-              <StatCard icon={PenSquare}  label="Blog posts" value={company.blog_post_count} />
+              <StatCard icon={Users} label="Members" value={company.member_count} />
+              <StatCard icon={Package} label="Products" value={company.product_count} />
+              <StatCard icon={Calendar} label="Events" value={company.event_count} />
+              <StatCard icon={PenSquare} label="Blog posts" value={company.blog_post_count} />
             </div>
           </section>
 
@@ -234,17 +317,15 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               Company type
             </h3>
             <div className="space-y-2">
-              <Select
-                value={localType ?? ""}
-                onValueChange={handleTypeChange}
-                disabled={isPending}
-              >
+              <Select value={localType ?? ""} onValueChange={handleTypeChange} disabled={isPending}>
                 <SelectTrigger className="bg-white/5 border-white/10 text-white">
                   <SelectValue placeholder="Select type…" />
                 </SelectTrigger>
                 <SelectContent>
                   {ORG_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -265,7 +346,9 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
                     </SelectTrigger>
                     <SelectContent>
                       {BROADCASTER_TYPES.map((bt) => (
-                        <SelectItem key={bt} value={bt}>{bt}</SelectItem>
+                        <SelectItem key={bt} value={bt}>
+                          {bt}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -274,15 +357,89 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
             </div>
           </section>
 
+          {/* ── Edit details ── */}
+          <section>
+            <button
+              type="button"
+              onClick={() => setEditOpen((v) => !v)}
+              className="w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3 hover:text-gray-300 transition-colors"
+            >
+              <span>Edit details</span>
+              <span className="text-gray-600">{editOpen ? "▲" : "▼"}</span>
+            </button>
+
+            {editOpen && (
+              <div className="space-y-3">
+                {(
+                  [
+                    { id: "name", label: "Name", type: "input" },
+                    { id: "tagline", label: "Tagline", type: "input" },
+                    { id: "description", label: "Description", type: "textarea" },
+                    { id: "website", label: "Website", type: "input" },
+                    { id: "contact_email", label: "Contact email", type: "input" },
+                    { id: "phone", label: "Phone", type: "input" },
+                    { id: "country", label: "Country", type: "input" },
+                    { id: "address", label: "Address", type: "input" },
+                    { id: "linkedin_url", label: "LinkedIn URL", type: "input" },
+                    { id: "x_url", label: "X (Twitter) URL", type: "input" },
+                    { id: "facebook_url", label: "Facebook URL", type: "input" },
+                    { id: "instagram_url", label: "Instagram URL", type: "input" },
+                    { id: "youtube_url", label: "YouTube URL", type: "input" },
+                    { id: "tiktok_url", label: "TikTok URL", type: "input" },
+                  ] as { id: keyof AdminOrgEditFields; label: string; type: "input" | "textarea" }[]
+                ).map(({ id, label, type }) => (
+                  <div key={id}>
+                    <Label htmlFor={`edit-${id}`} className="text-xs text-gray-400">
+                      {label}
+                    </Label>
+                    {type === "textarea" ? (
+                      <Textarea
+                        id={`edit-${id}`}
+                        value={(editFields[id] as string) ?? ""}
+                        onChange={(e) =>
+                          setEditFields((prev) => ({ ...prev, [id]: e.target.value }))
+                        }
+                        rows={4}
+                        className="bg-white/5 border-white/10 mt-1 resize-none text-sm"
+                      />
+                    ) : (
+                      <Input
+                        id={`edit-${id}`}
+                        value={(editFields[id] as string) ?? ""}
+                        onChange={(e) =>
+                          setEditFields((prev) => ({ ...prev, [id]: e.target.value }))
+                        }
+                        className="bg-white/5 border-white/10 mt-1 text-sm"
+                      />
+                    )}
+                  </div>
+                ))}
+                <Button
+                  onClick={handleEditSave}
+                  disabled={isPending}
+                  className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full"
+                >
+                  {isPending ? "Saving…" : "Save changes"}
+                </Button>
+              </div>
+            )}
+          </section>
+
           {/* ── Current plan ── */}
           <section>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
               Current subscription
             </h3>
             <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 space-y-2 text-sm">
-              <Row label="Plan">{PLAN_LABELS[company.plan ?? "free"] ?? company.plan ?? "Free"}</Row>
-              <Row label="Billing">{company.billing_interval === "year" ? "Annual" : "Monthly"}</Row>
-              <Row label="Status"><span className="capitalize">{company.plan_status ?? "active"}</span></Row>
+              <Row label="Plan">
+                {PLAN_LABELS[company.plan ?? "free"] ?? company.plan ?? "Free"}
+              </Row>
+              <Row label="Billing">
+                {company.billing_interval === "year" ? "Annual" : "Monthly"}
+              </Row>
+              <Row label="Status">
+                <span className="capitalize">{company.plan_status ?? "active"}</span>
+              </Row>
               <Row label="Owner">{company.owner_name ?? "—"}</Row>
             </div>
           </section>
@@ -305,11 +462,17 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
                     {format(new Date(company.gifted_until!), "MMM d, yyyy")}
                   </span>
                   {company.gifted_by_name && (
-                    <> by <span className="text-white">{company.gifted_by_name}</span></>
-                  )}.
+                    <>
+                      {" "}
+                      by <span className="text-white">{company.gifted_by_name}</span>
+                    </>
+                  )}
+                  .
                 </p>
                 {company.gifted_note && (
-                  <p className="text-xs italic text-gray-400">Note: &ldquo;{company.gifted_note}&rdquo;</p>
+                  <p className="text-xs italic text-gray-400">
+                    Note: &ldquo;{company.gifted_note}&rdquo;
+                  </p>
                 )}
                 <Button
                   variant="outline"
@@ -336,21 +499,27 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
             ) : (
               <div className="space-y-3">
                 <div>
-                  <Label htmlFor="org-gift-plan" className="text-xs text-gray-400">Plan</Label>
+                  <Label htmlFor="org-gift-plan" className="text-xs text-gray-400">
+                    Plan
+                  </Label>
                   <Select value={planChoice} onValueChange={(v) => setPlanChoice(v as PlanId)}>
                     <SelectTrigger id="org-gift-plan" className="bg-white/5 border-white/10 mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {ORG_GIFTABLE_PLANS.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label htmlFor="org-gift-duration" className="text-xs text-gray-400">Duration</Label>
+                    <Label htmlFor="org-gift-duration" className="text-xs text-gray-400">
+                      Duration
+                    </Label>
                     <Input
                       id="org-gift-duration"
                       type="number"
@@ -405,7 +574,11 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
             </h3>
             <div className="rounded-lg border border-red-500/20 bg-red-500/[0.04] p-4 space-y-3">
               <p className="text-xs text-gray-400">
-                Permanently delete this company and <span className="text-white font-medium">all its products, events, blog posts, and members</span>. This cannot be undone.
+                Permanently delete this company and{" "}
+                <span className="text-white font-medium">
+                  all its products, events, blog posts, and members
+                </span>
+                . This cannot be undone.
               </p>
               <div>
                 <Label className="text-xs text-gray-400">
@@ -429,7 +602,6 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               </Button>
             </div>
           </section>
-
         </div>
       </SheetContent>
     </Sheet>
