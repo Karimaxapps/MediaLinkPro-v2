@@ -62,7 +62,7 @@ async function runSeed() {
                 headline: 'Broadcast Solutions Specialist · Sony Professional Solutions',
                 company: 'Sony Professional Solutions',
                 job_title: 'Broadcast Solutions Specialist',
-                job_function: 'Sales',
+                job_function: 'Business',
                 website: 'https://pro.sony',
                 portfolio_url: 'https://pro.sony/en_US/products',
                 linkedin_url: 'https://linkedin.com/in/kevin-yamamoto-sony-demo',

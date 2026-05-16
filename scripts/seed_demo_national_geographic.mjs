@@ -62,7 +62,7 @@ async function runSeed() {
                 headline: 'Director of Content Partnerships · National Geographic',
                 company: 'National Geographic',
                 job_title: 'Director of Content Partnerships',
-                job_function: 'Business Development',
+                job_function: 'Business',
                 website: 'https://www.nationalgeographic.com',
                 portfolio_url: 'https://www.nationalgeographic.com/tv',
                 linkedin_url: 'https://linkedin.com/in/david-chen-natgeo-demo',

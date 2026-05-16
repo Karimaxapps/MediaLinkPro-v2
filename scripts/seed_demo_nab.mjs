@@ -62,7 +62,7 @@ async function runSeed() {
                 headline: 'Director of Membership · NAB — National Association of Broadcasters',
                 company: 'National Association of Broadcasters',
                 job_title: 'Director of Membership',
-                job_function: 'Business Development',
+                job_function: 'Business',
                 website: 'https://www.nab.org',
                 portfolio_url: 'https://www.nab.org/about/leadership',
                 linkedin_url: 'https://linkedin.com/in/michael-torres-nab-demo',
@@ -192,8 +192,8 @@ async function runSeed() {
                     'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop'
                 ],
                 price: null,
-                pricing_model: 'Freemium',
-                price_upon_request: false,
+                pricing_model: 'Custom Quote',
+                price_upon_request: true,
                 currency: 'USD'
             }
         ];
