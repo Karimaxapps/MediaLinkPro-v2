@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Settings, Building2, Users, Search } from "lucide-react";
-import { type AdminOrganization } from "@/features/admin/server/actions";
+import { ExternalLink, Settings, Building2, Users, Search, Star } from "lucide-react";
+import { type AdminOrganization, toggleOrgFeatured } from "@/features/admin/server/actions";
 import { ManageCompanySheet } from "./manage-company-sheet";
 
 const PLAN_CONFIG: Record<string, { label: string; className: string }> = {
@@ -43,6 +44,24 @@ export function AdminCompaniesClient({
   const [planFilter, setPlanFilter] = useState("all");
   const [selected, setSelected] = useState<AdminOrganization | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [pendingId, setPendingId] = useState<string | null>(null);
+
+  const handleToggleFeatured = (c: AdminOrganization) => {
+    const next = !c.is_featured;
+    setPendingId(c.id);
+    startTransition(async () => {
+      const result = await toggleOrgFeatured(c.id, next);
+      setPendingId(null);
+      if (result.success) {
+        setCompanies((prev) => prev.map((o) => o.id === c.id ? { ...o, is_featured: next } : o));
+        setSelected((prev) => prev?.id === c.id ? { ...prev, is_featured: next } : prev);
+        toast.success(next ? `"${c.name}" added to featured` : `"${c.name}" removed from featured`);
+      } else {
+        toast.error(result.error ?? "Failed to update");
+      }
+    });
+  };
 
   const filtered = companies.filter((c) => {
     const matchQ =
@@ -162,6 +181,7 @@ export function AdminCompaniesClient({
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">Events</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Type</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Created</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Featured</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -224,6 +244,22 @@ export function AdminCompaniesClient({
                         <span className="text-gray-400 text-sm">
                           {c.created_at ? new Date(c.created_at).toLocaleDateString() : "—"}
                         </span>
+                      </td>
+
+                      {/* Featured toggle */}
+                      <td className="px-4 py-3 text-center hidden sm:table-cell">
+                        <button
+                          onClick={() => handleToggleFeatured(c)}
+                          disabled={isPending && pendingId === c.id}
+                          title={c.is_featured ? "Remove from featured" : "Add to featured"}
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            c.is_featured
+                              ? "text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                              : "text-gray-600 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                          } disabled:opacity-40`}
+                        >
+                          <Star className={`h-4 w-4 ${c.is_featured ? "fill-[#C6A85E]" : ""}`} />
+                        </button>
                       </td>
 
                       {/* Actions */}

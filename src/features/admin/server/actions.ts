@@ -456,6 +456,7 @@ export type AdminOrganization = {
   type: string | null;
   broadcaster_type: string | null;
   country: string | null;
+  is_featured: boolean;
   tagline: string | null;
   description: string | null;
   website: string | null;
@@ -493,7 +494,7 @@ export async function listAdminOrganizations(
   let query = admin
     .from("organizations")
     .select(
-      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, tagline, description, website, contact_email, phone, address, linkedin_url, x_url, facebook_url, instagram_url, youtube_url, tiktok_url"
+      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_featured, tagline, description, website, contact_email, phone, address, linkedin_url, x_url, facebook_url, instagram_url, youtube_url, tiktok_url"
     )
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -609,6 +610,7 @@ export async function listAdminOrganizations(
       type: o.type,
       broadcaster_type: (o as { broadcaster_type?: string | null }).broadcaster_type ?? null,
       country: o.country,
+      is_featured: (o as { is_featured?: boolean }).is_featured ?? false,
       tagline: (o as { tagline?: string | null }).tagline ?? null,
       description: (o as { description?: string | null }).description ?? null,
       website: (o as { website?: string | null }).website ?? null,
@@ -713,6 +715,22 @@ export async function updateOrganizationAsAdmin(
     .eq("id", orgId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/companies");
+  return { success: true };
+}
+
+export async function toggleOrgFeatured(
+  orgId: string,
+  featured: boolean
+): Promise<{ success: boolean; error?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("organizations")
+    .update({ is_featured: featured, updated_at: new Date().toISOString() } as never)
+    .eq("id", orgId);
+  if (error) return { success: false, error: error.message };
+  revalidatePath("/admin/companies");
+  revalidatePath("/dashboard");
   return { success: true };
 }
 

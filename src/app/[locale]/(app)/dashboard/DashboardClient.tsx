@@ -28,6 +28,7 @@ type FeedCompany = {
 export function DashboardClient({
     initialProducts,
     latestServices = [],
+    featuredCompanies = [],
     latestCompanies,
     latestUsers,
     upcomingEvent,
@@ -38,6 +39,7 @@ export function DashboardClient({
 }: {
     initialProducts: Product[],
     latestServices?: Product[],
+    featuredCompanies?: FeedCompany[],
     latestCompanies: FeedCompany[],
     latestUsers: unknown[],
     upcomingEvent?: Event | null,
@@ -114,26 +116,22 @@ export function DashboardClient({
                 {/* Hero Banner — admin-managed via /admin/ads (placement: dashboard_hero_banner) */}
                 {heroBanner}
 
-                {/* Featured Companies Section */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-white">Featured Companies</h2>
-                        <Link href="/companies" className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors">
-                            View all
-                        </Link>
-                    </div>
-                    {latestCompanies.length === 0 ? (
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center text-gray-400">
-                            No companies found yet.
+                {/* Featured Companies Section — only shown when admin has featured at least one */}
+                {featuredCompanies.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-semibold text-white">Featured Companies</h2>
+                            <Link href="/companies" className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors">
+                                View all
+                            </Link>
                         </div>
-                    ) : (
                         <div className="relative group/section">
                             <div
                                 ref={companiesScrollRef}
                                 className="flex overflow-x-auto gap-6 pb-4 snap-x [&::-webkit-scrollbar]:hidden"
                                 style={{ scrollbarWidth: 'none' }}
                             >
-                                {latestCompanies.map((company) => (
+                                {featuredCompanies.map((company) => (
                                     <div key={company.id} className="w-[180px] snap-start shrink-0">
                                         <FeedCompanyCard
                                             id={company.id}
@@ -162,8 +160,8 @@ export function DashboardClient({
                                 <ChevronRight className="w-6 h-6" />
                             </button>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {/* Media Services Section */}
                 <div className="space-y-4">

@@ -12,6 +12,7 @@ import {
   Users,
   Trash2,
   ExternalLink,
+  Star,
 } from "lucide-react";
 import {
   Sheet,
@@ -37,6 +38,7 @@ import {
   revokeOrgGift,
   updateOrgType,
   updateOrganizationAsAdmin,
+  toggleOrgFeatured,
   deleteOrganizationAsAdmin,
   type AdminOrganization,
   type AdminOrgEditFields,
@@ -229,6 +231,20 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
     });
   };
 
+  // ── Featured toggle ─────────────────────────────────────────────────────────
+  const handleToggleFeatured = () => {
+    const next = !company.is_featured;
+    startTransition(async () => {
+      const result = await toggleOrgFeatured(company.id, next);
+      if (result.success) {
+        onUpdated({ id: company.id, is_featured: next });
+        toast.success(next ? "Company marked as featured" : "Company removed from featured");
+      } else {
+        toast.error(result.error ?? "Failed to update featured status");
+      }
+    });
+  };
+
   // ── Edit details ────────────────────────────────────────────────────────────
   const handleEditSave = () => {
     startTransition(async () => {
@@ -309,6 +325,33 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               <StatCard icon={Calendar} label="Events" value={company.event_count} />
               <StatCard icon={PenSquare} label="Blog posts" value={company.blog_post_count} />
             </div>
+          </section>
+
+          {/* ── Featured on feed ── */}
+          <section>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+              Feed visibility
+            </h3>
+            <button
+              type="button"
+              onClick={handleToggleFeatured}
+              disabled={isPending}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
+                company.is_featured
+                  ? "border-[#C6A85E]/50 bg-[#C6A85E]/10 text-[#C6A85E]"
+                  : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/[0.07]"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Star className={`h-4 w-4 ${company.is_featured ? "fill-[#C6A85E]" : ""}`} />
+                <span className="text-sm font-medium">
+                  {company.is_featured ? "Featured on feed" : "Not featured"}
+                </span>
+              </div>
+              <span className="text-xs">
+                {company.is_featured ? "Click to unfeature" : "Click to feature"}
+              </span>
+            </button>
           </section>
 
           {/* ── Company type ── */}

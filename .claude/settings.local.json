@@ -49,7 +49,21 @@
       "Bash(git commit -m ' *)",
       "Bash(git commit *)",
       "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_project_url",
-      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_publishable_keys"
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_publishable_keys",
+      "Bash(grep -E \"\\\\.\\(sql|ts|mjs\\)$\")",
+      "Bash(xargs grep -l \"CREATE TABLE.*organizations\")",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -l \"organizations\")",
+      "Bash(xargs grep -l \"organization\")",
+      "Bash(xargs grep -l \"can_edit_org\\\\|organizations\")",
+      "Bash(xargs grep -l \"UPDATE\\\\|create function\\\\|can_edit\")",
+      "Bash(xargs grep -l \"UPDATE\")",
+      "Bash(xargs grep -l \"organizations.*RLS\\\\|CREATE POLICY.*organizations\")",
+      "Bash(xargs grep \"function can_edit_org\")",
+      "Bash(xargs grep -l \"organizations.*ENABLE ROW\\\\|CREATE POLICY.*organizations\")",
+      "Bash(xargs grep \"organizations\")",
+      "Bash(xargs grep -B 5 -A 15 \"CREATE TABLE.*organizations\\\\|ALTER TABLE.*organizations.*ENABLE ROW\")",
+      "Bash(xargs grep -l \"organization_members\\\\|CREATE TABLE\")"
     ]
   }
 }
