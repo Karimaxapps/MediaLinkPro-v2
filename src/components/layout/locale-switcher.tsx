@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 import ReactCountryFlag from "react-country-flag";
@@ -49,9 +50,25 @@ type Props = {
 export function LocaleSwitcher({ locales }: Props) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   // Use the provided locales or fall back to all configured locales
   const displayLocales = locales && locales.length > 0 ? locales : [...routing.locales];
+
+  // Render a static placeholder during SSR/first paint to avoid Radix useId
+  // hydration mismatches when this component sits inside an async server tree.
+  if (!mounted) {
+    return (
+      <span
+        aria-label={`Language: ${LOCALE_LABEL[locale] ?? locale}`}
+        className="inline-flex h-8 w-8 items-center justify-center px-2"
+      >
+        <Flag countryCode={LOCALE_COUNTRY[locale] ?? "GB"} size={20} />
+      </span>
+    );
+  }
 
   function switchLocale(next: string) {
     if (next === locale) return;

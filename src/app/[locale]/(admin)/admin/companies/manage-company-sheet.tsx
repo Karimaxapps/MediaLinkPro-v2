@@ -4,15 +4,8 @@ import { useState, useTransition, useEffect } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
-  Gift,
-  AlertTriangle,
-  Package,
-  Calendar,
-  PenSquare,
-  Users,
-  Trash2,
-  ExternalLink,
-  Star,
+  Gift, AlertTriangle, Package, Calendar, PenSquare,
+  Users, Trash2, ExternalLink, Pencil,
 } from "lucide-react";
 import {
   Sheet,
@@ -40,6 +33,7 @@ import {
   updateOrganizationAsAdmin,
   toggleOrgFeatured,
   deleteOrganizationAsAdmin,
+  convertToAdminStub,
   type AdminOrganization,
   type AdminOrgEditFields,
 } from "@/features/admin/server/actions";
@@ -231,34 +225,15 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
     });
   };
 
-  // ── Featured toggle ─────────────────────────────────────────────────────────
-  const handleToggleFeatured = () => {
-    const next = !company.is_featured;
+  // ── Convert to stub ─────────────────────────────────────────────────────────
+  const handleConvertToStub = () => {
     startTransition(async () => {
-      const result = await toggleOrgFeatured(company.id, next);
+      const result = await convertToAdminStub(company.id);
       if (result.success) {
-        onUpdated({ id: company.id, is_featured: next });
-        toast.success(next ? "Company marked as featured" : "Company removed from featured");
+        onUpdated({ id: company.id, is_stub: true, source: "admin_seed" });
+        toast.success("Company converted to admin stub. Edit button now available.");
       } else {
-        toast.error(result.error ?? "Failed to update featured status");
-      }
-    });
-  };
-
-  // ── Edit details ────────────────────────────────────────────────────────────
-  const handleEditSave = () => {
-    startTransition(async () => {
-      const payload: AdminOrgEditFields = {};
-      for (const [k, v] of Object.entries(editFields)) {
-        (payload as Record<string, string | null>)[k] = (v as string).trim() || null;
-      }
-      const result = await updateOrganizationAsAdmin(company.id, payload);
-      if (result.success) {
-        onUpdated({ id: company.id, ...payload });
-        toast.success("Company details updated");
-        setEditOpen(false);
-      } else {
-        toast.error(result.error ?? "Failed to update");
+        toast.error(result.error ?? "Failed to convert.");
       }
     });
   };
@@ -314,6 +289,26 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         </SheetHeader>
 
         <div className="px-4 py-5 space-y-6">
+
+          {/* ── Unclaimed stub banner ── */}
+          {(company.is_stub || (company.source !== "user" && !company.claimed_at)) && (
+            <div className="rounded-lg border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-4 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-[#C6A85E]">Unclaimed stub</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Seeded by admin — not yet claimed by an owner.
+                </p>
+              </div>
+              <a
+                href={`/admin/companies/stubs/edit/${company.slug}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#C6A85E] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#B5964A] transition-colors shrink-0"
+              >
+                <Pencil className="h-3 w-3" />
+                Edit profile
+              </a>
+            </div>
+          )}
+
           {/* ── Stats ── */}
           <section>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
@@ -608,6 +603,31 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               </div>
             )}
           </section>
+
+          {/* ── Convert to admin stub ── */}
+          {!company.is_stub && !company.owner_id && (
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-1.5">
+                <Pencil className="h-3.5 w-3.5" />
+                Admin control
+              </h3>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 space-y-3">
+                <p className="text-xs text-gray-400">
+                  This company has no owner. Convert it to an admin-managed stub to unlock full profile editing and the claim flow.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={isPending}
+                  onClick={handleConvertToStub}
+                  className="bg-transparent border-[#C6A85E]/40 text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                >
+                  <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                  Convert to admin stub
+                </Button>
+              </div>
+            </section>
+          )}
 
           {/* ── Danger zone ── */}
           <section>

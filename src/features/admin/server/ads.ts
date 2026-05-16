@@ -72,6 +72,7 @@ export async function adminCreateCampaign(input: {
     if (error) return { success: false, error: error.message };
     revalidatePath("/admin/ads");
     revalidatePath("/jobs");
+    revalidatePath("/", "layout");
     return { success: true };
 }
 
@@ -101,6 +102,7 @@ export async function adminUpdateCampaign(
     if (error) return { success: false, error: error.message };
     revalidatePath("/admin/ads");
     revalidatePath("/jobs");
+    revalidatePath("/", "layout");
     return { success: true };
 }
 
@@ -116,5 +118,6 @@ export async function adminDeleteCampaign(
     if (error) return { success: false, error: error.message };
     revalidatePath("/admin/ads");
     revalidatePath("/jobs");
+    revalidatePath("/", "layout");
     return { success: true };
 }

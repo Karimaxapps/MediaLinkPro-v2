@@ -25,6 +25,14 @@ type FeedCompany = {
     plan?: string | null;
 };
 
+type FeedUser = {
+    id: string;
+    username: string;
+    full_name?: string | null;
+    avatar_url?: string | null;
+    job_title?: string | null;
+};
+
 export function DashboardClient({
     initialProducts,
     latestServices = [],
@@ -41,7 +49,7 @@ export function DashboardClient({
     latestServices?: Product[],
     featuredCompanies?: FeedCompany[],
     latestCompanies: FeedCompany[],
-    latestUsers: unknown[],
+    latestUsers: FeedUser[],
     upcomingEvent?: Event | null,
     latestBlogPosts?: BlogPost[],
     featuredAiTools?: AiTool[],

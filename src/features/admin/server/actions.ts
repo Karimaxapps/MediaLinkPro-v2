@@ -97,6 +97,7 @@ export async function getAdminStats(): Promise<AdminStats> {
 
 export type AdminUser = {
   id: string;
+  email: string | null;
   username: string | null;
   full_name: string | null;
   avatar_url: string | null;
@@ -202,11 +203,24 @@ export async function listAdminUsers(
     );
   }
 
+  // Fetch emails from auth.users (service role only)
+  const emailMap = new Map<string, string>();
+  try {
+    const { data: authData } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const idSet = new Set(ids);
+    for (const u of authData?.users ?? []) {
+      if (idSet.has(u.id) && u.email) emailMap.set(u.id, u.email);
+    }
+  } catch {
+    // Non-fatal — email just won't show if this fails
+  }
+
   // Merge
   const merged: AdminUser[] = profiles.map((r) => {
     const sub = subMap.get(r.id);
     return {
       id: r.id,
+      email: emailMap.get(r.id) ?? null,
       username: r.username,
       full_name: r.full_name,
       avatar_url: r.avatar_url,
@@ -456,19 +470,10 @@ export type AdminOrganization = {
   type: string | null;
   broadcaster_type: string | null;
   country: string | null;
-  is_featured: boolean;
-  tagline: string | null;
-  description: string | null;
-  website: string | null;
-  contact_email: string | null;
-  phone: string | null;
-  address: string | null;
-  linkedin_url: string | null;
-  x_url: string | null;
-  facebook_url: string | null;
-  instagram_url: string | null;
-  youtube_url: string | null;
-  tiktok_url: string | null;
+  is_stub: boolean;
+  claimed_at: string | null;
+  merged_into_id: string | null;
+  source: string;
   member_count: number;
   product_count: number;
   event_count: number;
@@ -493,9 +498,7 @@ export async function listAdminOrganizations(
 
   let query = admin
     .from("organizations")
-    .select(
-      "id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_featured, tagline, description, website, contact_email, phone, address, linkedin_url, x_url, facebook_url, instagram_url, youtube_url, tiktok_url"
-    )
+    .select("id, name, slug, logo_url, created_at, type, broadcaster_type, country, is_stub, claimed_at, merged_into_id, source" as "id, name, slug, logo_url, created_at, type, broadcaster_type, country")
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -610,19 +613,10 @@ export async function listAdminOrganizations(
       type: o.type,
       broadcaster_type: (o as { broadcaster_type?: string | null }).broadcaster_type ?? null,
       country: o.country,
-      is_featured: (o as { is_featured?: boolean }).is_featured ?? false,
-      tagline: (o as { tagline?: string | null }).tagline ?? null,
-      description: (o as { description?: string | null }).description ?? null,
-      website: (o as { website?: string | null }).website ?? null,
-      contact_email: (o as { contact_email?: string | null }).contact_email ?? null,
-      phone: (o as { phone?: string | null }).phone ?? null,
-      address: (o as { address?: string | null }).address ?? null,
-      linkedin_url: (o as { linkedin_url?: string | null }).linkedin_url ?? null,
-      x_url: (o as { x_url?: string | null }).x_url ?? null,
-      facebook_url: (o as { facebook_url?: string | null }).facebook_url ?? null,
-      instagram_url: (o as { instagram_url?: string | null }).instagram_url ?? null,
-      youtube_url: (o as { youtube_url?: string | null }).youtube_url ?? null,
-      tiktok_url: (o as { tiktok_url?: string | null }).tiktok_url ?? null,
+      is_stub: (o as { is_stub?: boolean }).is_stub ?? false,
+      claimed_at: (o as { claimed_at?: string | null }).claimed_at ?? null,
+      merged_into_id: (o as { merged_into_id?: string | null }).merged_into_id ?? null,
+      source: (o as { source?: string }).source ?? "user",
       member_count: memberCountMap.get(o.id) ?? 0,
       product_count: productCountMap.get(o.id) ?? 0,
       event_count: eventCountMap.get(o.id) ?? 0,
@@ -638,6 +632,31 @@ export async function listAdminOrganizations(
       gifted_by_name: sub?.gifted_by ? (gifterMap.get(sub.gifted_by) ?? null) : null,
     };
   });
+}
+
+export async function convertToAdminStub(orgId: string): Promise<ActionState> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  // Only convert ownerless companies — if someone already owns it, leave it alone
+  const { data: member } = await admin
+    .from("organization_members")
+    .select("user_id")
+    .eq("organization_id", orgId)
+    .eq("role", "owner")
+    .maybeSingle();
+
+  if (member) {
+    return { error: "This company already has an owner and cannot be converted to a stub.", success: false };
+  }
+
+  const { error } = await admin
+    .from("organizations")
+    .update({ is_stub: true, source: "admin_seed" } as never)
+    .eq("id", orgId);
+
+  if (error) return { error: error.message, success: false };
+  return { success: true };
 }
 
 export async function deleteOrganizationAsAdmin(orgId: string) {
@@ -1042,50 +1061,66 @@ export async function listAdminOwnershipRequests(
   if (!requests?.length) return [];
 
   type RawRequest = {
-    id: string;
-    content_type: string;
-    content_id: string;
-    requesting_org_id: string;
-    status: string;
-    message: string | null;
-    admin_note: string | null;
-    created_at: string;
-    resolved_at: string | null;
-    resolved_by: string | null;
+    id: string; content_type: string; content_id: string; requesting_org_id: string | null;
+    requesting_user_id: string | null;
+    status: string; message: string | null; admin_note: string | null;
+    created_at: string; resolved_at: string | null; resolved_by: string | null;
   };
   const rows = requests as unknown as RawRequest[];
 
-  const orgIds = Array.from(new Set(rows.map((r) => r.requesting_org_id)));
-  const productIds = Array.from(
-    new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id))
-  );
+  const orgIds = Array.from(new Set(rows.map((r) => r.requesting_org_id).filter((v): v is string => !!v)));
+  const productIds = Array.from(new Set(rows.filter((r) => r.content_type === "product").map((r) => r.content_id)));
+  const stubOrgIds = Array.from(new Set(rows.filter((r) => r.content_type === "organization").map((r) => r.content_id)));
+  const userIds = Array.from(new Set(rows.map((r) => r.requesting_user_id).filter((v): v is string => !!v)));
 
-  const [{ data: orgs }, { data: products }] = await Promise.all([
-    admin.from("organizations").select("id, name, slug").in("id", orgIds),
-    admin.from("products").select("id, name, slug").in("id", productIds),
+  const [{ data: orgs }, { data: products }, { data: stubs }, { data: userProfiles }] = await Promise.all([
+    orgIds.length
+      ? admin.from("organizations").select("id, name, slug").in("id", orgIds)
+      : Promise.resolve({ data: [] }),
+    productIds.length
+      ? admin.from("products").select("id, name, slug").in("id", productIds)
+      : Promise.resolve({ data: [] }),
+    stubOrgIds.length
+      ? admin.from("organizations").select("id, name, slug").in("id", stubOrgIds)
+      : Promise.resolve({ data: [] }),
+    userIds.length
+      ? admin.from("profiles").select("id, full_name, username").in("id", userIds)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
   const productMap = new Map((products ?? []).map((p) => [p.id, p]));
+  const stubMap = new Map((stubs ?? []).map((o) => [o.id, o]));
+  const userMap = new Map(
+    (userProfiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "User"])
+  );
 
   return rows.map((r) => {
-    const org = orgMap.get(r.requesting_org_id);
-    const product = productMap.get(r.content_id);
+    const org = r.requesting_org_id ? orgMap.get(r.requesting_org_id) : undefined;
+    const product = r.content_type === "product" ? productMap.get(r.content_id) : undefined;
+    const stub = r.content_type === "organization" ? stubMap.get(r.content_id) : undefined;
     return {
       id: r.id,
-      content_type: r.content_type as "product" | "event" | "blog_post",
+      content_type: r.content_type as "product" | "event" | "blog_post" | "organization",
       content_id: r.content_id,
       requesting_org_id: r.requesting_org_id,
+      requesting_user_id: r.requesting_user_id,
       status: r.status as "pending" | "approved" | "rejected",
       message: r.message,
       admin_note: r.admin_note,
       created_at: r.created_at,
       resolved_at: r.resolved_at,
       resolved_by: r.resolved_by,
-      requesting_org_name: org?.name ?? "Unknown",
+      requesting_org_name: org?.name ?? (r.requesting_org_id ? "Unknown" : "(no org)"),
       requesting_org_slug: org?.slug ?? "",
-      product_name: product?.name ?? "Unknown",
-      product_slug: product?.slug ?? "",
+      product_name: product?.name ?? stub?.name ?? "—",
+      product_slug: product?.slug ?? stub?.slug ?? "",
+      stub_org_name: stub?.name,
+      stub_org_slug: stub?.slug,
+      requesting_user_name: r.requesting_user_id
+        ? userMap.get(r.requesting_user_id) ?? null
+        : null,
+      requesting_user_email: null,
     };
   });
 }

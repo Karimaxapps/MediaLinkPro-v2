@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, Pause, Play, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Pause, Play, ExternalLink, MousePointerClick, Eye } from "lucide-react";
 import {
     adminCreateCampaign,
     adminUpdateCampaign,
@@ -17,7 +17,7 @@ import {
 import type { AdCampaign } from "@/features/advertising/server/actions";
 
 const PLACEMENTS: { value: AdCampaign["placement"]; label: string }[] = [
-    { value: "dashboard_hero_banner", label: "Dashboard hero banner" },
+    { value: "dashboard_hero_banner", label: "Feed banner (below Latest Products)" },
     { value: "jobs_sidebar", label: "Jobs sidebar" },
     { value: "job_details_sidebar", label: "Job detail sidebar" },
     { value: "events_sidebar", label: "Events sidebar" },
@@ -293,12 +293,10 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                                         {c.status}
                                     </span>
                                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400">
-                                        {c.placement}
+                                        {PLACEMENTS.find((p) => p.value === c.placement)?.label ?? c.placement}
                                     </span>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-0.5 truncate">
-                                    {c.name} · {c.impressions} impressions · {c.clicks} clicks
-                                </p>
+                                <p className="text-xs text-gray-500 mt-0.5 truncate">{c.name}</p>
                                 <a
                                     href={c.cta_url}
                                     target="_blank"
@@ -308,6 +306,22 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                                     {c.cta_url}
                                     <ExternalLink className="h-3 w-3" />
                                 </a>
+                                {/* Stats */}
+                                <div className="flex items-center gap-3 mt-2">
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-300 bg-white/5 border border-white/10 rounded-md px-2 py-0.5">
+                                        <Eye className="h-3 w-3 text-gray-400" />
+                                        {c.impressions.toLocaleString()} impressions
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] bg-[#C6A85E]/10 border border-[#C6A85E]/20 rounded-md px-2 py-0.5">
+                                        <MousePointerClick className="h-3 w-3" />
+                                        {c.clicks.toLocaleString()} clicks
+                                    </span>
+                                    {c.impressions > 0 && (
+                                        <span className="text-xs text-gray-500">
+                                            {((c.clicks / c.impressions) * 100).toFixed(1)}% CTR
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0">
