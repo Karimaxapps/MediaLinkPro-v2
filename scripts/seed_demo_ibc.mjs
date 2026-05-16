@@ -17,96 +17,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-const shortId = () => crypto.randomBytes(4).toString('hex');
+// Admin user who seeds these stub companies
+const ADMIN_USER_ID = 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea';
 
 async function runSeed() {
-    console.log('🌐  Starting demo IBC seed process...');
-
-    const suffix = shortId();
-    const demoEmail = `demo.ibc_${suffix}@medialinkpro.com`;
-    const demoPassword = 'password123';
-    const orgId = crypto.randomUUID();
+    console.log('🌐  Starting stub seed: International Broadcasting Convention (IBC)...');
 
     try {
-        // 1. CREATE USER
-        console.log(`\n👤 Creating user account ${demoEmail}...`);
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            email_confirm: true,
-            user_metadata: {
-                full_name: 'Sarah Mitchell',
-                avatar_url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&auto=format&fit=crop'
-            }
-        });
-        if (userError) throw userError;
-        const userId = userData.user.id;
-        console.log('   ✅ User created.');
-
-        await new Promise((r) => setTimeout(r, 1200));
-
-        // 2. UPDATE PROFILE
-        console.log('\n📋 Updating profile for Sarah Mitchell...');
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-                username: `sarahmitchell_${suffix}`,
-                full_name: 'Sarah Mitchell',
-                avatar_url:
-                    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&auto=format&fit=crop',
-                cover_url:
-                    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1600&auto=format&fit=crop',
-                bio: 'Conference Programme Manager at IBC, shaping the world\'s leading broadcast and media technology conference. 12+ years curating technical content at the intersection of broadcast, IP and streaming.',
-                about:
-                    'I oversee the technical conference programme for IBC — the International Broadcasting Convention — held annually at RAI Amsterdam. My role spans speaker acquisition, session curation across 12 conference streams, and editorial strategy for IBC365, our year-round digital knowledge platform. I work closely with industry experts, manufacturers and broadcasters to ensure IBC\'s content stays at the cutting edge of media technology.',
-                headline: 'Conference Programme Manager · IBC — International Broadcasting Convention',
-                company: 'International Broadcasting Convention',
-                job_title: 'Conference Programme Manager',
-                job_function: 'Creative',
-                website: 'https://www.ibc.org',
-                portfolio_url: 'https://www.ibc.org/about',
-                linkedin_url: 'https://linkedin.com/in/sarah-mitchell-ibc-demo',
-                x_url: 'https://x.com/sarahmitchell_ibc',
-                instagram_url: 'https://instagram.com/ibcshow',
-                youtube_url: 'https://youtube.com/@ibcshow',
-                tiktok_url: 'https://tiktok.com/@ibcshow',
-                facebook_url: 'https://facebook.com/ibcshow',
-                contact_email_public: 's.mitchell@ibc.demo',
-                contact_email_public_enabled: true,
-                contact_phone_public: '+44 20 7832 4100',
-                contact_phone_public_enabled: true,
-                city: 'Amsterdam',
-                country: 'Netherlands',
-                birth_date: '1982-09-07',
-                hourly_rate: null,
-                skills: [
-                    'Conference Programming',
-                    'Content Curation',
-                    'Broadcast Technology',
-                    'IP Video',
-                    'Streaming Technology',
-                    'Speaker Management',
-                    'Editorial Strategy',
-                    'Event Management'
-                ],
-                followers_count: 7230,
-                following_count: 540,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        if (profileError) throw profileError;
-        console.log('   ✅ Profile updated.');
-
-        // 3. CREATE ORGANIZATION (Media Association)
-        console.log('\n🏢 Creating organization IBC (Media Association)...');
-        const orgSlug = `international-broadcasting-convention-${suffix}`;
+        // 1. UPSERT ORGANIZATION (stub, unclaimed)
+        console.log('\n🏢 Upserting organization IBC...');
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
-                    id: orgId,
                     name: 'International Broadcasting Convention',
-                    slug: orgSlug,
+                    slug: 'international-broadcasting-convention',
                     logo_url:
                         'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&h=300&auto=format&fit=crop',
                     tagline: 'Where the global broadcast and media technology community connects.',
@@ -120,7 +45,7 @@ async function runSeed() {
                     phone: '+44 20 7832 4100',
                     country: 'Netherlands',
                     address: 'RAI Amsterdam, Europaplein 24, 1078 GZ Amsterdam, Netherlands',
-                    linkedin_url: 'https://linkedin.com/company/ibc-demo',
+                    linkedin_url: 'https://linkedin.com/company/ibc',
                     x_url: 'https://x.com/ibcshow',
                     facebook_url: 'https://facebook.com/ibcshow',
                     instagram_url: 'https://instagram.com/ibcshow',
@@ -128,7 +53,7 @@ async function runSeed() {
                     youtube_url: 'https://youtube.com/@ibcshow',
                     is_stub: true,
                     source: 'admin_seed',
-                    created_at: new Date().toISOString(),
+                    seeded_by: ADMIN_USER_ID,
                     updated_at: new Date().toISOString()
                 },
                 { onConflict: 'slug' }
@@ -136,26 +61,15 @@ async function runSeed() {
             .select()
             .single();
         if (orgError) throw orgError;
-        const actualOrgId = orgData.id;
-        console.log('   ✅ Organization created.');
+        const orgId = orgData.id;
+        console.log('   ✅ Organization upserted. ID:', orgId);
 
-        // 4. MEMBERSHIP (owner)
-        console.log('\n🤝 Linking user as owner...');
-        const { error: memberError } = await supabase
-            .from('organization_members')
-            .upsert(
-                { organization_id: actualOrgId, user_id: userId, role: 'owner' },
-                { onConflict: 'organization_id,user_id' }
-            );
-        if (memberError) throw memberError;
-        console.log('   ✅ Membership set.');
-
-        // 5. CREATE PRODUCTS / SERVICES
-        console.log('\n📦 Creating products for IBC...');
+        // 2. UPSERT PRODUCTS
+        console.log('\n📦 Upserting products for IBC...');
         const products = [
             {
                 name: 'IBC Show',
-                slug: `ibc-show-${shortId()}`,
+                slug: 'ibc-show',
                 short_description:
                     'The world\'s leading broadcast and media technology conference and exhibition. Amsterdam, September.',
                 description:
@@ -177,7 +91,7 @@ async function runSeed() {
             },
             {
                 name: 'IBC365',
-                slug: `ibc365-${shortId()}`,
+                slug: 'ibc365',
                 short_description:
                     'Year-round digital knowledge platform: news, technical papers, webinars and on-demand sessions.',
                 description:
@@ -204,7 +118,7 @@ async function runSeed() {
                 .upsert(
                     {
                         id: crypto.randomUUID(),
-                        organization_id: actualOrgId,
+                        organization_id: orgId,
                         name: p.name,
                         slug: p.slug,
                         description: p.description,
@@ -232,18 +146,16 @@ async function runSeed() {
                     { onConflict: 'organization_id,slug' }
                 );
             if (prodError) throw prodError;
-            console.log(`   ✅ Product created: ${p.name}`);
+            console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
-        console.log(`Demo User    : ${demoEmail}`);
-        console.log(`Password     : ${demoPassword}`);
-        console.log(`User ID      : ${userId}`);
-        console.log(`Organization : International Broadcasting Convention (Media Association)`);
-        console.log(`Org slug     : ${orgSlug}`);
-        console.log(`Org ID       : ${actualOrgId}`);
-        console.log(`Products     : ${products.length} created`);
+        console.log(`Organization : International Broadcasting Convention`);
+        console.log(`Slug         : international-broadcasting-convention`);
+        console.log(`Org ID       : ${orgId}`);
+        console.log(`Status       : Stub (unclaimed, claimable)`);
+        console.log(`Products     : ${products.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);

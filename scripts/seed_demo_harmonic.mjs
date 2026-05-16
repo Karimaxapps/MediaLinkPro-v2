@@ -17,96 +17,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-const shortId = () => crypto.randomBytes(4).toString('hex');
+// Admin user who seeds these stub companies
+const ADMIN_USER_ID = 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea';
 
 async function runSeed() {
-    console.log('🎥  Starting demo Harmonic seed process...');
-
-    const suffix = shortId();
-    const demoEmail = `demo.harmonic_${suffix}@medialinkpro.com`;
-    const demoPassword = 'password123';
-    const orgId = crypto.randomUUID();
+    console.log('🎥  Starting stub seed: Harmonic...');
 
     try {
-        // 1. CREATE USER
-        console.log(`\n👤 Creating user account ${demoEmail}...`);
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            email_confirm: true,
-            user_metadata: {
-                full_name: 'Amanda Foster',
-                avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop'
-            }
-        });
-        if (userError) throw userError;
-        const userId = userData.user.id;
-        console.log('   ✅ User created.');
-
-        await new Promise((r) => setTimeout(r, 1200));
-
-        // 2. UPDATE PROFILE
-        console.log('\n📋 Updating profile for Amanda Foster...');
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-                username: `amandafoster_${suffix}`,
-                full_name: 'Amanda Foster',
-                avatar_url:
-                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop',
-                cover_url:
-                    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1600&auto=format&fit=crop',
-                bio: 'Solutions Engineer at Harmonic, helping broadcasters and streaming operators architect scalable cloud video infrastructure. Specialist in SaaS playout, live encoding and OTT delivery.',
-                about:
-                    'I help Harmonic\'s broadcast and streaming customers design and deploy end-to-end video infrastructure solutions — from ingest and processing through to cloud playout and OTT delivery. My focus is on the VOS360 Media SaaS platform and the Electra X encoding product line, working with tier-1 broadcasters, pay-TV operators and streaming services across North America and EMEA.',
-                headline: 'Solutions Engineer · Harmonic — Video Infrastructure & Streaming Solutions',
-                company: 'Harmonic',
-                job_title: 'Solutions Engineer',
-                job_function: 'Technical',
-                website: 'https://www.harmonicinc.com',
-                portfolio_url: 'https://www.harmonicinc.com/resources',
-                linkedin_url: 'https://linkedin.com/in/amanda-foster-harmonic-demo',
-                x_url: 'https://x.com/amandafoster_vid',
-                instagram_url: 'https://instagram.com/harmonicinc',
-                youtube_url: 'https://youtube.com/@harmonicinc',
-                tiktok_url: null,
-                facebook_url: 'https://facebook.com/harmonicinc',
-                contact_email_public: 'a.foster@harmonic.demo',
-                contact_email_public_enabled: true,
-                contact_phone_public: '+1 408-542-2500',
-                contact_phone_public_enabled: false,
-                city: 'San Jose',
-                country: 'United States',
-                birth_date: '1986-11-14',
-                hourly_rate: null,
-                skills: [
-                    'Cloud Video Infrastructure',
-                    'Live Encoding',
-                    'OTT Delivery',
-                    'SaaS Playout',
-                    'SMPTE ST 2110',
-                    'HLS / DASH Streaming',
-                    'ABR Encoding',
-                    'Solutions Architecture'
-                ],
-                followers_count: 4180,
-                following_count: 390,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        if (profileError) throw profileError;
-        console.log('   ✅ Profile updated.');
-
-        // 3. CREATE ORGANIZATION (Solution Provider)
-        console.log('\n🏢 Creating organization Harmonic (Solution Provider)...');
-        const orgSlug = `harmonic-${suffix}`;
+        // 1. UPSERT ORGANIZATION (stub, unclaimed)
+        console.log('\n🏢 Upserting organization Harmonic...');
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
-                    id: orgId,
                     name: 'Harmonic',
-                    slug: orgSlug,
+                    slug: 'harmonic',
                     logo_url:
                         'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&h=300&auto=format&fit=crop',
                     tagline: 'Powering the future of video streaming and broadcast infrastructure.',
@@ -120,7 +45,7 @@ async function runSeed() {
                     phone: '+1 408-542-2500',
                     country: 'United States',
                     address: '2590 Orchard Pkwy, San Jose, CA 95134, USA',
-                    linkedin_url: 'https://linkedin.com/company/harmonic-inc-demo',
+                    linkedin_url: 'https://linkedin.com/company/harmonic-inc',
                     x_url: 'https://x.com/harmonicinc',
                     facebook_url: 'https://facebook.com/harmonicinc',
                     instagram_url: 'https://instagram.com/harmonicinc',
@@ -128,7 +53,7 @@ async function runSeed() {
                     youtube_url: 'https://youtube.com/@harmonicinc',
                     is_stub: true,
                     source: 'admin_seed',
-                    created_at: new Date().toISOString(),
+                    seeded_by: ADMIN_USER_ID,
                     updated_at: new Date().toISOString()
                 },
                 { onConflict: 'slug' }
@@ -136,26 +61,15 @@ async function runSeed() {
             .select()
             .single();
         if (orgError) throw orgError;
-        const actualOrgId = orgData.id;
-        console.log('   ✅ Organization created.');
+        const orgId = orgData.id;
+        console.log('   ✅ Organization upserted. ID:', orgId);
 
-        // 4. MEMBERSHIP (owner)
-        console.log('\n🤝 Linking user as owner...');
-        const { error: memberError } = await supabase
-            .from('organization_members')
-            .upsert(
-                { organization_id: actualOrgId, user_id: userId, role: 'owner' },
-                { onConflict: 'organization_id,user_id' }
-            );
-        if (memberError) throw memberError;
-        console.log('   ✅ Membership set.');
-
-        // 5. CREATE PRODUCTS
-        console.log('\n📦 Creating products for Harmonic...');
+        // 2. UPSERT PRODUCTS
+        console.log('\n📦 Upserting products for Harmonic...');
         const products = [
             {
                 name: 'VOS360 Media SaaS Platform',
-                slug: `vos360-media-saas-platform-${shortId()}`,
+                slug: 'vos360-media-saas-platform',
                 short_description:
                     'Cloud-native SaaS platform for live linear channel playout, OTT streaming and VOD delivery at scale.',
                 description:
@@ -177,7 +91,7 @@ async function runSeed() {
             },
             {
                 name: 'Electra X Encoding Platform',
-                slug: `electra-x-encoding-platform-${shortId()}`,
+                slug: 'electra-x-encoding-platform',
                 short_description:
                     'High-density live encoding appliance for broadcast contribution, distribution and OTT — HEVC, AVC, AV1.',
                 description:
@@ -204,7 +118,7 @@ async function runSeed() {
                 .upsert(
                     {
                         id: crypto.randomUUID(),
-                        organization_id: actualOrgId,
+                        organization_id: orgId,
                         name: p.name,
                         slug: p.slug,
                         description: p.description,
@@ -232,18 +146,16 @@ async function runSeed() {
                     { onConflict: 'organization_id,slug' }
                 );
             if (prodError) throw prodError;
-            console.log(`   ✅ Product created: ${p.name}`);
+            console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
-        console.log(`Demo User    : ${demoEmail}`);
-        console.log(`Password     : ${demoPassword}`);
-        console.log(`User ID      : ${userId}`);
-        console.log(`Organization : Harmonic (Solution Provider)`);
-        console.log(`Org slug     : ${orgSlug}`);
-        console.log(`Org ID       : ${actualOrgId}`);
-        console.log(`Products     : ${products.length} created`);
+        console.log(`Organization : Harmonic`);
+        console.log(`Slug         : harmonic`);
+        console.log(`Org ID       : ${orgId}`);
+        console.log(`Status       : Stub (unclaimed, claimable)`);
+        console.log(`Products     : ${products.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);

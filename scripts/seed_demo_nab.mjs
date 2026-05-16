@@ -17,96 +17,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-const shortId = () => crypto.randomBytes(4).toString('hex');
+// Admin user who seeds these stub companies
+const ADMIN_USER_ID = 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea';
 
 async function runSeed() {
-    console.log('📡  Starting demo NAB seed process...');
-
-    const suffix = shortId();
-    const demoEmail = `demo.nab_${suffix}@medialinkpro.com`;
-    const demoPassword = 'password123';
-    const orgId = crypto.randomUUID();
+    console.log('📡  Starting stub seed: National Association of Broadcasters (NAB)...');
 
     try {
-        // 1. CREATE USER
-        console.log(`\n👤 Creating user account ${demoEmail}...`);
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            email_confirm: true,
-            user_metadata: {
-                full_name: 'Michael Torres',
-                avatar_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&auto=format&fit=crop'
-            }
-        });
-        if (userError) throw userError;
-        const userId = userData.user.id;
-        console.log('   ✅ User created.');
-
-        await new Promise((r) => setTimeout(r, 1200));
-
-        // 2. UPDATE PROFILE
-        console.log('\n📋 Updating profile for Michael Torres...');
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-                username: `michaeltorres_${suffix}`,
-                full_name: 'Michael Torres',
-                avatar_url:
-                    'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&auto=format&fit=crop',
-                cover_url:
-                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1600&auto=format&fit=crop',
-                bio: 'Director of Membership at NAB, the National Association of Broadcasters. 16+ years driving member engagement, advocacy initiatives and industry partnerships across the U.S. broadcast landscape.',
-                about:
-                    'I lead membership strategy for NAB, the trade association and voice of the American broadcasting industry. We represent radio and television stations, networks and allied media companies before Congress, the FCC and other federal agencies. My focus is growing our member community and delivering the resources that help broadcasters thrive in an increasingly digital world.',
-                headline: 'Director of Membership · NAB — National Association of Broadcasters',
-                company: 'National Association of Broadcasters',
-                job_title: 'Director of Membership',
-                job_function: 'Business',
-                website: 'https://www.nab.org',
-                portfolio_url: 'https://www.nab.org/about/leadership',
-                linkedin_url: 'https://linkedin.com/in/michael-torres-nab-demo',
-                x_url: 'https://x.com/michaeltorres_nab',
-                instagram_url: 'https://instagram.com/nabshow',
-                youtube_url: 'https://youtube.com/@nabshow',
-                tiktok_url: 'https://tiktok.com/@nabshow',
-                facebook_url: 'https://facebook.com/nabshow',
-                contact_email_public: 'm.torres@nab.demo',
-                contact_email_public_enabled: true,
-                contact_phone_public: '+1 202-429-5300',
-                contact_phone_public_enabled: true,
-                city: 'Washington',
-                country: 'United States',
-                birth_date: '1975-03-18',
-                hourly_rate: null,
-                skills: [
-                    'Member Engagement',
-                    'Industry Advocacy',
-                    'Broadcast Policy',
-                    'Trade Show Strategy',
-                    'Stakeholder Relations',
-                    'FCC Regulatory Affairs',
-                    'Public Speaking',
-                    'Strategic Partnerships'
-                ],
-                followers_count: 9840,
-                following_count: 760,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        if (profileError) throw profileError;
-        console.log('   ✅ Profile updated.');
-
-        // 3. CREATE ORGANIZATION (Media Association)
-        console.log('\n🏢 Creating organization NAB (Media Association)...');
-        const orgSlug = `national-association-of-broadcasters-${suffix}`;
+        // 1. UPSERT ORGANIZATION (stub, unclaimed)
+        console.log('\n🏢 Upserting organization NAB...');
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
-                    id: orgId,
                     name: 'National Association of Broadcasters',
-                    slug: orgSlug,
+                    slug: 'national-association-of-broadcasters',
                     logo_url:
                         'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&auto=format&fit=crop',
                     tagline: 'The voice of the American broadcasting industry.',
@@ -120,7 +45,7 @@ async function runSeed() {
                     phone: '+1 202-429-5300',
                     country: 'United States',
                     address: '1 M Street SE, Washington, DC 20003, USA',
-                    linkedin_url: 'https://linkedin.com/company/nab-demo',
+                    linkedin_url: 'https://linkedin.com/company/nab',
                     x_url: 'https://x.com/nabshow',
                     facebook_url: 'https://facebook.com/nabshow',
                     instagram_url: 'https://instagram.com/nabshow',
@@ -128,7 +53,7 @@ async function runSeed() {
                     youtube_url: 'https://youtube.com/@nabshow',
                     is_stub: true,
                     source: 'admin_seed',
-                    created_at: new Date().toISOString(),
+                    seeded_by: ADMIN_USER_ID,
                     updated_at: new Date().toISOString()
                 },
                 { onConflict: 'slug' }
@@ -136,26 +61,15 @@ async function runSeed() {
             .select()
             .single();
         if (orgError) throw orgError;
-        const actualOrgId = orgData.id;
-        console.log('   ✅ Organization created.');
+        const orgId = orgData.id;
+        console.log('   ✅ Organization upserted. ID:', orgId);
 
-        // 4. MEMBERSHIP (owner)
-        console.log('\n🤝 Linking user as owner...');
-        const { error: memberError } = await supabase
-            .from('organization_members')
-            .upsert(
-                { organization_id: actualOrgId, user_id: userId, role: 'owner' },
-                { onConflict: 'organization_id,user_id' }
-            );
-        if (memberError) throw memberError;
-        console.log('   ✅ Membership set.');
-
-        // 5. CREATE PRODUCTS / SERVICES
-        console.log('\n📦 Creating products for NAB...');
+        // 2. UPSERT PRODUCTS
+        console.log('\n📦 Upserting products for NAB...');
         const products = [
             {
                 name: 'NAB Show',
-                slug: `nab-show-${shortId()}`,
+                slug: 'nab-show',
                 short_description:
                     'The world\'s largest annual media, entertainment and technology convention. Las Vegas, April.',
                 description:
@@ -177,7 +91,7 @@ async function runSeed() {
             },
             {
                 name: 'NAB Amplify',
-                slug: `nab-amplify-${shortId()}`,
+                slug: 'nab-amplify',
                 short_description:
                     'Year-round media and entertainment industry platform: news, research, events and community.',
                 description:
@@ -204,7 +118,7 @@ async function runSeed() {
                 .upsert(
                     {
                         id: crypto.randomUUID(),
-                        organization_id: actualOrgId,
+                        organization_id: orgId,
                         name: p.name,
                         slug: p.slug,
                         description: p.description,
@@ -232,18 +146,16 @@ async function runSeed() {
                     { onConflict: 'organization_id,slug' }
                 );
             if (prodError) throw prodError;
-            console.log(`   ✅ Product created: ${p.name}`);
+            console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
-        console.log(`Demo User    : ${demoEmail}`);
-        console.log(`Password     : ${demoPassword}`);
-        console.log(`User ID      : ${userId}`);
-        console.log(`Organization : National Association of Broadcasters (Media Association)`);
-        console.log(`Org slug     : ${orgSlug}`);
-        console.log(`Org ID       : ${actualOrgId}`);
-        console.log(`Products     : ${products.length} created`);
+        console.log(`Organization : National Association of Broadcasters`);
+        console.log(`Slug         : national-association-of-broadcasters`);
+        console.log(`Org ID       : ${orgId}`);
+        console.log(`Status       : Stub (unclaimed, claimable)`);
+        console.log(`Products     : ${products.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);

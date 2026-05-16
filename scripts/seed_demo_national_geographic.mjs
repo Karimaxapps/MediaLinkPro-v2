@@ -17,96 +17,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-const shortId = () => crypto.randomBytes(4).toString('hex');
+// Admin user who seeds these stub companies
+const ADMIN_USER_ID = 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea';
 
 async function runSeed() {
-    console.log('🌍  Starting demo National Geographic seed process...');
-
-    const suffix = shortId();
-    const demoEmail = `demo.natgeo_${suffix}@medialinkpro.com`;
-    const demoPassword = 'password123';
-    const orgId = crypto.randomUUID();
+    console.log('🌍  Starting stub seed: National Geographic...');
 
     try {
-        // 1. CREATE USER
-        console.log(`\n👤 Creating user account ${demoEmail}...`);
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            email_confirm: true,
-            user_metadata: {
-                full_name: 'David Chen',
-                avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop'
-            }
-        });
-        if (userError) throw userError;
-        const userId = userData.user.id;
-        console.log('   ✅ User created.');
-
-        await new Promise((r) => setTimeout(r, 1200));
-
-        // 2. UPDATE PROFILE
-        console.log('\n📋 Updating profile for David Chen...');
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-                username: `davidchen_${suffix}`,
-                full_name: 'David Chen',
-                avatar_url:
-                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&auto=format&fit=crop',
-                cover_url:
-                    'https://images.unsplash.com/photo-1447684808650-354b51afaf2a?w=1600&auto=format&fit=crop',
-                bio: 'Director of Content Partnerships at National Geographic, driving co-productions and distribution deals with global broadcasters, streaming platforms and production companies for linear and SVOD content.',
-                about:
-                    'I lead content partnerships for National Geographic globally — negotiating co-production agreements, licensing deals and distribution arrangements with broadcasters and streaming partners across APAC, EMEA and the Americas. My focus is maximizing the reach of National Geographic\'s iconic storytelling across the National Geographic Channel, Disney+ and emerging streaming platforms.',
-                headline: 'Director of Content Partnerships · National Geographic',
-                company: 'National Geographic',
-                job_title: 'Director of Content Partnerships',
-                job_function: 'Business',
-                website: 'https://www.nationalgeographic.com',
-                portfolio_url: 'https://www.nationalgeographic.com/tv',
-                linkedin_url: 'https://linkedin.com/in/david-chen-natgeo-demo',
-                x_url: 'https://x.com/davidchen_natgeo',
-                instagram_url: 'https://instagram.com/natgeo',
-                youtube_url: 'https://youtube.com/@natgeo',
-                tiktok_url: 'https://tiktok.com/@natgeo',
-                facebook_url: 'https://facebook.com/natgeo',
-                contact_email_public: 'd.chen@natgeo.demo',
-                contact_email_public_enabled: true,
-                contact_phone_public: '+1 202-857-7000',
-                contact_phone_public_enabled: false,
-                city: 'Washington',
-                country: 'United States',
-                birth_date: '1980-05-22',
-                hourly_rate: null,
-                skills: [
-                    'Content Partnerships',
-                    'Co-Production',
-                    'Distribution Deals',
-                    'SVOD Licensing',
-                    'Broadcast Rights',
-                    'APAC Markets',
-                    'EMEA Markets',
-                    'Documentary Programming'
-                ],
-                followers_count: 11450,
-                following_count: 830,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        if (profileError) throw profileError;
-        console.log('   ✅ Profile updated.');
-
-        // 3. CREATE ORGANIZATION (Broadcaster TV)
-        console.log('\n🏢 Creating organization National Geographic (Broadcaster - Television)...');
-        const orgSlug = `national-geographic-${suffix}`;
+        // 1. UPSERT ORGANIZATION (stub, unclaimed)
+        console.log('\n🏢 Upserting organization National Geographic...');
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
-                    id: orgId,
                     name: 'National Geographic',
-                    slug: orgSlug,
+                    slug: 'national-geographic',
                     logo_url:
                         'https://images.unsplash.com/photo-1447684808650-354b51afaf2a?w=300&h=300&auto=format&fit=crop',
                     tagline: 'Inspiring people to care about the planet since 1888.',
@@ -117,11 +42,11 @@ async function runSeed() {
                     description:
                         'National Geographic is one of the world\'s most iconic global media brands, reaching more than 760 million people in 172 countries and 43 languages. Founded in Washington DC in 1888, National Geographic produces and distributes premium documentary and factual content across the National Geographic Channel (linear television) and National Geographic on Disney+ (streaming). A subsidiary of The Walt Disney Company, National Geographic is dedicated to illuminating and protecting the wonder of our world through groundbreaking storytelling, science, exploration and education.',
                     website: 'https://www.nationalgeographic.com',
-                    contact_email: 'partnerships@natgeo.demo',
+                    contact_email: 'partnerships@natgeo.com',
                     phone: '+1 202-857-7000',
                     country: 'United States',
                     address: '1145 17th Street NW, Washington, DC 20036, USA',
-                    linkedin_url: 'https://linkedin.com/company/national-geographic-demo',
+                    linkedin_url: 'https://linkedin.com/company/national-geographic',
                     x_url: 'https://x.com/natgeo',
                     facebook_url: 'https://facebook.com/natgeo',
                     instagram_url: 'https://instagram.com/natgeo',
@@ -129,7 +54,7 @@ async function runSeed() {
                     youtube_url: 'https://youtube.com/@natgeo',
                     is_stub: true,
                     source: 'admin_seed',
-                    created_at: new Date().toISOString(),
+                    seeded_by: ADMIN_USER_ID,
                     updated_at: new Date().toISOString()
                 },
                 { onConflict: 'slug' }
@@ -137,26 +62,15 @@ async function runSeed() {
             .select()
             .single();
         if (orgError) throw orgError;
-        const actualOrgId = orgData.id;
-        console.log('   ✅ Organization created.');
+        const orgId = orgData.id;
+        console.log('   ✅ Organization upserted. ID:', orgId);
 
-        // 4. MEMBERSHIP (owner)
-        console.log('\n🤝 Linking user as owner...');
-        const { error: memberError } = await supabase
-            .from('organization_members')
-            .upsert(
-                { organization_id: actualOrgId, user_id: userId, role: 'owner' },
-                { onConflict: 'organization_id,user_id' }
-            );
-        if (memberError) throw memberError;
-        console.log('   ✅ Membership set.');
-
-        // 5. CREATE PRODUCTS / SERVICES
-        console.log('\n📦 Creating products for National Geographic...');
+        // 2. UPSERT PRODUCTS
+        console.log('\n📦 Upserting products for National Geographic...');
         const products = [
             {
                 name: 'National Geographic Channel',
-                slug: `national-geographic-channel-${shortId()}`,
+                slug: 'national-geographic-channel',
                 short_description:
                     'Linear television network broadcasting premium documentary and factual content in 172 countries.',
                 description:
@@ -178,7 +92,7 @@ async function runSeed() {
             },
             {
                 name: 'Disney+ NatGeo',
-                slug: `disney-plus-natgeo-${shortId()}`,
+                slug: 'disney-plus-natgeo',
                 short_description:
                     'National Geographic\'s premium documentary and factual catalogue on Disney+, the global streaming platform.',
                 description:
@@ -205,7 +119,7 @@ async function runSeed() {
                 .upsert(
                     {
                         id: crypto.randomUUID(),
-                        organization_id: actualOrgId,
+                        organization_id: orgId,
                         name: p.name,
                         slug: p.slug,
                         description: p.description,
@@ -233,18 +147,16 @@ async function runSeed() {
                     { onConflict: 'organization_id,slug' }
                 );
             if (prodError) throw prodError;
-            console.log(`   ✅ Product created: ${p.name}`);
+            console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
-        console.log(`Demo User    : ${demoEmail}`);
-        console.log(`Password     : ${demoPassword}`);
-        console.log(`User ID      : ${userId}`);
-        console.log(`Organization : National Geographic (Broadcaster - Television)`);
-        console.log(`Org slug     : ${orgSlug}`);
-        console.log(`Org ID       : ${actualOrgId}`);
-        console.log(`Products     : ${products.length} created`);
+        console.log(`Organization : National Geographic`);
+        console.log(`Slug         : national-geographic`);
+        console.log(`Org ID       : ${orgId}`);
+        console.log(`Status       : Stub (unclaimed, claimable)`);
+        console.log(`Products     : ${products.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);

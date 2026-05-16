@@ -17,96 +17,21 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-const shortId = () => crypto.randomBytes(4).toString('hex');
+// Admin user who seeds these stub companies
+const ADMIN_USER_ID = 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea';
 
 async function runSeed() {
-    console.log('📷  Starting demo Sony Professional Solutions seed process...');
-
-    const suffix = shortId();
-    const demoEmail = `demo.sony_${suffix}@medialinkpro.com`;
-    const demoPassword = 'password123';
-    const orgId = crypto.randomUUID();
+    console.log('📷  Starting stub seed: Sony Professional Solutions...');
 
     try {
-        // 1. CREATE USER
-        console.log(`\n👤 Creating user account ${demoEmail}...`);
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-            email: demoEmail,
-            password: demoPassword,
-            email_confirm: true,
-            user_metadata: {
-                full_name: 'Kevin Yamamoto',
-                avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop'
-            }
-        });
-        if (userError) throw userError;
-        const userId = userData.user.id;
-        console.log('   ✅ User created.');
-
-        await new Promise((r) => setTimeout(r, 1200));
-
-        // 2. UPDATE PROFILE
-        console.log('\n📋 Updating profile for Kevin Yamamoto...');
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-                username: `kevinyamamoto_${suffix}`,
-                full_name: 'Kevin Yamamoto',
-                avatar_url:
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop',
-                cover_url:
-                    'https://images.unsplash.com/photo-1514896856000-91cb6de818e0?w=1600&auto=format&fit=crop',
-                bio: 'Broadcast Solutions Specialist at Sony Professional Solutions, helping broadcasters, cinematographers and production facilities choose the right camera and production technology for their workflow.',
-                about:
-                    'I help broadcast and production clients find the right Sony Professional solutions — from cinema cameras and studio systems to IP live production infrastructure and production workflow servers. With a background in cinematography and 10+ years at Sony, I specialise in the Venice line of cinema cameras and the PWS production workflow server family, working closely with networks, studios and independent DPs across the US market.',
-                headline: 'Broadcast Solutions Specialist · Sony Professional Solutions',
-                company: 'Sony Professional Solutions',
-                job_title: 'Broadcast Solutions Specialist',
-                job_function: 'Business',
-                website: 'https://pro.sony',
-                portfolio_url: 'https://pro.sony/en_US/products',
-                linkedin_url: 'https://linkedin.com/in/kevin-yamamoto-sony-demo',
-                x_url: 'https://x.com/kevinyamamoto_pro',
-                instagram_url: 'https://instagram.com/sonypro',
-                youtube_url: 'https://youtube.com/@sonypro',
-                tiktok_url: 'https://tiktok.com/@sonypro',
-                facebook_url: 'https://facebook.com/sonyprofessional',
-                contact_email_public: 'k.yamamoto@sony.demo',
-                contact_email_public_enabled: true,
-                contact_phone_public: '+1 201-930-1000',
-                contact_phone_public_enabled: false,
-                city: 'Park Ridge',
-                country: 'United States',
-                birth_date: '1983-02-28',
-                hourly_rate: null,
-                skills: [
-                    'Cinema Cameras',
-                    'Broadcast Systems',
-                    'IP Live Production',
-                    'Workflow Integration',
-                    'Sony Venice',
-                    'HDR Imaging',
-                    'Production Servers',
-                    'Pre-sales Engineering'
-                ],
-                followers_count: 6320,
-                following_count: 470,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        if (profileError) throw profileError;
-        console.log('   ✅ Profile updated.');
-
-        // 3. CREATE ORGANIZATION (Solution Provider)
-        console.log('\n🏢 Creating organization Sony Professional Solutions (Solution Provider)...');
-        const orgSlug = `sony-professional-solutions-${suffix}`;
+        // 1. UPSERT ORGANIZATION (stub, unclaimed)
+        console.log('\n🏢 Upserting organization Sony Professional Solutions...');
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
-                    id: orgId,
                     name: 'Sony Professional Solutions',
-                    slug: orgSlug,
+                    slug: 'sony-professional-solutions',
                     logo_url:
                         'https://images.unsplash.com/photo-1514896856000-91cb6de818e0?w=300&h=300&auto=format&fit=crop',
                     tagline: 'Professional broadcast and AV technology that moves the world.',
@@ -120,7 +45,7 @@ async function runSeed() {
                     phone: '+1 201-930-1000',
                     country: 'United States',
                     address: '1 Sony Drive, Park Ridge, NJ 07656, USA',
-                    linkedin_url: 'https://linkedin.com/company/sony-professional-demo',
+                    linkedin_url: 'https://linkedin.com/company/sony-professional',
                     x_url: 'https://x.com/sonypro',
                     facebook_url: 'https://facebook.com/sonyprofessional',
                     instagram_url: 'https://instagram.com/sonypro',
@@ -128,7 +53,7 @@ async function runSeed() {
                     youtube_url: 'https://youtube.com/@sonypro',
                     is_stub: true,
                     source: 'admin_seed',
-                    created_at: new Date().toISOString(),
+                    seeded_by: ADMIN_USER_ID,
                     updated_at: new Date().toISOString()
                 },
                 { onConflict: 'slug' }
@@ -136,26 +61,15 @@ async function runSeed() {
             .select()
             .single();
         if (orgError) throw orgError;
-        const actualOrgId = orgData.id;
-        console.log('   ✅ Organization created.');
+        const orgId = orgData.id;
+        console.log('   ✅ Organization upserted. ID:', orgId);
 
-        // 4. MEMBERSHIP (owner)
-        console.log('\n🤝 Linking user as owner...');
-        const { error: memberError } = await supabase
-            .from('organization_members')
-            .upsert(
-                { organization_id: actualOrgId, user_id: userId, role: 'owner' },
-                { onConflict: 'organization_id,user_id' }
-            );
-        if (memberError) throw memberError;
-        console.log('   ✅ Membership set.');
-
-        // 5. CREATE PRODUCTS
-        console.log('\n📦 Creating products for Sony Professional Solutions...');
+        // 2. UPSERT PRODUCTS
+        console.log('\n📦 Upserting products for Sony Professional Solutions...');
         const products = [
             {
                 name: 'Venice 2',
-                slug: `sony-venice-2-${shortId()}`,
+                slug: 'sony-venice-2',
                 short_description:
                     'Full-frame cinema camera with 8.6K sensor, dual base ISO and anamorphic de-squeeze. The benchmark for cinematic imaging.',
                 description:
@@ -177,7 +91,7 @@ async function runSeed() {
             },
             {
                 name: 'PWS-4500 Production Workflow Server',
-                slug: `sony-pws-4500-${shortId()}`,
+                slug: 'sony-pws-4500',
                 short_description:
                     'Scalable production workflow server for ingest, transcode, browse proxy and media management in broadcast and studio environments.',
                 description:
@@ -204,7 +118,7 @@ async function runSeed() {
                 .upsert(
                     {
                         id: crypto.randomUUID(),
-                        organization_id: actualOrgId,
+                        organization_id: orgId,
                         name: p.name,
                         slug: p.slug,
                         description: p.description,
@@ -232,18 +146,16 @@ async function runSeed() {
                     { onConflict: 'organization_id,slug' }
                 );
             if (prodError) throw prodError;
-            console.log(`   ✅ Product created: ${p.name}`);
+            console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
-        console.log(`Demo User    : ${demoEmail}`);
-        console.log(`Password     : ${demoPassword}`);
-        console.log(`User ID      : ${userId}`);
-        console.log(`Organization : Sony Professional Solutions (Solution Provider)`);
-        console.log(`Org slug     : ${orgSlug}`);
-        console.log(`Org ID       : ${actualOrgId}`);
-        console.log(`Products     : ${products.length} created`);
+        console.log(`Organization : Sony Professional Solutions`);
+        console.log(`Slug         : sony-professional-solutions`);
+        console.log(`Org ID       : ${orgId}`);
+        console.log(`Status       : Stub (unclaimed, claimable)`);
+        console.log(`Products     : ${products.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);
