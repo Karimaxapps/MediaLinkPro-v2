@@ -77,7 +77,13 @@ async function runSeed() {
         const { data, error } = await supabase
             .from('organizations')
             .upsert(
-                { ...company, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+                {
+            ...company,
+            is_stub: true,
+            source: 'admin_seed',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        },
                 { onConflict: 'slug' }
             )
             .select('id, slug')
