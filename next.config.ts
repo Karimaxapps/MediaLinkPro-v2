@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { readFileSync } from "fs";
+
+const { version } = JSON.parse(readFileSync("./package.json", "utf8"));
 
 // Fix TLS certificate verification failures on corporate networks (MITM proxy).
 // The system trust-store flag only helps Turbopack; server-side fetch still uses
@@ -11,6 +14,9 @@ if (process.env.NODE_ENV === "development") {
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_APP_VERSION: version,
+  },
   images: {
     remotePatterns: [
       {

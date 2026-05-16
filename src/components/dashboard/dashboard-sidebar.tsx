@@ -116,9 +116,16 @@ export function DashboardSidebar({ latestCompanies, latestUsers, upcomingEvent }
 
             <div className="pt-4 text-center">
                 <p className="text-[10px] text-gray-600">
-                    {new Date().getFullYear()} Copyright Reserved MediaLink Pro.
+                    © {new Date().getFullYear()} Copyright Reserved MediaLink Pro.
                     <br />
                     Designed by <a href="https://lazaarworks.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-[#C6A85E]">LazaarWorks</a>
+                </p>
+                <p className="text-[10px] text-gray-700 mt-1">
+                    {(() => {
+                        const raw = process.env.NEXT_PUBLIC_APP_VERSION ?? "1.2026.1";
+                        const [major, year, build] = raw.split(".");
+                        return `v${major}.${year}.${String(Number(build)).padStart(2, "0")}`;
+                    })()}
                 </p>
             </div>
         </aside>
