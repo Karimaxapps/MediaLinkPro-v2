@@ -47,7 +47,9 @@
       "Bash(Remove-Item -Recurse -Force \"C:\\\\dev\\\\MediaLinkPro-v2\\\\.next\")",
       "Bash(git rm *)",
       "Bash(git commit -m ' *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_project_url",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_publishable_keys"
     ]
   }
 }
