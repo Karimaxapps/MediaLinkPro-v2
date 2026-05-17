@@ -9,7 +9,8 @@
     "dev": "next dev",
     "build": "node scripts/bump-version.js && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -17,7 +18,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache --cache-strategy content --no-warn-ignored",
       "prettier --write"
     ],
     "*.{json,css,md}": [
