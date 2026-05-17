@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'Harmonic',
                     slug: 'harmonic',
                     logo_url:
-                        'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779008507780_byy8q5nucd.jpg',
                     tagline: 'Powering the future of video streaming and broadcast infrastructure.',
                     type: 'Solution Provider',
                     main_activity:

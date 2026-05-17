@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'Insta360',
                     slug: 'insta360',
                     logo_url:
-                        'https://images.unsplash.com/photo-1617839625591-e5a789593135?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779006964290_92rks4rg1kh.jpg',
                     tagline: 'Capture the world in every direction.',
                     type: 'Solution Provider',
                     main_activity:

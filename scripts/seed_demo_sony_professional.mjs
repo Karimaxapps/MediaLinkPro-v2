@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'Sony Professional Solutions',
                     slug: 'sony-professional-solutions',
                     logo_url:
-                        'https://images.unsplash.com/photo-1514896856000-91cb6de818e0?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779008270747_htc02xfsw0s.jpg',
                     tagline: 'Professional broadcast and AV technology that moves the world.',
                     type: 'Solution Provider',
                     main_activity:

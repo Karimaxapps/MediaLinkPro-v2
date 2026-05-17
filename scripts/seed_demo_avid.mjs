@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'Avid',
                     slug: 'avid',
                     logo_url:
-                        'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779007709299_2xsr9pj7px3.png',
                     tagline: 'Make, manage and monetize media that matters.',
                     type: 'Solution Provider',
                     main_activity:

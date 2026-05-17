@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'x-dream-distribution GmbH',
                     slug: 'x-dream-distribution',
                     logo_url:
-                        'https://images.unsplash.com/photo-1560732488-6b0df240254a?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779012220317_ulo86j2od1.jpg',
                     tagline: 'Software sourcing for media IT.',
                     type: 'Solution Provider',
                     main_activity:

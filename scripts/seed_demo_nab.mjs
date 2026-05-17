@@ -26,14 +26,25 @@ async function runSeed() {
     try {
         // 1. UPSERT ORGANIZATION (stub, unclaimed)
         console.log('\n🏢 Upserting organization NAB...');
+
+        // Preserve any real logo already uploaded via the UI
+        const { data: existingNab } = await supabase
+            .from('organizations')
+            .select('logo_url')
+            .eq('slug', 'national-association-of-broadcasters')
+            .maybeSingle();
+        const nabLogoUrl =
+            existingNab?.logo_url && !existingNab.logo_url.includes('unsplash.com')
+                ? existingNab.logo_url
+                : 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&auto=format&fit=crop';
+
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
                     name: 'National Association of Broadcasters',
                     slug: 'national-association-of-broadcasters',
-                    logo_url:
-                        'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&auto=format&fit=crop',
+                    logo_url: nabLogoUrl,
                     tagline: 'The voice of the American broadcasting industry.',
                     type: 'Media Association',
                     main_activity:

@@ -33,7 +33,7 @@ async function runSeed() {
                     name: 'National Geographic',
                     slug: 'national-geographic',
                     logo_url:
-                        'https://images.unsplash.com/photo-1447684808650-354b51afaf2a?w=300&h=300&auto=format&fit=crop',
+                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/1779008579253_3dtubqjo2e7.jpg',
                     tagline: 'Inspiring people to care about the planet since 1888.',
                     type: 'Broadcaster',
                     broadcaster_type: 'Television',

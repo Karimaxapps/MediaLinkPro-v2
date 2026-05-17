@@ -26,14 +26,25 @@ async function runSeed() {
     try {
         // 1. UPSERT ORGANIZATION (stub, unclaimed)
         console.log('\n🏢 Upserting organization IBC...');
+
+        // Preserve any real logo already uploaded via the UI
+        const { data: existingIbc } = await supabase
+            .from('organizations')
+            .select('logo_url')
+            .eq('slug', 'international-broadcasting-convention')
+            .maybeSingle();
+        const ibcLogoUrl =
+            existingIbc?.logo_url && !existingIbc.logo_url.includes('unsplash.com')
+                ? existingIbc.logo_url
+                : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&h=300&auto=format&fit=crop';
+
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
                     name: 'International Broadcasting Convention',
                     slug: 'international-broadcasting-convention',
-                    logo_url:
-                        'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&h=300&auto=format&fit=crop',
+                    logo_url: ibcLogoUrl,
                     tagline: 'Where the global broadcast and media technology community connects.',
                     type: 'Media Association',
                     main_activity:

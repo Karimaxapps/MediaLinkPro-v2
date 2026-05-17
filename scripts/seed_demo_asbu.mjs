@@ -26,14 +26,25 @@ async function runSeed() {
     try {
         // 1. UPSERT ORGANIZATION (stub, unclaimed)
         console.log('\n🏢 Upserting organization ASBU...');
+
+        // Preserve any real logo already uploaded via the UI
+        const { data: existingAsbu } = await supabase
+            .from('organizations')
+            .select('logo_url')
+            .eq('slug', 'asbu')
+            .maybeSingle();
+        const asbuLogoUrl =
+            existingAsbu?.logo_url && !existingAsbu.logo_url.includes('unsplash.com')
+                ? existingAsbu.logo_url
+                : 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=300&auto=format&fit=crop';
+
         const { data: orgData, error: orgError } = await supabase
             .from('organizations')
             .upsert(
                 {
                     name: 'Arab States Broadcasting Union (ASBU)',
                     slug: 'asbu',
-                    logo_url:
-                        'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=300&auto=format&fit=crop',
+                    logo_url: asbuLogoUrl,
                     tagline: 'Uniting Arab broadcasters for a stronger media future.',
                     type: 'Media Association',
                     main_activity:
