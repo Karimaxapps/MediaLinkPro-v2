@@ -168,6 +168,45 @@ async function runSeed() {
                 registration_url: 'https://nabshow.com/2027/registration',
                 contact_email: 'nabshow@nab.org',
                 max_attendees: 95000
+            },
+            {
+                title: 'NAB Show New York 2026',
+                slug: 'nab-show-new-york-2026',
+                tagline: 'East Coast broadcast and media technology innovation.',
+                short_description:
+                    'The East Coast edition of the NAB Show — broadcast, streaming and media technology at the Javits Center, New York, October 2026.',
+                description:
+                    '<p><strong>NAB Show New York 2026</strong> is the premier East Coast gathering for broadcast, streaming and media technology professionals. Held each October at the Jacob K. Javits Convention Center in Manhattan, NAB Show New York brings together thousands of content creators, engineers, technologists and business leaders for two intensive days of exhibits, conference sessions and networking.</p><ul><li>500+ exhibitors across broadcast, streaming, cloud, AI and post-production</li><li>Two-day conference programme with keynotes and technical sessions</li><li>Focus on emerging trends: AI-driven production, IP workflows, cloud playout</li><li>Networking receptions and executive roundtables</li><li>Proximity to major New York media companies and agencies</li></ul>',
+                event_type: 'trade_show',
+                status: 'published',
+                start_date: '2026-10-21',
+                end_date: '2026-10-22',
+                timezone: 'America/New_York',
+                location: 'New York, NY, USA',
+                venue_name: 'Jacob K. Javits Convention Center',
+                address: '429 11th Ave, New York, NY 10001, USA',
+                city: 'New York',
+                country: 'United States',
+                is_online: false,
+                format: 'In-Person',
+                cover_image_url:
+                    'https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=1200&auto=format&fit=crop',
+                logo_url:
+                    'https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=300&h=300&auto=format&fit=crop',
+                gallery_urls: [
+                    'https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&auto=format&fit=crop'
+                ],
+                tags: ['broadcast', 'media technology', 'trade show', 'streaming', 'AI', 'New York'],
+                price: 699,
+                currency: 'USD',
+                price_upon_request: false,
+                pricing_model: 'Tiered',
+                website_url: 'https://nabshow.com/new-york',
+                registration_url: 'https://nabshow.com/new-york/2026/registration',
+                contact_email: 'nabshow@nab.org',
+                max_attendees: 20000
             }
         ];
 
