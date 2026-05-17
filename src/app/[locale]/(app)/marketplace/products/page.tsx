@@ -1,5 +1,6 @@
 import { getPublicProducts } from "@/features/products/server/actions";
 import { MarketplaceClient } from "@/features/products/components/marketplace-client";
+import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default async function MarketplaceProductsPage() {
             description="Discover cutting-edge media technology — hardware, software, cloud and hybrid solutions."
             itemNoun="product"
             availableTypes={PRODUCT_TYPE_CHIPS}
+            adSlot={<SponsoredCard placement="marketplace" />}
         />
     );
 }

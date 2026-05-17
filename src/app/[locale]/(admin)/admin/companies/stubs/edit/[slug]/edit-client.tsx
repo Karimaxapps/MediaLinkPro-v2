@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { ORG_TYPES, BROADCASTER_TYPES, type CompanyWizardValues } from "@/features/organizations/schema";
 import { MainActivitySelect } from "@/features/organizations/components/main-activity-select";
+import { AdminLogoUpload } from "@/features/organizations/components/admin-logo-upload";
 import { adminUpdateStubAction } from "@/features/organizations/server/stub-actions";
 import { COUNTRIES } from "@/features/organizations/data/countries";
 
@@ -54,7 +55,7 @@ type StubOrg = {
   youtube_url: string | null;
 };
 
-export function StubEditClient({ org }: { org: StubOrg }) {
+export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState({
@@ -217,17 +218,15 @@ export function StubEditClient({ org }: { org: StubOrg }) {
           />
         </Field>
 
-        <Field label="Logo URL">
-          <div className="flex items-center gap-3">
-            <Input
-              value={form.logo_url}
-              onChange={(e) => set("logo_url", e.target.value)}
-              placeholder="https://example.com/logo.png"
-              className="bg-black/20 border-white/10 text-white flex-1"
+        <div className="space-y-1.5">
+          <Label className="text-sm text-gray-300">Logo</Label>
+          <div className="flex justify-center py-2">
+            <AdminLogoUpload
+              currentLogoUrl={form.logo_url}
+              onUploadSuccess={(url) => set("logo_url", url)}
             />
-            {form.logo_url && <LogoPreview url={form.logo_url} />}
           </div>
-        </Field>
+        </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Website *">
@@ -247,7 +246,17 @@ export function StubEditClient({ org }: { org: StubOrg }) {
               <SelectContent className="max-h-64">
                 {COUNTRIES.map((c) => (
                   <SelectItem key={c.code} value={c.name}>
-                    {c.flag} {c.name}
+                    <div className="flex items-center gap-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://flagcdn.com/w20/${c.code.toLowerCase()}.png`}
+                        width={20}
+                        height={14}
+                        alt=""
+                        className="rounded-sm shrink-0"
+                      />
+                      <span>{c.name}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -333,25 +342,3 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function LogoPreview({ url }: { url: string }) {
-  const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
-  useEffect(() => { setStatus("loading"); }, [url]);
-
-  return (
-    <div className="relative h-10 w-10 shrink-0 rounded-md border border-white/10 bg-black/30 flex items-center justify-center overflow-hidden">
-      {status === "loading" && <Loader2 className="h-4 w-4 animate-spin text-gray-500 absolute" />}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        key={url}
-        src={url}
-        alt="Logo preview"
-        className={`h-full w-full object-contain transition-opacity duration-200 ${status === "ok" ? "opacity-100" : "opacity-0"}`}
-        onLoad={() => setStatus("ok")}
-        onError={() => setStatus("error")}
-      />
-      {status === "error" && (
-        <span className="text-[10px] text-red-400 text-center leading-tight px-0.5">Not found</span>
-      )}
-    </div>
-  );
-}

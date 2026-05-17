@@ -43,6 +43,8 @@ export function DashboardClient({
     latestBlogPosts = [],
     featuredAiTools = [],
     heroBanner,
+    inFeedAd,
+    sidebarAd,
     sidebarExtras,
 }: {
     initialProducts: Product[],
@@ -54,6 +56,8 @@ export function DashboardClient({
     latestBlogPosts?: BlogPost[],
     featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
+    inFeedAd?: ReactNode,
+    sidebarAd?: ReactNode,
     sidebarExtras?: ReactNode,
 }) {
     const productsScrollRef = useRef<HTMLDivElement>(null);
@@ -170,6 +174,9 @@ export function DashboardClient({
                         </div>
                     </div>
                 )}
+
+                {/* In-feed sponsored card — admin-managed via /admin/ads (placement: feed) */}
+                {inFeedAd}
 
                 {/* Media Services Section */}
                 <div className="space-y-4">
@@ -316,6 +323,8 @@ export function DashboardClient({
 
             {/* Right Column: Widgets */}
             <div className="lg:col-span-4 sticky top-24 space-y-6">
+                {/* Sponsored sidebar card — admin-managed via /admin/ads (placement: sidebar) */}
+                {sidebarAd}
                 {sidebarExtras}
                 <DashboardSidebar
                     latestCompanies={latestCompanies}

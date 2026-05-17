@@ -12,6 +12,7 @@ import { DashboardClient } from "./DashboardClient";
 import { RecommendedConnectionsWidget } from "@/features/connections/components/recommended-connections";
 import { DashboardJobApplicationsWidget } from "@/features/jobs/components/dashboard-applications-widget";
 import { DashboardHeroBanner } from "@/features/advertising/components/dashboard-hero-banner";
+import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -56,6 +57,8 @@ export default async function DashboardPage() {
       latestBlogPosts={latestBlogPosts}
       featuredAiTools={featuredAiTools}
       heroBanner={<DashboardHeroBanner />}
+      inFeedAd={<SponsoredCard placement="feed" />}
+      sidebarAd={<SponsoredCard placement="sidebar" />}
       sidebarExtras={
         <>
           <DashboardJobApplicationsWidget limit={5} />

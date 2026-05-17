@@ -1,5 +1,6 @@
 import { getPublicServices } from "@/features/products/server/actions";
 import { MarketplaceClient } from "@/features/products/components/marketplace-client";
+import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default async function ProductionServicesPage() {
             description="Production, post-production, and media support services from agencies, vendors, and freelancers."
             itemNoun="service"
             availableTypes={["Service"]}
+            adSlot={<SponsoredCard placement="marketplace" />}
         />
     );
 }

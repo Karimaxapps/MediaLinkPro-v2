@@ -121,3 +121,34 @@ export async function adminDeleteCampaign(
     revalidatePath("/", "layout");
     return { success: true };
 }
+
+// ── Ad image upload (admin client bypasses storage RLS) ─────────────────────
+
+export async function adminUploadAdImage(
+    formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+    const guard = await requireAdmin();
+    if (!guard.ok) return { success: false, error: guard.error };
+
+    const file = formData.get("file") as File | null;
+    if (!file || file.size === 0) return { success: false, error: "No file provided." };
+
+    if (file.size > 5 * 1024 * 1024) return { success: false, error: "File must be under 5 MB." };
+    if (!file.type.startsWith("image/")) {
+        return { success: false, error: "Only image files are allowed." };
+    }
+
+    const admin = createAdminClient();
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `ads/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const bytes = await file.arrayBuffer();
+    const { error } = await admin.storage
+        .from("public-assets")
+        .upload(path, bytes, { contentType: file.type, upsert: true });
+
+    if (error) return { success: false, error: "Upload failed: " + error.message };
+
+    const { data: { publicUrl } } = admin.storage.from("public-assets").getPublicUrl(path);
+    return { success: true, url: publicUrl };
+}

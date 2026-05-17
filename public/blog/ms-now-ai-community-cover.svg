@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">MS Now digital community strategy cover</title>
+  <desc id="desc">Editorial cover for a MediaLinkPro article about trusted digital communities in the age of AI noise.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070707"/>
+      <stop offset="0.46" stop-color="#16120b"/>
+      <stop offset="1" stop-color="#0a1f21"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d78b"/>
+      <stop offset="1" stop-color="#b89442"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M80 0H0V80" fill="none" stroke="#ffffff" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+
+  <g opacity="0.55">
+    <circle cx="1260" cy="205" r="180" fill="none" stroke="#C6A85E" stroke-opacity="0.28" stroke-width="2"/>
+    <circle cx="1260" cy="205" r="112" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="1260" cy="205" r="48" fill="#C6A85E" fill-opacity="0.18"/>
+    <path d="M1180 164l70 42 92-80M1180 250l70-44 108 76M1260 94v222" fill="none" stroke="#C6A85E" stroke-opacity="0.55" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(995 420)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="390" height="245" rx="22" fill="#101010" stroke="#ffffff" stroke-opacity="0.12"/>
+    <rect x="32" y="34" width="172" height="18" rx="9" fill="#C6A85E"/>
+    <rect x="32" y="76" width="326" height="16" rx="8" fill="#ffffff" fill-opacity="0.24"/>
+    <rect x="32" y="111" width="264" height="16" rx="8" fill="#ffffff" fill-opacity="0.18"/>
+    <rect x="32" y="156" width="80" height="56" rx="14" fill="#143537"/>
+    <rect x="132" y="156" width="80" height="56" rx="14" fill="#24312d"/>
+    <rect x="232" y="156" width="80" height="56" rx="14" fill="#322b1c"/>
+  </g>
+
+  <g transform="translate(214 172)">
+    <rect x="0" y="0" width="142" height="34" rx="17" fill="#C6A85E" fill-opacity="0.16" stroke="#C6A85E" stroke-opacity="0.55"/>
+    <text x="71" y="23" text-anchor="middle" fill="#F2D98D" font-family="Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">MEDIALINKPRO</text>
+  </g>
+
+  <foreignObject x="210" y="250" width="820" height="420">
+    <div xmlns="http://www.w3.org/1999/xhtml" dir="rtl" style="font-family: Arial, 'Tahoma', sans-serif; color: white;">
+      <div style="font-size: 22px; color: #C6A85E; font-weight: 700; margin-bottom: 28px;">تحليل استراتيجي</div>
+      <div style="font-size: 74px; line-height: 1.16; font-weight: 800; letter-spacing: 0;">
+        بناء مجتمع رقمي في عصر فوضى الذكاء الاصطناعي
+      </div>
+      <div style="margin-top: 30px; width: 620px; max-width: 100%; font-size: 30px; line-height: 1.45; color: #d6d6d6;">
+        قراءة MediaLinkPro في تجربة MS Now والتحول من الخبر كسلعة إلى الثقة كقيمة.
+      </div>
+    </div>
+  </foreignObject>
+
+  <g transform="translate(210 742)">
+    <rect width="520" height="2" fill="url(#gold)"/>
+    <text x="0" y="48" fill="#9b9b9b" font-family="Arial, sans-serif" font-size="24">Trust • Community • Human Journalism • AI Era</text>
+  </g>
+</svg>

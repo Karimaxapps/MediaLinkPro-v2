@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import { ProductCard } from "@/features/products/components/product-card";
 import type { Product } from "@/features/products/types";
 import { PRODUCT_TYPES, MAIN_CATEGORIES } from "@/features/products/constants";
@@ -33,6 +33,7 @@ export function MarketplaceClient({
     description = "Discover cutting-edge media technology and solutions.",
     itemNoun = "product",
     availableTypes,
+    adSlot,
 }: {
     products: Product[];
     title?: string;
@@ -40,6 +41,8 @@ export function MarketplaceClient({
     itemNoun?: string;
     /** Subset of PRODUCT_TYPES to show as filter chips. Defaults to all. */
     availableTypes?: readonly string[];
+    /** Optional sponsored ad card rendered between the header and the filters row. */
+    adSlot?: ReactNode;
 }) {
     const typeChips = availableTypes ?? PRODUCT_TYPES;
     const [searchQuery, setSearchQuery] = useState("");
@@ -147,6 +150,9 @@ export function MarketplaceClient({
                     />
                 </div>
             </div>
+
+            {/* Sponsored ad — admin-managed via /admin/ads (placement: marketplace) */}
+            {adSlot}
 
             {/* Filters Row */}
             <div className="flex flex-wrap items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-lg">

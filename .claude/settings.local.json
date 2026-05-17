@@ -75,7 +75,12 @@
       "Bash(Get-ChildItem -Path \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\\\\app\\\\*\\\\admin\" -Directory -ErrorAction SilentlyContinue)",
       "Bash(New-Item -ItemType Directory -Force \"C:\\\\dev\\\\MediaLinkPro-v2\\\\src\\\\app\\\\[locale]\\\\\\(admin\\)\\\\admin\\\\companies\\\\stubs\\\\edit\\\\[slug]\")",
       "Bash(Out-Null)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(git diff *)",
+      "Bash(git fetch *)",
+      "Bash(git cherry-pick *)",
+      "mcp__7a329591-1f7b-4d93-900f-024f741c0f40__get_logs",
+      "mcp__Claude_in_Chrome__tabs_context_mcp"
     ]
   }
 }

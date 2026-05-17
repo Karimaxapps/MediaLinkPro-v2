@@ -491,6 +491,7 @@ export type AdminOrganization = {
   product_count: number;
   event_count: number;
   blog_post_count: number;
+  job_count: number;
   owner_id: string | null;
   owner_name: string | null;
   plan: string | null;
@@ -526,23 +527,32 @@ export async function listAdminOrganizations(
 
   const orgIds = orgs.map((o) => o.id);
 
-  // Parallel: members + product/event/blog counts
-  const [{ data: members }, { data: products }, { data: events }, { data: blogPosts }] =
-    await Promise.all([
-      admin
-        .from("organization_members")
-        .select("organization_id, user_id, role")
-        .in("organization_id", orgIds),
-      admin.from("products").select("organization_id").in("organization_id", orgIds),
-      admin
-        .from("events")
-        .select("organization_id")
-        .in("organization_id", orgIds as never),
-      admin
-        .from("blog_posts" as never)
-        .select("organization_id")
-        .in("organization_id", orgIds as never),
-    ]);
+  // Parallel: members + product/event/blog/job counts
+  const [
+    { data: members },
+    { data: products },
+    { data: events },
+    { data: blogPosts },
+    { data: jobs },
+  ] = await Promise.all([
+    admin
+      .from("organization_members")
+      .select("organization_id, user_id, role")
+      .in("organization_id", orgIds),
+    admin.from("products").select("organization_id").in("organization_id", orgIds),
+    admin
+      .from("events")
+      .select("organization_id")
+      .in("organization_id", orgIds as never),
+    admin
+      .from("blog_posts" as never)
+      .select("organization_id")
+      .in("organization_id", orgIds as never),
+    admin
+      .from("jobs" as never)
+      .select("organization_id")
+      .in("organization_id", orgIds as never),
+  ]);
 
   type MemberRow = { organization_id: string; user_id: string; role: string };
   const memberRows = (members ?? []) as MemberRow[];
@@ -568,6 +578,7 @@ export async function listAdminOrganizations(
   const productCountMap = countByOrg(products as { organization_id?: string }[]);
   const eventCountMap = countByOrg(events as { organization_id?: string }[]);
   const blogCountMap = countByOrg(blogPosts as { organization_id?: string }[]);
+  const jobCountMap = countByOrg(jobs as { organization_id?: string }[]);
 
   // Resolve owner names + subscriptions
   const ownerIds = Array.from(new Set(Array.from(ownerMap.values())));
@@ -649,6 +660,7 @@ export async function listAdminOrganizations(
       product_count: productCountMap.get(o.id) ?? 0,
       event_count: eventCountMap.get(o.id) ?? 0,
       blog_post_count: blogCountMap.get(o.id) ?? 0,
+      job_count: jobCountMap.get(o.id) ?? 0,
       owner_id: ownerId,
       owner_name: ownerId ? (profileMap.get(ownerId) ?? null) : null,
       plan: sub?.plan ?? "free",

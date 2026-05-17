@@ -14,6 +14,10 @@ import {
   Upload,
   Pencil,
   Star,
+  Package,
+  CalendarDays,
+  Briefcase,
+  FileText,
 } from "lucide-react";
 import { type AdminOrganization, toggleOrgFeatured } from "@/features/admin/server/actions";
 import { ManageCompanySheet } from "./manage-company-sheet";
@@ -252,164 +256,196 @@ export function AdminCompaniesClient({
               <p>No companies found.</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/10 bg-white/[0.03]">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden md:table-cell">
-                    Plan
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
-                    Owner
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
-                    Members
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">
-                    Products
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden xl:table-cell">
-                    Events
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
-                    Type
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">
-                    Created
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">
-                    Featured
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {filtered.map((c) => {
-                  // eslint-disable-next-line react-hooks/purity
-                  const gifted =
-                    !!c.gifted_until && new Date(c.gifted_until).getTime() > Date.now();
-                  return (
-                    <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
-                      {/* Company */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9 rounded-lg shrink-0">
-                            <AvatarImage src={c.logo_url ?? undefined} />
-                            <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E] text-xs font-semibold rounded-lg">
-                              {c.name[0]?.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-white truncate">
-                                {c.name}
-                              </span>
-                              {c.is_stub && (
-                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C6A85E]/15 text-[#C6A85E] border border-[#C6A85E]/30">
-                                  Stub
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-separate border-spacing-0">
+                <thead>
+                  <tr className="bg-white/[0.03]">
+                    <th className="sticky left-0 z-20 bg-[#181818] px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-r border-white/10 min-w-[260px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.4)]">
+                      Company
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Plan
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Owner
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Members
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Products
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Events
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Jobs
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Blog
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Created
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Featured
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-white/10 whitespace-nowrap">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((c) => {
+                    // eslint-disable-next-line react-hooks/purity
+                    const gifted =
+                      !!c.gifted_until && new Date(c.gifted_until).getTime() > Date.now();
+                    return (
+                      <tr key={c.id} className="group hover:bg-white/[0.02] transition-colors">
+                        {/* Company (sticky) */}
+                        <td className="sticky left-0 z-10 bg-[#121212] group-hover:bg-[#1a1a1a] transition-colors px-4 py-3 border-b border-r border-white/5 min-w-[260px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.4)]">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9 rounded-lg shrink-0">
+                              <AvatarImage src={c.logo_url ?? undefined} />
+                              <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E] text-xs font-semibold rounded-lg">
+                                {c.name[0]?.toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-white truncate">
+                                  {c.name}
                                 </span>
-                              )}
+                                {c.is_stub && (
+                                  <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C6A85E]/15 text-[#C6A85E] border border-[#C6A85E]/30">
+                                    Stub
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-500">/{c.slug}</div>
                             </div>
-                            <div className="text-xs text-gray-500">/{c.slug}</div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Plan */}
-                      <td className="px-4 py-3 hidden md:table-cell">
-                        <PlanBadge plan={c.plan} gifted={gifted} />
-                      </td>
+                        {/* Plan */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <PlanBadge plan={c.plan} gifted={gifted} />
+                        </td>
 
-                      {/* Owner */}
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-gray-300 text-sm">{c.owner_name ?? "—"}</span>
-                      </td>
+                        {/* Owner */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="text-gray-300 text-sm">{c.owner_name ?? "—"}</span>
+                        </td>
 
-                      {/* Members */}
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
-                          <Users className="h-3.5 w-3.5" />
-                          {c.member_count}
-                        </span>
-                      </td>
+                        {/* Members */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
+                            <Users className="h-3.5 w-3.5" />
+                            {c.member_count}
+                          </span>
+                        </td>
 
-                      {/* Products */}
-                      <td className="px-4 py-3 hidden xl:table-cell">
-                        <span className="text-gray-400 text-sm">{c.product_count}</span>
-                      </td>
+                        {/* Products */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
+                            <Package className="h-3.5 w-3.5" />
+                            {c.product_count}
+                          </span>
+                        </td>
 
-                      {/* Events */}
-                      <td className="px-4 py-3 hidden xl:table-cell">
-                        <span className="text-gray-400 text-sm">{c.event_count}</span>
-                      </td>
+                        {/* Events */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
+                            <CalendarDays className="h-3.5 w-3.5" />
+                            {c.event_count}
+                          </span>
+                        </td>
 
-                      {/* Type */}
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-gray-400 text-sm capitalize">{c.type ?? "—"}</span>
-                      </td>
+                        {/* Jobs */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
+                            <Briefcase className="h-3.5 w-3.5" />
+                            {c.job_count}
+                          </span>
+                        </td>
 
-                      {/* Created */}
-                      <td className="px-4 py-3 hidden lg:table-cell">
-                        <span className="text-gray-400 text-sm">
-                          {c.created_at ? new Date(c.created_at).toLocaleDateString() : "—"}
-                        </span>
-                      </td>
+                        {/* Blog */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 text-gray-400 text-sm">
+                            <FileText className="h-3.5 w-3.5" />
+                            {c.blog_post_count}
+                          </span>
+                        </td>
 
-                      {/* Featured toggle */}
-                      <td className="px-4 py-3 text-center hidden sm:table-cell">
-                        <button
-                          onClick={() => handleToggleFeatured(c)}
-                          disabled={isPending && pendingId === c.id}
-                          title={c.is_featured ? "Remove from featured" : "Add to featured"}
-                          className={`p-1.5 rounded-lg transition-colors ${
-                            c.is_featured
-                              ? "text-[#C6A85E] hover:bg-[#C6A85E]/10"
-                              : "text-gray-600 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
-                          } disabled:opacity-40`}
-                        >
-                          <Star className={`h-4 w-4 ${c.is_featured ? "fill-[#C6A85E]" : ""}`} />
-                        </button>
-                      </td>
+                        {/* Type */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="text-gray-400 text-sm capitalize">{c.type ?? "—"}</span>
+                        </td>
 
-                      {/* Actions */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <Link href={`/companies/${c.slug}`} target="_blank">
-                            <button
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
-                              title="View company"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </button>
-                          </Link>
-                          {c.is_stub && (
-                            <Link href={`/admin/companies/stubs/edit/${c.slug}`}>
+                        {/* Created */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <span className="text-gray-400 text-sm">
+                            {c.created_at ? new Date(c.created_at).toLocaleDateString() : "—"}
+                          </span>
+                        </td>
+
+                        {/* Featured toggle */}
+                        <td className="px-4 py-3 text-center border-b border-white/5 whitespace-nowrap">
+                          <button
+                            onClick={() => handleToggleFeatured(c)}
+                            disabled={isPending && pendingId === c.id}
+                            title={c.is_featured ? "Remove from featured" : "Add to featured"}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              c.is_featured
+                                ? "text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                                : "text-gray-600 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                            } disabled:opacity-40`}
+                          >
+                            <Star
+                              className={`h-4 w-4 ${c.is_featured ? "fill-[#C6A85E]" : ""}`}
+                            />
+                          </button>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3 border-b border-white/5 whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            <Link href={`/companies/${c.slug}`} target="_blank">
                               <button
-                                className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
-                                title="Edit stub profile"
+                                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                title="View company"
                               >
-                                <Pencil className="h-4 w-4" />
+                                <ExternalLink className="h-4 w-4" />
                               </button>
                             </Link>
-                          )}
-                          <button
-                            onClick={() => openSheet(c)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
-                            title="Manage company"
-                          >
-                            <Settings className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {c.is_stub && (
+                              <Link href={`/admin/companies/stubs/edit/${c.slug}`}>
+                                <button
+                                  className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+                                  title="Edit stub profile"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </button>
+                              </Link>
+                            )}
+                            <button
+                              onClick={() => openSheet(c)}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+                              title="Manage company"
+                            >
+                              <Settings className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

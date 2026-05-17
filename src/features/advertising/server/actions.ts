@@ -4,6 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+export type AdPlacement =
+    | "feed"
+    | "sidebar"
+    | "marketplace"
+    | "jobs_sidebar"
+    | "events_sidebar"
+    | "job_details_sidebar"
+    | "dashboard_hero_banner"
+    | "mobile_top_feed_screen1"
+    | "mobile_middle_feed_screen2";
+
 export type AdCampaign = {
     id: string;
     advertiser_id: string;
@@ -14,7 +25,7 @@ export type AdCampaign = {
     cta_label: string | null;
     cta_url: string;
     image_url: string | null;
-    placement: "feed" | "sidebar" | "marketplace" | "jobs_sidebar" | "events_sidebar" | "job_details_sidebar" | "dashboard_hero_banner";
+    placement: AdPlacement;
     target_category: string | null;
     status: "draft" | "active" | "paused" | "ended";
     starts_at: string | null;
@@ -41,7 +52,7 @@ export async function listMyCampaigns(): Promise<AdCampaign[]> {
 }
 
 export async function getActiveAdForPlacement(
-    placement: "feed" | "sidebar" | "marketplace" | "jobs_sidebar" | "events_sidebar" | "job_details_sidebar" | "dashboard_hero_banner",
+    placement: AdPlacement,
     category?: string
 ): Promise<AdCampaign | null> {
     const cookieStore = await cookies();
@@ -73,7 +84,7 @@ export async function createCampaign(input: {
     cta_label?: string;
     cta_url: string;
     image_url?: string;
-    placement: "feed" | "sidebar" | "marketplace" | "jobs_sidebar" | "events_sidebar" | "job_details_sidebar" | "dashboard_hero_banner";
+    placement: AdPlacement;
     target_category?: string;
 }): Promise<{ success: boolean; error?: string }> {
     const cookieStore = await cookies();
