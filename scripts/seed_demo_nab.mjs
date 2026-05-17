@@ -68,28 +68,6 @@ async function runSeed() {
         console.log('\n📦 Upserting products for NAB...');
         const products = [
             {
-                name: 'NAB Show',
-                slug: 'nab-show',
-                short_description:
-                    'The world\'s largest annual media, entertainment and technology convention. Las Vegas, April.',
-                description:
-                    '<p><strong>NAB Show</strong> is the premier annual gathering of media, entertainment and technology professionals — drawing 90,000+ attendees and 1,700+ exhibitors to the Las Vegas Convention Center each April. Four days of keynotes, 150+ conference sessions, a 1.1M square-foot exhibition floor and the industry\'s most important product launches.</p><ul><li>1.1M sq ft exhibition floor across 1,700+ exhibitors</li><li>150+ conference sessions across 8 tracks</li><li>Keynotes from the world\'s top broadcast and streaming executives</li><li>NAB Show Product of the Year awards</li><li>Networking receptions, demo stages and show floor theaters</li></ul>',
-                logo_url:
-                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&auto=format&fit=crop',
-                product_type: 'Service',
-                main_category: 'Other',
-                sub_category: 'Other',
-                gallery: [
-                    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop'
-                ],
-                price: 895,
-                pricing_model: 'One-time',
-                price_upon_request: false,
-                currency: 'USD'
-            },
-            {
                 name: 'NAB Amplify',
                 slug: 'nab-amplify',
                 short_description:
@@ -149,6 +127,98 @@ async function runSeed() {
             console.log(`   ✅ Product upserted: ${p.name}`);
         }
 
+        // 3. UPSERT EVENTS
+        console.log('\n🗓️  Upserting events for NAB...');
+        const events = [
+            {
+                title: 'NAB Show 2027',
+                slug: 'nab-show-2027',
+                tagline: 'The world\'s largest media, entertainment and technology show.',
+                short_description:
+                    'The premier annual trade show for broadcast, media and entertainment technology. Las Vegas Convention Center, April 2027.',
+                description:
+                    '<p><strong>NAB Show 2027</strong> is the world\'s largest and most influential convention for professionals who create, manage, deliver and monetise content across all platforms. Held each April at the Las Vegas Convention Center, NAB Show brings together 90,000+ attendees and 1,700+ exhibitors to showcase the industry\'s latest innovations in broadcast, streaming, AI, cloud production, audio and post.</p><ul><li>1,700+ exhibitors across multiple exhibit halls</li><li>300+ conference sessions, keynotes and masterclasses</li><li>NAB Show Awards recognising excellence in content and technology</li><li>Dedicated innovation zones: AI, IP Showcase, Cloud, Future of Cinema</li><li>Networking events, industry meetups and hosted buyer programme</li></ul>',
+                event_type: 'trade_show',
+                status: 'published',
+                start_date: '2027-04-11',
+                end_date: '2027-04-14',
+                timezone: 'America/Los_Angeles',
+                location: 'Las Vegas, NV, USA',
+                venue_name: 'Las Vegas Convention Center',
+                address: '3150 Paradise Rd, Las Vegas, NV 89109, USA',
+                city: 'Las Vegas',
+                country: 'United States',
+                is_online: false,
+                format: 'In-Person',
+                cover_image_url:
+                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop',
+                logo_url:
+                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&h=300&auto=format&fit=crop',
+                gallery_urls: [
+                    'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop'
+                ],
+                tags: ['broadcast', 'media technology', 'trade show', 'streaming', 'AI', 'cloud'],
+                price: 999,
+                currency: 'USD',
+                price_upon_request: false,
+                pricing_model: 'Tiered',
+                website_url: 'https://nabshow.com',
+                registration_url: 'https://nabshow.com/2027/registration',
+                contact_email: 'nabshow@nab.org',
+                max_attendees: 95000
+            }
+        ];
+
+        for (const e of events) {
+            const { error: eventError } = await supabase
+                .from('events')
+                .upsert(
+                    {
+                        id: crypto.randomUUID(),
+                        organization_id: orgId,
+                        title: e.title,
+                        slug: e.slug,
+                        tagline: e.tagline,
+                        short_description: e.short_description,
+                        description: e.description,
+                        event_type: e.event_type,
+                        status: e.status,
+                        start_date: e.start_date,
+                        end_date: e.end_date,
+                        timezone: e.timezone,
+                        location: e.location,
+                        venue_name: e.venue_name,
+                        address: e.address,
+                        city: e.city,
+                        country: e.country,
+                        is_online: e.is_online,
+                        format: e.format,
+                        cover_image_url: e.cover_image_url,
+                        logo_url: e.logo_url,
+                        gallery_urls: e.gallery_urls,
+                        tags: e.tags,
+                        price: e.price,
+                        currency: e.currency,
+                        price_upon_request: e.price_upon_request,
+                        pricing_model: e.pricing_model,
+                        website_url: e.website_url,
+                        registration_url: e.registration_url,
+                        contact_email: e.contact_email,
+                        max_attendees: e.max_attendees,
+                        is_public: true,
+                        views_count: Math.floor(Math.random() * 12000) + 4000,
+                        bookmarks_count: Math.floor(Math.random() * 400) + 80,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    },
+                    { onConflict: 'organization_id,slug' }
+                );
+            if (eventError) throw eventError;
+            console.log(`   ✅ Event upserted: ${e.title}`);
+        }
+
         console.log('\n🎉 SEEDING COMPLETE! 🎉');
         console.log('---------------------------------------------');
         console.log(`Organization : National Association of Broadcasters`);
@@ -156,6 +226,7 @@ async function runSeed() {
         console.log(`Org ID       : ${orgId}`);
         console.log(`Status       : Stub (unclaimed, claimable)`);
         console.log(`Products     : ${products.length} upserted`);
+        console.log(`Events       : ${events.length} upserted`);
         console.log('---------------------------------------------');
     } catch (error) {
         console.error('\n❌ Error during seeding:', error);
