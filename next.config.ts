@@ -30,12 +30,17 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "flagcdn.com",
-      }
+      },
     ],
   },
   // Fix TLS certificate verification in dev (corporate networks / self-signed certs)
   experimental: {
     turbopackUseSystemTlsCerts: true,
+    // Default is 1 MB; raise to 8 MB so ad images / logos up to ~5 MB work end-to-end
+    // (some headroom for multipart overhead).
+    serverActions: {
+      bodySizeLimit: "8mb",
+    },
   },
 };
 
