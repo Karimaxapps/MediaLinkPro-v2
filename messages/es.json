@@ -140,7 +140,9 @@
     "ctaTitle": "¿Listo para Unirte a la Red de Medios?",
     "ctaSubtitle": "Crea tu cuenta gratuita y empieza a conectar con profesionales, descubrir soluciones y hacer crecer tu carrera.",
     "ctaButton": "Comenzar — Es Gratis",
-    "copyright": "Todos los derechos reservados."
+    "copyright": "Todos los derechos reservados.",
+    "terms": "Términos de servicio",
+    "privacy": "Política de privacidad"
   },
   "blog": {
     "label": "Blog de MediaLinkPro",
@@ -231,6 +233,8 @@
     "billingPlans": "Facturación y Planes",
     "settings": "Configuración",
     "language": "Idioma",
+    "termsOfService": "Términos de servicio",
+    "privacyPolicy": "Política de privacidad",
     "logOut": "Cerrar sesión"
   },
   "appHeader": {
@@ -244,7 +248,9 @@
   },
   "footer": {
     "copyright": "Todos los derechos reservados",
-    "designedBy": "Diseñado por"
+    "designedBy": "Diseñado por",
+    "terms": "Términos de servicio",
+    "privacy": "Política de privacidad"
   },
   "auth": {
     "signUp": "Registrarse",
@@ -273,6 +279,11 @@
     "featureAnalytics": "Analítica",
     "quote": "Donde los profesionales de medios construyen carreras.",
     "passwordsMismatch": "Las contraseñas no coinciden",
+    "termsRequired": "Debes aceptar los Términos de servicio y la Política de privacidad para continuar",
+    "termsAcceptPrefix": "Acepto los",
+    "termsLink": "Términos de servicio",
+    "termsAcceptAnd": "y la",
+    "privacyLink": "Política de privacidad",
     "forgotPasswordTitle": "Restablecer Contraseña",
     "forgotPasswordDesc": "Introduce tu correo y te enviaremos un enlace para restablecerla",
     "sendResetLink": "Enviar Enlace de Restablecimiento",

@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 
 function getErrorMessage(error: unknown) {
@@ -32,6 +34,9 @@ export function AuthTabs() {
     // Login state
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
+
+    // Terms acceptance
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     // Forgot password state
     const [forgotEmail, setForgotEmail] = useState("");
@@ -65,6 +70,10 @@ export function AuthTabs() {
         e.preventDefault();
         if (signupPassword !== confirmPassword) {
             setError(t("passwordsMismatch"));
+            return;
+        }
+        if (!termsAccepted) {
+            setError(t("termsRequired"));
             return;
         }
         setIsLoading(true);
@@ -238,6 +247,25 @@ export function AuthTabs() {
                         >
                             {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
+                    </div>
+
+                    <div className="flex items-start gap-3 pt-1">
+                        <Checkbox
+                            id="terms"
+                            checked={termsAccepted}
+                            onCheckedChange={(v) => setTermsAccepted(v === true)}
+                            className="mt-0.5 border-white/20 data-[state=checked]:bg-[#C6A85E] data-[state=checked]:border-[#C6A85E]"
+                        />
+                        <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed cursor-pointer select-none">
+                            {t("termsAcceptPrefix")}{" "}
+                            <Link href="/terms" target="_blank" className="text-[#C6A85E] hover:underline">
+                                {t("termsLink")}
+                            </Link>
+                            {" "}{t("termsAcceptAnd")}{" "}
+                            <Link href="/privacy" target="_blank" className="text-[#C6A85E] hover:underline">
+                                {t("privacyLink")}
+                            </Link>
+                        </label>
                     </div>
 
                     <Button

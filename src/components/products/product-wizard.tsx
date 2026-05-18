@@ -398,7 +398,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         <Label htmlFor="organization_id" className="text-gray-300">Organization</Label>
                                         <Select
                                             onValueChange={(value) => setValue("organization_id", value, { shouldValidate: true })}
-                                            defaultValue={getValues("organization_id")}
+                                            value={watch("organization_id") ?? ""}
                                         >
                                             <SelectTrigger className="bg-black/20 border-white/10 text-white">
                                                 <SelectValue placeholder="Select Organization" />
@@ -459,7 +459,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     <Label htmlFor="product_type" className="text-gray-300">Product Type <span className="text-red-500">*</span></Label>
                                     <Select
                                         onValueChange={(value) => setValue("product_type", value as InsertProduct["product_type"], { shouldValidate: true })}
-                                        defaultValue={getValues("product_type")}
+                                        value={watch("product_type") ?? ""}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white">
                                             <SelectValue placeholder="Select Product Type" />
@@ -482,7 +482,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     <Label htmlFor="main_category" className="text-gray-300">Main Category <span className="text-red-500">*</span></Label>
                                     <Select
                                         onValueChange={(value) => setValue("main_category", value as InsertProduct["main_category"], { shouldValidate: true })}
-                                        defaultValue={getValues("main_category")}
+                                        value={watch("main_category") ?? ""}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white">
                                             <SelectValue placeholder="Select Main Category" />
@@ -507,7 +507,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         {availableSubCategories.length > 0 ? (
                                             <Select
                                                 onValueChange={(value) => setValue("sub_category", value, { shouldValidate: true })}
-                                                value={watch("sub_category")}
+                                                value={watch("sub_category") ?? ""}
                                             >
                                                 <SelectTrigger className="bg-black/20 border-white/10 text-white">
                                                     <SelectValue placeholder="Select Sub Category" />
@@ -622,7 +622,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                 <ProductMediaUpload
                                     userId={userId}
                                     organizationId={getValues('organization_id')}
-                                    mainImageUrl={watch('logo_url')}
+                                    mainImageUrl={watch('logo_url') ?? ''}
                                     galleryUrls={watch('gallery_urls')}
                                     onMainImageChange={(url) => setValue('logo_url', url, { shouldValidate: true })}
                                     onGalleryChange={(urls) => setValue('gallery_urls', urls, { shouldValidate: true })}

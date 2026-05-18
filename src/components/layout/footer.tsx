@@ -32,16 +32,24 @@ export function Footer({ isSidebar = false }: FooterProps) {
         <div className="text-sm font-medium">
           © {year} {t("copyright")} <span className="text-[#C6A85E]">MediaLinkPro</span>
         </div>
-        <div className="text-sm">
-          {t("designedBy") + " "}
-          <Link
-            href="https://lazaarworks.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-[#C6A85E] transition-colors duration-200 underline underline-offset-4"
-          >
-            LazaarWorks
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/terms" className="hover:text-[#C6A85E] transition-colors duration-200">
+            {t("terms")}
           </Link>
+          <Link href="/privacy" className="hover:text-[#C6A85E] transition-colors duration-200">
+            {t("privacy")}
+          </Link>
+          <span>
+            {t("designedBy") + " "}
+            <Link
+              href="https://lazaarworks.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-[#C6A85E] transition-colors duration-200 underline underline-offset-4"
+            >
+              LazaarWorks
+            </Link>
+          </span>
         </div>
       </div>
     </footer>

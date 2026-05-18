@@ -24,13 +24,16 @@ type NotificationItem = {
     id: string;
     title: string;
     message: string;
-    type: "connection_request" | "demo_request" | string;
+    type: "connection_request" | "demo_request" | "admin_broadcast" | string;
     is_read: boolean;
     created_at: string;
+    image_url?: string | null;
+    link_url?: string | null;
     data?: {
         username?: string;
         product_slug?: string;
         product_id?: string;
+        broadcast_id?: string;
     } | null;
 };
 
@@ -86,6 +89,19 @@ export function NotificationsPopover() {
         // Optimistically mark as read
         if (!notification.is_read) {
             handleMarkAsRead(notification.id);
+        }
+
+        if (notification.type === 'admin_broadcast') {
+            const url = notification.link_url;
+            if (url) {
+                setIsOpen(false);
+                if (/^https?:\/\//i.test(url)) {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                } else {
+                    router.push(url);
+                }
+            }
+            return;
         }
 
         if (notification.type === 'connection_request') {
@@ -194,8 +210,21 @@ export function NotificationsPopover() {
                                                 : ""
                                     )}
                                 >
+                                    {notification.image_url && (
+                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                        <img
+                                            src={notification.image_url}
+                                            alt=""
+                                            className="w-full h-24 object-cover rounded-md mb-2"
+                                        />
+                                    )}
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex items-center gap-2">
+                                            {notification.type === 'admin_broadcast' && (
+                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
+                                                    <Bell className="h-3 w-3 text-[#C6A85E]" />
+                                                </div>
+                                            )}
                                             {(notification.type === 'demo_request' || notification.type === 'connection_request') && (
                                                 <div className={cn(
                                                     "p-1.5 rounded-full shrink-0",

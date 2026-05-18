@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ProductWizard } from "@/components/products/product-wizard";
 import { getOrganizations } from "@/features/organizations/server/actions";
 import { getProductBySlug } from "@/features/products/server/actions";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
@@ -29,6 +29,39 @@ export default async function EditProductPage({ params }: PageProps) {
     const supabase = createClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Site admins can edit any product, even orgs they don't belong to.
+    // Ensure the product's owning org is in the dropdown so the wizard can
+    // render (it gates on `organizations.length === 0`).
+    let mergedOrgs = organizations;
+    if (user) {
+        const admin = createAdminClient();
+        const { data: profile } = await admin
+            .from("profiles")
+            .select("is_admin")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        const isSiteAdmin = (profile as { is_admin?: boolean } | null)?.is_admin === true;
+
+        if (
+            isSiteAdmin &&
+            product.organization_id &&
+            !organizations.some((o) => o.id === product.organization_id)
+        ) {
+            const { data: ownerOrg } = await admin
+                .from("organizations")
+                .select("id, name, slug")
+                .eq("id", product.organization_id)
+                .maybeSingle();
+            if (ownerOrg) {
+                mergedOrgs = [
+                    ...organizations,
+                    ownerOrg as { id: string; name: string; slug: string },
+                ];
+            }
+        }
+    }
+
     return (
         <div className="space-y-6">
             <PageHeader
@@ -36,7 +69,7 @@ export default async function EditProductPage({ params }: PageProps) {
                 text={`Update details for ${product.name}`}
             />
             <ProductWizard
-                organizations={organizations}
+                organizations={mergedOrgs}
                 userId={user?.id || ''}
                 initialData={product}
             />

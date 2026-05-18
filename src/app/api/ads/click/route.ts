@@ -1,25 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { trackClick } from "@/features/advertising/server/actions";
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    const url = searchParams.get("url");
 
-    if (!id || !url) {
+    if (!id) {
         return NextResponse.json({ error: "Missing params" }, { status: 400 });
     }
 
-    // Only allow absolute URLs to prevent open redirect to internal routes
+    // Look up the campaign and use its stored cta_url as the source of truth.
+    // The `url` query param is ignored — trusting it would allow an open redirect:
+    // an attacker could craft /api/ads/click?id=<any>&url=https://evil.example
+    // and use our domain to bounce victims to phishing/malware.
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+    const { data: campaign } = await supabase
+        .from("ad_campaigns" as never)
+        .select("cta_url, status")
+        .eq("id", id)
+        .single<{ cta_url: string | null; status: string }>();
+
+    if (!campaign || !campaign.cta_url) {
+        return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
+    }
+
+    // Reject non-http(s) protocols (javascript:, data:, file:, …)
+    let target: URL;
     try {
-        const parsed = new URL(url);
-        if (!["http:", "https:"].includes(parsed.protocol)) {
-            return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
-        }
+        target = new URL(campaign.cta_url);
     } catch {
-        return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+        return NextResponse.json({ error: "Invalid campaign URL" }, { status: 400 });
+    }
+    if (!["http:", "https:"].includes(target.protocol)) {
+        return NextResponse.json({ error: "Invalid campaign URL" }, { status: 400 });
     }
 
     await trackClick(id).catch(() => undefined);
-    return NextResponse.redirect(url, 302);
+    return NextResponse.redirect(target.toString(), 302);
 }

@@ -140,7 +140,9 @@
     "ctaTitle": "准备好加入媒体网络了吗？",
     "ctaSubtitle": "创建您的免费账户，开始与专业人士建立联系、发现解决方案并发展您的职业生涯。",
     "ctaButton": "立即开始 — 完全免费",
-    "copyright": "版权所有。"
+    "copyright": "版权所有。",
+    "terms": "服务条款",
+    "privacy": "隐私政策"
   },
   "blog": {
     "label": "MediaLinkPro 博客",
@@ -231,6 +233,8 @@
     "billingPlans": "账单与方案",
     "settings": "设置",
     "language": "语言",
+    "termsOfService": "服务条款",
+    "privacyPolicy": "隐私政策",
     "logOut": "退出登录"
   },
   "appHeader": {
@@ -244,7 +248,9 @@
   },
   "footer": {
     "copyright": "版权所有",
-    "designedBy": "由以下机构设计"
+    "designedBy": "由以下机构设计",
+    "terms": "服务条款",
+    "privacy": "隐私政策"
   },
   "auth": {
     "signUp": "注册",
@@ -273,6 +279,11 @@
     "featureAnalytics": "数据分析",
     "quote": "媒体专业人士职业发展的舞台。",
     "passwordsMismatch": "两次密码不一致",
+    "termsRequired": "您必须接受服务条款和隐私政策才能继续",
+    "termsAcceptPrefix": "我同意",
+    "termsLink": "服务条款",
+    "termsAcceptAnd": "和",
+    "privacyLink": "隐私政策",
     "forgotPasswordTitle": "重置密码",
     "forgotPasswordDesc": "输入您的邮箱，我们将发送重置链接",
     "sendResetLink": "发送重置链接",

@@ -18,10 +18,10 @@ import type { AdminOwnershipRequest } from "@/features/ownership-requests/types"
  * Next.js surfaces to error.tsx) if they are not.
  */
 export async function requireSiteAdmin(): Promise<{ userId: string }> {
-  // DEV BYPASS: skip auth when NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local
+  // DEV BYPASS: skip auth when DEV_BYPASS_AUTH=true in .env.local
   if (
     process.env.NODE_ENV === "development" &&
-    process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true"
+    process.env.DEV_BYPASS_AUTH === "true"
   ) {
     return { userId: "dev-bypass" };
   }

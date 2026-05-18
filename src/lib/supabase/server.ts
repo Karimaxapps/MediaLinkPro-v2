@@ -1,10 +1,13 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { env } from "@/lib/env";
+
+const supabaseUrl = process.env.SUPABASE_URL ?? env.NEXT_PUBLIC_SUPABASE_URL;
 
 export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) => {
     return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseUrl,
+        env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
                 getAll() {
@@ -28,8 +31,8 @@ export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) =
 
 export const createAdminClient = () => {
     return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        supabaseUrl,
+        env.SUPABASE_SERVICE_ROLE_KEY,
         {
             cookies: {
                 getAll() {

@@ -81,6 +81,14 @@ export default function LandingPage() {
           <span>
             &copy; {new Date().getFullYear()} MediaLinkPro. {t("copyright")}
           </span>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-[#C6A85E] transition-colors duration-200">
+              {t("terms")}
+            </Link>
+            <Link href="/privacy" className="hover:text-[#C6A85E] transition-colors duration-200">
+              {t("privacy")}
+            </Link>
+          </div>
         </div>
       </footer>
     </main>

@@ -9,10 +9,10 @@ import { ProfileOnboarding } from "@/features/profiles/components/ProfileOnboard
 
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-    // DEV BYPASS: set NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local to skip auth when Supabase is down
+    // DEV BYPASS: set DEV_BYPASS_AUTH=true in .env.local to skip auth when Supabase is down
     const devBypass =
         process.env.NODE_ENV === "development" &&
-        process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true";
+        process.env.DEV_BYPASS_AUTH === "true";
 
     let profile = null;
     let organizations: Awaited<ReturnType<typeof getOrganizations>> = [];

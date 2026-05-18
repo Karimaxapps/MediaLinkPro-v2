@@ -140,7 +140,9 @@
     "ctaTitle": "Bereit, dem Medien-Netzwerk Beizutreten?",
     "ctaSubtitle": "Erstellen Sie Ihr kostenloses Konto und vernetzen Sie sich mit Fachleuten, entdecken Sie Lösungen und bauen Sie Ihre Karriere aus.",
     "ctaButton": "Jetzt Loslegen — Es ist Kostenlos",
-    "copyright": "Alle Rechte vorbehalten."
+    "copyright": "Alle Rechte vorbehalten.",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie"
   },
   "blog": {
     "label": "MediaLinkPro Blog",
@@ -231,6 +233,8 @@
     "billingPlans": "Abrechnung & Pläne",
     "settings": "Einstellungen",
     "language": "Sprache",
+    "termsOfService": "Nutzungsbedingungen",
+    "privacyPolicy": "Datenschutzrichtlinie",
     "logOut": "Abmelden"
   },
   "appHeader": {
@@ -244,7 +248,9 @@
   },
   "footer": {
     "copyright": "Alle Rechte vorbehalten",
-    "designedBy": "Gestaltet von"
+    "designedBy": "Gestaltet von",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie"
   },
   "auth": {
     "signUp": "Registrieren",
@@ -273,6 +279,11 @@
     "featureAnalytics": "Analysen",
     "quote": "Wo Medienprofis Karriere machen.",
     "passwordsMismatch": "Passwörter stimmen nicht überein",
+    "termsRequired": "Sie müssen die Nutzungsbedingungen und Datenschutzrichtlinie akzeptieren",
+    "termsAcceptPrefix": "Ich stimme den",
+    "termsLink": "Nutzungsbedingungen",
+    "termsAcceptAnd": "und der",
+    "privacyLink": "Datenschutzrichtlinie",
     "forgotPasswordTitle": "Passwort Zurücksetzen",
     "forgotPasswordDesc": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link",
     "sendResetLink": "Reset-Link Senden",

@@ -5,7 +5,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Trash2, ExternalLink } from "lucide-react";
+import { Trash2, ExternalLink, Pencil } from "lucide-react";
 import { deleteProductAsAdmin } from "@/features/admin/server/actions";
 
 type Product = {
@@ -53,8 +53,23 @@ export function AdminProductRow({ product }: { product: Product }) {
             <td className="p-4 text-right">
                 <div className="flex items-center justify-end gap-1">
                     <Link href={`/products/${product.slug}`} target="_blank">
-                        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-400 hover:text-white"
+                            title="View product"
+                        >
                             <ExternalLink className="h-4 w-4" />
+                        </Button>
+                    </Link>
+                    <Link href={`/products/${product.slug}/edit`}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-[#C6A85E] hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                            title="Edit product"
+                        >
+                            <Pencil className="h-4 w-4" />
                         </Button>
                     </Link>
                     <Button
@@ -63,6 +78,7 @@ export function AdminProductRow({ product }: { product: Product }) {
                         className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         disabled={isPending}
                         onClick={handleDelete}
+                        title="Delete product"
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>

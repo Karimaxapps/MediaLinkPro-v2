@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell } from "lucide-react";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -14,15 +14,16 @@ const NAV = [
     { href: "/admin/reviews", label: "Reviews", icon: Star },
     { href: "/admin/blog", label: "Blog Posts", icon: PenSquare },
     { href: "/admin/ads", label: "Ad Campaigns", icon: Megaphone },
+    { href: "/admin/broadcasts", label: "Push Notifications", icon: Bell },
     { href: "/admin/languages", label: "Languages", icon: Globe },
     { href: "/admin/support", label: "Support", icon: MessageSquare },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    // DEV BYPASS: skip Supabase auth when NEXT_PUBLIC_DEV_BYPASS_AUTH=true in .env.local
+    // DEV BYPASS: skip Supabase auth when DEV_BYPASS_AUTH=true in .env.local
     const devBypass =
         process.env.NODE_ENV === "development" &&
-        process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === "true";
+        process.env.DEV_BYPASS_AUTH === "true";
 
     if (!devBypass) {
         const cookieStore = await cookies();

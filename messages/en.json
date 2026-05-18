@@ -140,7 +140,9 @@
     "ctaTitle": "Ready to Join the Media Network?",
     "ctaSubtitle": "Create your free account and start connecting with professionals, discovering solutions, and growing your career.",
     "ctaButton": "Get Started — It's Free",
-    "copyright": "All rights reserved."
+    "copyright": "All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "blog": {
     "label": "MediaLinkPro Blog",
@@ -231,6 +233,8 @@
     "billingPlans": "Billing & Plans",
     "settings": "Settings",
     "language": "Language",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
     "logOut": "Log out"
   },
   "appHeader": {
@@ -244,7 +248,9 @@
   },
   "footer": {
     "copyright": "Copyright Reserved",
-    "designedBy": "Designed by"
+    "designedBy": "Designed by",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "auth": {
     "signUp": "Sign Up",
@@ -273,6 +279,11 @@
     "featureAnalytics": "Analytics",
     "quote": "Where media professionals build careers.",
     "passwordsMismatch": "Passwords do not match",
+    "termsRequired": "You must accept the Terms of Service and Privacy Policy to continue",
+    "termsAcceptPrefix": "I agree to the",
+    "termsLink": "Terms of Service",
+    "termsAcceptAnd": "and",
+    "privacyLink": "Privacy Policy",
     "forgotPasswordTitle": "Reset Password",
     "forgotPasswordDesc": "Enter your email and we'll send you a reset link",
     "sendResetLink": "Send Reset Link",

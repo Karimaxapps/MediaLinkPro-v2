@@ -140,7 +140,9 @@
     "ctaTitle": "Prêt à Rejoindre le Réseau Médias ?",
     "ctaSubtitle": "Créez votre compte gratuit et commencez à vous connecter avec des professionnels, découvrir des solutions et développer votre carrière.",
     "ctaButton": "Commencer — C'est Gratuit",
-    "copyright": "Tous droits réservés."
+    "copyright": "Tous droits réservés.",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité"
   },
   "blog": {
     "label": "Blog MediaLinkPro",
@@ -231,6 +233,8 @@
     "billingPlans": "Facturation et Plans",
     "settings": "Paramètres",
     "language": "Langue",
+    "termsOfService": "Conditions d'utilisation",
+    "privacyPolicy": "Politique de confidentialité",
     "logOut": "Se déconnecter"
   },
   "appHeader": {
@@ -244,7 +248,9 @@
   },
   "footer": {
     "copyright": "Tous droits réservés",
-    "designedBy": "Conçu par"
+    "designedBy": "Conçu par",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité"
   },
   "auth": {
     "signUp": "S'inscrire",
@@ -273,6 +279,11 @@
     "featureAnalytics": "Analytique",
     "quote": "Là où les professionnels des médias construisent des carrières.",
     "passwordsMismatch": "Les mots de passe ne correspondent pas",
+    "termsRequired": "Vous devez accepter les Conditions d'utilisation et la Politique de confidentialité pour continuer",
+    "termsAcceptPrefix": "J'accepte les",
+    "termsLink": "Conditions d'utilisation",
+    "termsAcceptAnd": "et la",
+    "privacyLink": "Politique de confidentialité",
     "forgotPasswordTitle": "Réinitialiser le mot de passe",
     "forgotPasswordDesc": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation",
     "sendResetLink": "Envoyer le lien de réinitialisation",
