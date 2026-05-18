@@ -21,25 +21,44 @@ export async function SponsoredCard({
     await trackImpression(ad.id).catch(() => undefined);
 
     return (
-        <div className="relative rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/5 to-white/5 overflow-hidden">
-            <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider text-[#C6A85E] bg-black/40 backdrop-blur px-2 py-0.5 rounded">
+        <Link
+            href={`/api/ads/click?id=${ad.id}&url=${encodeURIComponent(ad.cta_url)}`}
+            className="group block relative rounded-xl overflow-hidden min-h-[196px] bg-[#111]"
+        >
+            {/* Full-bleed background image */}
+            {ad.image_url && (
+                <Image
+                    src={ad.image_url}
+                    alt={ad.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+            )}
+
+            {/* Gradient overlay — darkens bottom so text is readable */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
+
+            {/* Sponsored badge */}
+            <div className="absolute top-2.5 right-2.5 text-[9px] uppercase tracking-wider text-white/90 bg-black/50 backdrop-blur px-2 py-0.5 rounded">
                 Sponsored
             </div>
-            {ad.image_url && (
-                <div className="relative h-32 w-full bg-white/5">
-                    <Image src={ad.image_url} alt={ad.title} fill className="object-cover" />
+
+            {/* Text + CTA stacked above the image */}
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+                <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-bold text-white leading-tight line-clamp-2 drop-shadow">
+                        {ad.title}
+                    </h3>
+                    {ad.body && (
+                        <p className="text-[11px] text-white/75 mt-0.5 line-clamp-1 drop-shadow">
+                            {ad.body}
+                        </p>
+                    )}
                 </div>
-            )}
-            <div className="p-5 space-y-2">
-                <h3 className="text-base font-semibold text-white">{ad.title}</h3>
-                {ad.body && <p className="text-sm text-gray-400 line-clamp-2">{ad.body}</p>}
-                <Link
-                    href={`/api/ads/click?id=${ad.id}&url=${encodeURIComponent(ad.cta_url)}`}
-                    className="inline-block mt-2 text-sm font-medium text-[#C6A85E] hover:underline"
-                >
-                    {ad.cta_label ?? "Learn more"} →
-                </Link>
+                <span className="shrink-0 bg-[#C6A85E] hover:bg-[#b5975a] text-black text-xs font-semibold rounded-full px-3 py-1.5 shadow transition-colors">
+                    {ad.cta_label ?? "Learn more"}
+                </span>
             </div>
-        </div>
+        </Link>
     );
 }

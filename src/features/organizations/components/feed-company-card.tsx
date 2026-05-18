@@ -45,8 +45,8 @@ export function FeedCompanyCard({
                     )}
                 </div>
 
-                {/* Name + badge */}
-                <div className="flex items-center justify-center gap-1 w-full">
+                {/* Name + badge — fixed height so activity tag aligns across all cards */}
+                <div className="flex items-center justify-center gap-1 w-full h-10 shrink-0">
                     <h3 className="text-white font-semibold text-sm leading-tight line-clamp-2 text-center group-hover:text-[#C6A85E] transition-colors">
                         {name}
                     </h3>

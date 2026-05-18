@@ -272,7 +272,12 @@
     "featureEvents": "Live Events",
     "featureAnalytics": "Analytics",
     "quote": "Where media professionals build careers.",
-    "passwordsMismatch": "Passwords do not match"
+    "passwordsMismatch": "Passwords do not match",
+    "forgotPasswordTitle": "Reset Password",
+    "forgotPasswordDesc": "Enter your email and we'll send you a reset link",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Check your email for a password reset link",
+    "backToLogin": "Back to log in"
   },
   "onboarding": {
     "title": "Welcome to MediaLinkPro",

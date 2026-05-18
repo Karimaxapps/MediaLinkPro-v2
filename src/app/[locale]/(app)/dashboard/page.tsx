@@ -48,6 +48,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardClient
+      userFirstName={profile.full_name ?? undefined}
       initialProducts={latestProducts}
       latestServices={latestServices}
       featuredCompanies={featuredCompanies}
@@ -57,8 +58,7 @@ export default async function DashboardPage() {
       latestBlogPosts={latestBlogPosts}
       featuredAiTools={featuredAiTools}
       heroBanner={<DashboardHeroBanner />}
-      inFeedAd={<SponsoredCard placement="feed" />}
-      sidebarAd={<SponsoredCard placement="sidebar" />}
+      sidebarAd={<SponsoredCard placement="feed" />}
       sidebarExtras={
         <>
           <DashboardJobApplicationsWidget limit={5} />

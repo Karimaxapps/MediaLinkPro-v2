@@ -5,7 +5,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const handleI18n = createMiddleware(routing);
 
-export async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   // 1. Run Supabase session refresh + auth guards
   const supabaseResponse = await updateSession(request);
 

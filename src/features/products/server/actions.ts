@@ -8,6 +8,41 @@ import { redirect } from "next/navigation";
 import { Product } from "../types";
 import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
 
+type SBClient = ReturnType<typeof createClient>;
+
+/**
+ * Returns true if the user is a site admin OR an org member with the given level.
+ * - level "editor" → owner / admin / editor
+ * - level "admin"  → owner / admin
+ * Site admins always pass regardless of org membership.
+ */
+async function userCanEditOrg(
+  supabase: SBClient,
+  userId: string,
+  orgId: string,
+  level: "editor" | "admin" = "editor"
+): Promise<boolean> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", userId)
+    .maybeSingle();
+  if ((profile as { is_admin?: boolean } | null)?.is_admin) return true;
+
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("organization_id", orgId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (!membership) return false;
+  const allowed = level === "admin"
+    ? ["owner", "admin"]
+    : ["owner", "admin", "editor"];
+  return allowed.includes((membership as { role: string }).role);
+}
+
 export async function createProduct(
   prevState: ActionState,
   formData: FormData
@@ -64,15 +99,7 @@ export async function createProduct(
     return { error: "Invalid data: " + errorMessage, success: false };
   }
 
-  // Verify user has edit rights to org
-  const { data: membership, error: memberError } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", validated.data.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (memberError || !["owner", "admin", "editor"].includes(membership?.role || "")) {
+  if (!(await userCanEditOrg(supabase, user.id, validated.data.organization_id))) {
     return {
       error: "You do not have permission to create products for this organization.",
       success: false,
@@ -122,15 +149,8 @@ export async function updateProduct(productId: string, formData: FormData): Prom
     return { error: "Product not found", success: false };
   }
 
-  // 2. Verify permissions
-  const { data: membership, error: memberError } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", existingProduct.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (memberError || !["owner", "admin", "editor"].includes(membership?.role || "")) {
+  // 2. Verify permissions (site admins always pass)
+  if (!(await userCanEditOrg(supabase, user.id, existingProduct.organization_id))) {
     return { error: "You do not have permission to update this product.", success: false };
   }
 
@@ -422,14 +442,7 @@ export async function deleteCommunityResource(resourceId: string): Promise<Actio
     .single();
 
   if (product) {
-    const { data: membership } = await supabase
-      .from("organization_members")
-      .select("role")
-      .eq("organization_id", product.organization_id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (membership && ["owner", "admin", "editor"].includes(membership.role)) {
+    if (await userCanEditOrg(supabase, user.id, product.organization_id)) {
       const { error } = await supabase
         .from("product_community_resources")
         .delete()
@@ -581,14 +594,7 @@ export async function removeProductExpert(productId: string, userId: string): Pr
       .single();
 
     if (product) {
-      const { data: membership } = await supabase
-        .from("organization_members")
-        .select("role")
-        .eq("organization_id", product.organization_id)
-        .eq("user_id", user.id)
-        .single();
-
-      if (!["owner", "admin"].includes(membership?.role || "")) {
+      if (!(await userCanEditOrg(supabase, user.id, product.organization_id, "admin"))) {
         return { error: "You do not have permission to remove this user.", success: false };
       }
     }
@@ -638,14 +644,7 @@ export async function incrementProductView(productId: string) {
       .single();
 
     if (product) {
-      const { data: membership } = await supabase
-        .from("organization_members")
-        .select("role")
-        .eq("organization_id", product.organization_id)
-        .eq("user_id", user.id)
-        .single();
-
-      if (membership && ["owner", "admin"].includes(membership.role)) {
+      if (await userCanEditOrg(supabase, user.id, product.organization_id, "admin")) {
         return product.views_count || product.view_count || 0; // Return current count for owners/admins
       }
     }
@@ -892,15 +891,8 @@ export async function deleteProduct(productId: string): Promise<ActionState> {
     return { error: "Product not found", success: false };
   }
 
-  // 2. Verify permissions
-  const { data: membership, error: memberError } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", existingProduct.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (memberError || !["owner", "admin"].includes(membership?.role || "")) {
+  // 2. Verify permissions (site admins always pass)
+  if (!(await userCanEditOrg(supabase, user.id, existingProduct.organization_id, "admin"))) {
     return { error: "You do not have permission to delete this product.", success: false };
   }
 
@@ -932,14 +924,7 @@ export async function getProductDemoRequestsCount(productId: string) {
 
   if (!product) return 0;
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return 0;
   }
 
@@ -976,14 +961,7 @@ export async function addProductResource(data: {
 
   if (!product) return { error: "Product not found", success: false };
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return { error: "You do not have permission to add resources.", success: false };
   }
 
@@ -1063,14 +1041,7 @@ export async function updateProductResource(
 
   if (!product) return { error: "Product not found", success: false };
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return { error: "You do not have permission to update resources.", success: false };
   }
 
@@ -1110,14 +1081,7 @@ export async function deleteProductResource(resourceId: string): Promise<ActionS
 
   if (!product) return { error: "Product not found", success: false };
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return { error: "You do not have permission to delete resources.", success: false };
   }
 
@@ -1153,15 +1117,8 @@ export async function removeProductTrainingVideo(
     return { error: "Product not found", success: false };
   }
 
-  // 2. Verify permissions
-  const { data: membership, error: memberError } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (memberError || !["owner", "admin", "editor"].includes(membership?.role || "")) {
+  // 2. Verify permissions (site admins always pass)
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return { error: "You do not have permission to update this product.", success: false };
   }
 
@@ -1261,14 +1218,7 @@ export async function getProductDemoRequests(productId: string) {
 
   if (!product) return [];
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return [];
   }
 
@@ -1305,14 +1255,7 @@ export async function getProductBookmarks(productId: string) {
 
   if (!product) return [];
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return [];
   }
 
@@ -1364,14 +1307,7 @@ export async function getProductScans(productId: string) {
 
   if (!product) return [];
 
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("role")
-    .eq("organization_id", product.organization_id)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!membership || !["owner", "admin", "editor"].includes(membership.role)) {
+  if (!(await userCanEditOrg(supabase, user.id, product.organization_id))) {
     return [];
   }
 

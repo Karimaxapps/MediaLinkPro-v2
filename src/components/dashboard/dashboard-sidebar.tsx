@@ -10,6 +10,7 @@ import { EventCard } from "@/components/events/event-card";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
 import type { Event } from "@/features/events/types";
+import type { ReactNode } from "react";
 
 interface Company {
   id: string;
@@ -31,17 +32,22 @@ interface DashboardSidebarProps {
   latestCompanies: Company[];
   latestUsers: User[];
   upcomingEvent?: Event | null;
+  adSlot?: ReactNode;
 }
 
 export function DashboardSidebar({
   latestCompanies,
   latestUsers,
   upcomingEvent,
+  adSlot,
 }: DashboardSidebarProps) {
   return (
     <aside className="space-y-6">
       {/* Upcoming Event */}
       {upcomingEvent && <EventCard event={upcomingEvent} />}
+
+      {/* Sponsored ad — below upcoming event */}
+      {adSlot}
 
       {/* Latest Joined Companies */}
       <Card className="bg-white/5 border-white/10 text-white">

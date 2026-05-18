@@ -272,7 +272,12 @@
     "featureEvents": "直播活动",
     "featureAnalytics": "数据分析",
     "quote": "媒体专业人士职业发展的舞台。",
-    "passwordsMismatch": "两次密码不一致"
+    "passwordsMismatch": "两次密码不一致",
+    "forgotPasswordTitle": "重置密码",
+    "forgotPasswordDesc": "输入您的邮箱，我们将发送重置链接",
+    "sendResetLink": "发送重置链接",
+    "resetEmailSent": "请查看您的邮箱获取密码重置链接",
+    "backToLogin": "返回登录"
   },
   "onboarding": {
     "title": "欢迎来到 MediaLinkPro",

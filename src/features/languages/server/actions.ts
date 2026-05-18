@@ -3,6 +3,7 @@
 import { revalidateTag } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { requireSiteAdmin } from "@/features/admin/server/actions";
 import { getActiveLanguages as _getActiveLanguages } from "./queries";
 
 export type { Language } from "./queries";
@@ -23,6 +24,7 @@ export async function toggleLanguage(code: string, isActive: boolean): Promise<{
   if (code === "en") return { error: "The default language cannot be deactivated." };
 
   try {
+    await requireSiteAdmin();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const admin = createAdminClient() as any;
     const { error } = await admin

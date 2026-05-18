@@ -19,7 +19,7 @@ export function AiToolCard({ tool }: AiToolCardProps) {
     <Link href={`/ai-tools/${tool.slug}`} className="group block h-full">
       <Card className="relative flex h-full w-full flex-col gap-0 overflow-hidden border-white/10 bg-white/5 p-0 transition-all duration-300 hover:border-[#C6A85E]/50">
         <CardHeader className="p-0">
-          <div className="relative h-48 w-full overflow-hidden bg-gray-900 transition-opacity group-hover:opacity-90">
+          <div className="relative h-32 w-full overflow-hidden bg-gray-900 transition-opacity group-hover:opacity-90">
             {image ? (
               <img
                 src={image}
@@ -49,30 +49,30 @@ export function AiToolCard({ tool }: AiToolCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-1 flex-col justify-between space-y-4 p-4">
-          <div className="space-y-2">
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="line-clamp-1 text-lg font-bold text-white transition-colors group-hover:text-[#C6A85E]">
+        <CardContent className="flex flex-1 flex-col justify-between space-y-2 p-3">
+          <div className="space-y-1">
+            <div className="flex items-start justify-between gap-1">
+              <h3 className="line-clamp-1 text-sm font-bold text-white transition-colors group-hover:text-[#C6A85E]">
                 {tool.name}
               </h3>
               {tool.pricing_model && (
                 <Badge
                   variant="outline"
-                  className="shrink-0 border-[#C6A85E]/30 bg-transparent text-[#C6A85E]"
+                  className="shrink-0 border-[#C6A85E]/30 bg-transparent text-[#C6A85E] text-[10px] px-1.5 py-0"
                 >
                   {PRICING_MODEL_LABELS[tool.pricing_model] ?? tool.pricing_model}
                 </Badge>
               )}
             </div>
-            {tool.tagline && <p className="line-clamp-2 text-sm text-gray-400">{tool.tagline}</p>}
+            {tool.tagline && <p className="line-clamp-1 text-[11px] text-gray-400">{tool.tagline}</p>}
           </div>
 
           {tool.platforms && tool.platforms.length > 0 && (
-            <div className="mt-auto flex flex-wrap gap-1.5 border-t border-white/5 pt-4">
-              {tool.platforms.slice(0, 4).map((platform) => (
+            <div className="mt-auto flex flex-wrap gap-1 border-t border-white/5 pt-2">
+              {tool.platforms.slice(0, 3).map((platform) => (
                 <span
                   key={platform}
-                  className="rounded bg-white/5 px-2 py-0.5 text-[11px] text-gray-400"
+                  className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-400"
                 >
                   {platform}
                 </span>

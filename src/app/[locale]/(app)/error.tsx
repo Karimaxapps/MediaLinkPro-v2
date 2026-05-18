@@ -24,30 +24,7 @@ export default function AppError({
       <p className="text-gray-400 max-w-md mb-4">
         An unexpected error occurred. Please try again or return to the dashboard.
       </p>
-      {/* TEMP DEBUG — remove once root cause is identified */}
-      <details className="max-w-2xl w-full mb-6 text-left bg-red-500/5 border border-red-500/20 rounded-lg p-4">
-        <summary className="cursor-pointer text-red-300 text-sm font-medium">
-          Error details (temporary debug)
-        </summary>
-        <pre className="mt-3 text-xs text-red-200 whitespace-pre-wrap break-all">
-          <strong>Message:</strong> {error.message}
-          {error.digest && (
-            <>
-              {"\n"}
-              <strong>Digest:</strong> {error.digest}
-            </>
-          )}
-          {error.stack && (
-            <>
-              {"\n\n"}
-              <strong>Stack:</strong>
-              {"\n"}
-              {error.stack}
-            </>
-          )}
-        </pre>
-      </details>
-      <div className="flex gap-4">
+<div className="flex gap-4">
         <button
           onClick={reset}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-medium rounded-lg transition-colors"

@@ -272,7 +272,12 @@
     "featureEvents": "Live-Events",
     "featureAnalytics": "Analysen",
     "quote": "Wo Medienprofis Karriere machen.",
-    "passwordsMismatch": "Passwörter stimmen nicht überein"
+    "passwordsMismatch": "Passwörter stimmen nicht überein",
+    "forgotPasswordTitle": "Passwort Zurücksetzen",
+    "forgotPasswordDesc": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link",
+    "sendResetLink": "Reset-Link Senden",
+    "resetEmailSent": "Überprüfen Sie Ihre E-Mail für einen Passwort-Reset-Link",
+    "backToLogin": "Zurück zur Anmeldung"
   },
   "onboarding": {
     "title": "Willkommen bei MediaLinkPro",

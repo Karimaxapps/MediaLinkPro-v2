@@ -14,6 +14,7 @@ import type { BlogPost } from "@/features/blog/server/actions";
 import type { Product } from "@/features/products/types";
 import type { AiTool } from "@/features/ai-tools/types";
 import { FeaturedAiTools } from "@/features/ai-tools/components/featured-ai-tools";
+import { DailyGreeting } from "@/components/dashboard/daily-greeting";
 
 type FeedCompany = {
     id: string;
@@ -34,6 +35,7 @@ type FeedUser = {
 };
 
 export function DashboardClient({
+    userFirstName,
     initialProducts,
     latestServices = [],
     featuredCompanies = [],
@@ -47,6 +49,7 @@ export function DashboardClient({
     sidebarAd,
     sidebarExtras,
 }: {
+    userFirstName?: string,
     initialProducts: Product[],
     latestServices?: Product[],
     featuredCompanies?: FeedCompany[],
@@ -78,9 +81,7 @@ export function DashboardClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Middle Column: Main Feed */}
             <div className="lg:col-span-8 space-y-8">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-white">Feed</h1>
-                </div>
+                <DailyGreeting firstName={userFirstName} />
 
                 {/* Latest Products Section */}
                 <div className="space-y-4">
@@ -102,8 +103,8 @@ export function DashboardClient({
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 {initialProducts.map((product) => (
-                                    <div key={product.id} className="min-w-[300px] sm:min-w-[350px] snap-start shrink-0">
-                                        <ProductCard product={product} />
+                                    <div key={product.id} className="w-[200px] snap-start shrink-0">
+                                        <ProductCard product={product} compact />
                                     </div>
                                 ))}
                             </div>
@@ -175,9 +176,6 @@ export function DashboardClient({
                     </div>
                 )}
 
-                {/* In-feed sponsored card — admin-managed via /admin/ads (placement: feed) */}
-                {inFeedAd}
-
                 {/* Media Services Section */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -201,8 +199,8 @@ export function DashboardClient({
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 {latestServices.map((service) => (
-                                    <div key={service.id} className="min-w-[300px] sm:min-w-[350px] snap-start shrink-0">
-                                        <ProductCard product={service} />
+                                    <div key={service.id} className="w-[200px] snap-start shrink-0">
+                                        <ProductCard product={service} compact />
                                     </div>
                                 ))}
                             </div>
@@ -322,14 +320,13 @@ export function DashboardClient({
             </div>
 
             {/* Right Column: Widgets */}
-            <div className="lg:col-span-4 sticky top-24 space-y-6">
-                {/* Sponsored sidebar card — admin-managed via /admin/ads (placement: sidebar) */}
-                {sidebarAd}
+            <div className="lg:col-span-4 sticky top-0 space-y-6">
                 {sidebarExtras}
                 <DashboardSidebar
                     latestCompanies={latestCompanies}
                     latestUsers={latestUsers}
                     upcomingEvent={upcomingEvent}
+                    adSlot={sidebarAd}
                 />
             </div>
         </div>

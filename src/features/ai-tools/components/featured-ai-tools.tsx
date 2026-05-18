@@ -41,7 +41,7 @@ export function FeaturedAiTools({ tools }: { tools: AiTool[] }) {
             style={{ scrollbarWidth: "none" }}
           >
             {tools.map((tool) => (
-              <div key={tool.id} className="w-[300px] shrink-0 snap-start sm:w-[350px]">
+              <div key={tool.id} className="w-[200px] shrink-0 snap-start">
                 <AiToolCard tool={tool} />
               </div>
             ))}
