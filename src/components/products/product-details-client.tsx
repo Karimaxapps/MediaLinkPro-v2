@@ -547,7 +547,9 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                     <div className="space-y-8">
                         <div>
                             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{product.name}</h1>
-                            <p className="text-xl text-gray-400 mb-4">{product.tagline || "No tagline available"}</p>
+                            {product.tagline && (
+                                <p className="text-xl text-gray-400 mb-4">{product.tagline}</p>
+                            )}
                             <div className="flex gap-3 items-center">
                                 {product.organizations?.name && (
                                     <Link href={`/companies/${product.organizations.slug}`}>

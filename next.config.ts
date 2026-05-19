@@ -31,6 +31,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "flagcdn.com",
       },
+      // Blog post cover images and other user-submitted URLs can come from
+      // any https host; allow all and rely on URL validation at submit time.
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
   // Fix TLS certificate verification in dev (corporate networks / self-signed certs)

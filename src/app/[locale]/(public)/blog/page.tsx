@@ -2,8 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { PenSquare, Eye, Heart } from "lucide-react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { PublicNav } from "@/components/layout/public-nav";
 import { listPublishedPosts } from "@/features/blog/server/actions";
+import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 
@@ -14,6 +17,14 @@ export const metadata: Metadata = {
 };
 
 export default async function PublicBlogPage() {
+  // Authenticated users get the dashboard blog listing, not the public one.
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    redirect("/blog/feed");
+  }
+
   const posts = await listPublishedPosts(30);
   const t = await getTranslations("blog");
 

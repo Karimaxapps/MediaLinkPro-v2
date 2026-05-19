@@ -23,11 +23,11 @@ export const insertProductSchema = z.object({
     course_url: z.string().url("Please enter a valid URL").nullish().or(z.literal("")),
     training_video_urls: z.array(z.string().url("Please enter a valid URL")).optional().default([]),
     // Screen 5: Commercial
-    availability_status: z.enum(['Available', 'Pre-order', 'Discontinued']).optional(),
-    price: z.number().min(0).optional(),
-    currency: z.string().default('USD'),
-    price_upon_request: z.boolean().default(false),
-    pricing_model: z.enum(['One-time', 'Subscription', 'Rental', 'Custom Quote']).optional(),
+    availability_status: z.enum(['Available', 'Pre-order', 'Discontinued']).nullish(),
+    price: z.number().min(0).nullish(),
+    currency: z.string().nullish().default('USD'),
+    price_upon_request: z.boolean().nullish().default(false),
+    pricing_model: z.enum(['One-time', 'Subscription', 'Rental', 'Custom Quote']).nullish(),
     // Lifecycle
     status: z.enum(['draft', 'published', 'archived']).default('draft'),
 }).refine((data) => {

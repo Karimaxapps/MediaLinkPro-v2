@@ -166,3 +166,39 @@
   scrollbar-width: none;
   /* Firefox */
 }
+
+/* Themed scrollbar — dark track with gold thumb to match the webapp theme.
+   Applies globally; opt out with .scrollbar-hide on a per-element basis. */
+html,
+body,
+*:not(.scrollbar-hide) {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(198, 168, 94, 0.55) rgba(255, 255, 255, 0.04) !important;
+}
+
+*:not(.scrollbar-hide)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*:not(.scrollbar-hide)::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9999px;
+}
+
+*:not(.scrollbar-hide)::-webkit-scrollbar-thumb {
+  background-color: rgba(198, 168, 94, 0.45);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+*:not(.scrollbar-hide)::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(198, 168, 94, 0.85);
+  background-clip: padding-box;
+}
+
+*:not(.scrollbar-hide)::-webkit-scrollbar-corner {
+  background: transparent;
+}
