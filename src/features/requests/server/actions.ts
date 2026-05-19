@@ -85,6 +85,31 @@ export async function updateRequestStatus(requestId: string, status: 'pending' |
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: 'Not authenticated' };
+
+    // Look up the request's owning organization so we can verify the caller
+    // is an admin/owner. Without this check anyone with a valid request UUID
+    // could flip status fields on requests addressed to other companies.
+    const { data: request } = await supabase
+        .from('demo_requests')
+        .select('organization_id')
+        .eq('id', requestId)
+        .single();
+
+    if (!request) return { success: false, error: 'Request not found' };
+
+    const { data: membership } = await supabase
+        .from('organization_members')
+        .select('role')
+        .eq('organization_id', request.organization_id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    if (!membership || !['owner', 'admin'].includes(membership.role)) {
+        return { success: false, error: 'You do not have permission to update this request' };
+    }
+
     const { error } = await supabase
         .from('demo_requests')
         .update({ status })

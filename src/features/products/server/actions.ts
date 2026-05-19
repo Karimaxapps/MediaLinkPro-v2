@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { insertProductSchema } from "../schema";
@@ -7,6 +8,27 @@ import { ActionState } from "@/features/types";
 import { redirect } from "next/navigation";
 import { Product } from "../types";
 import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
+
+// http(s)-only URL: rejects javascript:, data:, file:, etc. which are unsafe
+// when rendered as <a href> or <iframe src>.
+const communityVideoSchema = z.object({
+    title: z.string().trim().min(1, "Title is required").max(200),
+    url: z
+        .string()
+        .trim()
+        .url("Must be a valid URL")
+        .refine(
+            (val) => {
+                try {
+                    const u = new URL(val);
+                    return u.protocol === "http:" || u.protocol === "https:";
+                } catch {
+                    return false;
+                }
+            },
+            { message: "URL must start with http:// or https://" }
+        ),
+});
 
 type SBClient = ReturnType<typeof createClient>;
 
@@ -385,13 +407,18 @@ export async function addCommunityVideo(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated", success: false };
 
-  // Basic validation
-  if (!url || !title) return { error: "Title and URL are required", success: false };
+  const parsed = communityVideoSchema.safeParse({ title, url });
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues.map((i) => i.message).join(", "),
+      success: false,
+    };
+  }
 
   const { error } = await supabase.from("product_community_resources").insert({
     product_id: productId,
-    title,
-    url,
+    title: parsed.data.title,
+    url: parsed.data.url,
     type: "video", // defaulting to video as per request
     created_by: user.id,
     is_approved: true, // Auto-approve

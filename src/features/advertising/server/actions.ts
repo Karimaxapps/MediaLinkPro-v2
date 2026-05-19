@@ -1,8 +1,48 @@
 "use server";
 
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+
+// http(s)-only URL schema. Plain z.string().url() also lets through
+// javascript:, data:, file:, etc. — which are unsafe in <a href>.
+const httpUrl = z
+    .string()
+    .trim()
+    .url("Must be a valid URL")
+    .refine(
+        (val) => {
+            try {
+                const u = new URL(val);
+                return u.protocol === "http:" || u.protocol === "https:";
+            } catch {
+                return false;
+            }
+        },
+        { message: "URL must start with http:// or https://" }
+    );
+
+const createCampaignSchema = z.object({
+    name: z.string().trim().min(1, "Name is required").max(120),
+    title: z.string().trim().min(1, "Title is required").max(120),
+    body: z.string().trim().max(500).optional(),
+    cta_label: z.string().trim().max(60).optional(),
+    cta_url: httpUrl,
+    image_url: httpUrl.optional(),
+    placement: z.enum([
+        "feed",
+        "sidebar",
+        "marketplace",
+        "jobs_sidebar",
+        "events_sidebar",
+        "job_details_sidebar",
+        "dashboard_hero_banner",
+        "mobile_top_feed_screen1",
+        "mobile_middle_feed_screen2",
+    ]),
+    target_category: z.string().trim().max(60).optional(),
+});
 
 export type AdPlacement =
     | "feed"
@@ -91,20 +131,26 @@ export async function createCampaign(input: {
     const supabase = createClient(cookieStore);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Not authenticated" };
-    if (!input.name.trim() || !input.title.trim() || !input.cta_url.trim()) {
-        return { success: false, error: "Name, title, and CTA URL are required" };
+
+    const parsed = createCampaignSchema.safeParse(input);
+    if (!parsed.success) {
+        return {
+            success: false,
+            error: parsed.error.issues.map((i) => i.message).join(", "),
+        };
     }
+    const data = parsed.data;
 
     const { error } = await supabase.from("ad_campaigns" as never).insert({
         advertiser_id: user.id,
-        name: input.name.trim(),
-        title: input.title.trim(),
-        body: input.body ?? null,
-        cta_label: input.cta_label ?? "Learn more",
-        cta_url: input.cta_url.trim(),
-        image_url: input.image_url ?? null,
-        placement: input.placement,
-        target_category: input.target_category ?? null,
+        name: data.name,
+        title: data.title,
+        body: data.body ?? null,
+        cta_label: data.cta_label ?? "Learn more",
+        cta_url: data.cta_url,
+        image_url: data.image_url ?? null,
+        placement: data.placement,
+        target_category: data.target_category ?? null,
         status: "draft",
     } as never);
 

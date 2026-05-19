@@ -8,6 +8,12 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { ConnectListClient, type ConnectListItem } from "./connect-list-client";
 
+// This page reads cookies() to identify the current user (for connection /
+// follow status), so it cannot be statically generated. Force dynamic
+// rendering — otherwise Next.js attempts to prerender each category at
+// build time and throws DYNAMIC_SERVER_USAGE.
+export const dynamic = "force-dynamic";
+
 // Map URL slugs to DB types
 const categoryToDbType: Record<string, string> = {
     'broadcasters': 'Broadcaster',

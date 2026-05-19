@@ -90,12 +90,24 @@ export async function acceptConnectionRequest(requestId: string) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
-    const { error } = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Not authenticated', success: false };
+
+    // Only the recipient of the request may accept it. Scoping the WHERE
+    // clause to recipient_id prevents an attacker from accepting requests
+    // addressed to other users.
+    const { data, error } = await supabase
         .from('connections')
         .update({ status: 'accepted', updated_at: new Date().toISOString() })
-        .eq('id', requestId);
+        .eq('id', requestId)
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending')
+        .select('id');
 
     if (error) return { error: 'Failed to accept request', success: false };
+    if (!data || data.length === 0) {
+        return { error: 'Request not found or you are not the recipient', success: false };
+    }
 
     revalidatePath('/profiles');
     return { success: true, message: 'Connection accepted!' };
@@ -105,12 +117,22 @@ export async function rejectConnectionRequest(requestId: string) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
-    const { error } = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Not authenticated', success: false };
+
+    // Only the recipient may reject a pending request.
+    const { data, error } = await supabase
         .from('connections')
         .delete()
-        .eq('id', requestId);
+        .eq('id', requestId)
+        .eq('recipient_id', user.id)
+        .eq('status', 'pending')
+        .select('id');
 
     if (error) return { error: 'Failed to reject request', success: false };
+    if (!data || data.length === 0) {
+        return { error: 'Request not found or you are not the recipient', success: false };
+    }
 
     revalidatePath('/profiles');
     return { success: true, message: 'Request rejected' };

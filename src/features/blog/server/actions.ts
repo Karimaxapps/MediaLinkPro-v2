@@ -194,11 +194,26 @@ export async function updatePostStatus(
 ): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { error } = await supabase
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
+
+  // Scope the update to the caller's own posts. Anyone passing a postId
+  // they don't own will get a clean "not found" instead of mutating the post.
+  const { data, error } = await supabase
     .from("blog_posts" as never)
     .update({ status } as never)
-    .eq("id", postId);
+    .eq("id", postId)
+    .eq("author_id", user.id)
+    .select("id");
+
   if (error) return { success: false, error: error.message };
+  if (!data || (data as unknown as { id: string }[]).length === 0) {
+    return { success: false, error: "Post not found or you are not the author" };
+  }
+
   revalidatePath("/blog");
   revalidatePath("/blog/my-posts");
   return { success: true };
@@ -207,11 +222,26 @@ export async function updatePostStatus(
 export async function deletePost(postId: string): Promise<{ success: boolean; error?: string }> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { error } = await supabase
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Not authenticated" };
+
+  // Scope the delete to the caller's own posts so attackers cannot delete
+  // arbitrary content by guessing or harvesting post IDs.
+  const { data, error } = await supabase
     .from("blog_posts" as never)
     .delete()
-    .eq("id", postId);
+    .eq("id", postId)
+    .eq("author_id", user.id)
+    .select("id");
+
   if (error) return { success: false, error: error.message };
+  if (!data || (data as unknown as { id: string }[]).length === 0) {
+    return { success: false, error: "Post not found or you are not the author" };
+  }
+
   revalidatePath("/blog");
   revalidatePath("/blog/my-posts");
   return { success: true };
