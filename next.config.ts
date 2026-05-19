@@ -40,11 +40,11 @@ const nextConfig: NextConfig = {
     // (some headroom for multipart overhead).
     serverActions: {
       bodySizeLimit: "8mb",
-      // Stable key so Server Action IDs survive redeploys.
-      // Without this, every `next build` regenerates IDs and any open
-      // browser tab from the previous build 500s on action invocation.
-      // Set NEXT_SERVER_ACTIONS_ENCRYPTION_KEY in Hostinger env (32-byte base64).
-      encryptionKey: process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY,
+      // Stable Server Action IDs across redeploys are configured via the
+      // NEXT_SERVER_ACTIONS_ENCRYPTION_KEY env var (32-byte base64), which
+      // Next.js reads automatically at build time. Without it, every
+      // `next build` generates new IDs and stale browser tabs 500 with
+      // "Failed to find Server Action <id>". Set it in Hostinger env vars.
     },
   },
 };
