@@ -1,6 +1,6 @@
 {
   "name": "medialinkpro",
-  "version": "1.2026.1",
+  "version": "1.2026.2",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
