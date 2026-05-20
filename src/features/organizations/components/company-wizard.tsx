@@ -39,6 +39,7 @@ import {
   BROADCASTER_TYPES,
 } from "../schema";
 import { createCompanyWizardAction } from "../server/actions";
+import { CompanyAutofillBanner } from "./company-autofill-banner";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -72,6 +73,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [completed, setCompleted] = React.useState(false); // Success state
+  const [autofillDismissed, setAutofillDismissed] = React.useState(false);
   const router = useRouter();
 
   const form = useForm<CompanyWizardValues>({
@@ -137,6 +139,22 @@ export function CompanyWizard({ userId }: { userId: string }) {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
+  const handleAutofillImport = (data: Partial<CompanyWizardValues>) => {
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) setValue(key as keyof CompanyWizardValues, value as string);
+    });
+    // Auto-derive slug from website domain only if slug is still empty
+    if (!watch("slug") && data.website) {
+      try {
+        const domain = new URL(data.website).hostname.replace(/^www\./, "");
+        const autoSlug = domain.split(".")[0].toLowerCase().replace(/[^a-z0-9]/g, "-");
+        setValue("slug", autoSlug);
+      } catch {
+        // ignore invalid URL
+      }
+    }
+  };
+
   const onSubmit = async (data: CompanyWizardValues) => {
     setIsSubmitting(true);
     try {
@@ -195,6 +213,14 @@ export function CompanyWizard({ userId }: { userId: string }) {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Auto-fill banner — visible on step 1 until dismissed or after import */}
+      {currentStep === 0 && !autofillDismissed && (
+        <CompanyAutofillBanner
+          onImport={(data) => handleAutofillImport(data)}
+          onDismiss={() => setAutofillDismissed(true)}
+        />
+      )}
+
       {/* Steps Indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-between relative">
