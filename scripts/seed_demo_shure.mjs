@@ -28,6 +28,8 @@ const LOGO_CANDIDATES = [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Shure_Logo_2024.svg/320px-Shure_Logo_2024.svg.png',
 ];
 
+// Direct Wikimedia Commons URLs stored as-is (no Supabase upload).
+// These load fine in browsers; the rate-limiting only affects server-side fetch.
 const PRODUCT_IMAGES = {
     'shure-sm7b': [
         // SM7B in use by Marius Bear — confirmed correct path c/c9/
@@ -36,11 +38,9 @@ const PRODUCT_IMAGES = {
         'https://upload.wikimedia.org/wikipedia/commons/f/fc/Shure_SM7.jpg',
     ],
     'shure-axient-digital': [
-        // Shure MoveMic Two Kit (Shure wireless system) — confirmed correct path 8/8e/
+        // Shure MoveMic Two Kit (Shure wireless system) — confirmed path 8/8e/
         'https://upload.wikimedia.org/wikipedia/commons/8/8e/Shure_MoveMic_Two_Kit_Wireless_System.jpg',
-        // Classic SM7 as fallback
         'https://upload.wikimedia.org/wikipedia/commons/f/fc/Shure_SM7.jpg',
-        // SM7B as further fallback
         'https://upload.wikimedia.org/wikipedia/commons/c/c9/Marius_Bear_SM7B.jpg',
     ],
 };
@@ -157,16 +157,18 @@ async function runSeed() {
 
         for (const product of products) {
             console.log(`\n📦 Upserting product: ${product.name}`);
-            let productLogo = logoUrl;
             const candidates = PRODUCT_IMAGES[product.slug];
+            // Default: first candidate URL stored directly (works in browsers even if
+            // server-side download is rate-limited by Wikimedia).
+            let productLogo = candidates?.[0] ?? logoUrl;
             if (candidates) {
                 try {
                     await new Promise((r) => setTimeout(r, 1500));
                     const { buf, contentType } = await downloadImage({ candidates, label: product.slug });
                     productLogo = await uploadProductImage({ buf, contentType, productSlug: product.slug });
-                    console.log(`   ✅ Product image uploaded: ${productLogo}`);
+                    console.log(`   ✅ Product image uploaded to Supabase: ${productLogo}`);
                 } catch {
-                    console.log(`   ⚠️  Using org logo as product image fallback`);
+                    console.log(`   ⚠️  Download failed — storing direct URL: ${productLogo}`);
                 }
             }
 

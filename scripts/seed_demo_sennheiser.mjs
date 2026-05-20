@@ -151,16 +151,16 @@ async function runSeed() {
 
         for (const product of products) {
             console.log(`\n📦 Upserting product: ${product.name}`);
-            let productLogo = logoUrl;
             const candidates = PRODUCT_IMAGES[product.slug];
+            let productLogo = candidates?.[0] ?? logoUrl;
             if (candidates) {
                 try {
                     await new Promise((r) => setTimeout(r, 1500));
                     const { buf, contentType } = await downloadImage({ candidates, label: product.slug });
                     productLogo = await uploadProductImage({ buf, contentType, productSlug: product.slug });
-                    console.log(`   ✅ Product image uploaded: ${productLogo}`);
+                    console.log(`   ✅ Product image uploaded to Supabase: ${productLogo}`);
                 } catch {
-                    console.log(`   ⚠️  Using org logo as product image fallback`);
+                    console.log(`   ⚠️  Download failed — storing direct URL: ${productLogo}`);
                 }
             }
 
