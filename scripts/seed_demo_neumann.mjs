@@ -31,7 +31,7 @@ async function runSeed() {
                     name: 'Neumann',
                     slug: 'neumann',
                     logo_url:
-                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/neumann_logo.png',
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Georg_Neumann_GmbH_Logo.svg/1200px-Georg_Neumann_GmbH_Logo.svg.png',
                     tagline: 'Made in Germany. Trusted in studios worldwide.',
                     type: 'Solution Provider',
                     main_activity:
@@ -71,14 +71,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Neumann U 87 Ai</strong> is the definitive large-diaphragm condenser microphone — a studio standard found in virtually every professional recording facility in the world. Evolved from the original U 87 introduced in 1967, the U 87 Ai delivers the warm, detailed Neumann sound that has defined countless classic recordings across every genre.</p><ul><li>Three switchable polar patterns: omnidirectional, cardioid, figure-8</li><li>Large dual-diaphragm capsule for natural, detailed transient response</li><li>Transformerless output for extremely low noise and high dynamic range</li><li>Self-noise: 12 dB-A — suitable for the quietest acoustic sources</li><li>Max SPL: 117 dB (127 dB with -10 dB pad)</li><li>High-pass filter at 80 Hz for proximity effect control</li><li>Available in nickel and matte black finishes</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742?w=300&h=300&auto=format&fit=crop',
+                    'https://assets.neumann.com/img/products/u87ai/u87ai_front_large.jpg',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Microphones',
                 gallery: [
-                    'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1200&auto=format&fit=crop'
+                    'https://assets.neumann.com/img/products/u87ai/u87ai_front_large.jpg'
                 ],
                 price: 3599,
                 pricing_model: 'One-time',
@@ -93,13 +91,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Neumann TLM 103</strong> is the professional studio condenser that brings legendary Neumann quality to a wider range of applications. Featuring the same capsule technology as the acclaimed U 87 Ai in a transformerless, cardioid-only design, the TLM 103 delivers extraordinarily low self-noise in a compact, versatile body.</p><ul><li>Cardioid polar pattern — optimised for vocals, voiceover and instruments</li><li>Transformerless circuit for extremely low noise: 7 dB-A self-noise</li><li>Max SPL: 138 dB — handles loud sources with ease</li><li>Subtle presence boost around 8–12 kHz adds clarity and air</li><li>Robust construction with elastic-mounted capsule for reduced handling noise</li><li>Ships with EA 1 elastic suspension shockmount</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=300&h=300&auto=format&fit=crop',
+                    'https://assets.neumann.com/img/products/u87ai/u87ai_front_large.jpg',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Microphones',
                 gallery: [
-                    'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1516223725307-6f76b9ec8742?w=1200&auto=format&fit=crop'
+                    'https://assets.neumann.com/img/products/u87ai/u87ai_front_large.jpg'
                 ],
                 price: 1699,
                 pricing_model: 'One-time',

@@ -31,7 +31,7 @@ async function runSeed() {
                     name: 'Shure',
                     slug: 'shure',
                     logo_url:
-                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/shure_logo.png',
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Shure_logo.svg/1200px-Shure_logo.svg.png',
                     tagline: 'Quality. Reliability. Trust.',
                     type: 'Solution Provider',
                     main_activity:
@@ -71,14 +71,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Shure SM7B</strong> is one of the most recognizable and widely used broadcast microphones in the world. A broadcast-quality dynamic microphone with a smooth, flat, wide-range frequency response, the SM7B has been the choice of broadcasters, podcasters and voiceover artists for decades — most famously used to record Michael Jackson\'s <em>Thriller</em> album.</p><ul><li>Cardioid dynamic cartridge — wide frequency response (50 Hz – 20 kHz)</li><li>Air suspension shock isolation eliminates mechanical noise and vibration</li><li>Advanced electromagnetic shielding rejects hum from computer monitors and other electrical devices</li><li>Switchable bass roll-off and mid-range presence boost</li><li>Detachable close-talk windscreen and stand adapter included</li><li>Yoke mount for precise positioning on boom arms and studio stands</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=300&auto=format&fit=crop',
+                    'https://pubs.shure.com/guide/axient/en-US/content/en-US/axient-digital/source/images/ADX5D_front.png',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Microphones',
                 gallery: [
-                    'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1200&auto=format&fit=crop'
+                    'https://pubs.shure.com/guide/axient/en-US/content/en-US/axient-digital/source/images/ADX5D_front.png'
                 ],
                 price: 399,
                 pricing_model: 'One-time',
@@ -93,13 +91,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Shure Axient Digital</strong> is the pinnacle of Shure\'s professional wireless portfolio, designed for the most demanding broadcast, theatrical and large-scale live production environments. Axient Digital combines pristine 24-bit digital audio with the industry\'s most advanced RF management features, including Quadversity antenna diversity and real-time ShowLink remote control of transmitters — even during a live performance.</p><ul><li>24-bit/48 kHz digital audio with Shure\'s proprietary codec</li><li>Quadversity (4-antenna) diversity for maximum RF reliability in RF-congested environments</li><li>ShowLink remote control: adjust transmitter gain, mute, and RF power mid-show</li><li>AES-256 encryption for secure mission-critical applications</li><li>Automatic frequency management and Interference Detection &amp; Avoidance (IDA)</li><li>Compatible with Shure Wireless Workbench and Shure Designer software</li><li>Interchangeable with ULX-D bodypack and handheld transmitters</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&auto=format&fit=crop',
+                    'https://pubs.shure.com/guide/axient/en-US/content/en-US/axient-digital/source/images/ADX5D_front.png',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Wireless Systems',
                 gallery: [
-                    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&auto=format&fit=crop'
+                    'https://pubs.shure.com/guide/axient/en-US/content/en-US/axient-digital/source/images/ADX5D_front.png'
                 ],
                 price: null,
                 pricing_model: 'Custom Quote',

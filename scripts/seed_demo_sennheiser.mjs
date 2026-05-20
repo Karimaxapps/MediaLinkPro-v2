@@ -31,7 +31,7 @@ async function runSeed() {
                     name: 'Sennheiser',
                     slug: 'sennheiser',
                     logo_url:
-                        'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/logos/sennheiser_logo.png',
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Sennheiser_Logo_2019.svg/1200px-Sennheiser_Logo_2019.svg.png',
                     tagline: 'Shaping the future of audio.',
                     type: 'Solution Provider',
                     main_activity:
@@ -71,14 +71,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Sennheiser MKH 416</strong> is the benchmark short shotgun microphone for professional film, broadcast and ENG production. Its interference-tube design delivers precise directional pickup with outstanding rejection of off-axis noise, making it the first choice of location sound recordists and boom operators worldwide for over four decades.</p><ul><li>Supercardioid/lobar polar pattern via interference tube principle</li><li>Frequency response: 40 Hz – 20 kHz</li><li>High RF condenser capsule — extremely low sensitivity to humidity and temperature</li><li>Low self-noise: 13 dB(A)</li><li>Max SPL: 130 dB (with 10 dB pad: 140 dB)</li><li>Compact, lightweight design ideal for boom pole and camera mounting</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=300&h=300&auto=format&fit=crop',
+                    'https://assets.sennheiser.com/img/23494/x1_desktop_EW_DX_EM_2_Dante_Set_ANT_Bundle.jpg',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Microphones',
                 gallery: [
-                    'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1200&auto=format&fit=crop'
+                    'https://assets.sennheiser.com/img/23494/x1_desktop_EW_DX_EM_2_Dante_Set_ANT_Bundle.jpg'
                 ],
                 price: 999,
                 pricing_model: 'One-time',
@@ -93,13 +91,12 @@ async function runSeed() {
                 description:
                     '<p>The <strong>Sennheiser Evolution Wireless Digital (EW-D)</strong> is the professional digital wireless system designed for broadcast, live event and theatre applications. Building on decades of wireless expertise, EW-D delivers pristine 24-bit/48 kHz audio, robust RF performance and an intuitive workflow engineered for professional rental and touring environments.</p><ul><li>24-bit/48 kHz audio codec for broadcast-quality wireless audio</li><li>Dynamic frequency selection and auto-scan for fast deployment</li><li>AES-256 encryption for secure transmission</li><li>Latency: 1.9 ms for transparent sound reinforcement</li><li>Up to 90 m range (line of sight)</li><li>Available in handheld, bodypack, headset and instrument configurations</li><li>Control and monitoring via Smart Assist app or Sennheiser Control Cockpit software</li></ul>',
                 logo_url:
-                    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&auto=format&fit=crop',
+                    'https://assets.sennheiser.com/img/23494/x1_desktop_EW_DX_EM_2_Dante_Set_ANT_Bundle.jpg',
                 product_type: 'Hardware',
                 main_category: 'Audio',
                 sub_category: 'Wireless Systems',
                 gallery: [
-                    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop',
-                    'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=1200&auto=format&fit=crop'
+                    'https://assets.sennheiser.com/img/23494/x1_desktop_EW_DX_EM_2_Dante_Set_ANT_Bundle.jpg'
                 ],
                 price: 1199,
                 pricing_model: 'One-time',
