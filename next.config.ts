@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { withSentryConfig } from "@sentry/nextjs";
 import { readFileSync } from "fs";
 
 const { version } = JSON.parse(readFileSync("./package.json", "utf8"));
@@ -55,4 +56,19 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withSentryConfig(withNextIntl(nextConfig), {
+  // Build-time options for source-map upload. These are only needed for
+  // readable stack traces in Sentry; the build still succeeds without them.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Only print upload logs in CI.
+  silent: !process.env.CI,
+
+  // Upload a wider set of client bundles for better stack traces.
+  widenClientFileUpload: true,
+
+  // Tree-shake Sentry's debug logger out of the production bundle.
+  disableLogger: true,
+});

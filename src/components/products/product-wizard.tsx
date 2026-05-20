@@ -739,7 +739,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                 <div className="space-y-2">
                                     <Label htmlFor="availability_status" className="text-gray-300">Availability Status</Label>
                                     <Select
-                                        value={watch("availability_status")}
+                                        value={watch("availability_status") ?? undefined}
                                         onValueChange={(value) => setValue("availability_status", value as InsertProduct["availability_status"], { shouldValidate: true })}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
@@ -758,7 +758,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         <Label htmlFor="price_upon_request" className="text-gray-300 cursor-pointer">Price upon request</Label>
                                         <Switch
                                             id="price_upon_request"
-                                            checked={watch('price_upon_request')}
+                                            checked={watch('price_upon_request') ?? false}
                                             onCheckedChange={(checked) => {
                                                 setValue('price_upon_request', checked);
                                                 if (checked) {
@@ -785,7 +785,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                             <div className="space-y-2">
                                                 <Label htmlFor="currency" className="text-gray-300">Currency</Label>
                                                 <Select
-                                                    value={watch("currency")}
+                                                    value={watch("currency") ?? undefined}
                                                     onValueChange={(value) => setValue("currency", value)}
                                                 >
                                                     <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
@@ -805,7 +805,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                 <div className="space-y-2">
                                     <Label htmlFor="pricing_model" className="text-gray-300">Pricing Model</Label>
                                     <Select
-                                        value={watch("pricing_model")}
+                                        value={watch("pricing_model") ?? undefined}
                                         onValueChange={(value) => setValue("pricing_model", value as InsertProduct["pricing_model"])}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">

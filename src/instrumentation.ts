@@ -1,24 +1,31 @@
+import * as Sentry from "@sentry/nextjs";
+
 /**
- * Temporary debugging instrumentation: capture every server-side error
- * with full stack to `runtime-errors.log` in the project root.
+ * Initializes Sentry for the active server runtime, and (still) writes raw
+ * server-side errors to `runtime-errors.log` in the project root.
  *
- * Hostinger's nginx rewrites Next.js 500 responses to a generic
- * "Internal Server Error" string before they reach the browser, which
- * strips the error digest. And the runtime log viewer only surfaces the
- * masked production error. This file bypasses both by writing the raw
- * error to disk where we can `cat` it via SSH.
- *
- * Remove this file once the prod 500s are debugged.
+ * The file-logging exists because Hostinger's nginx rewrites Next.js 500
+ * responses to a generic "Internal Server Error" before they reach the
+ * browser, stripping the error digest. We keep it as a local fallback that
+ * can be read over SSH; Sentry is the primary, structured reporting channel.
  */
 export async function register() {
-  // no-op; everything happens in onRequestError below
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    await import("../sentry.server.config");
+  }
+  if (process.env.NEXT_RUNTIME === "edge") {
+    await import("../sentry.edge.config");
+  }
 }
 
-type ReqInfo = { path: string; method: string };
-type CtxInfo = { routeType: string; routePath?: string };
-
-export async function onRequestError(err: unknown, request: ReqInfo, context: CtxInfo) {
-  try {
+export const onRequestError = async (
+  err: unknown,
+  request: Parameters<typeof Sentry.captureRequestError>[1],
+  context: Parameters<typeof Sentry.captureRequestError>[2]
+) => {
+  // 1) Local disk log (Hostinger SSH fallback). Node.js runtime only —
+  //    node:fs/promises is unavailable in the Edge runtime (middleware).
+  if (process.env.NEXT_RUNTIME === "nodejs") try {
     const { appendFile } = await import("node:fs/promises");
     const e = (err ?? {}) as {
       name?: string;
@@ -45,4 +52,7 @@ export async function onRequestError(err: unknown, request: ReqInfo, context: Ct
   } catch {
     // swallow — never let logging break the request handler
   }
-}
+
+  // 2) Structured reporting to Sentry (no-ops if no DSN / not enabled).
+  Sentry.captureRequestError(err, request, context);
+};
