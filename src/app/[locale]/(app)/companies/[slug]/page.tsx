@@ -1,19 +1,17 @@
-import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Globe, Mail, Phone, ExternalLink, Linkedin, Facebook, Youtube, Twitter, Instagram } from "lucide-react";
+import { MapPin, Globe, Mail, Phone, ExternalLink, Linkedin, Facebook, Youtube, Twitter, Instagram, Briefcase, Building2 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { getOrgVerifiedPlan } from "@/lib/subscription";
-import { CardListItem } from "@/components/ui/card-list-item";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { notFound, permanentRedirect } from "next/navigation";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { CompanyEditForm } from "@/features/organizations/components/company-edit-form";
 import { StubClaimBanner } from "@/features/organizations/components/StubClaimBanner";
 import { ContactButton } from "@/features/messaging/components/ContactButton";
@@ -26,6 +24,8 @@ import { Users } from "lucide-react";
 import type { Metadata } from "next";
 
 import { ProductList } from "@/features/products/components/product-list";
+import { listOpenJobs } from "@/features/jobs/server/actions";
+import { JOB_TYPE_COLORS, JOB_TYPE_LABELS, type Job } from "@/features/jobs/types";
 
 const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
@@ -139,10 +139,11 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         }
     }
 
-    const [isFollowing, followerCount, orgPlan] = await Promise.all([
+    const [isFollowing, followerCount, orgPlan, companyJobs] = await Promise.all([
         isFollowingOrganization(org.id),
         getOrganizationFollowerCount(org.id),
         getOrgVerifiedPlan(org.id),
+        listOpenJobs({ orgId: org.id }),
     ]);
 
     const jsonLd = {
@@ -208,25 +209,24 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
                 </div>
 
+                {!canEdit && user && (
+                    <div className="flex w-full justify-center gap-3 md:w-auto md:self-end md:justify-end">
+                        <FollowButton
+                            organizationId={org.id}
+                            initialFollowing={isFollowing}
+                            initialCount={followerCount}
+                            size="default"
+                        />
+                        <ContactButton text="Message" targetOrganizationId={org.id} />
+                    </div>
+                )}
+
                 {canEdit && (
                     <div className="absolute bottom-4 right-4 z-10">
                         <CompanyEditForm org={org} currentUserId={user!.id} />
                     </div>
                 )}
             </div>
-
-            {/* Actions Bar */}
-            {!canEdit && user && (
-                <div className="flex justify-end gap-3 mb-4">
-                    <FollowButton
-                        organizationId={org.id}
-                        initialFollowing={isFollowing}
-                        initialCount={followerCount}
-                        size="default"
-                    />
-                    <ContactButton text="Message Company" targetOrganizationId={org.id} />
-                </div>
-            )}
 
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -236,7 +236,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                         <TabsList className="bg-white/5 border border-white/10 w-full justify-start overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Overview</TabsTrigger>
                             <TabsTrigger value="products" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Products</TabsTrigger>
-                            <TabsTrigger value="community" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Community</TabsTrigger>
+                            <TabsTrigger value="jobs" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Jobs</TabsTrigger>
 
                         </TabsList>
 
@@ -255,12 +255,8 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                             <ProductList orgId={org.id} isOwner={canEdit} />
                         </TabsContent>
 
-                        <TabsContent value="community" className="mt-6">
-                            <EmptyState
-                                icon={Globe}
-                                title="Community Hub"
-                                description="Join the discussion and view updates."
-                            />
+                        <TabsContent value="jobs" className="mt-6">
+                            <CompanyJobsTab jobs={companyJobs} orgName={org.name} orgSlug={org.slug} />
                         </TabsContent>
 
 
@@ -390,6 +386,110 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         </div >
 
     );
+}
+
+function CompanyJobsTab({
+    jobs,
+    orgName,
+    orgSlug,
+}: {
+    jobs: Job[];
+    orgName: string;
+    orgSlug: string;
+}) {
+    if (jobs.length === 0) {
+        return (
+            <EmptyState
+                icon={Briefcase}
+                title="No open jobs"
+                description={`${orgName} is not currently advertising open roles on MediaLinkPro.`}
+            />
+        );
+    }
+
+    return (
+        <div className="space-y-4">
+            {jobs.map((job) => (
+                <CompanyJobCard key={job.id} job={job} orgSlug={orgSlug} />
+            ))}
+        </div>
+    );
+}
+
+function CompanyJobCard({ job, orgSlug }: { job: Job; orgSlug: string }) {
+    const color = JOB_TYPE_COLORS[job.job_type];
+    const salary = formatSalary(job);
+
+    return (
+        <Link
+            href={`/jobs/${job.organizations?.slug ?? orgSlug}/${job.slug}`}
+            className="group block rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/[0.07]"
+        >
+            <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-[#C6A85E]">
+                    <Briefcase className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-1">
+                            <h3 className="line-clamp-2 font-semibold text-white transition-colors group-hover:text-[#C6A85E]">
+                                {job.title}
+                            </h3>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                                {job.department && (
+                                    <span className="flex items-center gap-1">
+                                        <Building2 className="h-3.5 w-3.5" />
+                                        {job.department}
+                                    </span>
+                                )}
+                                <span className="flex items-center gap-1">
+                                    <MapPin className="h-3.5 w-3.5" />
+                                    {job.is_remote ? "Remote" : job.location || "Unspecified"}
+                                </span>
+                                {salary && <span className="text-[#C6A85E]">{salary}</span>}
+                            </div>
+                        </div>
+                        <span
+                            className="flex-shrink-0 rounded px-2 py-0.5 text-xs font-medium"
+                            style={{ backgroundColor: `${color}20`, color }}
+                        >
+                            {JOB_TYPE_LABELS[job.job_type]}
+                        </span>
+                    </div>
+
+                    {job.description && (
+                        <p className="line-clamp-2 text-sm text-gray-400">{stripHtml(job.description)}</p>
+                    )}
+
+                    <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-gray-500">
+                        <span>Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
+                        <span className="inline-flex items-center gap-1 font-medium text-[#C6A85E]">
+                            View role
+                            <ExternalLink className="h-3 w-3" />
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </Link>
+    );
+}
+
+function formatSalary(job: Job): string | null {
+    if (!job.salary_min && !job.salary_max) return null;
+    const currency = job.currency ?? "USD";
+    const fmt = (value: number) => new Intl.NumberFormat("en-US").format(value);
+
+    if (job.salary_min && job.salary_max) return `${currency} ${fmt(job.salary_min)} - ${fmt(job.salary_max)}`;
+    if (job.salary_min) return `${currency} ${fmt(job.salary_min)}+`;
+    if (job.salary_max) return `Up to ${currency} ${fmt(job.salary_max)}`;
+    return null;
+}
+
+function stripHtml(text: string): string {
+    return text
+        .replace(/<[^>]+>/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 async function CompanyMembersCard({ orgId }: { orgId: string }) {

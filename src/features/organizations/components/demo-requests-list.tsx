@@ -31,15 +31,34 @@ interface DemoRequestsListProps {
     organizationId: string;
 }
 
+type RequestStatus = "pending" | "contacted" | "ignored";
+type RequestType = "demo" | "quote";
+
+type OrganizationRequest = {
+    id: string;
+    created_at: string;
+    request_type: RequestType | null;
+    status: RequestStatus;
+    contact_name: string;
+    contact_email: string;
+    contact_phone: string | null;
+    company_name: string | null;
+    message: string | null;
+    products: {
+        name: string | null;
+        slug: string | null;
+    } | null;
+};
+
 export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
-    const [requests, setRequests] = useState<any[]>([]);
+    const [requests, setRequests] = useState<OrganizationRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchRequests = async () => {
         setIsLoading(true);
         try {
             const data = await getOrganizationRequests(organizationId);
-            setRequests(data || []);
+            setRequests((data || []) as OrganizationRequest[]);
         } catch (error) {
             console.error("Failed to fetch requests", error);
             toast.error("Failed to load requests");
@@ -52,7 +71,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
         fetchRequests();
     }, [organizationId]);
 
-    const handleStatusUpdate = async (id: string, newStatus: 'pending' | 'contacted' | 'ignored') => {
+    const handleStatusUpdate = async (id: string, newStatus: RequestStatus) => {
         try {
             const result = await updateRequestStatus(id, newStatus);
             if (result.success) {
@@ -75,7 +94,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
             <EmptyState
                 icon={Mail}
                 title="No Requests Yet"
-                description="When users request a demo for your products, they will appear here."
+                description="When users request a demo or quote for your products, they will appear here."
             />
         );
     }
@@ -83,14 +102,15 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
     return (
         <Card className="bg-white/5 border-white/10 text-white">
             <CardHeader>
-                <CardTitle>Demo Requests</CardTitle>
-                <CardDescription>Manage incoming demo requests for your products.</CardDescription>
+                <CardTitle>Requests (Demo &amp; Quote)</CardTitle>
+                <CardDescription>Manage incoming demo and quote requests for your products.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
                         <TableRow className="border-white/10 hover:bg-white/5">
                             <TableHead className="text-gray-400">Date</TableHead>
+                            <TableHead className="text-gray-400">Type</TableHead>
                             <TableHead className="text-gray-400">Product</TableHead>
                             <TableHead className="text-gray-400">Contact</TableHead>
                             <TableHead className="text-gray-400">Status</TableHead>
@@ -102,6 +122,18 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
                             <TableRow key={request.id} className="border-white/10 hover:bg-white/5">
                                 <TableCell className="text-gray-300">
                                     {format(new Date(request.created_at), 'MMM d, yyyy')}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge
+                                        variant="secondary"
+                                        className={
+                                            request.request_type === 'quote'
+                                                ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+                                                : "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
+                                        }
+                                    >
+                                        {request.request_type === 'quote' ? 'Quote' : 'Demo'}
+                                    </Badge>
                                 </TableCell>
                                 <TableCell className="font-medium text-white">
                                     {request.products?.name || "Unknown Product"}
@@ -149,7 +181,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
     );
 }
 
-function ViewRequestDialog({ request }: { request: any }) {
+function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
     return (
         <Dialog>
             <DialogTrigger asChild>

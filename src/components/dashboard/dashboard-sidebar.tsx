@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, User, Sparkles, ArrowRight } from "lucide-react";
+import { Building2, User, ArrowRight, Zap, Rocket, TrendingUp, Crown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,7 +10,91 @@ import { EventCard } from "@/components/events/event-card";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
 import type { Event } from "@/features/events/types";
+import type { PlanId } from "@/lib/stripe/plans";
 import type { ReactNode } from "react";
+
+// ─── Plan upgrade promo config ────────────────────────────────────────────────
+
+type UpgradePromo = {
+  badge: string;
+  Icon: React.ElementType;
+  title: string;
+  description: string;
+  price: string;
+  cta: string;
+  href: string;
+};
+
+const UPGRADE_PROMOS: Record<PlanId, UpgradePromo | null> = {
+  free: {
+    badge: "Go Pro",
+    Icon: Zap,
+    title: "Unlock Your Full Potential",
+    description: "Unlimited connections, initiate conversations & list your expert services.",
+    price: "From $19 / month",
+    cta: "Upgrade to Individual Pro",
+    href: "/billing",
+  },
+  individual_pro: {
+    badge: "For Companies",
+    Icon: Rocket,
+    title: "Grow Your Business",
+    description: "Full company profile, product listings, job posts & events — all in one place.",
+    price: "From $199 / month",
+    cta: "Start an Org Plan",
+    href: "/billing",
+  },
+  org_free: {
+    badge: "Scale Up",
+    Icon: TrendingUp,
+    title: "Unlock Org Growth",
+    description: "10 product listings, 5 team seats, advanced analytics & $50/mo ad credits.",
+    price: "From $199 / month",
+    cta: "Upgrade to Org Growth",
+    href: "/billing",
+  },
+  org_growth: {
+    badge: "Enterprise",
+    Icon: Crown,
+    title: "Go Enterprise",
+    description: "Unlimited products, dedicated account manager & featured placement on landing.",
+    price: "Custom pricing",
+    cta: "Contact Sales",
+    href: "/billing",
+  },
+  // Top-tier — no upgrade to show
+  org_enterprise: null,
+};
+
+function PlanUpgradeCard({ plan }: { plan?: PlanId }) {
+  const promo = plan ? UPGRADE_PROMOS[plan] : UPGRADE_PROMOS["free"];
+  if (!promo) return null;
+
+  const { badge, Icon, title, description, price, cta, href } = promo;
+
+  return (
+    <Card className="bg-gradient-to-br from-[#C6A85E] to-[#B5964A] border-none text-black overflow-hidden relative">
+      <div className="absolute top-0 right-0 p-4 opacity-20">
+        <Icon className="h-16 w-16" />
+      </div>
+      <CardContent className="p-6 relative z-10">
+        <span className="text-[10px] font-bold uppercase tracking-wider bg-black/10 px-2 py-0.5 rounded-full mb-3 inline-block">
+          {badge}
+        </span>
+        <h4 className="text-lg font-bold mb-1.5">{title}</h4>
+        <p className="text-sm mb-1 opacity-80">{description}</p>
+        <p className="text-xs font-semibold mb-4 opacity-60">{price}</p>
+        <Button size="sm" className="w-full bg-black text-white hover:bg-black/80" asChild>
+          <Link href={href}>
+            {cta} <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Company {
   id: string;
@@ -20,7 +104,7 @@ interface Company {
   type?: string | null;
 }
 
-interface User {
+interface SidebarUser {
   id: string;
   username: string;
   full_name?: string | null;
@@ -28,23 +112,42 @@ interface User {
   job_title?: string | null;
 }
 
+interface EventAttendee {
+  avatar_url: string | null;
+  full_name: string | null;
+}
+
 interface DashboardSidebarProps {
   latestCompanies: Company[];
-  latestUsers: User[];
+  latestUsers: SidebarUser[];
   upcomingEvent?: Event | null;
+  eventIsGoing?: boolean;
+  eventAttendees?: EventAttendee[];
   adSlot?: ReactNode;
+  userPlan?: PlanId;
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function DashboardSidebar({
   latestCompanies,
   latestUsers,
   upcomingEvent,
+  eventIsGoing,
+  eventAttendees,
   adSlot,
+  userPlan,
 }: DashboardSidebarProps) {
   return (
     <aside className="space-y-6">
       {/* Upcoming Event */}
-      {upcomingEvent && <EventCard event={upcomingEvent} />}
+      {upcomingEvent && (
+        <EventCard
+          event={upcomingEvent}
+          isGoing={eventIsGoing}
+          attendees={eventAttendees}
+        />
+      )}
 
       {/* Sponsored ad — below upcoming event */}
       {adSlot}
@@ -141,27 +244,11 @@ export function DashboardSidebar({
         </CardContent>
       </Card>
 
-      {/* Featured Product Banner */}
-      <Card className="bg-gradient-to-br from-[#C6A85E] to-[#B5964A] border-none text-black overflow-hidden relative">
-        <div className="absolute top-0 right-0 p-4 opacity-20">
-          <Sparkles className="h-16 w-16" />
-        </div>
-        <CardContent className="p-6 relative z-10">
-          <span className="text-[10px] font-bold uppercase tracking-wider bg-black/10 px-2 py-0.5 rounded-full mb-3 inline-block">
-            Featured
-          </span>
-          <h4 className="text-lg font-bold mb-2">ProStream X1</h4>
-          <p className="text-sm mb-4 opacity-80">
-            The ultimate 4K streaming solution for broadcasting professionals.
-          </p>
-          <Button size="sm" className="w-full bg-black text-white hover:bg-black/80">
-            Discover More <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Plan Upgrade Promo */}
+      <PlanUpgradeCard plan={userPlan} />
 
       {/* Ads Banner */}
-      <AdPlaceholder height={200} />
+      <AdPlaceholder height={300} />
 
       <div className="pt-4 text-center">
         <p className="text-[10px] text-gray-600">

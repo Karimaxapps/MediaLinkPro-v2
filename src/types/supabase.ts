@@ -554,6 +554,7 @@ export type Database = {
           message: string | null
           organization_id: string | null
           product_id: string | null
+          request_type: string
           requester_id: string | null
           status: string | null
         }
@@ -567,6 +568,7 @@ export type Database = {
           message?: string | null
           organization_id?: string | null
           product_id?: string | null
+          request_type?: string
           requester_id?: string | null
           status?: string | null
         }
@@ -580,6 +582,7 @@ export type Database = {
           message?: string | null
           organization_id?: string | null
           product_id?: string | null
+          request_type?: string
           requester_id?: string | null
           status?: string | null
         }
@@ -1499,6 +1502,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           facebook_url: string | null
+          followers_count: number
           id: string
           instagram_url: string | null
           is_platform_org: boolean
@@ -1512,6 +1516,7 @@ export type Database = {
           tiktok_url: string | null
           type: string | null
           updated_at: string | null
+          views_count: number
           website: string | null
           x_url: string | null
           youtube_url: string | null
@@ -1524,6 +1529,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           facebook_url?: string | null
+          followers_count?: number
           id?: string
           instagram_url?: string | null
           is_platform_org?: boolean
@@ -1537,6 +1543,7 @@ export type Database = {
           tiktok_url?: string | null
           type?: string | null
           updated_at?: string | null
+          views_count?: number
           website?: string | null
           x_url?: string | null
           youtube_url?: string | null
@@ -1549,6 +1556,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           facebook_url?: string | null
+          followers_count?: number
           id?: string
           instagram_url?: string | null
           is_platform_org?: boolean
@@ -1562,6 +1570,7 @@ export type Database = {
           tiktok_url?: string | null
           type?: string | null
           updated_at?: string | null
+          views_count?: number
           website?: string | null
           x_url?: string | null
           youtube_url?: string | null

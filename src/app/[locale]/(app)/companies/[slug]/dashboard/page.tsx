@@ -13,6 +13,7 @@ import {
 import { CompanyJobsWidget } from "@/features/jobs/components/company-jobs-widget";
 import { CompanyEventsWidget } from "@/features/events/components/company-events-widget";
 import { CompanyBlogWidget } from "@/features/blog/components/company-blog-widget";
+import { DemoRequestsList } from "@/features/organizations/components/demo-requests-list";
 import { getOrgUsage } from "@/features/billing/server/usage";
 import { getOrgPlan } from "@/lib/subscription/gate";
 import { PlanUsageCard } from "@/components/subscription/plan-usage-card";
@@ -74,6 +75,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
         <Suspense fallback={<TableSkeleton />}>
           <CompanyBlogWidget orgId={orgId} blogQuota={usage.blogPostsThisMonth} />
         </Suspense>
+
+        <DemoRequestsList organizationId={orgId} />
 
         <div className="max-w-2xl">
           <Suspense fallback={<FeedSkeleton />}>

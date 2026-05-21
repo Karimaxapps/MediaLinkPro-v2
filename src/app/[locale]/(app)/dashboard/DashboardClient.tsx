@@ -13,6 +13,7 @@ import type { Event } from "@/features/events/types";
 import type { BlogPost } from "@/features/blog/server/actions";
 import type { Product } from "@/features/products/types";
 import type { AiTool } from "@/features/ai-tools/types";
+import type { PlanId } from "@/lib/stripe/plans";
 import { FeaturedAiTools } from "@/features/ai-tools/components/featured-ai-tools";
 import { DailyGreeting } from "@/components/dashboard/daily-greeting";
 
@@ -24,6 +25,10 @@ type FeedCompany = {
     slug: string;
     main_activity?: string | null;
     plan?: string | null;
+    country?: string | null;
+    followers_count?: number | null;
+    products_count?: number | null;
+    is_following?: boolean;
 };
 
 type FeedUser = {
@@ -36,12 +41,15 @@ type FeedUser = {
 
 export function DashboardClient({
     userFirstName,
+    userPlan,
     initialProducts,
     latestServices = [],
     featuredCompanies = [],
     latestCompanies,
     latestUsers,
     upcomingEvent,
+    eventIsGoing,
+    eventAttendees,
     latestBlogPosts = [],
     featuredAiTools = [],
     heroBanner,
@@ -50,12 +58,15 @@ export function DashboardClient({
     sidebarExtras,
 }: {
     userFirstName?: string,
+    userPlan?: PlanId,
     initialProducts: Product[],
     latestServices?: Product[],
     featuredCompanies?: FeedCompany[],
     latestCompanies: FeedCompany[],
     latestUsers: FeedUser[],
     upcomingEvent?: Event | null,
+    eventIsGoing?: boolean,
+    eventAttendees?: { avatar_url: string | null; full_name: string | null }[],
     latestBlogPosts?: BlogPost[],
     featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
@@ -126,9 +137,6 @@ export function DashboardClient({
                     )}
                 </div>
 
-                {/* Hero Banner — admin-managed via /admin/ads (placement: dashboard_hero_banner) */}
-                {heroBanner}
-
                 {/* Featured Companies Section — only shown when admin has featured at least one */}
                 {featuredCompanies.length > 0 && (
                     <div className="space-y-4">
@@ -145,7 +153,7 @@ export function DashboardClient({
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 {featuredCompanies.map((company) => (
-                                    <div key={company.id} className="w-[180px] snap-start shrink-0">
+                                    <div key={company.id} className="w-[300px] snap-start shrink-0">
                                         <FeedCompanyCard
                                             id={company.id}
                                             name={company.name}
@@ -154,6 +162,10 @@ export function DashboardClient({
                                             slug={company.slug}
                                             main_activity={company.main_activity}
                                             plan={company.plan}
+                                            country={company.country}
+                                            followers_count={company.followers_count}
+                                            products_count={company.products_count}
+                                            is_following={company.is_following}
                                         />
                                     </div>
                                 ))}
@@ -175,6 +187,9 @@ export function DashboardClient({
                         </div>
                     </div>
                 )}
+
+                {/* Hero Banner — admin-managed via /admin/ads (placement: dashboard_hero_banner) */}
+                {heroBanner}
 
                 {/* Media Services Section */}
                 <div className="space-y-4">
@@ -326,7 +341,10 @@ export function DashboardClient({
                     latestCompanies={latestCompanies}
                     latestUsers={latestUsers}
                     upcomingEvent={upcomingEvent}
+                    eventIsGoing={eventIsGoing}
+                    eventAttendees={eventAttendees}
                     adSlot={sidebarAd}
+                    userPlan={userPlan}
                 />
             </div>
         </div>

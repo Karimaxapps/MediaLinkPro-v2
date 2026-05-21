@@ -3,7 +3,7 @@
 import { useState, useMemo, type ReactNode } from "react";
 import { ProductCard } from "@/features/products/components/product-card";
 import type { Product } from "@/features/products/types";
-import { PRODUCT_TYPES, MAIN_CATEGORIES } from "@/features/products/constants";
+import { PRODUCT_TYPES, MAIN_CATEGORIES_BY_TYPE, type ProductType } from "@/features/products/constants";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -123,6 +123,18 @@ export function MarketplaceClient({
 
     const visibleProducts = filteredProducts.slice(0, visibleCount);
     const hasMore = visibleCount < filteredProducts.length;
+
+    // Categories grouped by product type. When types are selected, only show
+    // categories belonging to those types.
+    const categoryGroups = useMemo(() => {
+        return typeChips
+            .filter((type) => selectedTypes.length === 0 || selectedTypes.includes(type))
+            .map((type) => ({
+                type,
+                categories: MAIN_CATEGORIES_BY_TYPE[type as ProductType] ?? [],
+            }))
+            .filter((group) => group.categories.length > 0);
+    }, [typeChips, selectedTypes]);
 
     return (
         <div className="space-y-6">
@@ -251,19 +263,28 @@ export function MarketplaceClient({
                             </button>
                         )}
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                        {MAIN_CATEGORIES.map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => toggleCategory(category)}
-                                className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                                    selectedCategories.includes(category)
-                                        ? "bg-[#C6A85E] text-black border-[#C6A85E] font-medium"
-                                        : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
-                                }`}
-                            >
-                                {category}
-                            </button>
+                    <div className="space-y-4">
+                        {categoryGroups.map((group) => (
+                            <div key={group.type}>
+                                <span className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+                                    {group.type}
+                                </span>
+                                <div className="flex flex-wrap gap-2">
+                                    {group.categories.map((category) => (
+                                        <button
+                                            key={category}
+                                            onClick={() => toggleCategory(category)}
+                                            className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                                                selectedCategories.includes(category)
+                                                    ? "bg-[#C6A85E] text-black border-[#C6A85E] font-medium"
+                                                    : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
+                                            }`}
+                                        >
+                                            {category}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>

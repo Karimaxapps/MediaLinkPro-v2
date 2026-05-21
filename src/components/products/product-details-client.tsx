@@ -7,7 +7,6 @@ import Image from "next/image";
 import { AddResourceDialog } from "@/features/products/components/add-resource-dialog";
 import { EditResourceDialog } from "@/features/products/components/edit-resource-dialog";
 import { getProductOfficialResources, deleteProductResource, removeProductTrainingVideo } from "@/features/products/server/actions";
-import { ContactButton } from "@/features/messaging/components/ContactButton";
 import { format } from "date-fns";
 import {
     CheckCircle,
@@ -37,6 +36,7 @@ import {
     ArrowBigUp,
     Plus,
     Youtube,
+    Newspaper,
 } from "lucide-react";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -90,6 +90,7 @@ interface ProductDetailsProps {
     isPlatformProduct?: boolean;
     userOrgId?: string | null;
     claimRequest?: OwnershipRequest | null;
+    relatedPosts?: any[];
 }
 
 function getYouTubeId(url: string) {
@@ -98,7 +99,7 @@ function getYouTubeId(url: string) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-export function ProductDetailsClient({ product, user, userProfile, isOwner = false, isPlatformProduct = false, userOrgId = null, claimRequest = null }: ProductDetailsProps) {
+export function ProductDetailsClient({ product, user, userProfile, isOwner = false, isPlatformProduct = false, userOrgId = null, claimRequest = null, relatedPosts = [] }: ProductDetailsProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [activeImage, setActiveImage] = useState<string | null>(product.promo_video_url ? 'video' : null);
@@ -594,18 +595,10 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         userProfile={userProfile}
                                         trigger={
                                             <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none">
-                                                Request Demo
+                                                Request Demo or Quote
                                             </Button>
                                         }
                                     />
-                                    {product.organization_id && (
-                                        <ContactButton
-                                            targetOrganizationId={product.organization_id}
-                                            variant="secondary"
-                                            className="h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none"
-                                            text="Message Company"
-                                        />
-                                    )}
                                     <ClaimProductButton
                                         productId={product.id}
                                         userOrgId={userOrgId}
@@ -1153,7 +1146,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 {!isExpert && (
                                     <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                                         <DialogTrigger asChild>
-                                            <Button size="sm" variant="outline" className="h-8 border-[#C6A85E]/50 text-[#C6A85E] hover:bg-[#C6A85E]/10">
+                                            <Button size="sm" className="h-8 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
                                                 Join
                                             </Button>
                                         </DialogTrigger>
@@ -1305,19 +1298,67 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-gradient-to-br from-[#C6A85E]/20 to-black border-[#C6A85E]/30 text-white">
-                            <CardHeader className="pb-3">
-                                <CardTitle className="text-lg">Request Quote</CardTitle>
-                                <CardDescription className="text-gray-400 text-xs mt-1">
-                                    Interested in {product.name}? Contact the organization directly.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="pt-0">
-                                <Button className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-10">
-                                    Contact Sales
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        {/* Featured in Blog Posts */}
+                        {relatedPosts.length > 0 && (
+                            <Card className="bg-white/5 border-white/10 text-white">
+                                <CardHeader className="pb-3 border-b border-white/10 flex flex-row items-center justify-between space-y-0">
+                                    <CardTitle className="text-lg flex items-center gap-2">
+                                        <Newspaper className="w-5 h-5 text-[#C6A85E]" />
+                                        Featured in Blog
+                                    </CardTitle>
+                                    <Link href="/blog" className="text-xs text-[#C6A85E] hover:underline shrink-0">
+                                        View all
+                                    </Link>
+                                </CardHeader>
+                                <CardContent className="pt-4">
+                                    <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
+                                        {relatedPosts.map((post: any) => (
+                                            <Link
+                                                key={post.id}
+                                                href={`/blog/${post.slug}`}
+                                                className="group snap-start shrink-0 w-[220px] rounded-xl border border-white/10 bg-black/20 overflow-hidden hover:border-[#C6A85E]/40 transition-colors"
+                                            >
+                                                <div className="relative aspect-video w-full bg-[#C6A85E]/10">
+                                                    {post.cover_image_url ? (
+                                                        <Image
+                                                            src={post.cover_image_url}
+                                                            alt={post.title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Newspaper className="w-8 h-8 text-[#C6A85E]/40" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="p-3">
+                                                    {post.category && (
+                                                        <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium mb-1">
+                                                            {post.category}
+                                                        </div>
+                                                    )}
+                                                    <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[#C6A85E] transition-colors leading-snug">
+                                                        {post.title}
+                                                    </h4>
+                                                    <div className="text-[10px] text-gray-500 mt-2 flex items-center gap-1.5">
+                                                        <span className="truncate">
+                                                            {post.author?.full_name ?? post.author?.username ?? "Author"}
+                                                        </span>
+                                                        {post.published_at && (
+                                                            <>
+                                                                <span>·</span>
+                                                                <span className="shrink-0">{format(new Date(post.published_at), "MMM d, yyyy")}</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
 
                         {/* Organization Info / Owner Tips */}
                         {isOwner ? (

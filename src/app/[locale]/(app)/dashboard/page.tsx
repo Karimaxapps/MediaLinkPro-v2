@@ -5,9 +5,10 @@ import { getMyProfile } from "@/features/profile/server/actions";
 import { getLatestProducts, getLatestServices } from "@/features/products/server/actions";
 import { getLatestOrganizations, getFeaturedOrganizations } from "@/features/organizations/server/actions";
 import { getLatestProfiles } from "@/features/profiles/server/actions";
-import { getUpcomingEvents } from "@/features/events/server/actions";
+import { getUpcomingEvents, getMyEventInterest, listEventInterests } from "@/features/events/server/actions";
 import { listPublishedPosts } from "@/features/blog/server/actions";
 import { getFeaturedAiTools } from "@/features/ai-tools/server/actions";
+import { getUserPlan } from "@/lib/subscription/gate";
 import { DashboardClient } from "./DashboardClient";
 import { RecommendedConnectionsWidget } from "@/features/connections/components/recommended-connections";
 import { DashboardJobApplicationsWidget } from "@/features/jobs/components/dashboard-applications-widget";
@@ -34,7 +35,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for the feed
-  const [latestProducts, latestServices, featuredCompanies, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools] = await Promise.all([
+  const [latestProducts, latestServices, featuredCompanies, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools, userPlan] = await Promise.all([
     getLatestProducts(10),
     getLatestServices(10),
     getFeaturedOrganizations(10),
@@ -43,22 +44,40 @@ export default async function DashboardPage() {
     getUpcomingEvents(1),
     listPublishedPosts(10),
     getFeaturedAiTools(10),
+    getUserPlan(user.id),
   ]);
   const upcomingEvent = upcomingEvents[0] ?? null;
+
+  let eventIsGoing = false;
+  let eventAttendees: { avatar_url: string | null; full_name: string | null }[] = [];
+  if (upcomingEvent) {
+    const [myInterest, interests] = await Promise.all([
+      getMyEventInterest(upcomingEvent.id),
+      listEventInterests(upcomingEvent.id, 5),
+    ]);
+    eventIsGoing = myInterest?.interest === "going";
+    eventAttendees = interests.map((i) => ({
+      avatar_url: i.profiles?.avatar_url ?? null,
+      full_name: i.profiles?.full_name ?? null,
+    }));
+  }
 
   return (
     <DashboardClient
       userFirstName={profile.full_name ?? undefined}
+      userPlan={userPlan}
       initialProducts={latestProducts}
       latestServices={latestServices}
       featuredCompanies={featuredCompanies}
       latestCompanies={latestCompanies}
       latestUsers={latestUsers}
       upcomingEvent={upcomingEvent}
+      eventIsGoing={eventIsGoing}
+      eventAttendees={eventAttendees}
       latestBlogPosts={latestBlogPosts}
       featuredAiTools={featuredAiTools}
       heroBanner={<DashboardHeroBanner />}
-      sidebarAd={<SponsoredCard placement="feed" />}
+      sidebarAd={<SponsoredCard placement="feed" minHeight={296} />}
       sidebarExtras={
         <>
           <DashboardJobApplicationsWidget limit={5} />

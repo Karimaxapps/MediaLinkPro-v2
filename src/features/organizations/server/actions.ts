@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 
 const createOrgSchema = z.object({
   name: z.string().min(3),
@@ -439,7 +440,7 @@ export async function getFeaturedOrganizations(limit: number = 10) {
 
   const { data, error } = await supabase
     .from("organizations")
-    .select("id, name, slug, logo_url, tagline, type, main_activity")
+    .select("id, name, slug, logo_url, tagline, type, main_activity, country, followers_count")
     .eq("is_featured" as never, true)
     .order("updated_at", { ascending: false })
     .limit(limit);
@@ -451,13 +452,39 @@ export async function getFeaturedOrganizations(limit: number = 10) {
 
   const orgIds = data.map((o) => o.id);
 
+  // Published product counts per org (for the card footer stat).
+  const { data: productRows } = await supabase
+    .from("products")
+    .select("organization_id")
+    .in("organization_id", orgIds)
+    .eq("status", "published")
+    .eq("is_public", true);
+
+  const productCountMap = new Map<string, number>();
+  for (const row of productRows ?? []) {
+    const oid = (row as { organization_id: string }).organization_id;
+    productCountMap.set(oid, (productCountMap.get(oid) ?? 0) + 1);
+  }
+
+  const followedIds = await getFollowedOrganizationIds(orgIds);
+
   const { data: ownerRows } = await admin
     .from("organization_members")
     .select("organization_id, user_id")
     .in("organization_id", orgIds)
     .eq("role", "owner");
 
-  if (!ownerRows?.length) return data.map((o) => ({ ...o, plan: null }));
+  const decorate = (
+    org: (typeof data)[number],
+    plan: string | null,
+  ) => ({
+    ...org,
+    plan,
+    products_count: productCountMap.get(org.id) ?? 0,
+    is_following: followedIds.has(org.id),
+  });
+
+  if (!ownerRows?.length) return data.map((o) => decorate(o, null));
 
   const ownerMap = new Map(ownerRows.map((r) => [r.organization_id, r.user_id]));
   const ownerIds = [...new Set(ownerRows.map((r) => r.user_id))];
@@ -474,7 +501,7 @@ export async function getFeaturedOrganizations(limit: number = 10) {
     const ownerId = ownerMap.get(org.id);
     const sub = ownerId ? subMap.get(ownerId) : null;
     const isActive = sub?.status === "active" || sub?.status === "trialing";
-    return { ...org, plan: sub?.plan && isActive ? sub.plan : null };
+    return decorate(org, sub?.plan && isActive ? sub.plan : null);
   });
 }
 

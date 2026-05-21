@@ -1,8 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { format } from "date-fns";
-import { Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { getProductBySlug } from "@/features/products/server/actions";
@@ -29,18 +25,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const title = `${product.name} | MediaLinkPro`;
     const description = product.short_description || product.description?.substring(0, 160) || 'View this product on MediaLinkPro';
 
-    // Prefer a gallery/banner image (landscape) for large card; fall back to logo (square → summary card)
-    type OGImage = { url: string; width: number; height: number; alt: string };
-    const images: OGImage[] = [];
-    if (product.gallery_urls && product.gallery_urls.length > 0) {
-        images.push({ url: product.gallery_urls[0], width: 1200, height: 630, alt: product.name });
-    } else if (product.logo_url) {
-        images.push({ url: product.logo_url, width: 400, height: 400, alt: product.name });
-    } else if (product.organizations?.logo_url) {
-        images.push({ url: product.organizations.logo_url, width: 400, height: 400, alt: product.name });
-    }
+    // Use the product's main image (the hero shown on the product page) as the post image.
+    // Fall back to the first gallery image, then the company logo.
+    const imageUrl =
+        product.logo_url ||
+        (product.gallery_urls && product.gallery_urls.length > 0 ? product.gallery_urls[0] : null) ||
+        product.organizations?.logo_url ||
+        null;
 
-    const twitterCard = images.length > 0 && product.gallery_urls?.length ? 'summary_large_image' : 'summary';
+    type OGImage = { url: string; width: number; height: number; alt: string };
+    const images: OGImage[] = imageUrl
+        ? [{ url: imageUrl, width: 1200, height: 630, alt: product.name }]
+        : [];
 
     return {
         title,
@@ -53,7 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             siteName: 'MediaLinkPro',
         },
         twitter: {
-            card: twitterCard,
+            card: 'summary_large_image',
             title,
             description,
             images: images.map((i) => i.url),
@@ -130,68 +126,8 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 isPlatformProduct={isPlatformProduct}
                 userOrgId={userOrgId}
                 claimRequest={claimRequest}
+                relatedPosts={relatedPosts}
             />
-
-            {relatedPosts.length > 0 && (
-                <section className="rounded-xl border border-white/10 bg-white/5 p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold text-white">From the blog</h2>
-                        <Link
-                            href="/blog"
-                            className="text-xs text-[#C6A85E] hover:underline"
-                        >
-                            View all posts
-                        </Link>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {relatedPosts.map((post) => (
-                            <Link
-                                key={post.id}
-                                href={`/blog/${post.slug}`}
-                                className="group flex gap-3 p-3 rounded-lg border border-white/10 bg-black/20 hover:bg-white/5 transition-colors"
-                            >
-                                {post.cover_image_url ? (
-                                    <div className="relative h-16 w-20 shrink-0 rounded overflow-hidden">
-                                        <Image
-                                            src={post.cover_image_url}
-                                            alt={post.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="h-16 w-20 shrink-0 rounded bg-[#C6A85E]/10 border border-[#C6A85E]/20" />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                    {post.category && (
-                                        <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium">
-                                            {post.category}
-                                        </div>
-                                    )}
-                                    <h3 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[#C6A85E] transition-colors">
-                                        {post.title}
-                                    </h3>
-                                    <div className="text-[10px] text-gray-500 mt-1 flex items-center gap-2">
-                                        {post.author?.full_name ?? post.author?.username ?? "Author"}
-                                        {post.published_at && (
-                                            <>
-                                                <span>·</span>
-                                                <span>{format(new Date(post.published_at), "MMM d, yyyy")}</span>
-                                            </>
-                                        )}
-                                        <span>·</span>
-                                        <span className="flex items-center gap-1">
-                                            <Eye className="h-2.5 w-2.5" />
-                                            {post.views_count}
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
-            )}
         </div>
     );
 }

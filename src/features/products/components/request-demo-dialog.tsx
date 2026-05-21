@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,10 +26,18 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
+    request_type: z.enum(["demo", "quote"]),
     contact_name: z.string().min(2, { message: "Name must be at least 2 characters." }),
     contact_email: z.string().email({ message: "Please enter a valid email address." }),
     contact_phone: z.string().optional(),
@@ -36,29 +45,57 @@ const formSchema = z.object({
     message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
+type RequestType = "demo" | "quote";
+
+function defaultMessage(type: RequestType, productName: string): string {
+    return type === "quote"
+        ? `Hi, I'd like to request a quote for ${productName}. Please send pricing and availability details.`
+        : `Hi, I'm interested in a demo of ${productName}. Please contact me to schedule a time.`;
+}
+
 interface RequestDemoDialogProps {
     productId: string;
     productName: string;
     organizationId: string;
-    user?: any;
-    userProfile?: any;
-    trigger?: React.ReactNode;
+    defaultRequestType?: RequestType;
+    user?: {
+        email?: string | null;
+    } | null;
+    userProfile?: {
+        full_name?: string | null;
+        company?: string | null;
+    } | null;
+    trigger?: ReactNode;
 }
 
-export function RequestDemoDialog({ productId, productName, organizationId, user, userProfile, trigger }: RequestDemoDialogProps) {
+export function RequestDemoDialog({ productId, productName, organizationId, defaultRequestType = "demo", user, userProfile, trigger }: RequestDemoDialogProps) {
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            request_type: defaultRequestType,
             contact_name: userProfile?.full_name || "",
             contact_email: user?.email || "",
             contact_phone: "",
             company_name: userProfile?.company || "",
-            message: `Hi, I'm interested in a demo of ${productName}. Please contact me to schedule a time.`,
+            message: defaultMessage(defaultRequestType, productName),
         },
     });
+
+    // Tracks the last auto-generated message so switching type only overwrites
+    // the message when the user hasn't customized it themselves.
+    const lastTemplate = useRef(defaultMessage(defaultRequestType, productName));
+
+    function handleTypeChange(value: RequestType) {
+        form.setValue("request_type", value);
+        if (form.getValues("message") === lastTemplate.current) {
+            const next = defaultMessage(value, productName);
+            form.setValue("message", next);
+            lastTemplate.current = next;
+        }
+    }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitting(true);
@@ -66,6 +103,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, user
             const formData = new FormData();
             formData.append("product_id", productId);
             formData.append("organization_id", organizationId);
+            formData.append("request_type", values.request_type);
             formData.append("contact_name", values.contact_name);
             formData.append("contact_email", values.contact_email);
             if (values.contact_phone) formData.append("contact_phone", values.contact_phone);
@@ -86,13 +124,14 @@ export function RequestDemoDialog({ productId, productName, organizationId, user
                     },
                 });
                 setOpen(false);
+                lastTemplate.current = defaultMessage(defaultRequestType, productName);
                 form.reset();
             } else {
                 toast.error("Error", {
                     description: result.error || "Failed to send request.",
                 });
             }
-        } catch (error) {
+        } catch {
             toast.error("Error", {
                 description: "An unexpected error occurred. Please try again.",
             });
@@ -111,24 +150,47 @@ export function RequestDemoDialog({ productId, productName, organizationId, user
         return trigger ? <>{trigger}</> : null;
     }
 
+    const selectedType = form.watch("request_type");
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {trigger || (
                     <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
-                        Request Demo
+                        Request Demo or Quote
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent className="bg-[#1F1F1F] border-white/10 text-white sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Request a Demo</DialogTitle>
+                    <DialogTitle>Request {selectedType === "quote" ? "a Quote" : "a Demo"}</DialogTitle>
                     <DialogDescription className="text-gray-400">
-                        Fill out the form below to request a demo for <span className="text-white font-medium">{productName}</span>.
+                        Fill out the form below to send your request for <span className="text-white font-medium">{productName}</span>.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="request_type"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-gray-300">Request type <span className="text-red-500">*</span></FormLabel>
+                                    <Select value={field.value} onValueChange={(v) => handleTypeChange(v as RequestType)}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="bg-[#1F1F1F] border-white/10 text-white">
+                                            <SelectItem value="demo">Demo request</SelectItem>
+                                            <SelectItem value="quote">Quote request</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="contact_name"

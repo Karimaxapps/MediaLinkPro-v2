@@ -16,6 +16,8 @@ export async function createDemoRequest(prevState: ActionState, formData: FormDa
     const contactPhone = formData.get("contact_phone") as string;
     const companyName = formData.get("company_name") as string;
     const message = formData.get("message") as string;
+    const requestTypeRaw = formData.get("request_type") as string | null;
+    const requestType = requestTypeRaw === "quote" ? "quote" : "demo";
 
     if (!productId || !contactName || !contactEmail || !message) {
         return {
@@ -34,7 +36,8 @@ export async function createDemoRequest(prevState: ActionState, formData: FormDa
             p_contact_email: contactEmail,
             p_contact_phone: contactPhone,
             p_company_name: companyName,
-            p_message: message
+            p_message: message,
+            p_request_type: requestType
         });
 
         if (error) {
@@ -48,7 +51,7 @@ export async function createDemoRequest(prevState: ActionState, formData: FormDa
 
         return {
             success: true,
-            message: "Demo request sent successfully! The company will contact you soon."
+            message: `${requestType === "quote" ? "Quote" : "Demo"} request sent successfully! The company will contact you soon.`
         };
     } catch (e) {
         console.error("Unexpected error:", e);

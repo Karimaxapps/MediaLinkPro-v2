@@ -30,7 +30,7 @@ export default async function JobsPage() {
           jobsQuota={usage?.jobsThisMonth ?? null}
         />
       </div>
-      <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
+      <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-4">
         {sidebarAd ? <SponsoredCard placement="jobs_sidebar" /> : <AdPlaceholder height={260} />}
         <AdPlaceholder height={200} />
       </aside>

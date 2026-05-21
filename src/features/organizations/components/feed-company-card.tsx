@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Building2 } from "lucide-react";
+import { Building2, Users, Package } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { FollowButton } from "@/features/organizations/components/follow-button";
 
 interface FeedCompanyCardProps {
     id: string;
@@ -13,14 +14,28 @@ interface FeedCompanyCardProps {
     slug: string;
     main_activity?: string | null;
     plan?: string | null;
+    country?: string | null;
+    followers_count?: number | null;
+    products_count?: number | null;
+    is_following?: boolean;
+}
+
+function formatCount(n: number): string {
+    if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K`;
+    return String(n);
 }
 
 export function FeedCompanyCard({
+    id,
     name,
     logo_url,
     slug,
     main_activity,
     plan,
+    country,
+    followers_count,
+    products_count,
+    is_following = false,
 }: FeedCompanyCardProps) {
     const href = `/companies/${slug}`;
 
@@ -28,37 +43,64 @@ export function FeedCompanyCard({
         ? main_activity.split(",")[0].trim()
         : null;
 
+    const subtitle = [primaryActivity, country].filter(Boolean).join(" · ");
+
     return (
         <Link href={href} className="group block w-full h-full">
-            <div className="bg-[#1A1A1A] border border-white/10 rounded-xl overflow-hidden hover:border-[#C6A85E]/40 transition-all duration-200 flex flex-col items-center p-4 gap-3 h-full">
-                {/* Logo */}
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-[#111] shrink-0 flex items-center justify-center">
-                    {logo_url ? (
-                        <Image
-                            src={logo_url}
-                            alt={name}
-                            fill
-                            className="object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+            <div className="bg-[#1A1A1A] border border-white/10 rounded-xl p-5 flex flex-col gap-4 h-full hover:border-[#C6A85E]/40 transition-all duration-200">
+                {/* Top row: logo + follow */}
+                <div className="flex items-start justify-between gap-3">
+                    <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                        {logo_url ? (
+                            <Image
+                                src={logo_url}
+                                alt={name}
+                                fill
+                                className="object-contain p-1.5 group-hover:scale-105 transition-transform duration-300"
+                            />
+                        ) : (
+                            <Building2 className="w-7 h-7 text-white/15" />
+                        )}
+                    </div>
+
+                    <div onClick={(e) => e.preventDefault()}>
+                        <FollowButton
+                            organizationId={id}
+                            initialFollowing={is_following}
+                            size="sm"
+                            className="bg-transparent text-[#C6A85E] hover:bg-[#C6A85E]/10 border-0 px-2"
                         />
-                    ) : (
-                        <Building2 className="w-10 h-10 text-white/15" />
+                    </div>
+                </div>
+
+                {/* Name + subtitle */}
+                <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                        <h3 className="text-white font-bold text-lg leading-tight truncate group-hover:text-[#C6A85E] transition-colors">
+                            {name}
+                        </h3>
+                        <VerifiedBadge plan={plan} size="sm" className="shrink-0" />
+                    </div>
+                    {subtitle && (
+                        <p className="text-gray-400 text-sm mt-1 truncate">{subtitle}</p>
                     )}
                 </div>
 
-                {/* Name + badge — fixed height so activity tag aligns across all cards */}
-                <div className="flex items-center justify-center gap-1 w-full h-10 shrink-0">
-                    <h3 className="text-white font-semibold text-sm leading-tight line-clamp-2 text-center group-hover:text-[#C6A85E] transition-colors">
-                        {name}
-                    </h3>
-                    <VerifiedBadge plan={plan} size="sm" className="shrink-0" />
-                </div>
-
-                {/* Main activity */}
-                {primaryActivity && (
-                    <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-[10px] text-gray-400 leading-tight text-center line-clamp-1 max-w-full">
-                        {primaryActivity}
+                {/* Footer stats */}
+                <div className="flex items-center gap-5 text-gray-400 text-sm mt-auto">
+                    <span className="flex items-center gap-1.5">
+                        <Users className="w-4 h-4" />
+                        <span className="font-medium text-gray-300">
+                            {formatCount(followers_count ?? 0)}
+                        </span>
                     </span>
-                )}
+                    <span className="flex items-center gap-1.5">
+                        <Package className="w-4 h-4" />
+                        <span className="font-medium text-gray-300">
+                            {products_count ?? 0}
+                        </span>
+                    </span>
+                </div>
             </div>
         </Link>
     );

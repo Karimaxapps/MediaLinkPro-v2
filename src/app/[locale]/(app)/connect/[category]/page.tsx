@@ -104,18 +104,16 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
 
     return (
         <div className="container mx-auto px-4 py-8 space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                 {/* Main Content (header + search + list, all client-side filtered) */}
                 <div className="lg:col-span-3 space-y-6">
                     <ConnectListClient items={items} type={type} title={title} />
                 </div>
 
                 {/* Sidebar */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="sticky top-24 space-y-6">
-                        <AdPlaceholder height={300} />
-                        <AdPlaceholder height={300} />
-                    </div>
+                <div className="lg:col-span-1 sticky top-4 space-y-6">
+                    <AdPlaceholder height={300} />
+                    <AdPlaceholder height={300} />
                 </div>
             </div>
         </div>

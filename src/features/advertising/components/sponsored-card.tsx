@@ -10,9 +10,11 @@ import { getActiveAdForPlacement, trackImpression, type AdPlacement } from "../s
 export async function SponsoredCard({
     placement,
     category,
+    minHeight = 196,
 }: {
     placement: AdPlacement;
     category?: string;
+    minHeight?: number;
 }) {
     const ad = await getActiveAdForPlacement(placement, category);
     if (!ad) return null;
@@ -23,7 +25,8 @@ export async function SponsoredCard({
     return (
         <Link
             href={`/api/ads/click?id=${ad.id}&url=${encodeURIComponent(ad.cta_url)}`}
-            className="group block relative rounded-xl overflow-hidden min-h-[196px] bg-[#111]"
+            className="group block relative rounded-xl overflow-hidden bg-[#111]"
+            style={{ minHeight }}
         >
             {/* Full-bleed background image */}
             {ad.image_url && (

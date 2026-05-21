@@ -1,91 +1,144 @@
-
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Building2, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Event } from "@/features/events/types";
+
+interface EventAttendee {
+    avatar_url: string | null;
+    full_name: string | null;
+}
 
 interface EventCardProps {
     event: Event;
+    /** Whether the current viewer has marked themselves as going. */
+    isGoing?: boolean;
+    /** A few attendee profiles for the avatar stack. */
+    attendees?: EventAttendee[];
 }
 
-function formatEventDateRange(startISO: string, endISO: string): string {
+function durationDays(startISO: string, endISO: string): number {
     const start = new Date(startISO);
     const end = new Date(endISO);
-    const sameDay = start.toDateString() === end.toDateString();
-    if (sameDay) {
-        return format(start, "MMM d, yyyy");
-    }
-    const sameMonth =
-        start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-    if (sameMonth) {
-        return `${format(start, "MMM d")}-${format(end, "d, yyyy")}`;
-    }
-    return `${format(start, "MMM d")} – ${format(end, "MMM d, yyyy")}`;
+    const ms = end.setHours(0, 0, 0, 0) - start.setHours(0, 0, 0, 0);
+    return Math.max(1, Math.round(ms / 86_400_000) + 1);
 }
 
-export function EventCard({ event }: EventCardProps) {
-    const dateLabel = formatEventDateRange(event.start_date, event.end_date);
-    const locationLabel = event.is_online
-        ? "Online"
-        : event.location || "Location TBA";
-    const organizer = event.organizations?.name ?? "MediaLinkPro";
+function daysUntil(startISO: string): number {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const start = new Date(startISO).setHours(0, 0, 0, 0);
+    return Math.round((start - today) / 86_400_000);
+}
+
+function countdownLabel(startISO: string, endISO: string): string {
+    const until = daysUntil(startISO);
+    if (until > 1) return `in ${until} days`;
+    if (until === 1) return "Tomorrow";
+    if (until === 0) return "Today";
+    // Event has started — show "Happening now" until it ends, else "Ended".
+    const end = new Date(endISO).setHours(0, 0, 0, 0);
+    return end >= new Date().setHours(0, 0, 0, 0) ? "Happening now" : "Ended";
+}
+
+const STRIPES =
+    "repeating-linear-gradient(45deg, rgba(198,168,94,0.07) 0px, rgba(198,168,94,0.07) 3px, transparent 3px, transparent 16px), #15130c";
+
+export function EventCard({ event, isGoing = false, attendees = [] }: EventCardProps) {
+    const start = new Date(event.start_date);
+    const month = format(start, "MMM").toUpperCase();
+    const day = format(start, "d");
+    const days = durationDays(event.start_date, event.end_date);
+    const countdown = countdownLabel(event.start_date, event.end_date);
+    const locationLabel = event.is_online ? "Online" : event.location || "Location TBA";
+    const bannerText = [event.title, !event.is_online && event.location]
+        .filter(Boolean)
+        .join(" · ")
+        .toUpperCase();
+    const goingCount = event.interest_count ?? 0;
 
     return (
-        <Card className="bg-white/5 border-white/10 text-white overflow-hidden hover:bg-white/10 transition-colors">
-            <CardHeader className="pb-2">
-                <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-3.5 w-3.5 text-[#C6A85E]" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        Upcoming Event
+        <Link href={`/events/${event.slug}`} className="group block">
+            <div className="bg-[#121212] border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A85E]/40 transition-colors">
+                {/* Banner */}
+                <div
+                    className="relative h-44 flex items-center justify-center"
+                    style={
+                        event.cover_image_url
+                            ? {
+                                  backgroundImage: `url(${event.cover_image_url})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                              }
+                            : { background: STRIPES }
+                    }
+                >
+                    {/* Date badge */}
+                    <div className="absolute top-4 left-4 bg-[#0c0c0c]/90 border border-white/10 rounded-lg w-12 py-1.5 text-center">
+                        <span className="block text-[9px] font-semibold uppercase tracking-widest text-[#C6A85E]">
+                            {month}
+                        </span>
+                        <span className="block text-xl font-bold text-white leading-none">{day}</span>
+                    </div>
+
+                    {/* Countdown badge */}
+                    <span className="absolute top-4 right-4 bg-[#0c0c0c]/90 border border-[#C6A85E]/30 rounded-full px-2.5 py-1 text-[11px] font-semibold text-[#C6A85E]">
+                        {countdown}
                     </span>
+
+                    {!event.cover_image_url && bannerText && (
+                        <span className="px-6 text-center text-[11px] font-medium tracking-[0.2em] text-white/30 line-clamp-2">
+                            {bannerText}
+                        </span>
+                    )}
                 </div>
-                <CardTitle className="text-base font-semibold text-[#C6A85E] line-clamp-1">
-                    {event.title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 pb-4">
-                <div className="space-y-1.5">
-                    <div className="flex items-center text-xs text-gray-400">
-                        <Calendar className="mr-2 h-3.5 w-3.5" />
-                        {dateLabel}
+
+                {/* Body */}
+                <div className="p-5 space-y-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#C6A85E]">
+                        Upcoming{isGoing && " · You're going"}
+                    </p>
+
+                    <h3 className="font-serif text-2xl text-white leading-tight group-hover:text-[#C6A85E] transition-colors line-clamp-2">
+                        {event.title}
+                    </h3>
+
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <Globe className="h-4 w-4 shrink-0" />
+                        <span className="truncate">
+                            {locationLabel} · {days} {days === 1 ? "day" : "days"}
+                        </span>
                     </div>
-                    <div className="flex items-center text-xs text-gray-400">
-                        {event.is_online ? (
-                            <Globe className="mr-2 h-3.5 w-3.5" />
-                        ) : (
-                            <MapPin className="mr-2 h-3.5 w-3.5" />
-                        )}
-                        {locationLabel}
-                    </div>
-                    <div className="flex items-center text-xs text-gray-400">
-                        <Building2 className="mr-2 h-3.5 w-3.5" />
-                        {organizer}
-                    </div>
+
+                    {(attendees.length > 0 || goingCount > 0) && (
+                        <div className="flex items-center gap-3 pt-1">
+                            <div className="flex -space-x-2">
+                                {(attendees.length > 0
+                                    ? attendees.slice(0, 5)
+                                    : Array.from({ length: Math.min(5, goingCount) }, () => null)
+                                ).map((a, i) => (
+                                    <Avatar
+                                        key={i}
+                                        className="h-8 w-8 border-2 border-[#121212] bg-[#C6A85E]"
+                                    >
+                                        <AvatarImage
+                                            src={a?.avatar_url ?? undefined}
+                                            alt={a?.full_name ?? undefined}
+                                        />
+                                        <AvatarFallback className="bg-[#C6A85E] text-black text-xs font-semibold">
+                                            {a?.full_name?.charAt(0).toUpperCase() ?? ""}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                ))}
+                            </div>
+                            {goingCount > 0 && (
+                                <span className="text-sm text-gray-400">+{goingCount} going</span>
+                            )}
+                        </div>
+                    )}
                 </div>
-                <div className="flex gap-2">
-                    <Link href={`/events/${event.slug}`} className="flex-1">
-                        <Button
-                            size="sm"
-                            className="w-full bg-white/10 hover:bg-white/20 text-white text-xs h-8 border-none"
-                        >
-                            Details
-                        </Button>
-                    </Link>
-                    <Link href="/events">
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="bg-transparent border-white/10 text-white hover:bg-white/10 text-xs h-8 whitespace-nowrap"
-                        >
-                            View all
-                        </Button>
-                    </Link>
-                </div>
-            </CardContent>
-        </Card>
+            </div>
+        </Link>
     );
 }

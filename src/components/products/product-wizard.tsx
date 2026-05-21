@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { PRODUCT_TYPES, MAIN_CATEGORIES, SUB_CATEGORIES } from '@/features/products/constants';
+import { PRODUCT_TYPES, MAIN_CATEGORIES_BY_TYPE, SUB_CATEGORIES, type ProductType } from '@/features/products/constants';
 import { ChevronRight, ChevronLeft, Box, FileText, Image, Loader2, Video as VideoIcon, GraduationCap, Tag, CheckCircle, Check, X, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
@@ -110,8 +110,25 @@ export function ProductWizard({ organizations, userId, initialData, createAction
     });
 
     const { trigger, watch, setValue, getValues, formState: { errors } } = form;
+    const watchProductType = watch('product_type');
     const watchMainCategory = watch('main_category');
     const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
+
+    const availableMainCategories = watchProductType
+        ? MAIN_CATEGORIES_BY_TYPE[watchProductType as ProductType] ?? []
+        : [];
+
+    useEffect(() => {
+        // Reset main category if it no longer belongs to the selected product type.
+        if (watchProductType) {
+            const valid = MAIN_CATEGORIES_BY_TYPE[watchProductType as ProductType] ?? [];
+            const currentMain = getValues('main_category');
+            if (currentMain && !valid.includes(currentMain)) {
+                setValue('main_category', '' as InsertProduct['main_category']);
+                setValue('sub_category', '');
+            }
+        }
+    }, [watchProductType, setValue, getValues]);
 
     useEffect(() => {
         if (watchMainCategory && SUB_CATEGORIES[watchMainCategory]) {
@@ -483,12 +500,13 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     <Select
                                         onValueChange={(value) => setValue("main_category", value as InsertProduct["main_category"], { shouldValidate: true })}
                                         value={watch("main_category") ?? ""}
+                                        disabled={!watchProductType}
                                     >
                                         <SelectTrigger className="bg-black/20 border-white/10 text-white">
-                                            <SelectValue placeholder="Select Main Category" />
+                                            <SelectValue placeholder={watchProductType ? "Select Main Category" : "Select a product type first"} />
                                         </SelectTrigger>
                                         <SelectContent className="bg-[#1A1F26] border-white/10 text-white max-h-[300px]">
-                                            {MAIN_CATEGORIES.map((category) => (
+                                            {availableMainCategories.map((category) => (
                                                 <SelectItem key={category} value={category} className="focus:bg-white/10 focus:text-white cursor-pointer">
                                                     {category}
                                                 </SelectItem>

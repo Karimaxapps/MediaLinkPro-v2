@@ -7,157 +7,161 @@ export const PRODUCT_TYPES = [
     'Service'
 ] as const;
 
-export const MAIN_CATEGORIES = [
-    'Content Creation & Capture',
-    'Live & Post Production',
-    'Graphics, VFX & Virtual Production',
-    'Audio Production & Radio',
-    'Media Asset Management & Workflow',
-    'Playout & Channel Automation',
-    'Streaming & OTT',
-    'Encoding & Transcoding',
-    'Broadcast Infrastructure & Networking',
-    'Cloud & Storage Solutions',
-    'Monitoring, QC & Compliance',
-    'AI & Automation Solutions',
-    'Advertising & Monetization',
-    'Digital Signage & Display',
-    'Accessories & Peripheral Equipment',
-    'Other'
-] as const;
+export type ProductType = typeof PRODUCT_TYPES[number];
 
+// Main categories available for each product type.
+export const MAIN_CATEGORIES_BY_TYPE: Record<ProductType, string[]> = {
+    Hardware: [
+        'Audio Production & Radio',
+        'Capture & Acquisition',
+        'Infrastructure & Transmission',
+        'Physical Storage Systems',
+    ],
+    Software: [
+        'Post-Production & Editing',
+        'Management & Orchestration',
+        'Monetization & Ad Tech',
+    ],
+    Cloud: [
+        'Cloud Production & Collaboration',
+        'Storage & Active Archive',
+        'Intelligent Tech & Cognitive Services',
+        'Cloud Playout & Virtual Distribution',
+    ],
+    Hybrid: [
+        'Hybrid Remote Production',
+        'Hybrid Storage & Compute',
+        'Edge Video Processing',
+    ],
+    Service: [
+        'Production Facilities & Rental',
+        'Post-Production & Finishing Services',
+        'Integration & Engineering Services',
+        'Professional Training & Consultancy',
+    ],
+};
+
+// Flat list of every main category (each is unique to a single product type).
+export const MAIN_CATEGORIES = Object.values(MAIN_CATEGORIES_BY_TYPE).flat() as readonly string[];
+
+// Sub categories keyed by main category.
 export const SUB_CATEGORIES: Record<string, string[]> = {
-    'Content Creation & Capture': [
-        'Cinema Cameras',
-        'Broadcast Studio Cameras',
-        'PTZ Cameras',
-        'Drones',
-        'Camera Lenses',
-        'Camera Support (Tripods, Rigs, Gimbals)',
-        'Lighting Fixtures',
-        'Lighting Control Systems',
-        'Microphones',
-        'Field Recorders',
-        'Capture Cards',
-        'Other'
-    ],
-    'Live & Post Production': [
-        'Video Switchers',
-        'Production Mixers',
-        'Editing Software (NLE)',
-        'Color Grading',
-        'Live Production Systems',
-        'Remote Production Systems',
-        'Production Automation',
-        'Other'
-    ],
-    'Graphics, VFX & Virtual Production': [
-        'Motion Graphics Software',
-        'Compositing & VFX',
-        'Virtual Studio Systems',
-        'AR / XR Production',
-        'Real-time Rendering Engines',
-        'Other'
-    ],
+    // Hardware
     'Audio Production & Radio': [
-        'Audio Consoles',
-        'DAWs',
-        'Radio Automation',
         'Audio Processors',
-        'Intercom Systems',
-        'Podcast Production',
-        'Other'
+        'Broadcast Mixing Consoles',
+        'Microphones & Transducers',
+        'Audio Monitors & Speakers',
+        'Intercom & IFB Systems',
     ],
-    'Media Asset Management & Workflow': [
-        'MAM Systems',
-        'Workflow Automation',
-        'Metadata Management',
-        'QC Systems',
-        'Transcoding Systems',
-        'Newsroom Systems (NRCS)',
-        'Other'
+    'Capture & Acquisition': [
+        'Studio & Field Cameras',
+        'Camcorders & ENG Units',
+        'Broadcast Lenses',
+        'Camera Support, Tripods & Gimbals',
+        'Prompting Equipment',
+        'Lighting & Grip Systems',
     ],
-    'Playout & Channel Automation': [
-        'Playout Servers',
-        'Channel-in-a-Box',
-        'Broadcast Automation',
-        'Branding & CG Systems',
-        'Other'
+    'Infrastructure & Transmission': [
+        'Signal Converters & DA',
+        'Routers & SDI/IP Matrices',
+        'Transmitters & Antennas',
+        'OB Flypacks & Mobile Units',
+        'Cabling, Fiber & Connection Systems',
     ],
-    'Streaming & OTT': [
-        'OTT Platforms',
-        'Streaming Servers',
-        'CDN Services',
-        'Video Players',
-        'Subscriber Management',
-        'Other'
+    'Physical Storage Systems': [
+        'On-Premises NAS/SAN Arrays',
+        'SSD & HDD Media Arrays',
+        'LTO Tape Libraries & Drives',
     ],
-    'Encoding & Transcoding': [
-        'Hardware Encoders',
-        'Software Encoders',
-        'Live Transcoding',
-        'File-based Transcoding',
-        'Compression Optimization',
-        'Other'
+    // Software
+    'Post-Production & Editing': [
+        'Non-Linear Editors (NLE)',
+        'Audio DAWs & Processing Tools',
+        'Color Grading Software',
+        'Visual Effects (VFX) & Compositing',
+        'Graphics, Titling & Subtitling',
     ],
-    'Broadcast Infrastructure & Networking': [
-        'IP Routers',
-        'SDI Routers',
-        'Network Switches',
-        'ST 2110 Solutions',
-        'NDI Solutions',
-        'KVM Systems',
-        'Broadcast Gateways',
-        'Other'
+    'Management & Orchestration': [
+        'Media Asset Management (MAM)',
+        'Production Asset Management (PAM)',
+        'Playout Automation & Servers',
+        'Traffic, Scheduling & Billing',
+        'Workflow Automation Engines',
     ],
-    'Cloud & Storage Solutions': [
-        'NAS Systems',
-        'SAN Systems',
-        'Object Storage',
-        'Cloud Storage',
-        'Archive Systems',
-        'Backup Solutions',
-        'Other'
+    'Monetization & Ad Tech': [
+        'Ad Servers & Campaign Management',
+        'Dynamic Ad Insertion (DAI)',
+        'Content Rights & Legal Software',
     ],
-    'Monitoring, QC & Compliance': [
-        'Waveform Monitors',
-        'Video Monitors',
-        'Loudness Monitoring',
-        'Signal Analyzers',
-        'Compliance Recording',
-        'Other'
+    // Cloud
+    'Cloud Production & Collaboration': [
+        'Cloud-Native Video Editors',
+        'Collaborative Review Platforms',
+        'Cloud Multiviewers & Monitoring',
+        'Remote Contribution & Comms',
     ],
-    'AI & Automation Solutions': [
-        'AI Video Editing',
-        'Speech-to-Text',
-        'AI Metadata Tagging',
-        'AI Recommendation',
-        'AI Encoding Optimization',
-        'Other'
+    'Storage & Active Archive': [
+        'Production Cloud Storage',
+        'Object Storage (S3-Compatible)',
+        'Hot/Cold Media Backup & Sync',
+        'Cloud-Native Archiving Platforms',
     ],
-    'Advertising & Monetization': [
-        'Ad Insertion',
-        'Programmatic Ads',
-        'Rights Management',
-        'Audience Analytics',
-        'Other'
+    'Intelligent Tech & Cognitive Services': [
+        'Automated Transcription & Captions',
+        'AI Translation & Virtual Dubbing',
+        'Automated Scene Curation & Indexing',
+        'Metadata Auto-Tagging & Search',
+        'AI Keyers & Graphics Generation',
     ],
-    'Digital Signage & Display': [
-        'LED Walls',
-        'Display Controllers',
-        'Digital Signage Software',
-        'Projection Systems',
-        'Other'
+    'Cloud Playout & Virtual Distribution': [
+        'FAST Channel Orchestration',
+        'Virtual CDNs & Edge Networks',
+        'Cloud Playback & Origination',
     ],
-    'Accessories & Peripheral Equipment': [
-        'Batteries & Power',
-        'Cables & Connectivity',
-        'Mounting Systems',
-        'Carrying Cases',
-        'Replacement Parts',
-        'Other'
+    // Hybrid
+    'Hybrid Remote Production': [
+        'Edge Transmission Encoders',
+        'Mobile 5G Transmitters & Bonded Cellular',
+        'Hybrid REMI & At-Home Production',
     ],
-    'Other': [
-        'Other'
-    ]
+    'Hybrid Storage & Compute': [
+        'Cloud-Integrated NAS',
+        'Edge Caching Gateways',
+        'Hybrid Render Farms & GPU Clusters',
+    ],
+    'Edge Video Processing': [
+        'Hardware-Accelerated Cloud Gateways',
+        'Smart Edge Converters',
+        'Real-Time Cropping Appliances',
+    ],
+    // Service
+    'Production Facilities & Rental': [
+        'Studio Hire & Studio Rental',
+        'Camera & Lens Rental',
+        'Grip & Lighting Rental',
+        'OB Truck Hire & Mobile Units',
+        'Photography Services',
+        'Drone & Aerial Shoots',
+    ],
+    'Post-Production & Finishing Services': [
+        'Video Editing',
+        'Color Grading & Finishing',
+        'Audio Post & Sound Design',
+        'Localization, Subtitling & Dubbing',
+        'Visual Effects (VFX) Rendering',
+    ],
+    'Integration & Engineering Services': [
+        'Systems Integration',
+        'AV Wiring & Installation',
+        'Broadcast IT Installation',
+        'Acoustic Design & Studio Furniture',
+        'Specialist Technical Support',
+    ],
+    'Professional Training & Consultancy': [
+        'Technical & Workflow Consultancy',
+        'Operator Training',
+        'Managed SLA Support',
+        'Hardware Repairs & Maintenance',
+    ],
 };

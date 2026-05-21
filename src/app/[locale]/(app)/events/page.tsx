@@ -31,7 +31,7 @@ export default async function EventsPage() {
           eventsQuota={usage?.eventsThisMonth ?? null}
         />
       </div>
-      <aside className="lg:col-span-3 lg:sticky lg:top-24">
+      <aside className="lg:col-span-3 lg:sticky lg:top-4">
         {sidebarAd ? <SponsoredCard placement="events_sidebar" /> : <AdPlaceholder height={520} />}
       </aside>
     </div>
