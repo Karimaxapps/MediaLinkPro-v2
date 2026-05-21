@@ -2,19 +2,14 @@
 
 import { useState } from "react";
 import { sanitizeHtml } from "@/lib/sanitize";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
-import {
-  Briefcase,
-  Building2,
-  Calendar,
-  Check,
-  Globe,
-  MapPin,
-  Users,
-} from "lucide-react";
+import { Briefcase, Building2, Calendar, Check, Globe, MapPin, Users } from "lucide-react";
 import { ApplyJobDialog } from "./apply-job-dialog";
 import {
   APPLICATION_STATUS_COLORS,
@@ -160,21 +155,51 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
       {job.description && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
           <h2 className="text-lg font-semibold text-white mb-3">About this role</h2>
-          <div
-            className="text-sm text-gray-300 leading-relaxed space-y-4
-              [&_p]:my-3
-              [&_strong]:text-white [&_strong]:font-semibold
-              [&_em]:italic
-              [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2
-              [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2
-              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
-              [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
-              [&_li]:marker:text-[#C6A85E]
-              [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
-              [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
-              [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }}
-          />
+          <div className="text-sm text-gray-300 leading-relaxed">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                h2: ({ children }) => (
+                  <h2 className="text-lg font-semibold text-white mt-6 mb-2">{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-base font-semibold text-white mt-5 mb-2">{children}</h3>
+                ),
+                p: ({ children }) => <p className="my-3">{children}</p>,
+                strong: ({ children }) => (
+                  <strong className="text-white font-semibold">{children}</strong>
+                ),
+                em: ({ children }) => <em className="italic">{children}</em>,
+                ul: ({ children }) => <ul className="list-disc pl-6 my-3 space-y-1">{children}</ul>,
+                ol: ({ children }) => (
+                  <ol className="list-decimal pl-6 my-3 space-y-1">{children}</ol>
+                ),
+                li: ({ children }) => <li className="marker:text-[#C6A85E]">{children}</li>,
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-2 border-[#C6A85E] pl-4 italic text-gray-400 my-3">
+                    {children}
+                  </blockquote>
+                ),
+                a: ({ href, children }) => (
+                  <a
+                    href={href}
+                    className="text-[#C6A85E] underline underline-offset-2"
+                    rel="noopener noreferrer"
+                  >
+                    {children}
+                  </a>
+                ),
+                code: ({ children }) => (
+                  <code className="bg-black/40 px-1.5 py-0.5 rounded text-xs font-mono">
+                    {children}
+                  </code>
+                ),
+              }}
+            >
+              {sanitizeHtml(job.description)}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
 
