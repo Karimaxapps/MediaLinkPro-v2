@@ -1,207 +1,110 @@
 ---
 name: seed-stub-company
 description: >
-  Step-by-step playbook for seeding a stub company (organization + products) into the
-  MediaLinkPro-v2 Supabase database with a validated logo and cover image. Invoke this
-  skill whenever the user says things like "add [Company] as a stub", "seed [Company]",
-  "create a stub entry for [Company]", "insert [Company] into the DB", or "I want to
-  add [Company] to the directory". Also use it proactively whenever you are writing or
-  updating a seed_demo_*.mjs script.
+  Autonomous workflow for seeding a stub company into MediaLinkPro-v2 with one command.
+  Invoke this skill whenever the user gives a company name and wants it added to the
+  directory — phrases like "seed [Company]", "add [Company] as a stub", "insert [Company]",
+  "create a stub for [Company]", or simply types a brand name after invoking the skill.
+  The skill researches the company, finds a real logo, inserts the organization + at least
+  one product/service with a valid image, and a job offer if one is available — all
+  autonomously without asking the user for data.
 ---
 
-# Seed a Stub Company — Full Playbook
+# Seed a Stub Company — Autonomous Workflow
 
-A _stub company_ is an organization seeded without a real user account — visible in the
-directory and claimable by the real company later. Each stub needs:
+**Input:** company name only.
+**Output:** organization row + ≥1 product row + optional job row — all in the DB, verified.
 
-- A **clean square logo** uploaded to Supabase Storage (never store external social media URLs).
-- A **cover/header image** — use a random abstract Unsplash photo (see Step 2b).
-- An **organization row** with correct metadata.
-- One or more **product rows** linked to the org.
-- A reusable **`scripts/seed_demo_{slug}.mjs`** that can re-run safely (upsert-safe).
+Do not ask the user for data. Research everything yourself, then insert.
 
 ---
 
-## Step 1 — Gather Company Data
+## Phase 1 — Research the Company
 
-Collect before writing any code:
+Use `WebSearch` and `WebFetch` to gather:
 
-| Field           | Example                                                                  |
-| --------------- | ------------------------------------------------------------------------ |
-| `name`          | Shure                                                                    |
-| `slug`          | shure (lowercase, hyphens only)                                          |
-| `type`          | Manufacturer / Distributor / Service Provider / Platform                 |
-| `main_activity` | Broadcast Audio                                                          |
-| `tagline`       | 1-sentence brand line                                                    |
-| `description`   | 2-3 sentence company overview (founding year, HQ, flagship products)     |
-| `website`       | https://www.shure.com                                                    |
-| Social handles  | Facebook page name, X/Twitter handle, LinkedIn company URL slug          |
-| Products        | Name, slug, short description, description (HTML), external URL for each |
+| What                                          | Where to look                                                                         |
+| --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Official name, founding year, HQ city/country | Wikipedia, company website About page                                                 |
+| One-line tagline                              | Website header, LinkedIn headline                                                     |
+| 2–3 sentence description                      | Wikipedia intro paragraph (best) or About page                                        |
+| `type`                                        | Manufacturer / Distributor / Service Provider / Platform / Broadcaster                |
+| `main_activity`                               | Pick from: Broadcast Audio, IP Video, Post-Production, Cloud Media, Live Events, etc. |
+| Facebook page name                            | Search `{Company} site:facebook.com` or check website footer                          |
+| X/Twitter handle                              | Website footer, Wikipedia infobox, or search `{Company} site:x.com`                   |
+| Website URL                                   | Wikipedia, search result                                                              |
+| 1–2 flagship products or services             | Wikipedia Products section, website nav, press releases                               |
+| Current job openings                          | `{Company} careers jobs site:{company-website}`, LinkedIn jobs                        |
+
+Aim to complete research in one or two WebSearch + WebFetch calls. Wikipedia is the
+fastest single source for name, description, founding year, and social handles.
 
 ---
 
-## Step 2 — Find the Logo (Priority Order)
+## Phase 2 — Find & Upload the Logo
 
-The goal is a **square, clean, brand-official image uploaded to Supabase Storage**.
-Social media profile pictures are the best source because they are always square,
-always brand-maintained, and available programmatically — unlike website logos which
-often sit on colored backgrounds or in wide banner formats.
+The logo must be **square, clean, and uploaded to Supabase Storage** — never store
+external social-media CDN URLs directly in the DB (they can expire).
 
-**The golden rule: always download → upload to Supabase. Store external URLs only as
-a last-resort fallback when the download itself fails.**
+Work through sources in this order. Stop at the first success.
 
-### 2a. Facebook Graph API (best: always square, always brand-official)
+### A. Facebook Graph API (always try first)
 
 ```
-https://graph.facebook.com/{facebook-page-name}/picture?type=square&width=400&redirect=false
+GET https://graph.facebook.com/{facebook-page-name}/picture?type=square&width=400&redirect=false
 ```
 
-This returns JSON with the actual CDN image URL — it does NOT redirect to the image.
-
-```bash
-curl -s "https://graph.facebook.com/shure/picture?type=square&width=400&redirect=false"
-# → {"data":{"height":400,"is_silhouette":false,"url":"https://...fbcdn.net/...","width":400}}
-```
-
-If `is_silhouette` is `false`: extract `.data.url` → download the image from that URL →
-upload to Supabase Storage. Do NOT store the `fbcdn.net` URL directly (it expires).
-
-In script form:
+This returns JSON — **not** the image. Extract `.data.url`, then download _that_ URL.
 
 ```js
 const apiRes = await fetch(
   `https://graph.facebook.com/${fbPageName}/picture?type=square&width=400&redirect=false`
 );
 const { data } = await apiRes.json();
-if (!data.is_silhouette) {
-  const imgRes = await fetch(data.url, { headers: FETCH_HEADERS });
-  const buf = Buffer.from(await imgRes.arrayBuffer());
-  // → uploadOrgLogo({ buf, contentType, slug })
-}
+// data.is_silhouette === false → real logo
+// data.url → fbcdn.net image — download this and upload to Supabase
+const imgRes = await fetch(data.url, { headers: FETCH_HEADERS });
+const buf = Buffer.from(await imgRes.arrayBuffer());
+logoUrl = await uploadOrgLogo({ buf, contentType, slug });
 ```
 
-### 2b. X / Twitter Profile Image
+`fbcdn.net` URLs carry expiring tokens — download the bytes immediately and upload.
 
-Get the profile image URL by visiting the company's X/Twitter page, right-clicking the
-profile picture → "Open image in new tab". The URL pattern is:
+### B. X / Twitter Profile Image
 
-```
-https://pbs.twimg.com/profile_images/{numeric-id}/{hash}_400x400.jpg
-```
+Find the `_400x400.jpg` variant of the company profile picture:
 
-Always use the `_400x400` variant — replace `_normal` with `_400x400` in the URL.
-`pbs.twimg.com` URLs are stable and can be fetched server-side; download → upload to
-Supabase Storage just like the Facebook image.
+- Visit the X page → right-click profile image → "Open image in new tab"
+- URL pattern: `https://pbs.twimg.com/profile_images/{id}/{hash}_400x400.jpg`
+- `pbs.twimg.com` URLs are stable — download → upload normally.
 
-### 2c. LinkedIn Company Page
+### C. Wikimedia Commons (well-known brands only)
 
-Navigate to the company's LinkedIn page. The logo URL pattern is:
+File paths cannot be guessed. Always use the API:
 
-```
-https://media.licdn.com/dms/image/{hash}/company-logo_200_200/...
-```
+1. Find filename: `https://en.wikipedia.org/w/api.php?action=query&titles={Company}&prop=images&format=json`
+   → look for the `.svg` or `.png` logo in `pages[*].images[*].title`
 
-LinkedIn blocks direct server-side fetch (403). Copy the URL from the browser's network
-tab and use it as the `LOGO_CANDIDATES[0]` in the script — the download step will fail
-gracefully and the script falls back to the direct URL. For LinkedIn specifically, storing
-the direct URL is acceptable since LinkedIn logos are stable.
+2. Get URL: `https://commons.wikimedia.org/w/api.php?action=query&titles=File:{filename}&prop=imageinfo&iiprop=url&format=json`
 
-### 2d. Wikimedia Commons (fallback — for well-known brands)
+3. For SVGs, never use 1200px thumbnails (they return HTTP 400). Use the pre-generated
+   size from `https://en.wikipedia.org/api/rest_v1/page/summary/{Company}` → `thumbnail.source`.
 
-Wikimedia is rate-limited server-side. The file paths are non-obvious and must be
-looked up via API — never guess them.
+4. Wait 1500 ms between Wikimedia requests to avoid HTTP 429.
 
-**Step 1 — Find the correct filename:**
+### D. LinkedIn / Company Website
 
-```
-https://en.wikipedia.org/w/api.php?action=query&titles={Company}&prop=images&format=json
-```
+LinkedIn CDN blocks server-side fetch (403) — storing the direct URL is acceptable
+since LinkedIn logos are long-lived. Company website logos are a last resort (often on
+colored backgrounds or in non-square format).
 
-Look for the `.svg` entry in `pages[*].images[*].title` (e.g., `File:Shure Logo 2024.svg`).
-
-**Step 2 — Get the direct URL:**
+### Upload convention
 
 ```
-https://commons.wikimedia.org/w/api.php?action=query&titles=File:{filename}&prop=imageinfo&iiprop=url&format=json
+Bucket  : organizations (public)
+Org logo: logos/{Date.now()}_{slug}_{random8}.{ext}
+Product : products/{product-slug}/logo_{Date.now()}_0.{ext}
 ```
-
-This returns the canonical URL with the correct hash path (e.g., `5/5d/`). You cannot
-derive this path from the filename — always use the API.
-
-**Step 3 — For SVGs, use a pre-generated PNG thumbnail:**
-
-SVG thumbnails at 1200px are never pre-generated → HTTP 400.
-Use the `page/summary` REST API to find a size that actually exists:
-
-```
-https://en.wikipedia.org/api/rest_v1/page/summary/{Company}
-```
-
-The `thumbnail.source` field returns a pre-generated thumbnail URL (e.g., `960px`).
-
-**Important:** Wikimedia rate-limits server-side requests (HTTP 429). Always wait
-1500ms between requests. If rate-limited, fall back to storing the direct Wikimedia
-URL as a string in the DB — it renders fine in browsers.
-
-### 2e. Company Website / Press Kit
-
-Last resort. Company logos on websites are often on colored backgrounds or in wide
-banner format. If you must use one, prefer URLs from press/media kit pages.
-
----
-
-## Step 2b — Cover / Header Image
-
-The organization profile has a `cover_image_url` banner field (wide landscape image shown
-at the top of the company page). For stub companies, **do not try to find a real cover
-photo** — use a random abstract Unsplash image instead. These are permanently stable,
-high-resolution, and look professional without needing per-company research.
-
-Pick any of these curated abstract/technology Unsplash photos (rotate through them so
-different companies don't look identical):
-
-```js
-const ABSTRACT_COVERS = [
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop", // circuit board macro
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop", // blue globe tech
-  "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&auto=format&fit=crop", // dark server room
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&auto=format&fit=crop", // abstract waves
-  "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop", // radio / broadcast
-  "https://images.unsplash.com/photo-1598387993441-a364f854cfdd?w=1600&auto=format&fit=crop", // audio waveform
-];
-// pick one, e.g. ABSTRACT_COVERS[Math.floor(Math.random() * ABSTRACT_COVERS.length)]
-```
-
-Store the Unsplash URL directly — no need to upload to Supabase (Unsplash CDN is
-permanently stable for these parameterized URLs).
-
-> **Schema note:** `cover_image_url` is not in the current organizations TypeScript types —
-> it may need a migration before being writable. If the column doesn't exist yet, skip
-> setting it in the upsert and add a `TODO` comment in the script.
-
----
-
-## Step 3 — Validate & Upload the Logo
-
-### Validate
-
-Before uploading, verify the URL returns a valid image:
-
-```js
-const res = await fetch(url, { redirect: "follow", headers: { "User-Agent": "..." } });
-// Must be: res.ok && res.headers.get('content-type').startsWith('image/')
-// Buffer must be > 1024 bytes
-```
-
-### Upload to Supabase Storage
-
-**Org logo path convention:**
-
-```
-logos/{Date.now()}_{slug}_{random8chars}.{ext}
-```
-
-Bucket: `organizations` (public)
 
 ```js
 async function uploadOrgLogo({ buf, contentType, slug }) {
@@ -216,197 +119,252 @@ async function uploadOrgLogo({ buf, contentType, slug }) {
   if (error) throw error;
   return supabase.storage.from("organizations").getPublicUrl(filePath).data.publicUrl;
 }
-```
 
-**Product image path convention:**
-
-```
-products/{product-slug}/logo_{Date.now()}_0.{ext}
-```
-
-Also in the `organizations` bucket (project convention — not the `products` bucket).
-
-### Download-failed fallback
-
-If every download attempt fails (rate-limiting, 403, etc.), store the direct source URL
-as a string in the DB. It will render correctly in browsers even though it's not on
-Supabase Storage. Use a direct SQL update so a partial run doesn't fail the whole script:
-
-```sql
-UPDATE organizations SET logo_url = 'https://...' WHERE slug = 'company-slug';
-```
-
-Or in-script:
-
-```js
-} catch {
-    console.log('   ⚠️  Download failed — storing direct URL as fallback');
-    // logoUrl is already set to the first candidate URL before the try block
+async function uploadProductImage({ buf, contentType, productSlug }) {
+  const ext = (contentType.split("/")[1] ?? "jpg")
+    .replace("jpeg", "jpg")
+    .replace("+xml", "")
+    .split(";")[0];
+  const filePath = `products/${productSlug}/logo_${Date.now()}_0.${ext}`;
+  const { error } = await supabase.storage
+    .from("organizations")
+    .upload(filePath, buf, { contentType, upsert: true });
+  if (error) throw error;
+  return supabase.storage.from("organizations").getPublicUrl(filePath).data.publicUrl;
 }
 ```
 
-**Never store Facebook CDN URLs (`fbcdn.net`) directly** — they include expiring tokens.
-If the Facebook download fails, fall through to X/Twitter or Wikimedia instead.
+**If every download attempt fails:** store the source URL string directly in the DB as
+a fallback — it will render in browsers. Never let an image failure abort the whole seed.
 
 ---
 
-## Step 4 — Write the Seed Script
+## Phase 3 — Cover / Header Image
 
-Create `scripts/seed_demo_{slug}.mjs`. Use `scripts/seed_demo_haivision.mjs` as the
-canonical template. Key requirements:
+Set `cover_image_url` to a random abstract Unsplash photo. No research needed — just
+rotate through this list so different companies look distinct:
 
-### Must-haves
+```js
+const ABSTRACT_COVERS = [
+  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop", // circuit board
+  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop", // blue globe
+  "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&auto=format&fit=crop", // server room
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&auto=format&fit=crop", // abstract waves
+  "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop", // radio / broadcast
+  "https://images.unsplash.com/photo-1598387993441-a364f854cfdd?w=1600&auto=format&fit=crop", // audio waveform
+];
+const coverImageUrl = ABSTRACT_COVERS[Math.floor(Math.random() * ABSTRACT_COVERS.length)];
+```
 
-1. **Upsert-safe** — use `{ onConflict: 'slug' }` for orgs, `{ onConflict: 'organization_id,slug' }` for products.
-2. **Preserve existing Supabase logos on re-run:**
+Store the Unsplash URL directly — no Supabase upload needed.
+
+> **Note:** `cover_image_url` may not yet be a column on `organizations`. Check the
+> TypeScript types before writing it. If it doesn't exist, add a `// TODO: add cover_image_url` comment
+> in the script and skip the field in the upsert.
+
+---
+
+## Phase 4 — Find Product / Service Image
+
+For each product, search for a valid image in this order:
+
+1. Wikimedia Commons (best for well-known hardware — e.g., `Shure SM7B site:commons.wikimedia.org`)
+2. Official product press kit / media page on the company website
+3. Org logo as the absolute last resort
+
+Download → upload to Supabase Storage using `uploadProductImage`.
+If download fails: store the source URL directly (same pattern as logo fallback).
+
+### Product type & category mapping
+
+Use the closest match from this taxonomy:
+
+| product_type | main_category examples                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------- |
+| `Hardware`   | Audio Production & Radio, Capture & Acquisition, Infrastructure & Transmission                          |
+| `Software`   | Post-Production & Editing, Management & Orchestration, Monetization & Ad Tech                           |
+| `Cloud`      | Cloud Production & Collaboration, Storage & Active Archive, Cloud Playout & Virtual Distribution        |
+| `Hybrid`     | Hybrid Remote Production, Edge Video Processing                                                         |
+| `Service`    | Production Facilities & Rental, Integration & Engineering Services, Professional Training & Consultancy |
+
+Pick `sub_category` from `src/features/products/constants.ts` or use `'Other'` if nothing fits.
+
+---
+
+## Phase 5 — Find a Job Offer (optional)
+
+Search the company's careers page and/or LinkedIn for **currently open** positions.
+Prefer roles that match the broadcast/media tech industry context.
+
+If found, collect:
+
+- `title` — exact job title (e.g., "Senior Broadcast Engineer")
+- `department` — e.g., Engineering, Sales, Marketing, Product
+- `location` — city + country, or "Remote"
+- `is_remote` — boolean
+- `job_type` — one of: `full_time`, `part_time`, `contract`, `freelance`, `internship`, `temporary`
+- `description` — 2–4 bullet point summary of responsibilities (HTML `<ul><li>` format)
+- `skills` — array of relevant skills strings, e.g. `['SMPTE ST 2110', 'NDI', 'Dante']`
+
+If no live posting is found, skip the job — do not invent one.
+
+---
+
+## Phase 6 — Write the Seed Script
+
+Create `scripts/seed_demo_{slug}.mjs`. Model it on `scripts/seed_demo_haivision.mjs`.
+
+### Mandatory fields — Organization
+
+```js
+{
+    name: 'Company Name',
+    slug: 'company-slug',                        // lowercase, hyphens only
+    logo_url: logoUrl,                           // Supabase Storage URL
+    cover_image_url: coverImageUrl,              // Unsplash abstract (if column exists)
+    tagline: '...',
+    type: 'Manufacturer',                        // or Distributor / Service Provider / Platform / Broadcaster
+    main_activity: 'Broadcast Audio',
+    description: '...',                          // 2–3 sentences
+    website: 'https://...',
+    is_stub: true,
+    claimed_at: null,
+    source: 'admin_seed',
+    seeded_by: ADMIN_USER_ID,                    // 'b713cc88-78fa-472a-bb8a-46eef3c1d5ea'
+    updated_at: new Date().toISOString(),
+}
+// onConflict: 'slug'
+```
+
+### Mandatory fields — Product
+
+```js
+{
+    id: crypto.randomUUID(),                     // required — not auto-generated in upsert
+    organization_id: orgId,
+    name: 'Product Name',
+    slug: 'org-slug-product-slug',
+    short_description: '...',                    // one sentence
+    description: '<p>...</p><ul><li>...</li></ul>', // HTML, 3–5 bullet specs
+    logo_url: productLogoUrl,                    // Supabase Storage URL (or fallback direct URL)
+    product_type: 'Hardware',                    // Hardware / Software / Cloud / Hybrid / Service
+    main_category: 'Audio Production & Radio',
+    sub_category: 'Microphones & Transducers',   // or 'Other'
+    external_url: 'https://...',
+    support_url: 'https://...',
+    documentation_url: 'https://...',
+    availability_status: 'Available',
+    price: null,
+    currency: 'USD',
+    price_upon_request: true,
+    pricing_model: 'Custom Quote',
+    is_public: true,
+    status: 'published',
+    views_count: Math.floor(Math.random() * 6000) + 1500,
+    bookmarks_count: Math.floor(Math.random() * 150) + 20,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+}
+// onConflict: 'organization_id,slug'
+```
+
+### Mandatory fields — Job (if found)
+
+```js
+{
+    id: crypto.randomUUID(),
+    organization_id: orgId,
+    title: 'Senior Broadcast Engineer',
+    slug: 'senior-broadcast-engineer-company-slug',  // title-slug + '-' + org-slug
+    description: '<ul><li>...</li><li>...</li></ul>',
+    job_type: 'full_time',                       // full_time / part_time / contract / freelance / internship / temporary
+    status: 'open',
+    location: 'Berlin, Germany',
+    is_remote: false,
+    department: 'Engineering',
+    skills: ['SMPTE ST 2110', 'NDI', 'Python'],
+    salary_min: null,
+    salary_max: null,
+    currency: 'USD',
+    expires_at: null,
+    posted_by: null,                             // null for stub — no real user
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+}
+// onConflict: 'slug'  (or insert only — check if job already exists by slug first)
+```
+
+### Logo preservation on re-run
 
 ```js
 const { data: existing } = await supabase
   .from("organizations")
   .select("logo_url")
-  .eq("slug", "company-slug")
+  .eq("slug", SLUG)
   .maybeSingle();
 
 if (
   existing?.logo_url &&
   !existing.logo_url.includes("unsplash.com") &&
-  !existing.logo_url.includes("wikimedia.org")
+  !existing.logo_url.includes("wikimedia.org") &&
+  !existing.logo_url.includes("fbcdn.net")
 ) {
-  logoUrl = existing.logo_url; // already in Supabase Storage — keep it
+  logoUrl = existing.logo_url; // already on Supabase Storage — keep it
 } else {
   // download + upload fresh
 }
 ```
 
-3. **Product image fallback to first candidate URL** (not org logo):
-
-```js
-let productLogo = candidates?.[0] ?? logoUrl;
-if (candidates) {
-  try {
-    await new Promise((r) => setTimeout(r, 1500));
-    const { buf, contentType } = await downloadImage({ candidates, label: product.slug });
-    productLogo = await uploadProductImage({ buf, contentType, productSlug: product.slug });
-  } catch {
-    console.log(`   ⚠️  Download failed — storing direct URL: ${productLogo}`);
-  }
-}
-```
-
-4. **`is_stub: true`** and **`claimed_at: null`** on every org upsert.
-5. **`seeded_by: ADMIN_USER_ID`** — use the constant `'b713cc88-78fa-472a-bb8a-46eef3c1d5ea'`.
-6. **`source: 'admin_seed'`** on org upsert.
-7. **`crypto.randomUUID()`** for product `id` fields (Supabase does not auto-generate these in upsert mode).
-
-### Script structure (skeleton)
-
-```js
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-import path from "path";
-import crypto from "crypto";
-
-dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
-// IMPORTANT: run from repo root (C:\dev\MediaLinkPro-v2), not from scripts/
-
-const ADMIN_USER_ID = "b713cc88-78fa-472a-bb8a-46eef3c1d5ea";
-
-const LOGO_CANDIDATES = [
-  /* primary URL first, then fallbacks */
-];
-const PRODUCT_IMAGES = {
-  "company-product-slug": [
-    /* candidates */
-  ],
-};
-
-// ... downloadImage, uploadOrgLogo, uploadProductImage helpers (copy from haivision) ...
-
-async function runSeed() {
-  // 1. Resolve logo
-  // 2. Upsert organization
-  // 3. For each product: resolve image → upsert product
-  // 4. Print summary
-}
-runSeed();
-```
-
 ---
 
-## Step 5 — Run the Script
+## Phase 7 — Run & Verify
 
-**Always run from the repo root** (so `.env.local` resolves correctly):
+**Always run from the repo root** (so `.env.local` resolves):
 
 ```bash
-# From C:\dev\MediaLinkPro-v2
 node scripts/seed_demo_{slug}.mjs
 ```
 
-If running a script that lives in the worktree:
-
-```bash
-node ".claude/worktrees/{worktree-name}/scripts/seed_demo_{slug}.mjs"
-```
-
----
-
-## Step 6 — Verify in the Database
-
-After running, confirm all rows are correct:
+Then verify:
 
 ```sql
--- Check org
-SELECT id, slug, name, logo_url, is_stub, claimed_at
-FROM organizations
-WHERE slug = 'company-slug';
+-- Org
+SELECT id, slug, name, logo_url, is_stub FROM organizations WHERE slug = '{slug}';
 
--- Check products
+-- Products
 SELECT p.slug, p.name, p.logo_url, p.status
-FROM products p
-JOIN organizations o ON p.organization_id = o.id
-WHERE o.slug = 'company-slug';
+FROM products p JOIN organizations o ON p.organization_id = o.id
+WHERE o.slug = '{slug}';
+
+-- Jobs
+SELECT j.title, j.job_type, j.status, j.location
+FROM jobs j JOIN organizations o ON j.organization_id = o.id
+WHERE o.slug = '{slug}';
 ```
 
-All `logo_url` values should contain either `supabase.co` (uploaded) or a valid direct
-image URL (rate-limit fallback). Test each URL returns HTTP 200 with an image content type.
+All `logo_url` values must be either a `supabase.co` URL or a valid external image URL
+(not null, not a placeholder).
 
 ---
 
-## Step 7 — Commit
-
-Stage only the new/modified seed scripts (never commit `.env.local` or `settings.local.json`):
+## Phase 8 — Commit
 
 ```bash
 git add scripts/seed_demo_{slug}.mjs
-git commit -m "feat(seed): add {CompanyName} stub seed script"
+git commit -m "feat(seed): add {CompanyName} stub — org, products, job"
 ```
 
-If a `fix_*.mjs` utility was created, add it too if it should be reusable.
-Discard ephemeral retry scripts: `git checkout scripts/fix_*_retry.mjs`.
+Never commit `.env.local`, `settings.local.json`, or ephemeral retry scripts.
 
 ---
 
-## Quick Reference — Logo Source Decision Tree
+## Full Execution Checklist
 
-```
-Logo (always upload to Supabase Storage):
-  1. Facebook Graph API         → fetch .data.url → download → upload ✅
-  2. X/Twitter _400x400 image   → download → upload ✅
-  3. LinkedIn company logo      → server fetch blocked; store direct URL (stable CDN) ⚠️
-  4. Wikimedia Commons          → API-verified URL → download → upload ✅ (rate-limit: store direct)
-  5. Company website/press kit  → last resort (may be on colored background)
-
-Cover image (store Unsplash URL directly — no upload needed):
-  → pick from ABSTRACT_COVERS list above; rotate so companies look different
-```
-
-## Image Quality Checklist
-
-Before storing any logo URL, verify:
-
-- [ ] Square or near-square aspect ratio
-- [ ] Clean background (transparent, white, or solid brand color)
-- [ ] Minimum 300×300px resolution
-- [ ] HTTP 200 response
-- [ ] `Content-Type` starts with `image/`
-- [ ] Buffer size > 1 KB
+- [ ] Company researched (name, description, website, socials, type, activity)
+- [ ] Logo downloaded from Facebook/X/Wikimedia and uploaded to Supabase Storage
+- [ ] Cover image set to abstract Unsplash URL
+- [ ] ≥1 product with real image uploaded to Supabase Storage
+- [ ] Job searched — inserted if found, skipped if none
+- [ ] Seed script runs without errors
+- [ ] DB rows verified (org + products + jobs)
+- [ ] Committed
