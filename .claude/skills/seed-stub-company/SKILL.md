@@ -2,8 +2,8 @@
 name: seed-stub-company
 description: >
   Step-by-step playbook for seeding a stub company (organization + products) into the
-  MediaLinkPro-v2 Supabase database with a validated logo image. Invoke this skill
-  whenever the user says things like "add [Company] as a stub", "seed [Company]",
+  MediaLinkPro-v2 Supabase database with a validated logo and cover image. Invoke this
+  skill whenever the user says things like "add [Company] as a stub", "seed [Company]",
   "create a stub entry for [Company]", "insert [Company] into the DB", or "I want to
   add [Company] to the directory". Also use it proactively whenever you are writing or
   updating a seed_demo_*.mjs script.
@@ -14,7 +14,8 @@ description: >
 A _stub company_ is an organization seeded without a real user account — visible in the
 directory and claimable by the real company later. Each stub needs:
 
-- A **clean square logo** stored in Supabase Storage (not a hot-linked external URL).
+- A **clean square logo** uploaded to Supabase Storage (never store external social media URLs).
+- A **cover/header image** — use a random abstract Unsplash photo (see Step 2b).
 - An **organization row** with correct metadata.
 - One or more **product rows** linked to the org.
 - A reusable **`scripts/seed_demo_{slug}.mjs`** that can re-run safely (upsert-safe).
@@ -41,8 +42,13 @@ Collect before writing any code:
 
 ## Step 2 — Find the Logo (Priority Order)
 
-The goal is a **square, clean, brand-official image** stored on Supabase Storage.
-Work through these sources in order — stop as soon as one succeeds.
+The goal is a **square, clean, brand-official image uploaded to Supabase Storage**.
+Social media profile pictures are the best source because they are always square,
+always brand-maintained, and available programmatically — unlike website logos which
+often sit on colored backgrounds or in wide banner formats.
+
+**The golden rule: always download → upload to Supabase. Store external URLs only as
+a last-resort fallback when the download itself fails.**
 
 ### 2a. Facebook Graph API (best: always square, always brand-official)
 
@@ -50,42 +56,57 @@ Work through these sources in order — stop as soon as one succeeds.
 https://graph.facebook.com/{facebook-page-name}/picture?type=square&width=400&redirect=false
 ```
 
-This returns JSON like `{"data":{"url":"https://...","is_silhouette":false}}`.
-The `url` in the response is the actual image URL to download.
-
-**Test it:**
+This returns JSON with the actual CDN image URL — it does NOT redirect to the image.
 
 ```bash
 curl -s "https://graph.facebook.com/shure/picture?type=square&width=400&redirect=false"
+# → {"data":{"height":400,"is_silhouette":false,"url":"https://...fbcdn.net/...","width":400}}
 ```
 
-If `is_silhouette` is `false`, this is a real logo image — use it.
-Download the image from the returned `url` field (not the API endpoint itself).
+If `is_silhouette` is `false`: extract `.data.url` → download the image from that URL →
+upload to Supabase Storage. Do NOT store the `fbcdn.net` URL directly (it expires).
+
+In script form:
+
+```js
+const apiRes = await fetch(
+  `https://graph.facebook.com/${fbPageName}/picture?type=square&width=400&redirect=false`
+);
+const { data } = await apiRes.json();
+if (!data.is_silhouette) {
+  const imgRes = await fetch(data.url, { headers: FETCH_HEADERS });
+  const buf = Buffer.from(await imgRes.arrayBuffer());
+  // → uploadOrgLogo({ buf, contentType, slug })
+}
+```
 
 ### 2b. X / Twitter Profile Image
 
-Go to the company's Twitter/X page. Right-click the profile picture → "Open image in new tab".
-The URL pattern is:
+Get the profile image URL by visiting the company's X/Twitter page, right-clicking the
+profile picture → "Open image in new tab". The URL pattern is:
 
 ```
 https://pbs.twimg.com/profile_images/{numeric-id}/{hash}_400x400.jpg
 ```
 
-Always request the `_400x400` variant (replace `_normal` with `_400x400` in the URL if needed).
+Always use the `_400x400` variant — replace `_normal` with `_400x400` in the URL.
+`pbs.twimg.com` URLs are stable and can be fetched server-side; download → upload to
+Supabase Storage just like the Facebook image.
 
 ### 2c. LinkedIn Company Page
 
 Navigate to the company's LinkedIn page. The logo URL pattern is:
 
 ```
-https://media.licdn.com/dms/image/{hash}/company-logo_200_200/{hash2}/{timestamp}/{slug}/{filename}
+https://media.licdn.com/dms/image/{hash}/company-logo_200_200/...
 ```
 
-LinkedIn blocks direct server-side fetch (403). If you need to use a LinkedIn logo,
-copy the URL from the browser's network tab and store it directly — do not attempt
-a server-side download.
+LinkedIn blocks direct server-side fetch (403). Copy the URL from the browser's network
+tab and use it as the `LOGO_CANDIDATES[0]` in the script — the download step will fail
+gracefully and the script falls back to the direct URL. For LinkedIn specifically, storing
+the direct URL is acceptable since LinkedIn logos are stable.
 
-### 2d. Wikimedia Commons (secondary — for well-known brands)
+### 2d. Wikimedia Commons (fallback — for well-known brands)
 
 Wikimedia is rate-limited server-side. The file paths are non-obvious and must be
 looked up via API — never guess them.
@@ -126,6 +147,37 @@ URL as a string in the DB — it renders fine in browsers.
 
 Last resort. Company logos on websites are often on colored backgrounds or in wide
 banner format. If you must use one, prefer URLs from press/media kit pages.
+
+---
+
+## Step 2b — Cover / Header Image
+
+The organization profile has a `cover_image_url` banner field (wide landscape image shown
+at the top of the company page). For stub companies, **do not try to find a real cover
+photo** — use a random abstract Unsplash image instead. These are permanently stable,
+high-resolution, and look professional without needing per-company research.
+
+Pick any of these curated abstract/technology Unsplash photos (rotate through them so
+different companies don't look identical):
+
+```js
+const ABSTRACT_COVERS = [
+  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop", // circuit board macro
+  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop", // blue globe tech
+  "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&auto=format&fit=crop", // dark server room
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&auto=format&fit=crop", // abstract waves
+  "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1600&auto=format&fit=crop", // radio / broadcast
+  "https://images.unsplash.com/photo-1598387993441-a364f854cfdd?w=1600&auto=format&fit=crop", // audio waveform
+];
+// pick one, e.g. ABSTRACT_COVERS[Math.floor(Math.random() * ABSTRACT_COVERS.length)]
+```
+
+Store the Unsplash URL directly — no need to upload to Supabase (Unsplash CDN is
+permanently stable for these parameterized URLs).
+
+> **Schema note:** `cover_image_url` is not in the current organizations TypeScript types —
+> it may need a migration before being writable. If the column doesn't exist yet, skip
+> setting it in the upsert and add a `TODO` comment in the script.
 
 ---
 
@@ -174,16 +226,27 @@ products/{product-slug}/logo_{Date.now()}_0.{ext}
 
 Also in the `organizations` bucket (project convention — not the `products` bucket).
 
-### Rate-limit fallback
+### Download-failed fallback
 
-If all download attempts fail due to rate limiting, store the direct URL string in the
-DB instead of a Supabase Storage URL:
+If every download attempt fails (rate-limiting, 403, etc.), store the direct source URL
+as a string in the DB. It will render correctly in browsers even though it's not on
+Supabase Storage. Use a direct SQL update so a partial run doesn't fail the whole script:
 
 ```sql
 UPDATE organizations SET logo_url = 'https://...' WHERE slug = 'company-slug';
 ```
 
-The direct URL will render correctly in browsers even though it's not on Supabase Storage.
+Or in-script:
+
+```js
+} catch {
+    console.log('   ⚠️  Download failed — storing direct URL as fallback');
+    // logoUrl is already set to the first candidate URL before the try block
+}
+```
+
+**Never store Facebook CDN URLs (`fbcdn.net`) directly** — they include expiring tokens.
+If the Facebook download fails, fall through to X/Twitter or Wikimedia instead.
 
 ---
 
@@ -326,12 +389,15 @@ Discard ephemeral retry scripts: `git checkout scripts/fix_*_retry.mjs`.
 ## Quick Reference — Logo Source Decision Tree
 
 ```
-1. Try Facebook Graph API → clean square, always works if page exists
-2. Try X/Twitter profile image → square, copy URL from browser
-3. Try LinkedIn company logo → may need to copy URL manually (server fetch blocked)
-4. Try Wikimedia Commons → use API to find correct filename + hash path
-5. Use company website / press kit → last resort, may be on colored background
-6. Rate-limited? → store direct URL string in DB (renders fine in browser)
+Logo (always upload to Supabase Storage):
+  1. Facebook Graph API         → fetch .data.url → download → upload ✅
+  2. X/Twitter _400x400 image   → download → upload ✅
+  3. LinkedIn company logo      → server fetch blocked; store direct URL (stable CDN) ⚠️
+  4. Wikimedia Commons          → API-verified URL → download → upload ✅ (rate-limit: store direct)
+  5. Company website/press kit  → last resort (may be on colored background)
+
+Cover image (store Unsplash URL directly — no upload needed):
+  → pick from ABSTRACT_COVERS list above; rotate so companies look different
 ```
 
 ## Image Quality Checklist
