@@ -26,4 +26,7 @@ export type AdminOwnershipRequest = OwnershipRequest & {
   stub_org_slug?: string;
   requesting_user_name?: string | null;
   requesting_user_email?: string | null;
+  requesting_user_username?: string | null;
+  requesting_user_avatar?: string | null;
+  requesting_user_country?: string | null;
 };

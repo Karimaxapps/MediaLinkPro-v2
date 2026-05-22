@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { PRODUCT_TYPES, MAIN_CATEGORIES } from "./constants";
 
+const requiredOption = (options: readonly string[], message: string) =>
+    z.preprocess(
+        (value) => (typeof value === "string" ? value.trim() : value),
+        z.string().min(1, message).refine((value) => options.includes(value), message)
+    );
+
 export const insertProductSchema = z.object({
     organization_id: z.string().uuid(),
     name: z.string().min(3, "Name must be at least 3 characters"),
@@ -9,8 +15,8 @@ export const insertProductSchema = z.object({
     logo_url: z.string().url().nullish().or(z.literal("")),
     is_public: z.boolean().default(true),
     // New fields
-    product_type: z.enum(PRODUCT_TYPES as unknown as [string, ...string[]]),
-    main_category: z.enum(MAIN_CATEGORIES as unknown as [string, ...string[]]),
+    product_type: requiredOption(PRODUCT_TYPES, "Please select a product type"),
+    main_category: requiredOption(MAIN_CATEGORIES, "Please select a main category"),
     sub_category: z.string().min(1, "Please select a sub-category").nullish(),
     short_description: z.string().max(150, "Short description must be 150 characters or less").nullish(),
     external_url: z.string().url("Please enter a valid URL").nullish().or(z.literal("")),
@@ -30,10 +36,6 @@ export const insertProductSchema = z.object({
     pricing_model: z.enum(['One-time', 'Subscription', 'Rental', 'Custom Quote']).nullish(),
     // Lifecycle
     status: z.enum(['draft', 'published', 'archived']).default('draft'),
-}).refine((data) => {
-    // If price_upon_request is false, price should be set (if we want to enforce it for published products, but maybe not for drafts)
-    // For now, we'll leave it loose for drafts.
-    return true;
 });
 
 export type InsertProduct = z.infer<typeof insertProductSchema>;

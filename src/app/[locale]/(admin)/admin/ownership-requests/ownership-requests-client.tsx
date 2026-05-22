@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useTransition } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -12,10 +13,14 @@ import {
     Package,
     GitMerge,
     UserPlus,
+    MapPin,
+    Send,
+    MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Dialog,
     DialogContent,
@@ -25,7 +30,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { resolveOwnershipRequest } from "@/features/admin/server/actions";
-import { resolveOrgClaimAction } from "@/features/organizations/server/claim-actions";
+import {
+    resolveOrgClaimAction,
+    sendClaimReplyToRequester,
+} from "@/features/organizations/server/claim-actions";
 import type { AdminOwnershipRequest } from "@/features/ownership-requests/types";
 
 interface Props {
@@ -48,6 +56,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
     const [dialogState, setDialogState] = useState<DialogState | null>(null);
     const [adminNote, setAdminNote] = useState("");
     const [isPending, startTransition] = useTransition();
+    const [detailReq, setDetailReq] = useState<AdminOwnershipRequest | null>(null);
 
     const filtered = useMemo(() => {
         if (tab === "all") return requests;
@@ -158,13 +167,15 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                 return (
                                     <tr
                                         key={req.id}
-                                        className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                                        onClick={() => setDetailReq(req)}
+                                        className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
                                     >
                                         <td className="p-4">
                                             <a
                                                 href={targetHref}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
                                                 className="flex items-center gap-2 text-white hover:text-[#C6A85E] transition-colors font-medium text-sm"
                                             >
                                                 {isOrg ? (
@@ -193,6 +204,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                                     href={`/companies/${req.requesting_org_slug}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
                                                     className="text-xs text-gray-500 hover:text-[#C6A85E]"
                                                 >
                                                     Owns: {req.requesting_org_name}
@@ -231,7 +243,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                             <StatusBadge status={req.status} />
                                         </td>
                                         {!readOnly && req.status === "pending" && (
-                                            <td className="p-4">
+                                            <td className="p-4" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex gap-2 justify-end flex-wrap">
                                                     {isOrg && hasExistingOrg && (
                                                         <Button
@@ -393,7 +405,185 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                     </DialogContent>
                 </Dialog>
             )}
+
+            {detailReq && (
+                <RequestDetailDialog
+                    req={detailReq}
+                    onClose={() => setDetailReq(null)}
+                />
+            )}
         </>
+    );
+}
+
+function RequestDetailDialog({
+    req,
+    onClose,
+}: {
+    req: AdminOwnershipRequest;
+    onClose: () => void;
+}) {
+    const [reply, setReply] = useState("");
+    const [isSending, startSending] = useTransition();
+    const [sentConversationId, setSentConversationId] = useState<string | null>(null);
+
+    const isOrg = req.content_type === "organization";
+    const name = req.requesting_user_name ?? req.requesting_org_name ?? "Unknown requester";
+    const username = req.requesting_user_username;
+    const country = req.requesting_user_country;
+    const avatar = req.requesting_user_avatar;
+    const canReply = !!req.requesting_user_id;
+
+    const handleSend = () => {
+        if (!req.requesting_user_id) return;
+        const body = reply.trim();
+        if (!body) return;
+        startSending(async () => {
+            const result = await sendClaimReplyToRequester(req.requesting_user_id!, body);
+            if (result.success) {
+                toast.success("Reply sent to the requester's inbox.");
+                setReply("");
+                setSentConversationId(result.conversationId ?? null);
+            } else {
+                toast.error(result.error ?? "Failed to send reply.");
+            }
+        });
+    };
+
+    return (
+        <Dialog open onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="bg-[#0B0F14] border-white/10 text-white sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        {isOrg ? (
+                            <Building2 className="h-5 w-5 text-[#C6A85E]" />
+                        ) : (
+                            <Package className="h-5 w-5 text-blue-300" />
+                        )}
+                        Claim request details
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                        {isOrg
+                            ? `Company claim for "${req.stub_org_name ?? "Unknown"}"`
+                            : `Product claim for "${req.product_name}"`}
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-5">
+                    {/* Requester profile */}
+                    <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                        <Avatar className="h-12 w-12 border border-white/10">
+                            <AvatarImage src={avatar || ""} alt={name} />
+                            <AvatarFallback className="bg-[#C6A85E] text-black font-bold">
+                                {name.substring(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                            <div className="font-semibold text-white truncate">{name}</div>
+                            <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+                                {country && (
+                                    <span className="inline-flex items-center gap-1">
+                                        <MapPin className="h-3 w-3" />
+                                        {country}
+                                    </span>
+                                )}
+                                {username && <span className="text-gray-500">@{username}</span>}
+                            </div>
+                        </div>
+                        {username && (
+                            <Link
+                                href={`/profiles/${username}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] hover:text-[#B5964A] whitespace-nowrap"
+                            >
+                                View profile
+                                <ExternalLink className="h-3 w-3" />
+                            </Link>
+                        )}
+                    </div>
+
+                    {/* Full message */}
+                    <div className="space-y-1.5">
+                        <div className="text-xs uppercase tracking-wider text-gray-500">
+                            Message from requester
+                        </div>
+                        <div className="rounded-lg border border-white/10 bg-black/20 p-3 text-sm text-gray-200 whitespace-pre-wrap">
+                            {req.message || (
+                                <span className="text-gray-600 italic">No message provided.</span>
+                            )}
+                        </div>
+                    </div>
+
+                    {req.admin_note && (
+                        <div className="space-y-1.5">
+                            <div className="text-xs uppercase tracking-wider text-gray-500">
+                                Admin note
+                            </div>
+                            <div className="rounded-lg border border-white/10 bg-black/20 p-3 text-sm text-gray-300 whitespace-pre-wrap">
+                                {req.admin_note}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Reply */}
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-gray-500">
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            Reply via inbox
+                        </div>
+                        {canReply ? (
+                            <>
+                                <Textarea
+                                    value={reply}
+                                    onChange={(e) => setReply(e.target.value)}
+                                    placeholder="Write a message — it goes straight to the requester's messaging inbox."
+                                    maxLength={2000}
+                                    className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                />
+                                {sentConversationId && (
+                                    <Link
+                                        href="/messages"
+                                        className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] hover:text-[#B5964A]"
+                                    >
+                                        View conversation in inbox
+                                        <ExternalLink className="h-3 w-3" />
+                                    </Link>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-xs text-gray-500 italic">
+                                This claim has no associated user account to reply to.
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <DialogFooter className="gap-2">
+                    <Button
+                        variant="ghost"
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white"
+                    >
+                        Close
+                    </Button>
+                    {canReply && (
+                        <Button
+                            onClick={handleSend}
+                            disabled={isSending || reply.trim().length === 0}
+                            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold gap-2"
+                        >
+                            {isSending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Send className="h-4 w-4" />
+                            )}
+                            Send reply
+                        </Button>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
 

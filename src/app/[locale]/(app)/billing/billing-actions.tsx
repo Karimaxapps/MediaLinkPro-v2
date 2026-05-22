@@ -73,8 +73,7 @@ export function BillingActions({
   if (showManage) {
     return (
       <Button
-        variant="outline"
-        className="border-white/15 bg-transparent hover:bg-white/10"
+        className="rounded-full border border-[#C6A85E]/60 bg-[#C6A85E] px-5 font-semibold text-black shadow-sm shadow-[#C6A85E]/20 hover:border-[#D7BE78] hover:bg-[#B5964A] hover:text-black"
         disabled={isPending}
         onClick={handleManage}
       >

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell } from "lucide-react";
+import { NotificationsPopover } from "@/components/layout/notifications-popover";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -53,9 +54,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                             Admin Console
                         </span>
                     </div>
-                    <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white">
-                        ← Back to app
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <NotificationsPopover />
+                        <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white">
+                            ← Back to app
+                        </Link>
+                    </div>
                 </div>
             </header>
             <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8">

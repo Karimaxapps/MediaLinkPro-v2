@@ -6,18 +6,20 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { submitOrgClaimAction } from "@/features/organizations/server/claim-actions";
 
 export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [notifyByEmail, setNotifyByEmail] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [submitted, setSubmitted] = useState(false);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const res = await submitOrgClaimAction(stubId, message);
+      const res = await submitOrgClaimAction(stubId, message, notifyByEmail);
       if (res.success) {
         toast.success(res.message ?? "Claim submitted.");
         setSubmitted(true);
@@ -69,6 +71,19 @@ export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
           Min 20 characters. Be specific — vague claims are typically rejected.
         </p>
       </div>
+      <label className="flex items-start gap-3 cursor-pointer select-none">
+        <Checkbox
+          checked={notifyByEmail}
+          onCheckedChange={(checked) => setNotifyByEmail(checked === true)}
+          className="mt-0.5 border-white/20 data-[state=checked]:bg-[#C6A85E] data-[state=checked]:border-[#C6A85E] data-[state=checked]:text-black"
+        />
+        <span className="text-sm text-gray-300">
+          Email me when my claim is decided
+          <span className="block text-xs text-gray-500">
+            You&apos;ll always get an in-app notification. Uncheck to skip the email.
+          </span>
+        </span>
+      </label>
       <div className="flex justify-end">
         <Button
           type="submit"

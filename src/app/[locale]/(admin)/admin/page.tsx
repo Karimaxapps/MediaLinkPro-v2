@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { getAdminStats } from "@/features/admin/server/actions";
-import { Users, Building2, Package, Calendar, Star, Link2 } from "lucide-react";
+import { Users, Building2, Package, Calendar, Star, Link2, GitMerge } from "lucide-react";
 
 export default async function AdminOverviewPage() {
     const stats = await getAdminStats();
@@ -21,6 +22,28 @@ export default async function AdminOverviewPage() {
                     Real-time counts across core tables.
                 </p>
             </div>
+
+            <Link
+                href="/admin/ownership-requests"
+                className="block rounded-xl border border-[#C6A85E]/40 bg-[#C6A85E]/10 p-5 hover:bg-[#C6A85E]/15 transition-colors"
+            >
+                <div className="flex items-start justify-between">
+                    <div>
+                        <div className="text-xs uppercase tracking-wider text-[#C6A85E]">
+                            Pending Claims
+                        </div>
+                        <div className="text-3xl font-bold text-white mt-2">
+                            {stats.pendingClaims.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                            {stats.pendingClaims > 0
+                                ? "Awaiting your review — click to resolve"
+                                : "All claims resolved"}
+                        </div>
+                    </div>
+                    <GitMerge className="h-5 w-5 text-[#C6A85E]" />
+                </div>
+            </Link>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {cards.map((c) => (

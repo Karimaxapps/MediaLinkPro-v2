@@ -79,6 +79,27 @@ export const emailTemplates = {
       { url: jobUrl, label: "Open application" }
     ),
   }),
+  claimDecision: (
+    companyName: string,
+    approved: boolean,
+    note: string,
+    companyUrl: string
+  ) => ({
+    subject: approved
+      ? `Your claim for ${companyName} was approved`
+      : `Update on your claim for ${companyName}`,
+    html: wrap(
+      approved ? "Claim approved" : "Claim not approved",
+      approved
+        ? `Good news — your request to claim <strong>${companyName}</strong> has been approved. You can now manage the company page, add products, and connect with media pros.${
+            note ? `<br/><br/><strong>Note from our team:</strong><br/>${note.replace(/\n/g, "<br/>")}` : ""
+          }`
+        : `Your request to claim <strong>${companyName}</strong> was not approved.${
+            note ? `<br/><br/><strong>Reason:</strong><br/>${note.replace(/\n/g, "<br/>")}` : ""
+          }`,
+      { url: companyUrl, label: approved ? "Manage your company" : "View company" }
+    ),
+  }),
   interviewScheduled: (
     companyName: string,
     jobTitle: string,

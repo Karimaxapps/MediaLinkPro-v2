@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Clock } from "lucide-react";
 
-export function StubClaimBanner({ slug }: { slug: string }) {
+interface StubClaimBannerProps {
+  slug: string;
+  alreadyClaimed?: boolean;
+}
+
+export function StubClaimBanner({ slug, alreadyClaimed = false }: StubClaimBannerProps) {
   return (
     <div className="rounded-xl border border-[#C6A85E]/40 bg-[#C6A85E]/10 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
       <div className="flex items-start sm:items-center gap-3 flex-1">
@@ -13,17 +18,25 @@ export function StubClaimBanner({ slug }: { slug: string }) {
             This company profile is unclaimed.
           </p>
           <p className="text-sm text-gray-300 mt-0.5">
-            Are you the owner? Claim it to manage the page, add products, and
-            connect with media pros.
+            {alreadyClaimed
+              ? "Your claim request is pending review by our team."
+              : "Are you the owner? Claim it to manage the page, add products, and connect with media pros."}
           </p>
         </div>
       </div>
-      <Link
-        href={`/companies/${slug}/claim`}
-        className="inline-flex items-center justify-center rounded-lg bg-[#C6A85E] px-4 py-2 text-sm font-semibold text-black hover:bg-[#B5964A] transition-colors whitespace-nowrap"
-      >
-        Claim this company
-      </Link>
+      {alreadyClaimed ? (
+        <div className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-gray-400 whitespace-nowrap cursor-not-allowed">
+          <Clock className="h-4 w-4" />
+          Request Pending
+        </div>
+      ) : (
+        <Link
+          href={`/companies/${slug}/claim`}
+          className="inline-flex items-center justify-center rounded-lg bg-[#C6A85E] px-4 py-2 text-sm font-semibold text-black hover:bg-[#B5964A] transition-colors whitespace-nowrap"
+        >
+          Claim this company
+        </Link>
+      )}
     </div>
   );
 }

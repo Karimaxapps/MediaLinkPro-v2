@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { requireSiteAdmin } from "@/features/admin/server/actions";
+import { notifyAdmins } from "@/features/notifications/server/notify";
 import { submitTicketSchema, replyTicketSchema } from "@/features/support/schema";
 import type { ActionState } from "@/features/types";
 import type { SupportTicket, TicketStatus } from "@/features/support/types";
@@ -27,6 +28,15 @@ export async function submitTicket(data: unknown): Promise<ActionState> {
     });
 
     if (error) return { success: false, error: error.message };
+
+    // Notify admins (in-app + mobile push)
+    await notifyAdmins({
+        type: "support_ticket",
+        title: "New support ticket",
+        message: `${parsed.data.type}: ${parsed.data.subject}`,
+        linkUrl: "/admin/support",
+        data: { ticket_type: parsed.data.type },
+    });
 
     revalidatePath("/support");
     return { success: true, message: "Your ticket has been submitted. We'll get back to you soon." };

@@ -13,7 +13,10 @@ export type EmailMessage = {
 
 export async function sendEmail(msg: EmailMessage): Promise<{ success: boolean; error?: string }> {
     const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.EMAIL_FROM ?? "MediaLinkPro <noreply@medialinkpro.app>";
+    const from =
+        process.env.EMAIL_FROM ??
+        process.env.RESEND_FROM_EMAIL ??
+        "MediaLinkPro <noreply@medialinkpro.net>";
 
     if (!apiKey) {
         // Dev/unconfigured fallback

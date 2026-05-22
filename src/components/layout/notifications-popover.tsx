@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Bell, Check, Trash2, Mail, UserPlus } from "lucide-react";
+import { Bell, Check, Trash2, Mail, UserPlus, GitMerge, LifeBuoy } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { getUserNotifications, markNotificationAsRead, markAllNotificationsAsRead } from "@/features/notifications/server/actions";
@@ -24,7 +24,7 @@ type NotificationItem = {
     id: string;
     title: string;
     message: string;
-    type: "connection_request" | "demo_request" | "admin_broadcast" | string;
+    type: "connection_request" | "demo_request" | "admin_broadcast" | "ownership_claim" | "support_ticket" | string;
     is_read: boolean;
     created_at: string;
     image_url?: string | null;
@@ -91,7 +91,11 @@ export function NotificationsPopover() {
             handleMarkAsRead(notification.id);
         }
 
-        if (notification.type === 'admin_broadcast') {
+        if (
+            notification.type === 'admin_broadcast' ||
+            notification.type === 'ownership_claim' ||
+            notification.type === 'support_ticket'
+        ) {
             const url = notification.link_url;
             if (url) {
                 setIsOpen(false);
@@ -223,6 +227,16 @@ export function NotificationsPopover() {
                                             {notification.type === 'admin_broadcast' && (
                                                 <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
                                                     <Bell className="h-3 w-3 text-[#C6A85E]" />
+                                                </div>
+                                            )}
+                                            {notification.type === 'ownership_claim' && (
+                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
+                                                    <GitMerge className="h-3 w-3 text-[#C6A85E]" />
+                                                </div>
+                                            )}
+                                            {notification.type === 'support_ticket' && (
+                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
+                                                    <LifeBuoy className="h-3 w-3 text-[#C6A85E]" />
                                                 </div>
                                             )}
                                             {(notification.type === 'demo_request' || notification.type === 'connection_request') && (

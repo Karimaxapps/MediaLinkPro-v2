@@ -44,6 +44,14 @@ export const MAIN_CATEGORIES_BY_TYPE: Record<ProductType, string[]> = {
 // Flat list of every main category (each is unique to a single product type).
 export const MAIN_CATEGORIES = Object.values(MAIN_CATEGORIES_BY_TYPE).flat() as readonly string[];
 
+export function getProductTypeForMainCategory(mainCategory?: string | null): ProductType | undefined {
+    if (!mainCategory) return undefined;
+
+    return PRODUCT_TYPES.find((type) =>
+        MAIN_CATEGORIES_BY_TYPE[type].includes(mainCategory)
+    );
+}
+
 // Sub categories keyed by main category.
 export const SUB_CATEGORIES: Record<string, string[]> = {
     // Hardware

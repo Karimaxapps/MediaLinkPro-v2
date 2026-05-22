@@ -139,6 +139,20 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         }
     }
 
+    // Check if the current user already has a pending claim on this stub
+    let userHasPendingClaim = false;
+    if (isStub && !canEdit && user) {
+        const { data: existingClaim } = await supabase
+            .from("content_ownership_requests" as never)
+            .select("id")
+            .eq("content_type" as never, "organization")
+            .eq("content_id" as never, org.id)
+            .eq("requesting_user_id" as never, user.id)
+            .eq("status" as never, "pending")
+            .maybeSingle();
+        userHasPendingClaim = !!existingClaim;
+    }
+
     const [isFollowing, followerCount, orgPlan, companyJobs] = await Promise.all([
         isFollowingOrganization(org.id),
         getOrganizationFollowerCount(org.id),
@@ -171,7 +185,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            {isStub && !canEdit && <StubClaimBanner slug={org.slug} />}
+            {isStub && !canEdit && <StubClaimBanner slug={org.slug} alreadyClaimed={userHasPendingClaim} />}
             {/* Hero Section */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                 {/* Visual Background */}

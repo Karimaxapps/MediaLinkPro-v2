@@ -62,6 +62,7 @@ export type AdminStats = {
   reviews: number;
   connections: number;
   pendingReviews: number;
+  pendingClaims: number;
 };
 
 export async function getAdminStats(): Promise<AdminStats> {
@@ -71,18 +72,23 @@ export async function getAdminStats(): Promise<AdminStats> {
   const countQuery = (table: string) =>
     admin.from(table).select("id", { count: "exact", head: true });
 
-  const [users, orgs, products, events, reviews, connections, hiddenReviews] = await Promise.all([
-    countQuery("profiles"),
-    countQuery("organizations"),
-    countQuery("products"),
-    countQuery("events"),
-    countQuery("product_reviews"),
-    countQuery("connections"),
-    admin
-      .from("product_reviews")
-      .select("id", { count: "exact", head: true })
-      .eq("is_visible", false),
-  ]);
+  const [users, orgs, products, events, reviews, connections, hiddenReviews, pendingClaims] =
+    await Promise.all([
+      countQuery("profiles"),
+      countQuery("organizations"),
+      countQuery("products"),
+      countQuery("events"),
+      countQuery("product_reviews"),
+      countQuery("connections"),
+      admin
+        .from("product_reviews")
+        .select("id", { count: "exact", head: true })
+        .eq("is_visible", false),
+      admin
+        .from("content_ownership_requests" as never)
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending"),
+    ]);
 
   return {
     users: users.count ?? 0,
@@ -92,7 +98,19 @@ export async function getAdminStats(): Promise<AdminStats> {
     reviews: reviews.count ?? 0,
     connections: connections.count ?? 0,
     pendingReviews: hiddenReviews.count ?? 0,
+    pendingClaims: pendingClaims.count ?? 0,
   };
+}
+
+/** Count of ownership/claim requests still awaiting an admin decision. */
+export async function getPendingOwnershipClaimsCount(): Promise<number> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { count } = await admin
+    .from("content_ownership_requests" as never)
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  return count ?? 0;
 }
 
 export type AdminUser = {
@@ -1143,21 +1161,32 @@ export async function listAdminOwnershipRequests(
         ? admin.from("organizations").select("id, name, slug").in("id", stubOrgIds)
         : Promise.resolve({ data: [] }),
       userIds.length
-        ? admin.from("profiles").select("id, full_name, username").in("id", userIds)
+        ? admin
+            .from("profiles")
+            .select("id, full_name, username, avatar_url, country")
+            .in("id", userIds)
         : Promise.resolve({ data: [] }),
     ]);
 
   const orgMap = new Map((orgs ?? []).map((o) => [o.id, o]));
   const productMap = new Map((products ?? []).map((p) => [p.id, p]));
   const stubMap = new Map((stubs ?? []).map((o) => [o.id, o]));
+  type UserProfile = {
+    id: string;
+    full_name: string | null;
+    username: string | null;
+    avatar_url: string | null;
+    country: string | null;
+  };
   const userMap = new Map(
-    (userProfiles ?? []).map((p) => [p.id, p.full_name ?? p.username ?? "User"])
+    ((userProfiles ?? []) as UserProfile[]).map((p) => [p.id, p])
   );
 
   return rows.map((r) => {
     const org = r.requesting_org_id ? orgMap.get(r.requesting_org_id) : undefined;
     const product = r.content_type === "product" ? productMap.get(r.content_id) : undefined;
     const stub = r.content_type === "organization" ? stubMap.get(r.content_id) : undefined;
+    const userProfile = r.requesting_user_id ? userMap.get(r.requesting_user_id) : undefined;
     return {
       id: r.id,
       content_type: r.content_type as "product" | "event" | "blog_post" | "organization",
@@ -1176,10 +1205,13 @@ export async function listAdminOwnershipRequests(
       product_slug: product?.slug ?? stub?.slug ?? "",
       stub_org_name: stub?.name,
       stub_org_slug: stub?.slug,
-      requesting_user_name: r.requesting_user_id
-        ? (userMap.get(r.requesting_user_id) ?? null)
+      requesting_user_name: userProfile
+        ? (userProfile.full_name ?? userProfile.username ?? "User")
         : null,
       requesting_user_email: null,
+      requesting_user_username: userProfile?.username ?? null,
+      requesting_user_avatar: userProfile?.avatar_url ?? null,
+      requesting_user_country: userProfile?.country ?? null,
     };
   });
 }

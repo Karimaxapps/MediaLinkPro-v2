@@ -4,11 +4,16 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { requireSiteAdmin } from "@/features/admin/server/actions";
+import { notifyAdmins, notifyUser } from "@/features/notifications/server/notify";
+import { emailTemplates } from "@/lib/email/templates";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "";
 import type { ActionState } from "@/features/types";
 
 export async function submitOrgClaimAction(
   stubOrgId: string,
-  message: string
+  message: string,
+  notifyByEmail: boolean = true
 ): Promise<ActionState> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
@@ -25,13 +30,14 @@ export async function submitOrgClaimAction(
   // Validate stub
   const { data: stub } = await admin
     .from("organizations")
-    .select("id, slug, is_stub, claimed_at, merged_into_id")
+    .select("id, name, slug, is_stub, claimed_at, merged_into_id")
     .eq("id", stubOrgId)
     .maybeSingle();
 
   if (!stub) return { error: "Company not found.", success: false };
   const stubRow = stub as {
     id: string;
+    name: string;
     slug: string;
     is_stub: boolean | null;
     claimed_at: string | null;
@@ -76,6 +82,7 @@ export async function submitOrgClaimAction(
       requesting_user_id: user.id,
       status: "pending",
       message: message?.trim() || null,
+      notify_by_email: notifyByEmail,
     } as never);
 
   if (insertError) {
@@ -85,12 +92,110 @@ export async function submitOrgClaimAction(
     };
   }
 
+  // Notify admins (in-app + mobile push)
+  const { data: claimer } = await admin
+    .from("profiles")
+    .select("full_name, username")
+    .eq("id", user.id)
+    .maybeSingle();
+  const claimerName =
+    (claimer as { full_name?: string | null; username?: string | null } | null)?.full_name ||
+    (claimer as { username?: string | null } | null)?.username ||
+    "A user";
+
+  await notifyAdmins({
+    type: "ownership_claim",
+    title: "New company claim request",
+    message: `${claimerName} requested ownership of ${stubRow.name}.`,
+    linkUrl: "/admin/ownership-requests",
+    data: { content_type: "organization", content_id: stubOrgId },
+  });
+
   revalidatePath(`/companies/${stubRow.slug}`);
   revalidatePath("/admin/ownership-requests");
   return {
     success: true,
     message: "Claim submitted. An admin will review it shortly.",
   };
+}
+
+/**
+ * Admin replies to a claim requester. The message is delivered through the
+ * main messaging inbox — a direct conversation between the admin's user
+ * account and the requester (creating it if one doesn't exist yet).
+ */
+export async function sendClaimReplyToRequester(
+  requesterUserId: string,
+  content: string
+): Promise<{ success: boolean; error?: string; conversationId?: string }> {
+  const { userId: adminUserId } = await requireSiteAdmin();
+  if (adminUserId === "dev-bypass") {
+    return {
+      success: false,
+      error: "Replying requires a real admin account (not dev-bypass mode).",
+    };
+  }
+
+  const body = content.trim();
+  if (!body) return { success: false, error: "Message cannot be empty." };
+  if (!requesterUserId) {
+    return { success: false, error: "This claim has no requester to reply to." };
+  }
+
+  const admin = createAdminClient();
+
+  // Find an existing direct conversation between the two users.
+  const { data: myParts } = await admin
+    .from("conversation_participants")
+    .select("conversation_id")
+    .eq("profile_id", adminUserId);
+
+  let conversationId: string | null = null;
+  const myConvIds = (myParts ?? []).map((p: { conversation_id: string }) => p.conversation_id);
+  if (myConvIds.length > 0) {
+    const { data: shared } = await admin
+      .from("conversation_participants")
+      .select("conversation_id")
+      .in("conversation_id", myConvIds)
+      .eq("profile_id", requesterUserId)
+      .limit(1);
+    conversationId = (shared?.[0] as { conversation_id: string } | undefined)?.conversation_id ?? null;
+  }
+
+  // Create a new conversation if none exists.
+  if (!conversationId) {
+    conversationId = crypto.randomUUID();
+    const { error: convErr } = await admin
+      .from("conversations")
+      .insert({ id: conversationId } as never);
+    if (convErr) {
+      return { success: false, error: "Failed to start conversation: " + convErr.message };
+    }
+    const { error: partErr } = await admin.from("conversation_participants").insert([
+      { conversation_id: conversationId, profile_id: adminUserId },
+      { conversation_id: conversationId, profile_id: requesterUserId },
+    ] as never);
+    if (partErr) {
+      return { success: false, error: "Failed to add participants: " + partErr.message };
+    }
+  }
+
+  const { error: msgErr } = await admin.from("messages").insert({
+    conversation_id: conversationId,
+    content: body,
+    sender_profile_id: adminUserId,
+  } as never);
+  if (msgErr) {
+    return { success: false, error: "Failed to send message: " + msgErr.message };
+  }
+
+  await admin
+    .from("conversations")
+    .update({ updated_at: new Date().toISOString() } as never)
+    .eq("id", conversationId);
+
+  revalidatePath("/messages");
+  return { success: true, conversationId };
 }
 
 export async function resolveOrgClaimAction(
@@ -116,6 +221,7 @@ export async function resolveOrgClaimAction(
     requesting_org_id: string | null;
     requesting_user_id: string | null;
     status: string;
+    notify_by_email: boolean | null;
   };
   const req = request as unknown as ReqRow;
   if (req.status !== "pending") {
@@ -138,6 +244,36 @@ export async function resolveOrgClaimAction(
         admin_note: adminNote ?? null,
       } as never)
       .eq("id", requestId);
+
+    if (req.requesting_user_id) {
+      const { data: stub } = await admin
+        .from("organizations")
+        .select("name, slug")
+        .eq("id", req.content_id)
+        .maybeSingle();
+      const stubName = (stub as { name?: string } | null)?.name ?? "the company";
+      const stubSlug = (stub as { slug?: string } | null)?.slug;
+      const wantsEmail = req.notify_by_email !== false;
+      await notifyUser({
+        userId: req.requesting_user_id,
+        type: "ownership_claim",
+        title: "Company claim not approved",
+        message: adminNote
+          ? `Your claim for ${stubName} was not approved: ${adminNote}`
+          : `Your claim for ${stubName} was not approved.`,
+        linkUrl: stubSlug ? `/companies/${stubSlug}` : undefined,
+        data: { content_type: "organization", content_id: req.content_id, decision: "rejected" },
+        email: wantsEmail
+          ? emailTemplates.claimDecision(
+              stubName,
+              false,
+              adminNote ?? "",
+              stubSlug ? `${APP_URL}/companies/${stubSlug}` : APP_URL
+            )
+          : undefined,
+      });
+    }
+
     revalidatePath("/admin/ownership-requests");
     return { success: true };
   }
@@ -172,6 +308,7 @@ export async function resolveOrgClaimAction(
   }
 
   const effectiveMode: "adopt" | "merge" = mode ?? (existingOrgId ? "merge" : "adopt");
+  let claimedSlug = stubRow.slug;
 
   if (effectiveMode === "adopt") {
     if (existingOrgId) {
@@ -236,6 +373,7 @@ export async function resolveOrgClaimAction(
       id: string;
       slug: string;
     };
+    claimedSlug = existingRow.slug;
 
     // Fill blank fields on existing org from stub
     const FILLABLE = [
@@ -323,6 +461,27 @@ export async function resolveOrgClaimAction(
     .eq("content_id", stubId)
     .eq("status", "pending")
     .neq("id", requestId);
+
+  const claimedName = (stubRow.name as string | undefined) ?? "the company";
+  const wantsApprovalEmail = req.notify_by_email !== false;
+  await notifyUser({
+    userId: userIdClaimer,
+    type: "ownership_claim",
+    title: "Company claim approved",
+    message: adminNote
+      ? `Your claim for ${claimedName} was approved. ${adminNote}`
+      : `Your claim for ${claimedName} was approved — you can now manage the page.`,
+    linkUrl: `/companies/${claimedSlug}`,
+    data: { content_type: "organization", content_id: stubId, decision: "approved" },
+    email: wantsApprovalEmail
+      ? emailTemplates.claimDecision(
+          claimedName,
+          true,
+          adminNote ?? "",
+          `${APP_URL}/companies/${claimedSlug}`
+        )
+      : undefined,
+  });
 
   revalidatePath(`/companies/${stubRow.slug}`);
   revalidatePath("/admin/ownership-requests");

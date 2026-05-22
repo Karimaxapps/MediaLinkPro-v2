@@ -14,8 +14,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { PRODUCT_TYPES, MAIN_CATEGORIES_BY_TYPE, SUB_CATEGORIES, type ProductType } from '@/features/products/constants';
-import { ChevronRight, ChevronLeft, Box, FileText, Image, Loader2, Video as VideoIcon, GraduationCap, Tag, CheckCircle, Check, X, Plus, Trash2, Save } from 'lucide-react';
+import { PRODUCT_TYPES, MAIN_CATEGORIES_BY_TYPE, SUB_CATEGORIES, getProductTypeForMainCategory, type ProductType } from '@/features/products/constants';
+import { ChevronRight, ChevronLeft, Box, FileText, Image, Loader2, Video as VideoIcon, GraduationCap, Tag, CheckCircle, Plus, Trash2, Save } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { ProductMediaUpload } from './product-media-upload';
@@ -84,14 +84,23 @@ export function ProductWizard({ organizations, userId, initialData, createAction
 
     const defaultOrgId = organizations.length === 1 ? organizations[0].id : '';
 
+    const normalizedInitialData = initialData
+        ? {
+            ...initialData,
+            product_type:
+                initialData.product_type ??
+                getProductTypeForMainCategory(initialData.main_category),
+        }
+        : undefined;
+
     const form = useForm<InsertProduct>({
         resolver: zodResolver(insertProductSchema) as unknown as Resolver<InsertProduct>,
         mode: "onChange",
-        defaultValues: initialData ? {
-            ...initialData,
+        defaultValues: normalizedInitialData ? {
+            ...normalizedInitialData,
             // Ensure array fields are handled
-            gallery_urls: initialData.gallery_urls || [],
-            training_video_urls: initialData.training_video_urls || [],
+            gallery_urls: normalizedInitialData.gallery_urls || [],
+            training_video_urls: normalizedInitialData.training_video_urls || [],
         } : {
             organization_id: defaultOrgId,
             name: '',
@@ -343,8 +352,6 @@ export function ProductWizard({ organizations, userId, initialData, createAction
             </div>
         );
     }
-
-    const CurrentStepIcon = steps[currentStep].icon;
 
     return (
         <div className="max-w-3xl mx-auto">
