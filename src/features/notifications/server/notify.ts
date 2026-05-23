@@ -17,7 +17,8 @@ export type NotificationType =
   | "job_application_reply"
   | "job_interview_scheduled"
   | "ownership_claim"
-  | "support_ticket";
+  | "support_ticket"
+  | "ai_setup_request";
 
 type NotifyInput = {
   userId: string;
@@ -44,6 +45,7 @@ const TYPE_TO_PREF: Record<NotificationType, string> = {
   job_interview_scheduled: "product_updates",
   ownership_claim: "product_updates",
   support_ticket: "product_updates",
+  ai_setup_request: "product_updates",
 };
 
 /**

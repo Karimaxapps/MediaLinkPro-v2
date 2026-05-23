@@ -30,16 +30,12 @@ type Props = {
 };
 
 export function PlanSelector({ currentPlan, currentInterval, organizationId }: Props) {
-  // When viewing an org's billing page we lock to org plans; otherwise default
-  // to the current plan's track.
-  const isOrgContext = !!organizationId;
-  const initialTrack: PlanTrack = isOrgContext
-    ? "org"
-    : currentPlan === "org_free" || currentPlan === "org_growth" || currentPlan === "org_enterprise"
-      ? "org"
-      : "individual";
+  // Each billing page is locked to a single track: the personal /billing page
+  // shows only individual plans, and a company's /companies/[slug]/billing
+  // page shows only org plans. This prevents users from accidentally buying
+  // an org plan against their personal Stripe customer (or vice versa).
+  const track: PlanTrack = organizationId ? "org" : "individual";
 
-  const [track, setTrack] = useState<PlanTrack>(initialTrack);
   const [interval, setInterval] = useState<BillingInterval>(currentInterval);
 
   const visiblePlans = useMemo(() => getPlansForTrack(track), [track]);
@@ -62,20 +58,6 @@ export function PlanSelector({ currentPlan, currentInterval, organizationId }: P
           </span>
         )}
       </div>
-
-      {/* Track toggle (hidden in org-only context) */}
-      {!isOrgContext && (
-        <div className="flex items-center justify-center">
-          <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 p-1">
-            <PillButton active={track === "individual"} onClick={() => setTrack("individual")}>
-              Individual Plans
-            </PillButton>
-            <PillButton active={track === "org"} onClick={() => setTrack("org")}>
-              Organization Plans
-            </PillButton>
-          </div>
-        </div>
-      )}
 
       {/* Plans grid */}
       <div
@@ -134,7 +116,8 @@ function PlanCard({
   organizationId?: string;
 }) {
   const isFree = plan.id === "free" || plan.id === "org_free";
-  const isCurrent = plan.id === currentPlan;
+  const currentIsFree = currentPlan === "free" || currentPlan === "org_free";
+  const isCurrent = plan.id === currentPlan || (isFree && currentIsFree);
   const isAnnual = interval === "year" && !isFree;
   const monthlyDisplayCents = isAnnual ? plan.priceAnnualMonthly : plan.priceMonthly;
   const savings = isAnnual ? getAnnualSavings(plan) : 0;

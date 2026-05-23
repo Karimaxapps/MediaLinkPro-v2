@@ -132,6 +132,15 @@ export async function createCheckoutSession(
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth");
 
+  // Personal billing only sells individual-track plans. Org plans must be
+  // bought from the company billing page so they're attached to the org's
+  // Stripe customer, not the user's.
+  if (planId !== "free" && getPlanById(planId).track !== "individual") {
+    throw new Error(
+      "Organization plans can only be purchased from a company's billing page."
+    );
+  }
+
   const priceId = resolvePriceId(planId, billingInterval);
   if (!priceId) {
     throw new Error(
@@ -223,6 +232,14 @@ export async function createOrgCheckoutSession(
   if (!user) redirect("/auth");
 
   await assertOrgOwner(supabase, user.id, orgId);
+
+  // Org billing only sells org-track plans. Individual Pro can't be applied
+  // to an organization — it belongs on the user's personal subscription.
+  if (planId !== "org_free" && getPlanById(planId).track !== "org") {
+    throw new Error(
+      "Individual plans can only be purchased from your personal billing page."
+    );
+  }
 
   const priceId = resolvePriceId(planId, billingInterval);
   if (!priceId) {

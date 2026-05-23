@@ -217,6 +217,7 @@
     "products": "Products",
     "productionServices": "Production Services",
     "aiTools": "AI Production Tools",
+    "aiSetupBuilder": "AI Setup Builder",
     "events": "Events",
     "jobs": "Jobs",
     "blog": "Blog",
@@ -238,7 +239,8 @@
     "logOut": "Log out"
   },
   "appHeader": {
-    "searchPlaceholder": "Search products, companies, people..."
+    "searchPlaceholder": "Search products, companies, people...",
+    "aiSetupBuilder": "AI Setup Builder"
   },
   "notifications": {
     "title": "Notifications",

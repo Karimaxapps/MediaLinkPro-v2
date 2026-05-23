@@ -217,6 +217,7 @@
     "products": "Produits",
     "productionServices": "Services de Production",
     "aiTools": "Outils de Production IA",
+    "aiSetupBuilder": "Assistant de Configuration IA",
     "events": "Événements",
     "jobs": "Emplois",
     "blog": "Blog",
@@ -238,7 +239,8 @@
     "logOut": "Se déconnecter"
   },
   "appHeader": {
-    "searchPlaceholder": "Rechercher des produits, entreprises, personnes..."
+    "searchPlaceholder": "Rechercher des produits, entreprises, personnes...",
+    "aiSetupBuilder": "Assistant de Configuration IA"
   },
   "notifications": {
     "title": "Notifications",

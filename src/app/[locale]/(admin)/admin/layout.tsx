@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 
 const NAV = [
@@ -18,6 +18,7 @@ const NAV = [
     { href: "/admin/broadcasts", label: "Push Notifications", icon: Bell },
     { href: "/admin/languages", label: "Languages", icon: Globe },
     { href: "/admin/support", label: "Support", icon: MessageSquare },
+    { href: "/admin/feature-flags", label: "Feature Flags", icon: ToggleRight },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

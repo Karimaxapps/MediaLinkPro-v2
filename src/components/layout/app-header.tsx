@@ -9,13 +9,19 @@ import { MobileSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, HelpCircle } from "lucide-react";
+import { Search, HelpCircle, Wand2 } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 import { InboxBadge } from "@/components/layout/inbox-badge";
 
 type AppHeaderOrganization = { slug: string; name: string };
 
-export function AppHeader({ organizations }: { organizations?: AppHeaderOrganization[] }) {
+export function AppHeader({
+    organizations,
+    showAiSetup = false,
+}: {
+    organizations?: AppHeaderOrganization[];
+    showAiSetup?: boolean;
+}) {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const t = useTranslations("appHeader");
@@ -63,6 +69,21 @@ export function AppHeader({ organizations }: { organizations?: AppHeaderOrganiza
                 </form>
             </div>
             <div className="flex items-center gap-2">
+                {showAiSetup && (
+                    <Link href="/ai-setup">
+                        <Button
+                            variant="ghost"
+                            className="gap-2 px-2.5 text-[#C6A85E] hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                            aria-label={t("aiSetupBuilder")}
+                            title={t("aiSetupBuilder")}
+                        >
+                            <Wand2 className="h-5 w-5" />
+                            <span className="hidden lg:inline whitespace-nowrap font-medium">
+                                {t("aiSetupBuilder")}
+                            </span>
+                        </Button>
+                    </Link>
+                )}
                 <InboxBadge />
                 <NotificationsPopover />
                 <Link href="/support">

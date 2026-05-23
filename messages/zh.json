@@ -217,6 +217,7 @@
     "products": "产品",
     "productionServices": "制作服务",
     "aiTools": "AI 制作工具",
+    "aiSetupBuilder": "AI 配置助手",
     "events": "活动",
     "jobs": "职位",
     "blog": "博客",
@@ -238,7 +239,8 @@
     "logOut": "退出登录"
   },
   "appHeader": {
-    "searchPlaceholder": "搜索产品、公司、人员……"
+    "searchPlaceholder": "搜索产品、公司、人员……",
+    "aiSetupBuilder": "AI 配置助手"
   },
   "notifications": {
     "title": "通知",

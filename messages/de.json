@@ -217,6 +217,7 @@
     "products": "Produkte",
     "productionServices": "Produktionsdienstleistungen",
     "aiTools": "KI-Produktionstools",
+    "aiSetupBuilder": "KI-Setup-Assistent",
     "events": "Veranstaltungen",
     "jobs": "Stellen",
     "blog": "Blog",
@@ -238,7 +239,8 @@
     "logOut": "Abmelden"
   },
   "appHeader": {
-    "searchPlaceholder": "Produkte, Unternehmen, Personen suchen..."
+    "searchPlaceholder": "Produkte, Unternehmen, Personen suchen...",
+    "aiSetupBuilder": "KI-Setup-Assistent"
   },
   "notifications": {
     "title": "Benachrichtigungen",

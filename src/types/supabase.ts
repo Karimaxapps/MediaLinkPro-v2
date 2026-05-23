@@ -85,6 +85,48 @@ export type Database = {
           },
         ]
       }
+      ai_setup_requests: {
+        Row: {
+          brief: Json
+          budget_amount: number | null
+          budget_currency: string
+          created_at: string
+          id: string
+          product_ids: string[]
+          recommendation: Json
+          requester_id: string | null
+          satisfied: boolean | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          brief?: Json
+          budget_amount?: number | null
+          budget_currency?: string
+          created_at?: string
+          id?: string
+          product_ids?: string[]
+          recommendation?: Json
+          requester_id?: string | null
+          satisfied?: boolean | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          brief?: Json
+          budget_amount?: number | null
+          budget_currency?: string
+          created_at?: string
+          id?: string
+          product_ids?: string[]
+          recommendation?: Json
+          requester_id?: string | null
+          satisfied?: boolean | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_tool_bookmarks: {
         Row: {
           ai_tool_id: string
@@ -390,6 +432,45 @@ export type Database = {
           },
         ]
       }
+      broadcasts: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          image_url: string | null
+          link_url: string | null
+          message: string
+          push_failed_count: number | null
+          push_sent_count: number | null
+          recipient_count: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          message: string
+          push_failed_count?: number | null
+          push_sent_count?: number | null
+          recipient_count?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          message?: string
+          push_failed_count?: number | null
+          push_sent_count?: number | null
+          recipient_count?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       connections: {
         Row: {
           created_at: string
@@ -440,7 +521,9 @@ export type Database = {
           created_at: string
           id: string
           message: string | null
-          requesting_org_id: string
+          notify_by_email: boolean
+          requesting_org_id: string | null
+          requesting_user_id: string | null
           resolved_at: string | null
           resolved_by: string | null
           status: string
@@ -452,7 +535,9 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string | null
-          requesting_org_id: string
+          notify_by_email?: boolean
+          requesting_org_id?: string | null
+          requesting_user_id?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
           status?: string
@@ -464,7 +549,9 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string | null
-          requesting_org_id?: string
+          notify_by_email?: boolean
+          requesting_org_id?: string | null
+          requesting_user_id?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
           status?: string
@@ -603,24 +690,75 @@ export type Database = {
           },
         ]
       }
+      device_push_tokens: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_seen_at: string | null
+          platform: string
+          provider: string
+          token: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          platform: string
+          provider?: string
+          token: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          platform?: string
+          provider?: string
+          token?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       device_tokens: {
         Row: {
+          app_version: string | null
           created_at: string
+          device_id: string | null
+          is_active: boolean
+          last_seen_at: string
+          locale: string | null
           platform: string
+          timezone: string | null
           token: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          app_version?: string | null
           created_at?: string
+          device_id?: string | null
+          is_active?: boolean
+          last_seen_at?: string
+          locale?: string | null
           platform: string
+          timezone?: string | null
           token: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          app_version?: string | null
           created_at?: string
+          device_id?: string | null
+          is_active?: boolean
+          last_seen_at?: string
+          locale?: string | null
           platform?: string
+          timezone?: string | null
           token?: string
           updated_at?: string
           user_id?: string
@@ -1352,34 +1490,67 @@ export type Database = {
       notification_preferences: {
         Row: {
           connection_requests: boolean
+          connections: boolean
+          demo_reminders: boolean
           demo_requests: boolean
           email_notifications: boolean
           event_invites: boolean
+          event_reminders: boolean
+          events: boolean
+          marketing_announcements: boolean
           marketing_emails: boolean
           messages: boolean
           product_updates: boolean
+          profile_activity: boolean
+          quiet_hours_enabled: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          quiet_hours_timezone: string
+          security_alerts: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
           connection_requests?: boolean
+          connections?: boolean
+          demo_reminders?: boolean
           demo_requests?: boolean
           email_notifications?: boolean
           event_invites?: boolean
+          event_reminders?: boolean
+          events?: boolean
+          marketing_announcements?: boolean
           marketing_emails?: boolean
           messages?: boolean
           product_updates?: boolean
+          profile_activity?: boolean
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          quiet_hours_timezone?: string
+          security_alerts?: boolean
           updated_at?: string
           user_id: string
         }
         Update: {
           connection_requests?: boolean
+          connections?: boolean
+          demo_reminders?: boolean
           demo_requests?: boolean
           email_notifications?: boolean
           event_invites?: boolean
+          event_reminders?: boolean
+          events?: boolean
+          marketing_announcements?: boolean
           marketing_emails?: boolean
           messages?: boolean
           product_updates?: boolean
+          profile_activity?: boolean
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          quiet_hours_timezone?: string
+          security_alerts?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -1387,31 +1558,55 @@ export type Database = {
       }
       notifications: {
         Row: {
+          badge_count: number | null
+          collapse_key: string | null
           created_at: string | null
           data: Json | null
+          dismissed_at: string | null
+          entity_id: string | null
           id: string
+          image_url: string | null
           is_read: boolean | null
+          link_url: string | null
           message: string
+          push_event_id: string | null
+          thread_id: string | null
           title: string
           type: string
           user_id: string | null
         }
         Insert: {
+          badge_count?: number | null
+          collapse_key?: string | null
           created_at?: string | null
           data?: Json | null
+          dismissed_at?: string | null
+          entity_id?: string | null
           id?: string
+          image_url?: string | null
           is_read?: boolean | null
+          link_url?: string | null
           message: string
+          push_event_id?: string | null
+          thread_id?: string | null
           title: string
           type: string
           user_id?: string | null
         }
         Update: {
+          badge_count?: number | null
+          collapse_key?: string | null
           created_at?: string | null
           data?: Json | null
+          dismissed_at?: string | null
+          entity_id?: string | null
           id?: string
+          image_url?: string | null
           is_read?: boolean | null
+          link_url?: string | null
           message?: string
+          push_event_id?: string | null
+          thread_id?: string | null
           title?: string
           type?: string
           user_id?: string | null
@@ -1493,10 +1688,37 @@ export type Database = {
           },
         ]
       }
+      organization_slug_redirects: {
+        Row: {
+          created_at: string
+          old_slug: string
+          org_id: string
+        }
+        Insert: {
+          created_at?: string
+          old_slug: string
+          org_id: string
+        }
+        Update: {
+          created_at?: string
+          old_slug?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_slug_redirects_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           address: string | null
           broadcaster_type: string | null
+          claimed_at: string | null
           contact_email: string | null
           country: string | null
           created_at: string | null
@@ -1505,13 +1727,18 @@ export type Database = {
           followers_count: number
           id: string
           instagram_url: string | null
+          is_featured: boolean
           is_platform_org: boolean
+          is_stub: boolean
           linkedin_url: string | null
           logo_url: string | null
           main_activity: string | null
+          merged_into_id: string | null
           name: string
           phone: string | null
+          seeded_by: string | null
           slug: string
+          source: string
           tagline: string | null
           tiktok_url: string | null
           type: string | null
@@ -1524,6 +1751,7 @@ export type Database = {
         Insert: {
           address?: string | null
           broadcaster_type?: string | null
+          claimed_at?: string | null
           contact_email?: string | null
           country?: string | null
           created_at?: string | null
@@ -1532,13 +1760,18 @@ export type Database = {
           followers_count?: number
           id?: string
           instagram_url?: string | null
+          is_featured?: boolean
           is_platform_org?: boolean
+          is_stub?: boolean
           linkedin_url?: string | null
           logo_url?: string | null
           main_activity?: string | null
+          merged_into_id?: string | null
           name: string
           phone?: string | null
+          seeded_by?: string | null
           slug: string
+          source?: string
           tagline?: string | null
           tiktok_url?: string | null
           type?: string | null
@@ -1551,6 +1784,7 @@ export type Database = {
         Update: {
           address?: string | null
           broadcaster_type?: string | null
+          claimed_at?: string | null
           contact_email?: string | null
           country?: string | null
           created_at?: string | null
@@ -1559,13 +1793,18 @@ export type Database = {
           followers_count?: number
           id?: string
           instagram_url?: string | null
+          is_featured?: boolean
           is_platform_org?: boolean
+          is_stub?: boolean
           linkedin_url?: string | null
           logo_url?: string | null
           main_activity?: string | null
+          merged_into_id?: string | null
           name?: string
           phone?: string | null
+          seeded_by?: string | null
           slug?: string
+          source?: string
           tagline?: string | null
           tiktok_url?: string | null
           type?: string | null
@@ -1575,7 +1814,15 @@ export type Database = {
           x_url?: string | null
           youtube_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "organizations_merged_into_id_fkey"
+            columns: ["merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_bookmarks: {
         Row: {
@@ -2021,6 +2268,7 @@ export type Database = {
           id: string
           instagram_url: string | null
           is_admin: boolean
+          is_demo_profile: boolean
           job_function: string | null
           job_title: string | null
           linkedin_url: string | null
@@ -2058,6 +2306,7 @@ export type Database = {
           id: string
           instagram_url?: string | null
           is_admin?: boolean
+          is_demo_profile?: boolean
           job_function?: string | null
           job_title?: string | null
           linkedin_url?: string | null
@@ -2095,6 +2344,7 @@ export type Database = {
           id?: string
           instagram_url?: string | null
           is_admin?: boolean
+          is_demo_profile?: boolean
           job_function?: string | null
           job_title?: string | null
           linkedin_url?: string | null
@@ -2107,6 +2357,75 @@ export type Database = {
           website?: string | null
           x_url?: string | null
           youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      push_delivery_logs: {
+        Row: {
+          created_at: string
+          device_token_id: string | null
+          error_code: string | null
+          error_message: string | null
+          event_id: string | null
+          id: string
+          notification_id: string | null
+          notification_type: string
+          payload: Json
+          provider: string
+          provider_message_id: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_token_id?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          event_id?: string | null
+          id?: string
+          notification_id?: string | null
+          notification_type: string
+          payload?: Json
+          provider?: string
+          provider_message_id?: string | null
+          status: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_token_id?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          event_id?: string | null
+          id?: string
+          notification_id?: string | null
+          notification_type?: string
+          payload?: Json
+          provider?: string
+          provider_message_id?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      push_event_dedupes: {
+        Row: {
+          created_at: string
+          event_id: string
+          notification_type: string
+          recipient_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          notification_type: string
+          recipient_user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          notification_type?: string
+          recipient_user_id?: string
         }
         Relationships: []
       }
@@ -2271,6 +2590,7 @@ export type Database = {
           p_message: string
           p_organization_id: string
           p_product_id: string
+          p_request_type?: string
           p_requester_id: string
         }
         Returns: string
@@ -2292,6 +2612,10 @@ export type Database = {
         Args: { p_post_id: string }
         Returns: undefined
       }
+      increment_organization_views: {
+        Args: { organization_id: string }
+        Returns: undefined
+      }
       increment_product_qr_scans: {
         Args: { product_id: string }
         Returns: undefined
@@ -2311,6 +2635,10 @@ export type Database = {
       is_org_admin: { Args: { org_id: string }; Returns: boolean }
       is_org_member: { Args: { org_id: string }; Returns: boolean }
       is_site_admin: { Args: never; Returns: boolean }
+      notify_ai_setup_owners: {
+        Args: { p_request_id: string }
+        Returns: undefined
+      }
       user_has_plan: {
         Args: { p_user_id: string; required_plans: string[] }
         Returns: boolean

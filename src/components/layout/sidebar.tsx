@@ -8,15 +8,51 @@ import Image from "next/image";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { MarqueeText } from "@/components/ui/marquee-text";
-import { Menu, Building2, PlusCircle, LayoutDashboard, ChevronRight, ChevronDown } from "lucide-react";
+import { Menu, Building2, PlusCircle, LayoutDashboard, ChevronRight, ChevronDown, Sparkles, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Footer } from "@/components/layout/footer";
 import { useTranslations } from "next-intl";
+import type { PlanId } from "@/lib/stripe/plans";
 
 type SidebarOrganization = { slug: string; name: string };
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     organizations?: SidebarOrganization[];
+    userPlan?: PlanId;
+}
+
+function SidebarUpgradeCard() {
+    return (
+        <Link href="/billing" className="group block">
+            <div className="relative overflow-hidden rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/15 via-[#1F1F1F] to-[#8a6f2d]/10 p-3.5 transition-all hover:border-[#C6A85E]/60 hover:shadow-[0_0_24px_-6px_rgba(198,168,94,0.5)]">
+                <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#C6A85E]/20 blur-2xl transition-opacity group-hover:opacity-80" />
+                <div className="pointer-events-none absolute -bottom-8 -left-4 h-16 w-16 rounded-full bg-[#C6A85E]/10 blur-2xl" />
+
+                <div className="relative">
+                    <div className="mb-2 flex items-center gap-2">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#E6C77A] to-[#B5964A] shadow-inner shadow-black/20">
+                            <Sparkles className="h-3.5 w-3.5 text-black" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#C6A85E]">
+                            Go Pro
+                        </span>
+                    </div>
+
+                    <h4 className="mb-1 text-sm font-semibold leading-tight text-white">
+                        Unlock your full potential
+                    </h4>
+                    <p className="mb-3 text-[11px] leading-snug text-gray-400">
+                        Unlimited connections, conversations & expert services.
+                    </p>
+
+                    <div className="flex items-center justify-between rounded-md bg-gradient-to-r from-[#C6A85E] to-[#B5964A] px-2.5 py-1.5 text-[11px] font-semibold text-black transition-transform group-hover:translate-x-0.5">
+                        <span>Upgrade plan</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
+                </div>
+            </div>
+        </Link>
+    );
 }
 
 function NavItems({
@@ -149,7 +185,7 @@ function NavItems({
     );
 }
 
-export function Sidebar({ className, organizations }: SidebarProps) {
+export function Sidebar({ className, organizations, userPlan }: SidebarProps) {
     const pathname = usePathname();
     const [isCompanyOpen, setIsCompanyOpen] = useState(true);
 
@@ -167,7 +203,8 @@ export function Sidebar({ className, organizations }: SidebarProps) {
                     </div>
                 </div>
             </div>
-            <div className="px-3 pb-3 pt-2">
+            <div className="px-3 pb-3 pt-2 space-y-2">
+                {userPlan === "free" && <SidebarUpgradeCard />}
                 <Footer isSidebar />
             </div>
         </div>

@@ -202,3 +202,98 @@ body,
 *:not(.scrollbar-hide)::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* ---- AI Setup Builder: animated "AI request" glow around the generate button ---- */
+@property --ai-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes ai-spin {
+  to {
+    --ai-angle: 360deg;
+  }
+}
+
+.ai-glow {
+  position: relative;
+  border-radius: 9999px;
+  isolation: isolate;
+}
+
+/* Rotating gradient ring drawn as a masked border. */
+.ai-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ai-angle),
+    #c6a85e,
+    #135bec,
+    #8ab4f8,
+    #c6a85e,
+    #135bec,
+    #c6a85e
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-spin 3.2s linear infinite;
+  z-index: -1;
+}
+
+/* Soft blurred halo behind the button. */
+.ai-glow::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--ai-angle),
+    #c6a85e,
+    #135bec,
+    #8ab4f8,
+    #c6a85e
+  );
+  filter: blur(16px);
+  opacity: 0.45;
+  z-index: -2;
+  animation: ai-spin 3.2s linear infinite;
+}
+
+.ai-glow--active::before,
+.ai-glow--active::after {
+  animation-duration: 1.2s;
+}
+
+.ai-glow--active::after {
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-glow::before,
+  .ai-glow::after {
+    animation: none;
+  }
+}
+
+/* Animated signal-flow connector for the setup diagram. */
+@keyframes ai-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+.ai-flow-line {
+  stroke-dasharray: 4 4;
+  animation: ai-flow 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-flow-line {
+    animation: none;
+  }
+}
