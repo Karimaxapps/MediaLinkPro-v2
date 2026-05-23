@@ -158,7 +158,7 @@ export async function createCheckoutSession(
       metadata: { supabase_user_id: user.id },
     });
     customerId = customer.id;
-    await admin.from("subscriptions" as never).upsert(
+    const { error: upsertErr } = await admin.from("subscriptions" as never).upsert(
       {
         user_id: user.id,
         stripe_customer_id: customerId,
@@ -167,6 +167,11 @@ export async function createCheckoutSession(
       } as never,
       { onConflict: "user_id" }
     );
+    if (upsertErr) {
+      // Without a row here, the Stripe webhook can't reconcile the
+      // subscription back to this user — fail loudly instead of silently.
+      throw new Error(`Failed to persist subscription row: ${upsertErr.message}`);
+    }
   }
 
   const session = await stripe.checkout.sessions.create({
@@ -261,10 +266,22 @@ export async function createOrgCheckoutSession(
       },
     });
     customerId = customer.id;
-    await admin
-      .from("subscriptions" as never)
-      .update({ stripe_customer_id: customerId } as never)
-      .eq("organization_id", orgId);
+    // Use upsert (not update) so a missing org row is created on the fly;
+    // otherwise the customer ID would be orphaned and the webhook would
+    // never be able to reconcile back to this organization.
+    const { error: upsertErr } = await admin.from("subscriptions" as never).upsert(
+      {
+        organization_id: orgId,
+        stripe_customer_id: customerId,
+        plan: "org_free",
+        plan_track: "org",
+        status: "active",
+      } as never,
+      { onConflict: "organization_id" }
+    );
+    if (upsertErr) {
+      throw new Error(`Failed to persist org subscription row: ${upsertErr.message}`);
+    }
   }
 
   const returnPath = orgRow?.slug ? `/companies/${orgRow.slug}/billing` : "/billing";
