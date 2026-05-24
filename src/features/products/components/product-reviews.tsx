@@ -122,7 +122,7 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
                                     <StarRating rating={star} maxStars={1} size="sm" />
                                     <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
                                         <div
-                                            className="h-full rounded-full bg-[#C6A85E] transition-all"
+                                            className="h-full rounded-full bg-[var(--brand)] transition-all"
                                             style={{ width: `${percent}%` }}
                                         />
                                     </div>
@@ -140,7 +140,7 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
                     {!showForm ? (
                         <Button
                             onClick={() => setShowForm(true)}
-                            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-medium"
+                            className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-medium"
                         >
                             <Edit className="h-4 w-4 mr-2" />
                             {userReview ? "Edit Your Review" : "Write a Review"}
@@ -183,7 +183,7 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
                             className={cn(
                                 "px-3 py-1 text-xs rounded-md border transition-colors",
                                 sortBy === option.key
-                                    ? "bg-[#C6A85E] text-black border-[#C6A85E]"
+                                    ? "bg-[var(--brand)] text-black border-[var(--brand)]"
                                     : "bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
                             )}
                         >
@@ -220,7 +220,7 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
                                     <div>
                                         <Link
                                             href={`/profiles/${review.profiles?.username || review.user_id}`}
-                                            className="text-sm font-medium text-white hover:text-[#C6A85E] transition-colors"
+                                            className="text-sm font-medium text-white hover:text-[var(--brand)] transition-colors"
                                         >
                                             {review.profiles?.full_name || "Anonymous"}
                                         </Link>
@@ -257,7 +257,7 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
                                 className={cn(
                                     "flex items-center gap-1.5 text-xs transition-colors",
                                     review.user_voted_helpful
-                                        ? "text-[#C6A85E]"
+                                        ? "text-[var(--brand)]"
                                         : "text-gray-500 hover:text-gray-300"
                                 )}
                             >

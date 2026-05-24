@@ -33,7 +33,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Briefcase className="h-4 w-4 text-[#C6A85E]" />
+            <Briefcase className="h-4 w-4 text-[var(--brand)]" />
             Jobs & Applications
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
@@ -54,14 +54,14 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
           {jobsQuota?.exhausted ? (
             <Button
               disabled
-              className="bg-[#C6A85E] text-black font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[var(--brand)] text-black font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-3.5 w-3.5 mr-1" />
               Post a job
             </Button>
           ) : (
             <Link href="/jobs/new">
-              <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium text-xs">
+              <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium text-xs">
                 <Plus className="h-3.5 w-3.5 mr-1" />
                 Post a job
               </Button>
@@ -90,7 +90,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium truncate group-hover:text-[#C6A85E]">
+                      <p className="text-sm font-medium truncate group-hover:text-[var(--brand)]">
                         {job.title}
                       </p>
                       <span
@@ -99,7 +99,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                             ? "bg-[#10b981]/15 text-[#10b981]"
                             : job.status === "closed"
                               ? "bg-gray-500/15 text-gray-400"
-                              : "bg-[#C6A85E]/15 text-[#C6A85E]"
+                              : "bg-[var(--brand)]/15 text-[var(--brand)]"
                         }`}
                       >
                         {JOB_STATUS_LABELS[job.status]}
@@ -142,12 +142,12 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                         src={profile?.avatar_url ?? undefined}
                         alt={profile?.full_name ?? "Applicant"}
                       />
-                      <AvatarFallback className="bg-[#135bec]/20 text-[#135bec] text-xs">
+                      <AvatarFallback className="bg-[var(--brand-secondary)]/20 text-[var(--brand-secondary)] text-xs">
                         {(profile?.full_name ?? "?").substring(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate group-hover:text-[#C6A85E]">
+                      <p className="text-sm font-medium truncate group-hover:text-[var(--brand)]">
                         {profile?.full_name ?? "Anonymous applicant"}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
@@ -174,7 +174,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
             <div className="mt-3 text-right">
               <Link
                 href={`/companies/${orgSlug}/dashboard`}
-                className="text-xs text-gray-400 hover:text-[#C6A85E] inline-flex items-center gap-1"
+                className="text-xs text-gray-400 hover:text-[var(--brand)] inline-flex items-center gap-1"
               >
                 <ExternalLink className="h-3 w-3" />
                 Open in jobs management

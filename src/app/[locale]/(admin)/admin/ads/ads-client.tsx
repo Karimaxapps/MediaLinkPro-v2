@@ -305,7 +305,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
         </div>
         <Button
           onClick={() => setShowForm((s) => !s)}
-          className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+          className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
         >
           <Plus className="mr-1.5 h-4 w-4" />
           {showForm ? "Hide form" : "New campaign"}
@@ -414,7 +414,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                       size="sm"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
-                      className="bg-[#C6A85E] hover:bg-[#b5975a] text-black text-xs"
+                      className="bg-[var(--brand)] hover:bg-[#b5975a] text-black text-xs"
                     >
                       {isUploading ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -446,18 +446,18 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full h-40 rounded-lg border-2 border-dashed border-white/15 bg-black/20 hover:bg-black/30 hover:border-[#C6A85E]/50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 disabled:opacity-50"
+                  className="w-full h-40 rounded-lg border-2 border-dashed border-white/15 bg-black/20 hover:bg-black/30 hover:border-[var(--brand)]/50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 disabled:opacity-50"
                 >
                   {isUploading ? (
                     <>
-                      <Loader2 className="h-6 w-6 animate-spin text-[#C6A85E]" />
+                      <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
                       <span className="text-xs">Uploading…</span>
                     </>
                   ) : (
                     <>
                       <ImageIcon className="h-6 w-6 text-gray-500" />
                       <span className="text-xs">
-                        <span className="text-[#C6A85E] font-medium">Click to upload</span> or drag
+                        <span className="text-[var(--brand)] font-medium">Click to upload</span> or drag
                         an image
                       </span>
                       <span className="text-[10px] text-gray-500">
@@ -506,7 +506,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+              className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
             >
               {isPending ? "Creating..." : "Create campaign"}
             </Button>
@@ -561,7 +561,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                   href={c.cta_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-[#C6A85E] hover:underline inline-flex items-center gap-1 mt-1"
+                  className="text-xs text-[var(--brand)] hover:underline inline-flex items-center gap-1 mt-1"
                 >
                   {c.cta_url}
                   <ExternalLink className="h-3 w-3" />
@@ -572,7 +572,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                     <Eye className="h-3 w-3 text-gray-400" />
                     {c.impressions.toLocaleString()} impressions
                   </span>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] bg-[#C6A85E]/10 border border-[#C6A85E]/20 rounded-md px-2 py-0.5">
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--brand)] bg-[var(--brand)]/10 border border-[var(--brand)]/20 rounded-md px-2 py-0.5">
                     <MousePointerClick className="h-3 w-3" />
                     {c.clicks.toLocaleString()} clicks
                   </span>
@@ -674,7 +674,7 @@ function PlacementPreview({
 
         <p className="text-[11px] text-gray-400 text-center">
           Rendered at <span className="font-mono">{spec.previewWidth}px</span> wide ·{" "}
-          <span className="text-[#C6A85E] font-medium">
+          <span className="text-[var(--brand)] font-medium">
             Recommended image: {spec.recommendedRes}
           </span>
         </p>
@@ -720,7 +720,7 @@ function OverlayPreview({
         </div>
         <button
           type="button"
-          className="shrink-0 bg-[#C6A85E] hover:bg-[#b5975a] text-black text-xs font-semibold rounded-full px-4 py-1.5 shadow"
+          className="shrink-0 bg-[var(--brand)] hover:bg-[#b5975a] text-black text-xs font-semibold rounded-full px-4 py-1.5 shadow"
         >
           {cta}
         </button>
@@ -743,8 +743,8 @@ function StackedPreview({
   imageUrl: string;
 }) {
   return (
-    <div className="relative rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/5 to-white/5 overflow-hidden">
-      <div className="absolute top-2 right-2 z-10 text-[9px] uppercase tracking-wider text-[#C6A85E] bg-black/50 backdrop-blur px-1.5 py-0.5 rounded">
+    <div className="relative rounded-xl border border-[var(--brand)]/30 bg-gradient-to-br from-[var(--brand)]/5 to-white/5 overflow-hidden">
+      <div className="absolute top-2 right-2 z-10 text-[9px] uppercase tracking-wider text-[var(--brand)] bg-black/50 backdrop-blur px-1.5 py-0.5 rounded">
         Sponsored
       </div>
       <div className="relative w-full bg-black/40" style={{ aspectRatio: aspect }}>
@@ -760,7 +760,7 @@ function StackedPreview({
       <div className="p-3 space-y-1.5">
         <h4 className="text-sm font-semibold text-white truncate">{title}</h4>
         {body && <p className="text-[11px] text-gray-400 line-clamp-2">{body}</p>}
-        <span className="inline-block mt-1 text-xs font-medium text-[#C6A85E]">{cta} →</span>
+        <span className="inline-block mt-1 text-xs font-medium text-[var(--brand)]">{cta} →</span>
       </div>
     </div>
   );

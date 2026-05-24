@@ -100,7 +100,7 @@ export function AdvertisingClient({ campaigns }: { campaigns: AdCampaign[] }) {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Megaphone className="h-6 w-6 text-[#C6A85E]" />
+                        <Megaphone className="h-6 w-6 text-[var(--brand)]" />
                         Advertising
                     </h1>
                     <p className="text-sm text-gray-400 mt-1">
@@ -109,7 +109,7 @@ export function AdvertisingClient({ campaigns }: { campaigns: AdCampaign[] }) {
                 </div>
                 {!showForm && (
                     <Button
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
                         onClick={() => setShowForm(true)}
                     >
                         <Plus className="mr-2 h-4 w-4" />
@@ -230,7 +230,7 @@ export function AdvertisingClient({ campaigns }: { campaigns: AdCampaign[] }) {
                             Cancel
                         </Button>
                         <Button
-                            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+                            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
                             disabled={isPending || !name.trim() || !title.trim() || !ctaUrl.trim()}
                             onClick={handleCreate}
                         >

@@ -52,12 +52,12 @@ export function ProductScansDialog({ productId, children }: ProductScansDialogPr
                 <DialogHeader>
                     <DialogTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-[#C6A85E]/10">
-                                <QrCode className="w-5 h-5 text-[#C6A85E]" />
+                            <div className="p-2 rounded-lg bg-[var(--brand)]/10">
+                                <QrCode className="w-5 h-5 text-[var(--brand)]" />
                             </div>
                             <span>QR Scans History</span>
                         </div>
-                        <Badge variant="secondary" className="bg-[#C6A85E]/20 text-[#C6A85E]">
+                        <Badge variant="secondary" className="bg-[var(--brand)]/20 text-[var(--brand)]">
                             {scans.length}
                         </Badge>
                     </DialogTitle>
@@ -65,7 +65,7 @@ export function ProductScansDialog({ productId, children }: ProductScansDialogPr
                 <ScrollArea className="h-[500px] w-full pr-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#C6A85E]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[var(--brand)]" />
                         </div>
                     ) : scans.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-3 text-center text-gray-400">
@@ -80,7 +80,7 @@ export function ProductScansDialog({ productId, children }: ProductScansDialogPr
                                             <Link href={`/profiles/${scan.scanner.username || scan.scanner.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                                 <Avatar className="h-9 w-9 border border-white/10">
                                                     <AvatarImage src={scan.scanner.avatar_url} />
-                                                    <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E]">
+                                                    <AvatarFallback className="bg-[var(--brand)]/20 text-[var(--brand)]">
                                                         {scan.scanner.full_name?.charAt(0) || <User className="w-4 h-4" />}
                                                     </AvatarFallback>
                                                 </Avatar>

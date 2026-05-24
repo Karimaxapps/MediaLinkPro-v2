@@ -6,7 +6,7 @@ import type { DocCategory } from "@/features/docs/schema";
 import { DeleteDocButton } from "./delete-doc-button";
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
-  changelog:     "bg-[#C6A85E]/20 text-[#C6A85E] border-[#C6A85E]/30",
+  changelog:     "bg-[var(--brand)]/20 text-[var(--brand)] border-[var(--brand)]/30",
   "admin-guide": "bg-blue-500/20 text-blue-400 border-blue-500/30",
   feature:       "bg-purple-500/20 text-purple-400 border-purple-500/30",
   "user-guide":  "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
@@ -37,7 +37,7 @@ export default async function AdminDocsPage({
         </div>
         <Link
           href="/admin/docs/new"
-          className="inline-flex items-center gap-2 bg-[#C6A85E] hover:bg-[#b5975a] text-black text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 bg-[var(--brand)] hover:bg-[#b5975a] text-black text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Article
@@ -76,7 +76,7 @@ export default async function AdminDocsPage({
           <p className="text-gray-400 text-sm">No articles yet.</p>
           <Link
             href="/admin/docs/new"
-            className="mt-4 inline-flex items-center gap-2 text-[#C6A85E] text-sm hover:underline"
+            className="mt-4 inline-flex items-center gap-2 text-[var(--brand)] text-sm hover:underline"
           >
             <Plus className="h-3.5 w-3.5" /> Create your first article
           </Link>

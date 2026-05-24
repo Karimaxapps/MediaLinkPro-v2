@@ -12,7 +12,7 @@ export default async function AdminBlogPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <PenSquare className="h-6 w-6 text-[#C6A85E]" />
+            <PenSquare className="h-6 w-6 text-[var(--brand)]" />
             Blog Posts
           </h1>
           <p className="text-sm text-gray-400 mt-1">

@@ -192,7 +192,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             size="lg"
-            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+            className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
             onClick={() => router.push(`/companies/${watch("slug")}`)}
           >
             Go to Company Profile
@@ -226,7 +226,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
         <div className="flex items-center justify-between relative">
           <div className="absolute left-0 top-1/2 w-full h-0.5 bg-white/10 -z-10" />
           <div
-            className="absolute left-0 top-1/2 h-0.5 bg-[#C6A85E] -z-10 transition-all duration-300"
+            className="absolute left-0 top-1/2 h-0.5 bg-[var(--brand)] -z-10 transition-all duration-300"
             style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
           />
 
@@ -241,7 +241,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
                     isActive || isCompleted
-                      ? "border-[#C6A85E] bg-[#C6A85E]/10 text-[#C6A85E]"
+                      ? "border-[var(--brand)] bg-[var(--brand)]/10 text-[var(--brand)]"
                       : "border-white/10 bg-[#0B0F14] text-gray-500"
                   )}
                   // Make previously completed steps clickable
@@ -253,7 +253,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 <span
                   className={cn(
                     "text-xs mt-2 font-medium transition-colors duration-300",
-                    isActive ? "text-[#C6A85E]" : "text-gray-500"
+                    isActive ? "text-[var(--brand)]" : "text-gray-500"
                   )}
                 >
                   {step.title}
@@ -267,8 +267,8 @@ export function CompanyWizard({ userId }: { userId: string }) {
       <Card className="bg-white/5 border-white/10 text-white overflow-hidden backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-[#C6A85E]/10">
-              <CurrentStepIcon className="w-6 h-6 text-[#C6A85E]" />
+            <div className="p-3 rounded-lg bg-[var(--brand)]/10">
+              <CurrentStepIcon className="w-6 h-6 text-[var(--brand)]" />
             </div>
             <div>
               <CardTitle className="text-xl">{steps[currentStep].title}</CardTitle>
@@ -610,7 +610,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
             {currentStep < steps.length - 1 ? (
               <Button
                 onClick={nextStep}
-                className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
               >
                 Next Step
                 <ChevronRight className="w-4 h-4 ml-2" />
@@ -619,7 +619,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
               <Button
                 onClick={handleSubmit(onSubmit)}
                 disabled={isSubmitting}
-                className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold min-w-[120px]"
+                className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold min-w-[120px]"
               >
                 {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Finish"}
               </Button>

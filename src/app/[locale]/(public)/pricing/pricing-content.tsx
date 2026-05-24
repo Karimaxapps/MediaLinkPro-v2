@@ -20,7 +20,7 @@ import {
 } from "@/lib/stripe/plans";
 import { useTranslations } from "next-intl";
 
-const GOLD = "#C6A85E";
+const GOLD = "var(--brand)";
 
 const AD_PLACEMENTS = [
   { name: "Dashboard Hero", price: "$2,500/mo" },
@@ -50,7 +50,7 @@ export function PricingContent() {
       {/* Hero */}
       <section className="px-6 md:px-12 pt-20 pb-10 max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-          {t("title")} <span className="text-[#C6A85E]">{t("titleHighlight")}</span>
+          {t("title")} <span className="text-[var(--brand)]">{t("titleHighlight")}</span>
         </h1>
         <p className="mt-4 text-lg text-gray-400">{t("subtitle")}</p>
 
@@ -214,11 +214,11 @@ export function PricingContent() {
           {/* Ad placements callout */}
           <section className="px-6 md:px-12 pb-20 max-w-6xl mx-auto">
             <div
-              className="relative rounded-2xl border border-[#C6A85E]/40 bg-gradient-to-b from-[#C6A85E]/[0.06] to-transparent p-8 md:p-10"
+              className="relative rounded-2xl border border-[var(--brand)]/40 bg-gradient-to-b from-[var(--brand)]/[0.06] to-transparent p-8 md:p-10"
               style={{ boxShadow: `0 0 40px -10px ${GOLD}33` }}
             >
               <div className="flex items-start gap-3 mb-4">
-                <Sparkles className="size-6 text-[#C6A85E] shrink-0 mt-1" />
+                <Sparkles className="size-6 text-[var(--brand)] shrink-0 mt-1" />
                 <div>
                   <h3 className="text-2xl font-bold">{t("advertiseTitle")}</h3>
                   <p className="mt-2 text-gray-400 max-w-2xl">{t("advertiseDesc")}</p>
@@ -232,14 +232,14 @@ export function PricingContent() {
                     className="rounded-lg border border-white/10 bg-black/30 px-3 py-3 text-center"
                   >
                     <div className="text-sm font-medium text-white">{p.name}</div>
-                    <div className="text-xs text-[#C6A85E] mt-1">{p.price}</div>
+                    <div className="text-xs text-[var(--brand)] mt-1">{p.price}</div>
                   </div>
                 ))}
               </div>
 
               <div className="mt-8">
                 <Link href="/advertising">
-                  <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full px-6">
+                  <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold rounded-full px-6">
                     {t("viewAdOptions")}
                   </Button>
                 </Link>
@@ -255,7 +255,7 @@ export function PricingContent() {
         <Accordion type="single" collapsible className="w-full">
           {FAQS.map((faq, i) => (
             <AccordionItem key={i} value={`faq-${i}`} className="border-white/10 px-2">
-              <AccordionTrigger className="text-left text-base text-white hover:text-[#C6A85E] hover:no-underline">
+              <AccordionTrigger className="text-left text-base text-white hover:text-[var(--brand)] hover:no-underline">
                 {faq.q}
               </AccordionTrigger>
               <AccordionContent className="text-gray-400 leading-relaxed">{faq.a}</AccordionContent>
@@ -283,7 +283,7 @@ function TrackToggleButton({
       onClick={onClick}
       className={
         "px-5 md:px-6 py-2 rounded-full text-sm font-medium transition-all " +
-        (active ? "bg-[#C6A85E] text-black shadow" : "text-gray-400 hover:text-white")
+        (active ? "bg-[var(--brand)] text-black shadow" : "text-gray-400 hover:text-white")
       }
     >
       {children}
@@ -339,13 +339,13 @@ function PlanCard({
       className={
         "relative rounded-2xl p-7 transition-all flex flex-col " +
         (highlighted
-          ? "border-2 border-[#C6A85E] bg-gradient-to-b from-[#C6A85E]/[0.08] to-transparent"
+          ? "border-2 border-[var(--brand)] bg-gradient-to-b from-[var(--brand)]/[0.08] to-transparent"
           : "border border-white/10 bg-white/[0.03] hover:border-white/20")
       }
       style={highlighted ? { boxShadow: `0 0 50px -15px ${GOLD}66` } : undefined}
     >
       {plan.badge && highlighted && (
-        <div className="absolute -top-3 right-6 rounded-full bg-[#C6A85E] text-black text-xs font-bold px-3 py-1">
+        <div className="absolute -top-3 right-6 rounded-full bg-[var(--brand)] text-black text-xs font-bold px-3 py-1">
           {plan.badge}
         </div>
       )}
@@ -394,10 +394,10 @@ function PlanCard({
           className={
             "w-full rounded-full font-semibold " +
             (highlighted
-              ? "bg-[#C6A85E] hover:bg-[#B5964A] text-black"
+              ? "bg-[var(--brand)] hover:bg-[#B5964A] text-black"
               : isFree
                 ? "bg-white/10 hover:bg-white/15 text-white border border-white/15 bg-transparent"
-                : "bg-[#C6A85E] hover:bg-[#B5964A] text-black")
+                : "bg-[var(--brand)] hover:bg-[#B5964A] text-black")
           }
         >
           {ctaLabel}

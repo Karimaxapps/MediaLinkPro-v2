@@ -114,7 +114,7 @@ export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId:
             <ArrowLeft className="h-3.5 w-3.5" /> Back to Companies
           </Link>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2 mt-2">
-            <Building2 className="h-6 w-6 text-[#C6A85E]" />
+            <Building2 className="h-6 w-6 text-[var(--brand)]" />
             Edit Stub — {org.name}
           </h1>
           <p className="text-sm text-gray-400 mt-1">
@@ -323,7 +323,7 @@ export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId:
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-[#C6A85E] text-black hover:bg-[#B5964A] font-semibold"
+            className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
           >
             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}
           </Button>

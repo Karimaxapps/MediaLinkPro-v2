@@ -222,7 +222,7 @@ export function OnboardingWizard() {
           <Progress
             value={((currentStep + 1) / 3) * 100}
             className="h-2 bg-white/5"
-            indicatorClassName="bg-[#C6A85E]"
+            indicatorClassName="bg-[var(--brand)]"
           />
         </div>
       )}
@@ -231,9 +231,9 @@ export function OnboardingWizard() {
         <CardHeader>
           <CardTitle className="text-xl text-white flex items-center gap-2">
             {currentStep === 3 ? (
-              <CheckCircle2 className="h-6 w-6 text-[#C6A85E]" />
+              <CheckCircle2 className="h-6 w-6 text-[var(--brand)]" />
             ) : (
-              <div className="h-6 w-6 rounded-full bg-[#C6A85E]/20 text-[#C6A85E] flex items-center justify-center text-sm font-bold">
+              <div className="h-6 w-6 rounded-full bg-[var(--brand)]/20 text-[var(--brand)] flex items-center justify-center text-sm font-bold">
                 {currentStep + 1}
               </div>
             )}
@@ -284,8 +284,8 @@ export function OnboardingWizard() {
           {currentStep === 3 && (
             <div className="space-y-6 animate-in zoom-in duration-300">
               <div className="text-center py-4 space-y-3">
-                <div className="w-16 h-16 bg-[#C6A85E]/20 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="h-8 w-8 text-[#C6A85E]" />
+                <div className="w-16 h-16 bg-[var(--brand)]/20 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="h-8 w-8 text-[var(--brand)]" />
                 </div>
                 <h2 className="text-2xl font-bold text-white">{t("welcomeUser", { name: userName })}</h2>
                 <p className="text-gray-400 max-w-md mx-auto text-sm">
@@ -295,8 +295,8 @@ export function OnboardingWizard() {
 
               <div className="border border-white/10 rounded-xl p-5 bg-white/[0.03] space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#C6A85E]/15 flex items-center justify-center shrink-0">
-                    <Building2 className="h-4 w-4 text-[#C6A85E]" />
+                  <div className="w-9 h-9 rounded-lg bg-[var(--brand)]/15 flex items-center justify-center shrink-0">
+                    <Building2 className="h-4 w-4 text-[var(--brand)]" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{t("companyPromptHeading")}</p>
@@ -306,7 +306,7 @@ export function OnboardingWizard() {
                 <div className="flex flex-col sm:flex-row gap-2 pt-1">
                   <Button
                     onClick={() => router.push("/companies/new")}
-                    className="bg-[#C6A85E] text-black hover:bg-[#b5964a] flex-1"
+                    className="bg-[var(--brand)] text-black hover:bg-[#b5964a] flex-1"
                   >
                     <Building2 className="mr-2 h-4 w-4" />
                     {t("createCompanyButton")}
@@ -341,7 +341,7 @@ export function OnboardingWizard() {
               <Button
                 onClick={handleComplete}
                 disabled={isSubmitting}
-                className="bg-[#C6A85E] text-black hover:bg-[#b5964a]"
+                className="bg-[var(--brand)] text-black hover:bg-[#b5964a]"
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t("completeSetup")}

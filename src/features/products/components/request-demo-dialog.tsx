@@ -118,7 +118,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                 toast.success("Request Sent", {
                     description: result.message,
                     style: {
-                        background: '#C6A85E',
+                        background: 'var(--brand)',
                         color: 'black',
                         border: 'none',
                     },
@@ -156,7 +156,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {trigger || (
-                    <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
+                    <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold">
                         Request Demo or Quote
                     </Button>
                 )}
@@ -178,7 +178,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                     <FormLabel className="text-gray-300">Request type <span className="text-red-500">*</span></FormLabel>
                                     <Select value={field.value} onValueChange={(v) => handleTypeChange(v as RequestType)}>
                                         <FormControl>
-                                            <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]">
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-[var(--brand)]">
                                                 <SelectValue />
                                             </SelectTrigger>
                                         </FormControl>
@@ -198,7 +198,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                 <FormItem>
                                     <FormLabel className="text-gray-300">Name <span className="text-red-500">*</span></FormLabel>
                                     <FormControl>
-                                        <Input placeholder="John Doe" {...field} className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]" />
+                                        <Input placeholder="John Doe" {...field} className="bg-white/5 border-white/10 text-white focus:border-[var(--brand)]" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -212,7 +212,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                     <FormItem>
                                         <FormLabel className="text-gray-300">Email <span className="text-red-500">*</span></FormLabel>
                                         <FormControl>
-                                            <Input type="email" placeholder="john@example.com" {...field} className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]" />
+                                            <Input type="email" placeholder="john@example.com" {...field} className="bg-white/5 border-white/10 text-white focus:border-[var(--brand)]" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -225,7 +225,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                     <FormItem>
                                         <FormLabel className="text-gray-300">Phone</FormLabel>
                                         <FormControl>
-                                            <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]" />
+                                            <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className="bg-white/5 border-white/10 text-white focus:border-[var(--brand)]" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -239,7 +239,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                 <FormItem>
                                     <FormLabel className="text-gray-300">Company</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Acme Inc." {...field} className="bg-white/5 border-white/10 text-white focus:border-[#C6A85E]" />
+                                        <Input placeholder="Acme Inc." {...field} className="bg-white/5 border-white/10 text-white focus:border-[var(--brand)]" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -254,7 +254,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                                     <FormControl>
                                         <Textarea
                                             placeholder="Tell us about your needs..."
-                                            className="resize-none bg-white/5 border-white/10 text-white focus:border-[#C6A85E] min-h-[100px]"
+                                            className="resize-none bg-white/5 border-white/10 text-white focus:border-[var(--brand)] min-h-[100px]"
                                             {...field}
                                         />
                                     </FormControl>
@@ -266,7 +266,7 @@ export function RequestDemoDialog({ productId, productName, organizationId, defa
                             <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="text-gray-400 hover:text-white hover:bg-white/10">
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isSubmitting} className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
+                            <Button type="submit" disabled={isSubmitting} className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold">
                                 {isSubmitting ? "Sending..." : "Send Request"}
                             </Button>
                         </DialogFooter>

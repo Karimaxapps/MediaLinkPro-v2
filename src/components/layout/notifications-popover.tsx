@@ -175,7 +175,7 @@ export function NotificationsPopover() {
                 <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 relative">
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-[#C6A85E] rounded-full border border-[#1F1F1F]" />
+                        <span className="absolute top-2 right-2 w-2 h-2 bg-[var(--brand)] rounded-full border border-[#1F1F1F]" />
                     )}
                 </Button>
             </PopoverTrigger>
@@ -186,7 +186,7 @@ export function NotificationsPopover() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-auto px-2 text-xs text-[#C6A85E] hover:text-[#B5964A] hover:bg-transparent"
+                            className="h-auto px-2 text-xs text-[var(--brand)] hover:text-[#B5964A] hover:bg-transparent"
                             onClick={handleMarkAllAsRead}
                         >
                             {t("markAllRead")}
@@ -208,7 +208,7 @@ export function NotificationsPopover() {
                                     className={cn(
                                         "flex flex-col gap-1 p-4 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors cursor-pointer",
                                         !notification.is_read && notification.type === 'demo_request'
-                                            ? "bg-[#C6A85E] text-black"
+                                            ? "bg-[var(--brand)] text-black"
                                             : !notification.is_read
                                                 ? "bg-white/[0.02]"
                                                 : ""
@@ -225,18 +225,18 @@ export function NotificationsPopover() {
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="flex items-center gap-2">
                                             {notification.type === 'admin_broadcast' && (
-                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
-                                                    <Bell className="h-3 w-3 text-[#C6A85E]" />
+                                                <div className="p-1.5 rounded-full bg-[var(--brand)]/10 shrink-0">
+                                                    <Bell className="h-3 w-3 text-[var(--brand)]" />
                                                 </div>
                                             )}
                                             {notification.type === 'ownership_claim' && (
-                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
-                                                    <GitMerge className="h-3 w-3 text-[#C6A85E]" />
+                                                <div className="p-1.5 rounded-full bg-[var(--brand)]/10 shrink-0">
+                                                    <GitMerge className="h-3 w-3 text-[var(--brand)]" />
                                                 </div>
                                             )}
                                             {notification.type === 'support_ticket' && (
-                                                <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
-                                                    <LifeBuoy className="h-3 w-3 text-[#C6A85E]" />
+                                                <div className="p-1.5 rounded-full bg-[var(--brand)]/10 shrink-0">
+                                                    <LifeBuoy className="h-3 w-3 text-[var(--brand)]" />
                                                 </div>
                                             )}
                                             {(notification.type === 'demo_request' || notification.type === 'connection_request') && (
@@ -244,17 +244,17 @@ export function NotificationsPopover() {
                                                     "p-1.5 rounded-full shrink-0",
                                                     !notification.is_read && notification.type === 'demo_request'
                                                         ? "bg-black/10"
-                                                        : "bg-[#C6A85E]/10"
+                                                        : "bg-[var(--brand)]/10"
                                                 )}>
                                                     {notification.type === 'demo_request' ? (
                                                         <Mail className={cn(
                                                             "h-3 w-3",
                                                             !notification.is_read && notification.type === 'demo_request'
                                                                 ? "text-black"
-                                                                : "text-[#C6A85E]"
+                                                                : "text-[var(--brand)]"
                                                         )} />
                                                     ) : (
-                                                        <UserPlus className="h-3 w-3 text-[#C6A85E]" />
+                                                        <UserPlus className="h-3 w-3 text-[var(--brand)]" />
                                                     )}
                                                 </div>
                                             )}

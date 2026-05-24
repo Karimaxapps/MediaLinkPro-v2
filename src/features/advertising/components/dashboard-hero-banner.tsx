@@ -48,10 +48,10 @@ export async function DashboardHeroBanner() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
             ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-[#C6A85E]/20 via-[#135bec]/20 to-[#8b5cf6]/20" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand)]/20 via-[var(--brand-secondary)]/20 to-[#8b5cf6]/20" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-            <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider text-[#C6A85E] bg-black/40 backdrop-blur px-2 py-0.5 rounded">
+            <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider text-[var(--brand)] bg-black/40 backdrop-blur px-2 py-0.5 rounded">
                 Sponsored
             </div>
             <div className="absolute bottom-6 left-6 right-6">
@@ -61,7 +61,7 @@ export async function DashboardHeroBanner() {
                 {ad.body && (
                     <p className="text-white/80 text-sm mb-3 line-clamp-2">{ad.body}</p>
                 )}
-                <span className="inline-block bg-[#C6A85E] text-black text-xs font-semibold px-3 py-1.5 rounded-full">
+                <span className="inline-block bg-[var(--brand)] text-black text-xs font-semibold px-3 py-1.5 rounded-full">
                     {ad.cta_label ?? "Learn more"} →
                 </span>
             </div>

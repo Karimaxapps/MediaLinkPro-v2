@@ -41,6 +41,6 @@ export const TICKET_STATUS_COLORS: Record<TicketStatus, string> = {
 
 export const TICKET_TYPE_COLORS: Record<TicketType, string> = {
     feedback: "bg-purple-500/10 text-purple-400",
-    suggestion: "bg-[#C6A85E]/10 text-[#C6A85E]",
+    suggestion: "bg-[var(--brand)]/10 text-[var(--brand)]",
     support: "bg-red-500/10 text-red-400",
 };

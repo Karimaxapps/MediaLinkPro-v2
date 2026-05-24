@@ -18,10 +18,10 @@ export async function DashboardJobApplicationsWidget({ limit = 5 }: { limit?: nu
     <div className="rounded-xl border border-white/10 bg-white/5 p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Briefcase className="h-4 w-4 text-[#C6A85E]" />
+          <Briefcase className="h-4 w-4 text-[var(--brand)]" />
           <h3 className="text-sm font-semibold text-white">Recent applications</h3>
         </div>
-        <Link href="/jobs/manage" className="text-xs text-[#C6A85E] hover:underline">
+        <Link href="/jobs/manage" className="text-xs text-[var(--brand)] hover:underline">
           Manage
         </Link>
       </div>

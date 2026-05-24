@@ -17,7 +17,7 @@ export function AiToolCard({ tool }: AiToolCardProps) {
 
   return (
     <Link href={`/ai-tools/${tool.slug}`} className="group block h-full">
-      <Card className="relative flex h-full w-full flex-col gap-0 overflow-hidden border-white/10 bg-white/5 p-0 transition-all duration-300 hover:border-[#C6A85E]/50">
+      <Card className="relative flex h-full w-full flex-col gap-0 overflow-hidden border-white/10 bg-white/5 p-0 transition-all duration-300 hover:border-[var(--brand)]/50">
         <CardHeader className="p-0">
           <div className="relative h-32 w-full overflow-hidden bg-gray-900 transition-opacity group-hover:opacity-90">
             {image ? (
@@ -27,8 +27,8 @@ export function AiToolCard({ tool }: AiToolCardProps) {
                 className="h-full w-full transform object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#C6A85E]/10 to-black">
-                <Sparkles className="h-10 w-10 text-[#C6A85E]/40" />
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--brand)]/10 to-black">
+                <Sparkles className="h-10 w-10 text-[var(--brand)]/40" />
               </div>
             )}
 
@@ -52,13 +52,13 @@ export function AiToolCard({ tool }: AiToolCardProps) {
         <CardContent className="flex flex-1 flex-col justify-between space-y-2 p-3">
           <div className="space-y-1">
             <div className="flex items-start justify-between gap-1">
-              <h3 className="line-clamp-1 text-sm font-bold text-white transition-colors group-hover:text-[#C6A85E]">
+              <h3 className="line-clamp-1 text-sm font-bold text-white transition-colors group-hover:text-[var(--brand)]">
                 {tool.name}
               </h3>
               {tool.pricing_model && (
                 <Badge
                   variant="outline"
-                  className="shrink-0 border-[#C6A85E]/30 bg-transparent text-[#C6A85E] text-[10px] px-1.5 py-0"
+                  className="shrink-0 border-[var(--brand)]/30 bg-transparent text-[var(--brand)] text-[10px] px-1.5 py-0"
                 >
                   {PRICING_MODEL_LABELS[tool.pricing_model] ?? tool.pricing_model}
                 </Badge>

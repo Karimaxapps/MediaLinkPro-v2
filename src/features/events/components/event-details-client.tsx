@@ -91,7 +91,7 @@ export function EventDetailsClient({
   const endDate = new Date(event.end_date);
   const isSameDay = startDate.toDateString() === endDate.toDateString();
   const isPast = endDate < new Date();
-  const color = EVENT_TYPE_COLORS[event.event_type as EventType] || "#C6A85E";
+  const color = EVENT_TYPE_COLORS[event.event_type as EventType] || "var(--brand)";
   const isFull = event.max_attendees != null && event.registration_count >= event.max_attendees;
 
   const handleRegister = () => {
@@ -160,7 +160,7 @@ export function EventDetailsClient({
               {EVENT_TYPE_LABELS[event.event_type as EventType]}
             </span>
             {event.is_online && (
-              <span className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[#135bec] text-white rounded-md">
+              <span className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[var(--brand-secondary)] text-white rounded-md">
                 <Globe className="h-3 w-3" />
                 Online
               </span>
@@ -188,7 +188,7 @@ export function EventDetailsClient({
                   <Building2 className="h-3 w-3 text-gray-400" />
                 )}
               </div>
-              <span className="text-sm text-gray-300 group-hover:text-[#C6A85E] transition-colors">
+              <span className="text-sm text-gray-300 group-hover:text-[var(--brand)] transition-colors">
                 {event.organizations.name}
               </span>
             </Link>
@@ -203,7 +203,7 @@ export function EventDetailsClient({
             <section className="rounded-xl border border-white/10 bg-white/5 p-6">
               <h2 className="text-lg font-semibold text-white mb-3">About this event</h2>
               <div
-                className="text-sm text-gray-300 leading-relaxed [&_p]:my-3 [&_strong]:text-white [&_strong]:font-semibold [&_em]:italic [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1 [&_li]:marker:text-[#C6A85E] [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3 [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
+                className="text-sm text-gray-300 leading-relaxed [&_p]:my-3 [&_strong]:text-white [&_strong]:font-semibold [&_em]:italic [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1 [&_li]:marker:text-[var(--brand)] [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3 [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description ?? "") }}
               />
             </section>
@@ -216,7 +216,7 @@ export function EventDetailsClient({
           {event.organizations && (
             <Link
               href={`/companies/${event.organizations.slug}`}
-              className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-center gap-4 group hover:border-[#C6A85E]/40 transition-colors block"
+              className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-center gap-4 group hover:border-[var(--brand)]/40 transition-colors block"
             >
               <div className="h-14 w-14 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex-shrink-0 flex items-center justify-center">
                 {event.organizations.logo_url ? (
@@ -235,7 +235,7 @@ export function EventDetailsClient({
                 <div className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">
                   Organized by
                 </div>
-                <div className="text-white font-semibold truncate group-hover:text-[#C6A85E] transition-colors">
+                <div className="text-white font-semibold truncate group-hover:text-[var(--brand)] transition-colors">
                   {event.organizations.name}
                 </div>
                 <div className="text-xs text-gray-500 mt-0.5">View company profile →</div>
@@ -245,7 +245,7 @@ export function EventDetailsClient({
 
           <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-4">
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-[#C6A85E] flex-shrink-0 mt-0.5" />
+              <Calendar className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-sm text-gray-400">Date</div>
                 <div className="text-white font-medium">
@@ -256,7 +256,7 @@ export function EventDetailsClient({
             </div>
 
             <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-[#C6A85E] flex-shrink-0 mt-0.5" />
+              <Clock className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-sm text-gray-400">Time</div>
                 <div className="text-white font-medium">
@@ -266,7 +266,7 @@ export function EventDetailsClient({
             </div>
 
             <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-[#C6A85E] flex-shrink-0 mt-0.5" />
+              <MapPin className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
                 <div className="text-sm text-gray-400">Location</div>
                 <div className="text-white font-medium">
@@ -277,7 +277,7 @@ export function EventDetailsClient({
                     href={event.online_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-1 text-xs text-[#135bec] hover:underline"
+                    className="inline-flex items-center gap-1 mt-1 text-xs text-[var(--brand-secondary)] hover:underline"
                   >
                     Join link <ExternalLink className="h-3 w-3" />
                   </a>
@@ -286,7 +286,7 @@ export function EventDetailsClient({
             </div>
 
             <div className="flex items-start gap-3">
-              <Users className="h-5 w-5 text-[#C6A85E] flex-shrink-0 mt-0.5" />
+              <Users className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm text-gray-400">Interested</div>
                 <div className="text-white font-medium">
@@ -301,12 +301,12 @@ export function EventDetailsClient({
                           href={i.profiles?.username ? `/profiles/${i.profiles.username}` : "#"}
                           title={i.profiles?.full_name ?? "Attendee"}
                         >
-                          <Avatar className="h-7 w-7 border-2 border-[#0B0F14] hover:ring-2 hover:ring-[#C6A85E] transition">
+                          <Avatar className="h-7 w-7 border-2 border-[#0B0F14] hover:ring-2 hover:ring-[var(--brand)] transition">
                             <AvatarImage
                               src={i.profiles?.avatar_url ?? undefined}
                               alt={i.profiles?.full_name ?? "Attendee"}
                             />
-                            <AvatarFallback className="bg-[#135bec]/20 text-[#135bec] text-[10px]">
+                            <AvatarFallback className="bg-[var(--brand-secondary)]/20 text-[var(--brand-secondary)] text-[10px]">
                               {(i.profiles?.full_name ?? "?").substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
@@ -344,7 +344,7 @@ export function EventDetailsClient({
                     disabled={isInterestPending}
                     className={
                       myInterest?.interest === "maybe"
-                        ? "w-full bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                        ? "w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                         : "w-full bg-transparent border border-white/10 text-white hover:bg-white/10"
                     }
                   >
@@ -378,7 +378,7 @@ export function EventDetailsClient({
                   >
                     <Button
                       type="button"
-                      className="w-full bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                      className="w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                       <ExternalLink className="mr-1.5 h-4 w-4" />
                       Register Now
@@ -388,7 +388,7 @@ export function EventDetailsClient({
                   <Button
                     onClick={handleRegister}
                     disabled={isPending}
-                    className="w-full bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                    className="w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                   >
                     {isFull ? "Join Waitlist" : "Register Now"}
                   </Button>

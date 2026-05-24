@@ -15,7 +15,7 @@ export default async function AdminProductsPage() {
                     <p className="text-sm text-gray-400 mt-1">{products.length} most recent</p>
                 </div>
                 <Link href="/admin/products/new">
-                    <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold gap-2">
+                    <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold gap-2">
                         <Plus className="h-4 w-4" />
                         Add Platform Product
                     </Button>

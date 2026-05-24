@@ -22,7 +22,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="website"
                     placeholder="https://example.com"
                     {...register('website')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.website && (
                     <p className="text-sm text-red-500">{errors.website.message as string}</p>
@@ -34,7 +34,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="linkedin_url"
                     placeholder="https://linkedin.com/in/..."
                     {...register('linkedin_url')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.linkedin_url && (
                     <p className="text-sm text-red-500">{errors.linkedin_url.message as string}</p>
@@ -46,7 +46,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="x_url"
                     placeholder="https://x.com/..."
                     {...register('x_url')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.x_url && (
                     <p className="text-sm text-red-500">{errors.x_url.message as string}</p>
@@ -58,7 +58,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="instagram_url"
                     placeholder="https://instagram.com/..."
                     {...register('instagram_url')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.instagram_url && (
                     <p className="text-sm text-red-500">{errors.instagram_url.message as string}</p>
@@ -70,7 +70,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="facebook_url"
                     placeholder="https://facebook.com/..."
                     {...register('facebook_url')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.facebook_url && (
                     <p className="text-sm text-red-500">{errors.facebook_url.message as string}</p>
@@ -82,7 +82,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                     id="tiktok_url"
                     placeholder="https://tiktok.com/@..."
                     {...register('tiktok_url')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.tiktok_url && (
                     <p className="text-sm text-red-500">{errors.tiktok_url.message as string}</p>
@@ -101,7 +101,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                                 id="contact_email_public_enabled"
                                 checked={watch('contact_email_public_enabled')}
                                 onCheckedChange={(checked) => setValue('contact_email_public_enabled', checked, { shouldDirty: true })}
-                                className="data-[state=checked]:bg-[#C6A85E] data-[state=unchecked]:bg-slate-700"
+                                className="data-[state=checked]:bg-[var(--brand)] data-[state=unchecked]:bg-slate-700"
                             />
                             <Label htmlFor="contact_email_public_enabled" className="text-xs text-gray-400">
                                 {watch('contact_email_public_enabled') ? 'Public' : 'Private'}
@@ -112,7 +112,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                         id="contact_email_public"
                         placeholder="contact@example.com"
                         {...register('contact_email_public')}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     />
                     <p className="text-xs text-gray-500">Public email for business inquiries.</p>
                     {errors.contact_email_public && (
@@ -128,7 +128,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                                 id="contact_phone_public_enabled"
                                 checked={watch('contact_phone_public_enabled')}
                                 onCheckedChange={(checked) => setValue('contact_phone_public_enabled', checked, { shouldDirty: true })}
-                                className="data-[state=checked]:bg-[#C6A85E] data-[state=unchecked]:bg-slate-700"
+                                className="data-[state=checked]:bg-[var(--brand)] data-[state=unchecked]:bg-slate-700"
                             />
                             <Label htmlFor="contact_phone_public_enabled" className="text-xs text-gray-400">
                                 {watch('contact_phone_public_enabled') ? 'Public' : 'Private'}
@@ -139,7 +139,7 @@ export function ContactInfoFields({ register, errors, watch, setValue }: Contact
                         id="contact_phone_public"
                         placeholder="+1 (555) 000-0000"
                         {...register('contact_phone_public')}
-                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     />
                     <p className="text-xs text-gray-500">Public phone number for business inquiries.</p>
                     {errors.contact_phone_public && (

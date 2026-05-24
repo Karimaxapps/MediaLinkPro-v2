@@ -44,8 +44,8 @@ export function LanguagesClient({ languages: initial, userCounts }: Props) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-[#C6A85E]/10 border border-[#C6A85E]/20 flex items-center justify-center">
-          <Globe className="h-5 w-5 text-[#C6A85E]" />
+        <div className="h-10 w-10 rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/20 flex items-center justify-center">
+          <Globe className="h-5 w-5 text-[var(--brand)]" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-white">Language Management</h1>
@@ -100,7 +100,7 @@ export function LanguagesClient({ languages: initial, userCounts }: Props) {
                     <span className="text-sm font-semibold text-white">{lang.name}</span>
                     <span className="text-xs text-gray-500">{lang.native_name}</span>
                     {lang.is_default && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#C6A85E]/10 border border-[#C6A85E]/20 px-2 py-0.5 text-[10px] font-medium text-[#C6A85E]">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20 px-2 py-0.5 text-[10px] font-medium text-[var(--brand)]">
                         <Lock className="h-2.5 w-2.5" />
                         Default
                       </span>
@@ -119,7 +119,7 @@ export function LanguagesClient({ languages: initial, userCounts }: Props) {
                   </div>
                   <div className="w-20 h-1.5 rounded-full bg-white/10 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-[#C6A85E]/60 transition-all duration-500"
+                      className="h-full rounded-full bg-[var(--brand)]/60 transition-all duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -143,10 +143,10 @@ export function LanguagesClient({ languages: initial, userCounts }: Props) {
                 <div className="flex items-center">
                   {lang.is_default ? (
                     <div
-                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-[#C6A85E]/40 cursor-not-allowed opacity-60"
+                      className="relative inline-flex h-6 w-11 items-center rounded-full bg-[var(--brand)]/40 cursor-not-allowed opacity-60"
                       title="English is always active as the default language"
                     >
-                      <span className="translate-x-6 inline-block h-4 w-4 rounded-full bg-[#C6A85E] shadow transition-transform" />
+                      <span className="translate-x-6 inline-block h-4 w-4 rounded-full bg-[var(--brand)] shadow transition-transform" />
                     </div>
                   ) : (
                     <button
@@ -154,8 +154,8 @@ export function LanguagesClient({ languages: initial, userCounts }: Props) {
                       aria-checked={lang.is_active}
                       disabled={pending}
                       onClick={() => handleToggle(lang.code, lang.is_active)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6A85E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0F14] disabled:opacity-50 disabled:cursor-not-allowed ${
-                        lang.is_active ? "bg-[#C6A85E]" : "bg-white/20"
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0F14] disabled:opacity-50 disabled:cursor-not-allowed ${
+                        lang.is_active ? "bg-[var(--brand)]" : "bg-white/20"
                       }`}
                     >
                       <span

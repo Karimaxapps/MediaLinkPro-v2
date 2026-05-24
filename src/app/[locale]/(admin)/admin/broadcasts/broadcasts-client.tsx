@@ -141,7 +141,7 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                 className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-6"
             >
                 <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <Bell className="h-4 w-4 text-[#C6A85E]" />
+                    <Bell className="h-4 w-4 text-[var(--brand)]" />
                     Compose broadcast
                 </h2>
 
@@ -212,7 +212,7 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                                             size="sm"
                                             onClick={() => fileInputRef.current?.click()}
                                             disabled={isUploading}
-                                            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black text-xs"
+                                            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black text-xs"
                                         >
                                             {isUploading ? (
                                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -241,18 +241,18 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploading}
-                                    className="w-full h-32 rounded-lg border-2 border-dashed border-white/15 bg-black/20 hover:bg-black/30 hover:border-[#C6A85E]/50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 disabled:opacity-50"
+                                    className="w-full h-32 rounded-lg border-2 border-dashed border-white/15 bg-black/20 hover:bg-black/30 hover:border-[var(--brand)]/50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 disabled:opacity-50"
                                 >
                                     {isUploading ? (
                                         <>
-                                            <Loader2 className="h-6 w-6 animate-spin text-[#C6A85E]" />
+                                            <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
                                             <span className="text-xs">Uploading…</span>
                                         </>
                                     ) : (
                                         <>
                                             <ImageIcon className="h-6 w-6 text-gray-500" />
                                             <span className="text-xs">
-                                                <span className="text-[#C6A85E] font-medium">
+                                                <span className="text-[var(--brand)] font-medium">
                                                     Click to upload
                                                 </span>{" "}
                                                 or drag an image
@@ -289,7 +289,7 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                     <Button
                         type="submit"
                         disabled={isPending}
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                         {isPending ? (
                             <>
@@ -347,7 +347,7 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                                         href={b.link_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs text-[#C6A85E] hover:underline inline-flex items-center gap-1 mt-1 break-all"
+                                        className="text-xs text-[var(--brand)] hover:underline inline-flex items-center gap-1 mt-1 break-all"
                                     >
                                         {b.link_url}
                                         <ExternalLink className="h-3 w-3 shrink-0" />
@@ -358,7 +358,7 @@ export function AdminBroadcastsClient({ broadcasts }: { broadcasts: Broadcast[] 
                                         <Users className="h-3 w-3 text-gray-400" />
                                         {b.recipient_count.toLocaleString()} in-app
                                     </span>
-                                    <span className="inline-flex items-center gap-1 text-xs text-[#C6A85E] bg-[#C6A85E]/10 border border-[#C6A85E]/20 rounded-md px-2 py-0.5">
+                                    <span className="inline-flex items-center gap-1 text-xs text-[var(--brand)] bg-[var(--brand)]/10 border border-[var(--brand)]/20 rounded-md px-2 py-0.5">
                                         <Smartphone className="h-3 w-3" />
                                         {b.push_sent_count.toLocaleString()} push
                                     </span>
@@ -410,8 +410,8 @@ function NotificationPreview({
                 )}
                 <div className="p-3">
                     <div className="flex items-start gap-2">
-                        <div className="p-1.5 rounded-full bg-[#C6A85E]/10 shrink-0">
-                            <Bell className="h-3 w-3 text-[#C6A85E]" />
+                        <div className="p-1.5 rounded-full bg-[var(--brand)]/10 shrink-0">
+                            <Bell className="h-3 w-3 text-[var(--brand)]" />
                         </div>
                         <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium text-white truncate">
@@ -421,7 +421,7 @@ function NotificationPreview({
                                 {displayMessage}
                             </p>
                             {linkUrl && (
-                                <p className="text-[11px] text-[#C6A85E] mt-1 truncate">
+                                <p className="text-[11px] text-[var(--brand)] mt-1 truncate">
                                     Tap to open →
                                 </p>
                             )}

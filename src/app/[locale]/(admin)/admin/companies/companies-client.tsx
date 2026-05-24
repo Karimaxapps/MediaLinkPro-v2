@@ -30,7 +30,7 @@ const PLAN_CONFIG: Record<string, { label: string; className: string }> = {
     label: "Pro",
     className: "text-purple-400 bg-purple-400/10 border-purple-400/20",
   },
-  org_growth: { label: "Growth", className: "text-[#C6A85E] bg-[#C6A85E]/10 border-[#C6A85E]/20" },
+  org_growth: { label: "Growth", className: "text-[var(--brand)] bg-[var(--brand)]/10 border-[var(--brand)]/20" },
   org_enterprise: {
     label: "Enterprise",
     className: "text-green-400 bg-green-400/10 border-green-400/20",
@@ -131,7 +131,7 @@ export function AdminCompaniesClient({
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Building2 className="h-6 w-6 text-[#C6A85E]" />
+              <Building2 className="h-6 w-6 text-[var(--brand)]" />
               Companies
             </h1>
             <p className="text-sm text-gray-400 mt-1">
@@ -141,7 +141,7 @@ export function AdminCompaniesClient({
           <div className="flex gap-2">
             <Link
               href="/admin/companies/stubs/new"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#C6A85E] px-3 py-2 text-sm font-semibold text-black hover:bg-[#B5964A] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--brand)] px-3 py-2 text-sm font-semibold text-black hover:bg-[#B5964A] transition-colors"
             >
               <Plus className="h-4 w-4" /> New stub
             </Link>
@@ -167,7 +167,7 @@ export function AdminCompaniesClient({
               onClick={() => setPlanFilter(s.key)}
               className={`rounded-xl border p-4 text-left transition-colors ${
                 planFilter === s.key
-                  ? "border-[#C6A85E]/50 bg-[#C6A85E]/10"
+                  ? "border-[var(--brand)]/50 bg-[var(--brand)]/10"
                   : "border-white/10 bg-white/5 hover:bg-white/[0.07]"
               }`}
             >
@@ -189,8 +189,8 @@ export function AdminCompaniesClient({
               <p className="text-xl font-bold text-white">{ownedCompanies}</p>
               <p className="text-[11px] text-gray-400 mt-0.5">User-created</p>
             </div>
-            <div className="rounded-lg bg-[#C6A85E]/10 border border-[#C6A85E]/30 px-3 py-2">
-              <p className="text-xl font-bold text-[#C6A85E]">{claimedStubs}</p>
+            <div className="rounded-lg bg-[var(--brand)]/10 border border-[var(--brand)]/30 px-3 py-2">
+              <p className="text-xl font-bold text-[var(--brand)]">{claimedStubs}</p>
               <p className="text-[11px] text-gray-400 mt-0.5">Claimed stubs</p>
             </div>
             <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
@@ -213,7 +213,7 @@ export function AdminCompaniesClient({
               </div>
               <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#C6A85E] transition-all duration-500"
+                  className="h-full rounded-full bg-[var(--brand)] transition-all duration-500"
                   style={{ width: `${claimRate}%` }}
                 />
               </div>
@@ -230,13 +230,13 @@ export function AdminCompaniesClient({
               placeholder="Search by name, slug or owner..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#C6A85E]/50"
+              className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand)]/50"
             />
           </div>
           <select
             value={planFilter}
             onChange={(e) => setPlanFilter(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-[#C6A85E]/50"
+            className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-[var(--brand)]/50"
           >
             <option value="all">All Plans</option>
             <option value="paid">Paid (any)</option>
@@ -310,7 +310,7 @@ export function AdminCompaniesClient({
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9 rounded-lg shrink-0">
                               <AvatarImage src={c.logo_url ?? undefined} />
-                              <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E] text-xs font-semibold rounded-lg">
+                              <AvatarFallback className="bg-[var(--brand)]/20 text-[var(--brand)] text-xs font-semibold rounded-lg">
                                 {c.name[0]?.toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
@@ -320,7 +320,7 @@ export function AdminCompaniesClient({
                                   {c.name}
                                 </span>
                                 {c.is_stub && (
-                                  <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#C6A85E]/15 text-[#C6A85E] border border-[#C6A85E]/30">
+                                  <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--brand)]/15 text-[var(--brand)] border border-[var(--brand)]/30">
                                     Stub
                                   </span>
                                 )}
@@ -400,12 +400,12 @@ export function AdminCompaniesClient({
                             title={c.is_featured ? "Remove from featured" : "Add to featured"}
                             className={`p-1.5 rounded-lg transition-colors ${
                               c.is_featured
-                                ? "text-[#C6A85E] hover:bg-[#C6A85E]/10"
-                                : "text-gray-600 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                                ? "text-[var(--brand)] hover:bg-[var(--brand)]/10"
+                                : "text-gray-600 hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
                             } disabled:opacity-40`}
                           >
                             <Star
-                              className={`h-4 w-4 ${c.is_featured ? "fill-[#C6A85E]" : ""}`}
+                              className={`h-4 w-4 ${c.is_featured ? "fill-[var(--brand)]" : ""}`}
                             />
                           </button>
                         </td>
@@ -424,7 +424,7 @@ export function AdminCompaniesClient({
                             {c.is_stub && (
                               <Link href={`/admin/companies/stubs/edit/${c.slug}`}>
                                 <button
-                                  className="p-1.5 rounded-lg text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+                                  className="p-1.5 rounded-lg text-[var(--brand)] hover:bg-[var(--brand)]/10 transition-colors"
                                   title="Edit stub profile"
                                 >
                                   <Pencil className="h-4 w-4" />
@@ -433,7 +433,7 @@ export function AdminCompaniesClient({
                             )}
                             <button
                               onClick={() => openSheet(c)}
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-[var(--brand)] hover:bg-[var(--brand)]/10 transition-colors"
                               title="Manage company"
                             >
                               <Settings className="h-4 w-4" />

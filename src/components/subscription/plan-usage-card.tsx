@@ -33,12 +33,12 @@ export function PlanUsageCard({ usage, plan, orgSlug }: Props) {
         <div>
           <CardTitle className="text-base font-semibold">Plan usage</CardTitle>
           <p className="text-xs text-gray-400 mt-1">
-            On the <span className="text-[#C6A85E] font-medium">{planName}</span> plan
+            On the <span className="text-[var(--brand)] font-medium">{planName}</span> plan
           </p>
         </div>
         <Link
           href={`/companies/${orgSlug}/billing`}
-          className="inline-flex items-center gap-1 text-xs text-[#C6A85E] hover:underline"
+          className="inline-flex items-center gap-1 text-xs text-[var(--brand)] hover:underline"
         >
           Manage plan
           <ArrowUpRight className="size-3" />

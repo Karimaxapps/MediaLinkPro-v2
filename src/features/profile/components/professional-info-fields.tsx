@@ -100,7 +100,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                     id="job_title"
                     {...register('job_title')}
                     placeholder="Senior Product Designer"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {errors.job_title && (
                     <p className="text-sm text-red-500">{errors.job_title.message as string}</p>
@@ -113,7 +113,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                     onValueChange={(value) => setValue('job_function', value, { shouldDirty: true })}
                     defaultValue={watch('job_function') || ''}
                 >
-                    <SelectTrigger className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:ring-[#C6A85E] focus:border-[#C6A85E]">
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:ring-[var(--brand)] focus:border-[var(--brand)]">
                         <SelectValue placeholder="Select a job function" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1F24] border-white/10 text-white">
@@ -139,7 +139,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                         setValue('company', e.target.value, { shouldDirty: true });
                         setCompanyQuery(e.target.value);
                     }}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 {showCompanyList && companyQuery.length >= 2 && (
                     <div className="absolute top-[75px] w-full bg-[#1A1F24] border border-white/10 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
@@ -161,7 +161,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                             </ul>
                         ) : (
                             <div className="p-3 text-sm text-gray-400">
-                                No companies found. <button type="button" className="text-[#C6A85E] hover:underline" onClick={() => setShowCompanyList(false)}>Use current input</button>
+                                No companies found. <button type="button" className="text-[var(--brand)] hover:underline" onClick={() => setShowCompanyList(false)}>Use current input</button>
                             </div>
                         )}
                     </div>
@@ -185,7 +185,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                     defaultValue={Array.isArray(watch('skills')) ? watch('skills').join(', ') : ''}
                     onChange={handleSkillsChange}
                     placeholder="React, Next.js, Video Editing (comma separated)"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                 />
                 <p className="text-xs text-gray-500">Separate skills with commas.</p>
             </div>
@@ -194,7 +194,7 @@ export function ProfessionalInfoFields({ register, errors, watch, setValue }: Pr
                 <Label htmlFor="about" className="text-gray-300">Overview / Professional Background</Label>
                 <Textarea
                     id="about"
-                    className="min-h-[150px] bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="min-h-[150px] bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     placeholder="Detailed professional history..."
                     {...register('about')}
                 />

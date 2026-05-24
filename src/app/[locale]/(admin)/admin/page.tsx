@@ -25,11 +25,11 @@ export default async function AdminOverviewPage() {
 
             <Link
                 href="/admin/ownership-requests"
-                className="block rounded-xl border border-[#C6A85E]/40 bg-[#C6A85E]/10 p-5 hover:bg-[#C6A85E]/15 transition-colors"
+                className="block rounded-xl border border-[var(--brand)]/40 bg-[var(--brand)]/10 p-5 hover:bg-[var(--brand)]/15 transition-colors"
             >
                 <div className="flex items-start justify-between">
                     <div>
-                        <div className="text-xs uppercase tracking-wider text-[#C6A85E]">
+                        <div className="text-xs uppercase tracking-wider text-[var(--brand)]">
                             Pending Claims
                         </div>
                         <div className="text-3xl font-bold text-white mt-2">
@@ -41,7 +41,7 @@ export default async function AdminOverviewPage() {
                                 : "All claims resolved"}
                         </div>
                     </div>
-                    <GitMerge className="h-5 w-5 text-[#C6A85E]" />
+                    <GitMerge className="h-5 w-5 text-[var(--brand)]" />
                 </div>
             </Link>
 
@@ -57,7 +57,7 @@ export default async function AdminOverviewPage() {
                                 {c.value.toLocaleString()}
                             </div>
                         </div>
-                        <c.icon className="h-5 w-5 text-[#C6A85E]" />
+                        <c.icon className="h-5 w-5 text-[var(--brand)]" />
                     </div>
                 ))}
             </div>

@@ -76,7 +76,7 @@ export function FollowButton({
                 disabled={isPending}
                 variant="outline"
                 className={cn(
-                    "gap-1.5 bg-transparent border-[#C6A85E]/40 text-[#C6A85E]",
+                    "gap-1.5 bg-transparent border-[var(--brand)]/40 text-[var(--brand)]",
                     "hover:border-red-400/50 hover:text-red-400 hover:bg-red-400/10",
                     sizeClasses,
                     className,
@@ -96,7 +96,7 @@ export function FollowButton({
             onClick={handleClick}
             disabled={isPending}
             className={cn(
-                "gap-1.5 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold",
+                "gap-1.5 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold",
                 sizeClasses,
                 className,
             )}

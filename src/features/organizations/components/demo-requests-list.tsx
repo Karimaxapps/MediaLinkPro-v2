@@ -150,7 +150,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
                                         className={
                                             request.status === 'contacted' ? "bg-green-500/10 text-green-500 hover:bg-green-500/20" :
                                                 request.status === 'ignored' ? "bg-gray-500/10 text-gray-500 hover:bg-gray-500/20" :
-                                                    "bg-[#C6A85E]/10 text-[#C6A85E] hover:bg-[#C6A85E]/20"
+                                                    "bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20"
                                         }
                                     >
                                         {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
@@ -213,7 +213,7 @@ function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
                     <div className="space-y-3 pt-2 border-t border-white/10">
                         <div className="flex items-start gap-3">
                             <div className="p-2 bg-white/5 rounded-lg shrink-0">
-                                <Building2 className="w-4 h-4 text-[#C6A85E]" />
+                                <Building2 className="w-4 h-4 text-[var(--brand)]" />
                             </div>
                             <div>
                                 <h4 className="text-xs font-semibold text-gray-500 uppercase">Contact Info</h4>
@@ -224,9 +224,9 @@ function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
 
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-white/5 rounded-lg shrink-0">
-                                <Mail className="w-4 h-4 text-[#C6A85E]" />
+                                <Mail className="w-4 h-4 text-[var(--brand)]" />
                             </div>
-                            <a href={`mailto:${request.contact_email}`} className="text-[#C6A85E] hover:underline text-sm">
+                            <a href={`mailto:${request.contact_email}`} className="text-[var(--brand)] hover:underline text-sm">
                                 {request.contact_email}
                             </a>
                         </div>
@@ -234,7 +234,7 @@ function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
                         {request.contact_phone && (
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-white/5 rounded-lg shrink-0">
-                                    <Phone className="w-4 h-4 text-[#C6A85E]" />
+                                    <Phone className="w-4 h-4 text-[var(--brand)]" />
                                 </div>
                                 <a href={`tel:${request.contact_phone}`} className="text-gray-300 hover:text-white text-sm">
                                     {request.contact_phone}

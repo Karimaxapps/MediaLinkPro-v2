@@ -43,14 +43,14 @@ export function ProfileCompletionCard({
 }) {
     if (score === 100) return null;
     return (
-        <section className="rounded-xl border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-5">
+        <section className="rounded-xl border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-5">
             <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-semibold text-white">Profile Strength</h3>
-                <span className="text-2xl font-bold text-[#C6A85E]">{score}%</span>
+                <span className="text-2xl font-bold text-[var(--brand)]">{score}%</span>
             </div>
             <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-4">
                 <div
-                    className="h-full bg-gradient-to-r from-[#C6A85E] to-[#e5c377] rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-[var(--brand)] to-[#e5c377] rounded-full transition-all"
                     style={{ width: `${score}%` }}
                 />
             </div>
@@ -131,7 +131,7 @@ export function ExperienceSection({
         <section>
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-[#C6A85E]" />
+                    <Briefcase className="h-5 w-5 text-[var(--brand)]" />
                     Work Experience
                 </h3>
                 {isOwner && (
@@ -215,7 +215,7 @@ export function ExperienceSection({
                         className="bg-black/20 border-white/10 text-white"
                     />
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={isPending} size="sm" className="bg-[#C6A85E] text-black hover:bg-[#b5975a]">
+                        <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
                             Save
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
@@ -232,7 +232,7 @@ export function ExperienceSection({
             ) : (
                 <div className="space-y-4">
                     {items.map((exp) => (
-                        <div key={exp.id} className="relative border-l-2 border-[#C6A85E]/30 pl-4 pb-2">
+                        <div key={exp.id} className="relative border-l-2 border-[var(--brand)]/30 pl-4 pb-2">
                             {isOwner && (
                                 <button
                                     onClick={() => handleDelete(exp.id)}
@@ -241,9 +241,9 @@ export function ExperienceSection({
                                     <Trash2 className="h-3.5 w-3.5" />
                                 </button>
                             )}
-                            <div className="absolute left-0 top-1.5 -translate-x-[5px] h-2 w-2 rounded-full bg-[#C6A85E]" />
+                            <div className="absolute left-0 top-1.5 -translate-x-[5px] h-2 w-2 rounded-full bg-[var(--brand)]" />
                             <h4 className="text-white font-semibold">{exp.role}</h4>
-                            <div className="text-sm text-[#C6A85E]">{exp.company}</div>
+                            <div className="text-sm text-[var(--brand)]">{exp.company}</div>
                             <div className="text-xs text-gray-500 mt-0.5">
                                 {format(new Date(exp.start_date), "MMM yyyy")} —{" "}
                                 {exp.is_current ? "Present" : exp.end_date ? format(new Date(exp.end_date), "MMM yyyy") : "—"}
@@ -313,7 +313,7 @@ export function EducationSection({
         <section>
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5 text-[#C6A85E]" />
+                    <GraduationCap className="h-5 w-5 text-[var(--brand)]" />
                     Education
                 </h3>
                 {isOwner && (
@@ -381,7 +381,7 @@ export function EducationSection({
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={isPending} size="sm" className="bg-[#C6A85E] text-black hover:bg-[#b5975a]">
+                        <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
                             Save
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
@@ -401,7 +401,7 @@ export function EducationSection({
                         <div key={edu.id} className="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-4">
                             <div>
                                 <h4 className="text-white font-semibold">{edu.institution}</h4>
-                                <div className="text-sm text-[#C6A85E]">
+                                <div className="text-sm text-[var(--brand)]">
                                     {[edu.degree, edu.field].filter(Boolean).join(" · ")}
                                 </div>
                                 {(edu.start_year || edu.end_year) && (
@@ -477,7 +477,7 @@ export function PortfolioSection({
         <section>
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5 text-[#C6A85E]" />
+                    <ImageIcon className="h-5 w-5 text-[var(--brand)]" />
                     Portfolio
                 </h3>
                 {isOwner && (
@@ -534,7 +534,7 @@ export function PortfolioSection({
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={isPending} size="sm" className="bg-[#C6A85E] text-black hover:bg-[#b5975a]">
+                        <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
                             Save
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
@@ -581,7 +581,7 @@ export function PortfolioSection({
                                         href={item.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 mt-3 text-xs text-[#C6A85E] hover:underline"
+                                        className="inline-flex items-center gap-1 mt-3 text-xs text-[var(--brand)] hover:underline"
                                     >
                                         View <ExternalLink className="h-3 w-3" />
                                     </a>

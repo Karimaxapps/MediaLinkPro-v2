@@ -98,7 +98,7 @@ export function DashboardClient({
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-white">Latest Products</h2>
-                        <Link href="/marketplace/products" className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors">
+                        <Link href="/marketplace/products" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
                             View all
                         </Link>
                     </div>
@@ -142,7 +142,7 @@ export function DashboardClient({
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-semibold text-white">Featured Companies</h2>
-                            <Link href="/companies" className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors">
+                            <Link href="/companies" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
                                 View all
                             </Link>
                         </div>
@@ -197,7 +197,7 @@ export function DashboardClient({
                         <h2 className="text-xl font-semibold text-white">Media Services</h2>
                         <Link
                             href="/marketplace/services"
-                            className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors"
+                            className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
                         >
                             View all
                         </Link>
@@ -246,7 +246,7 @@ export function DashboardClient({
                         <h2 className="text-xl font-semibold text-white">Latest Blog Posts</h2>
                         <Link
                             href="/blog"
-                            className="text-[#C6A85E] hover:text-[#C6A85E]/80 text-sm font-medium transition-colors"
+                            className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
                         >
                             View all
                         </Link>
@@ -266,7 +266,7 @@ export function DashboardClient({
                                     <Link
                                         key={post.id}
                                         href={`/blog/${post.slug}`}
-                                        className="w-[240px] sm:w-[260px] snap-start shrink-0 group rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:border-[#C6A85E]/50 transition-all duration-300 flex flex-col"
+                                        className="w-[240px] sm:w-[260px] snap-start shrink-0 group rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:border-[var(--brand)]/50 transition-all duration-300 flex flex-col"
                                     >
                                         {post.cover_image_url ? (
                                             <div className="relative h-32 w-full bg-gray-900 overflow-hidden">
@@ -278,17 +278,17 @@ export function DashboardClient({
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="h-32 w-full bg-gradient-to-br from-[#C6A85E]/10 to-white/5 flex items-center justify-center">
-                                                <PenSquare className="h-8 w-8 text-[#C6A85E]/30" />
+                                            <div className="h-32 w-full bg-gradient-to-br from-[var(--brand)]/10 to-white/5 flex items-center justify-center">
+                                                <PenSquare className="h-8 w-8 text-[var(--brand)]/30" />
                                             </div>
                                         )}
                                         <div className="p-4 space-y-1.5 flex-1 flex flex-col">
                                             {post.category && (
-                                                <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium">
+                                                <div className="text-[10px] uppercase tracking-wider text-[var(--brand)] font-medium">
                                                     {post.category}
                                                 </div>
                                             )}
-                                            <h3 className="text-sm font-semibold text-white group-hover:text-[#C6A85E] transition-colors line-clamp-2">
+                                            <h3 className="text-sm font-semibold text-white group-hover:text-[var(--brand)] transition-colors line-clamp-2">
                                                 {post.title}
                                             </h3>
                                             {post.excerpt && (

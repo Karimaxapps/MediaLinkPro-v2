@@ -23,9 +23,9 @@ const PLAN_STYLES: Record<string, { label: string; bg: string; text: string; bor
   },
   org_growth: {
     label: "Growth",
-    bg: "bg-[#C6A85E]/15",
-    text: "text-[#C6A85E]",
-    border: "border-[#C6A85E]/40",
+    bg: "bg-[var(--brand)]/15",
+    text: "text-[var(--brand)]",
+    border: "border-[var(--brand)]/40",
   },
   org_enterprise: {
     label: "Enterprise",

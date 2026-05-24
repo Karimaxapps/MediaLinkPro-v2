@@ -66,7 +66,7 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                         </div>
 
                         <div className="flex flex-col gap-1 mt-1">
-                            <div className="flex items-center gap-2 text-[#C6A85E]">
+                            <div className="flex items-center gap-2 text-[var(--brand)]">
                                 <Briefcase className="h-4 w-4" />
                                 <span className="text-base font-medium">
                                     {primaryRole}

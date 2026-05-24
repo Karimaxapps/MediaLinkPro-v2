@@ -54,10 +54,10 @@ export default async function TeamPage() {
                 <div>
                     <h3 className="text-lg font-medium text-white">{t("teamManagement")}</h3>
                     <p className="text-sm text-gray-400">
-                        {t.rich("teamMembersDesc", { org: () => <span className="text-[#C6A85E] font-medium">{primaryOrg.name}</span> })}
+                        {t.rich("teamMembersDesc", { org: () => <span className="text-[var(--brand)] font-medium">{primaryOrg.name}</span> })}
                     </p>
                 </div>
-                <Button className="bg-[#C6A85E] text-black hover:bg-[#B5964A]">
+                <Button className="bg-[var(--brand)] text-black hover:bg-[#B5964A]">
                     <UserPlus className="mr-2 h-4 w-4" />
                     {t("inviteMember")}
                 </Button>
@@ -80,7 +80,7 @@ export default async function TeamPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Shield className="h-4 w-4 text-[#C6A85E]" />
+                                <Shield className="h-4 w-4 text-[var(--brand)]" />
                                 <span className="text-xs text-gray-400">{t("manage")}</span>
                             </div>
                         </div>

@@ -43,8 +43,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 <main className="flex-1 overflow-y-auto p-2.5 relative flex flex-col"> {/* Added flex flex-col */}
                     {/* Background visual flair */}
                     <div className="fixed inset-0 pointer-events-none z-0">
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C6A85E]/5 rounded-full blur-[100px]" />
-                        <div className="absolute bottom-0 left-64 w-[500px] h-[500px] bg-[#135bec]/5 rounded-full blur-[100px]" />
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--brand)]/5 rounded-full blur-[100px]" />
+                        <div className="absolute bottom-0 left-64 w-[500px] h-[500px] bg-[var(--brand-secondary)]/5 rounded-full blur-[100px]" />
                     </div>
                     <div className="relative z-10 max-w-7xl mx-auto space-y-8 flex-1 w-full"> {/* Added flex-1 w-full */}
                         {!isProfileComplete ? (

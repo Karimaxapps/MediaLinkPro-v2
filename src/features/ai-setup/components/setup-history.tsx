@@ -32,12 +32,12 @@ export function SetupHistory({
     <aside className="rounded-xl border border-white/10 bg-white/[0.03] p-3 lg:sticky lg:top-4 h-fit">
       <div className="flex items-center justify-between px-1 pb-2">
         <div className="flex items-center gap-2 text-gray-300">
-          <History className="h-4 w-4 text-[#C6A85E]" />
+          <History className="h-4 w-4 text-[var(--brand)]" />
           <span className="text-sm font-semibold">History</span>
         </div>
         <button
           onClick={onNew}
-          className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-[#C6A85E] hover:bg-[#C6A85E]/10 transition-colors"
+          className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-[var(--brand)] hover:bg-[var(--brand)]/10 transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           New
@@ -59,7 +59,7 @@ export function SetupHistory({
                   disabled={loadingId === item.id}
                   className={`w-full text-left rounded-lg px-3 py-2 transition-colors ${
                     active
-                      ? "bg-[#C6A85E]/15 border border-[#C6A85E]/40"
+                      ? "bg-[var(--brand)]/15 border border-[var(--brand)]/40"
                       : "border border-transparent hover:bg-white/5"
                   }`}
                 >

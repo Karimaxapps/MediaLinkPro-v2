@@ -46,12 +46,12 @@ export function ProductBookmarksDialog({ productId, children }: ProductBookmarks
                 <DialogHeader>
                     <DialogTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-lg bg-[#C6A85E]/10">
-                                <Bookmark className="w-5 h-5 text-[#C6A85E]" />
+                            <div className="p-2 rounded-lg bg-[var(--brand)]/10">
+                                <Bookmark className="w-5 h-5 text-[var(--brand)]" />
                             </div>
                             <span>Bookmarked By</span>
                         </div>
-                        <Badge variant="secondary" className="bg-[#C6A85E]/20 text-[#C6A85E]">
+                        <Badge variant="secondary" className="bg-[var(--brand)]/20 text-[var(--brand)]">
                             {bookmarks.length}
                         </Badge>
                     </DialogTitle>
@@ -59,7 +59,7 @@ export function ProductBookmarksDialog({ productId, children }: ProductBookmarks
                 <ScrollArea className="h-[400px] w-full pr-4">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#C6A85E]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[var(--brand)]" />
                         </div>
                     ) : bookmarks.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-3 text-center text-gray-400">
@@ -73,7 +73,7 @@ export function ProductBookmarksDialog({ productId, children }: ProductBookmarks
                                         <Link href={`/profiles/${bookmark.user?.username || bookmark.user?.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                                             <Avatar className="h-9 w-9 border border-white/10">
                                                 <AvatarImage src={bookmark.user?.avatar_url} />
-                                                <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E]">
+                                                <AvatarFallback className="bg-[var(--brand)]/20 text-[var(--brand)]">
                                                     {bookmark.user?.full_name?.charAt(0) || <User className="w-4 h-4" />}
                                                 </AvatarFallback>
                                             </Avatar>

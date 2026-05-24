@@ -85,8 +85,8 @@ export default async function AiToolDetailPage({
                     {heroImage ? (
                         <img src={heroImage} alt={tool.name} className="h-full w-full object-cover" />
                     ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#C6A85E]/10 to-black">
-                            <Sparkles className="h-16 w-16 text-[#C6A85E]/40" />
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--brand)]/10 to-black">
+                            <Sparkles className="h-16 w-16 text-[var(--brand)]/40" />
                         </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
@@ -119,7 +119,7 @@ export default async function AiToolDetailPage({
                                 showCount
                             />
                             <a href={tool.main_link} target="_blank" rel="noopener noreferrer">
-                                <Button className="gap-2 bg-[#C6A85E] font-semibold text-black hover:bg-[#B5964A]">
+                                <Button className="gap-2 bg-[var(--brand)] font-semibold text-black hover:bg-[#B5964A]">
                                     Visit Tool
                                     <ExternalLink className="h-4 w-4" />
                                 </Button>
@@ -136,7 +136,7 @@ export default async function AiToolDetailPage({
                         {tool.pricing_model && (
                             <Badge
                                 variant="outline"
-                                className="border-[#C6A85E]/30 bg-transparent text-[#C6A85E]"
+                                className="border-[var(--brand)]/30 bg-transparent text-[var(--brand)]"
                             >
                                 {PRICING_MODEL_LABELS[tool.pricing_model] ?? tool.pricing_model}
                             </Badge>
@@ -167,7 +167,7 @@ export default async function AiToolDetailPage({
             {tool.tags && tool.tags.length > 0 && (
                 <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
                     <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-white">
-                        <Tag className="h-4 w-4 text-[#C6A85E]" />
+                        <Tag className="h-4 w-4 text-[var(--brand)]" />
                         Tags
                     </h2>
                     <div className="flex flex-wrap gap-2">
@@ -212,7 +212,7 @@ export default async function AiToolDetailPage({
                             return (
                                 <div key={type}>
                                     {idx > 0 && <Separator className="mb-6 bg-white/10" />}
-                                    <h3 className="mb-3 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-[#C6A85E]">
+                                    <h3 className="mb-3 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-[var(--brand)]">
                                         <Icon className="h-4 w-4" />
                                         {RESOURCE_TYPE_LABELS[type] ?? type}
                                     </h3>
@@ -223,7 +223,7 @@ export default async function AiToolDetailPage({
                                                     href={r.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:border-[#C6A85E]/40 hover:text-white"
+                                                    className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-4 py-2.5 text-sm text-gray-300 transition-colors hover:border-[var(--brand)]/40 hover:text-white"
                                                 >
                                                     <span className="flex-1">{r.title}</span>
                                                     <ExternalLink className="h-3.5 w-3.5 text-gray-500" />

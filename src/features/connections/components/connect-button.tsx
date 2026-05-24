@@ -54,7 +54,7 @@ export function ConnectButton({ targetUserId, initialStatus, requestId, classNam
 
     if (status === 'connected') {
         return (
-            <Button variant="outline" size="sm" className={`gap-2 border-[#C6A85E]/50 text-[#C6A85E] hover:bg-[#C6A85E]/10 ${className}`} disabled>
+            <Button variant="outline" size="sm" className={`gap-2 border-[var(--brand)]/50 text-[var(--brand)] hover:bg-[var(--brand)]/10 ${className}`} disabled>
                 <UserCheck className="h-4 w-4" />
                 Connected
             </Button>
@@ -126,7 +126,7 @@ export function ConnectButton({ targetUserId, initialStatus, requestId, classNam
                 onClick={handleAccept}
                 disabled={isLoading || !requestId}
                 size="sm"
-                className={`gap-2 bg-[#C6A85E] text-black hover:bg-[#B5964B] ${className}`}
+                className={`gap-2 bg-[var(--brand)] text-black hover:bg-[#B5964B] ${className}`}
             >
                 <UserCheck className="h-4 w-4" />
                 {isLoading ? "Accepting..." : "Accept Connection"}
@@ -139,7 +139,7 @@ export function ConnectButton({ targetUserId, initialStatus, requestId, classNam
             onClick={handleConnect}
             disabled={isLoading}
             size="sm"
-            className={`gap-2 bg-[#C6A85E] text-black hover:bg-[#B5964B] ${className}`}
+            className={`gap-2 bg-[var(--brand)] text-black hover:bg-[#B5964B] ${className}`}
         >
             <UserPlus className="h-4 w-4" />
             Connect

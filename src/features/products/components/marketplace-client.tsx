@@ -158,7 +158,7 @@ export function MarketplaceClient({
                             setSearchQuery(e.target.value);
                             setVisibleCount(ITEMS_PER_PAGE);
                         }}
-                        className="bg-black/20 border-white/10 text-white pl-8 focus:border-[#C6A85E]/50 w-full md:w-[300px]"
+                        className="bg-black/20 border-white/10 text-white pl-8 focus:border-[var(--brand)]/50 w-full md:w-[300px]"
                     />
                 </div>
             </div>
@@ -181,7 +181,7 @@ export function MarketplaceClient({
                             onClick={() => toggleType(type)}
                             className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
                                 selectedTypes.includes(type)
-                                    ? "bg-[#C6A85E] text-black border-[#C6A85E] font-medium"
+                                    ? "bg-[var(--brand)] text-black border-[var(--brand)] font-medium"
                                     : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
                             }`}
                         >
@@ -197,7 +197,7 @@ export function MarketplaceClient({
                     onClick={() => setShowCategories(!showCategories)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border transition-colors ${
                         selectedCategories.length > 0
-                            ? "bg-[#C6A85E] text-black border-[#C6A85E] font-medium"
+                            ? "bg-[var(--brand)] text-black border-[var(--brand)] font-medium"
                             : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
                     }`}
                 >
@@ -226,7 +226,7 @@ export function MarketplaceClient({
                                     }}
                                     className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                                         sortBy === option.value
-                                            ? "bg-[#C6A85E]/10 text-[#C6A85E]"
+                                            ? "bg-[var(--brand)]/10 text-[var(--brand)]"
                                             : "text-gray-300 hover:bg-white/5"
                                     }`}
                                 >
@@ -276,7 +276,7 @@ export function MarketplaceClient({
                                             onClick={() => toggleCategory(category)}
                                             className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
                                                 selectedCategories.includes(category)
-                                                    ? "bg-[#C6A85E] text-black border-[#C6A85E] font-medium"
+                                                    ? "bg-[var(--brand)] text-black border-[var(--brand)] font-medium"
                                                     : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
                                             }`}
                                         >
@@ -296,7 +296,7 @@ export function MarketplaceClient({
                     {selectedTypes.map((type) => (
                         <span
                             key={type}
-                            className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-[#C6A85E]/10 text-[#C6A85E] border border-[#C6A85E]/20"
+                            className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-[var(--brand)]/10 text-[var(--brand)] border border-[var(--brand)]/20"
                         >
                             {type}
                             <button onClick={() => toggleType(type)} className="hover:text-white">

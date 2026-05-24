@@ -144,7 +144,7 @@ export function UserNav() {
     return (
       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
         <Avatar className="h-8 w-8 border border-white/10">
-          <AvatarFallback className="bg-[#C6A85E] text-black font-bold">U</AvatarFallback>
+          <AvatarFallback className="bg-[var(--brand)] text-black font-bold">U</AvatarFallback>
         </Avatar>
       </Button>
     );
@@ -166,7 +166,7 @@ export function UserNav() {
       {/* ── Full-screen loading overlay shown while the page reloads ── */}
       {switchingLocale && (
         <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0B0B0B]/90 backdrop-blur-sm">
-          <Loader2 className="h-10 w-10 text-[#C6A85E] animate-spin mb-5" />
+          <Loader2 className="h-10 w-10 text-[var(--brand)] animate-spin mb-5" />
           <p className="text-white text-lg font-semibold mb-1">
             {t("switchingTo", { lang: targetLocaleLabel })}
           </p>
@@ -185,7 +185,7 @@ export function UserNav() {
                 src={profile?.avatar_url || ""}
                 alt={profile?.full_name || "@user"}
               />
-              <AvatarFallback className="bg-[#C6A85E] text-black font-bold">
+              <AvatarFallback className="bg-[var(--brand)] text-black font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -293,7 +293,7 @@ export function UserNav() {
                   />
                   <span className="text-sm">{lang.name}</span>
                   {lang.code === currentLocale && (
-                    <Check className="ml-auto h-3.5 w-3.5 text-[#C6A85E]" />
+                    <Check className="ml-auto h-3.5 w-3.5 text-[var(--brand)]" />
                   )}
                 </DropdownMenuItem>
               ))}

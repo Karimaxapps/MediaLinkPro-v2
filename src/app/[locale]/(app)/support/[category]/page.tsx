@@ -50,7 +50,7 @@ export default async function SupportCategoryPage({ params }: Props) {
               className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors group"
             >
               <div className="flex-1 min-w-0 pr-4">
-                <div className="text-sm font-medium text-white group-hover:text-[#C6A85E] transition-colors">
+                <div className="text-sm font-medium text-white group-hover:text-[var(--brand)] transition-colors">
                   {article.title}
                 </div>
                 {article.excerpt && (
@@ -66,7 +66,7 @@ export default async function SupportCategoryPage({ params }: Props) {
                   })}
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-[#C6A85E] shrink-0 transition-colors" />
+              <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-[var(--brand)] shrink-0 transition-colors" />
             </Link>
           ))}
         </div>

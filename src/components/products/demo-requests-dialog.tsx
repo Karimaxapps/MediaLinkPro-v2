@@ -44,7 +44,7 @@ export function DemoRequestsDialog({ productId, children }: DemoRequestsDialogPr
                 <DialogHeader>
                     <DialogTitle className="flex items-center justify-between">
                         <span>Demo Requests</span>
-                        <Badge variant="secondary" className="bg-[#C6A85E]/20 text-[#C6A85E] hover:bg-[#C6A85E]/30">
+                        <Badge variant="secondary" className="bg-[var(--brand)]/20 text-[var(--brand)] hover:bg-[var(--brand)]/30">
                             {requests.length} Requests
                         </Badge>
                     </DialogTitle>
@@ -52,7 +52,7 @@ export function DemoRequestsDialog({ productId, children }: DemoRequestsDialogPr
                 <ScrollArea className="h-[500px] pr-4 w-full">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                            <Loader2 className="w-8 h-8 animate-spin text-[#C6A85E]" />
+                            <Loader2 className="w-8 h-8 animate-spin text-[var(--brand)]" />
                             <p className="text-gray-400">Loading requests...</p>
                         </div>
                     ) : requests.length === 0 ? (
@@ -73,7 +73,7 @@ export function DemoRequestsDialog({ productId, children }: DemoRequestsDialogPr
                                 <div key={request.id} className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-colors">
                                     <div className="flex justify-between items-start">
                                         <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-[#C6A85E]/20 flex items-center justify-center text-[#C6A85E] shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-[var(--brand)]/20 flex items-center justify-center text-[var(--brand)] shrink-0">
                                                 <User className="w-5 h-5" />
                                             </div>
                                             <div>
@@ -93,14 +93,14 @@ export function DemoRequestsDialog({ productId, children }: DemoRequestsDialogPr
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                         <div className="flex items-center gap-2.5 text-gray-300 bg-black/20 p-2.5 rounded-lg">
                                             <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0">
-                                                <Mail className="w-3.5 h-3.5 text-[#C6A85E]" />
+                                                <Mail className="w-3.5 h-3.5 text-[var(--brand)]" />
                                             </div>
                                             <span className="truncate">{request.contact_email}</span>
                                         </div>
                                         {request.contact_phone && (
                                             <div className="flex items-center gap-2.5 text-gray-300 bg-black/20 p-2.5 rounded-lg">
                                                 <div className="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center shrink-0">
-                                                    <Phone className="w-3.5 h-3.5 text-[#C6A85E]" />
+                                                    <Phone className="w-3.5 h-3.5 text-[var(--brand)]" />
                                                 </div>
                                                 <span>{request.contact_phone}</span>
                                             </div>
@@ -109,7 +109,7 @@ export function DemoRequestsDialog({ productId, children }: DemoRequestsDialogPr
 
                                     {request.message && (
                                         <div className="bg-black/30 rounded-lg p-3.5 text-sm text-gray-300 relative border border-white/5">
-                                            <div className="absolute top-3 left-0 w-1 h-full bg-[#C6A85E]/50 rounded-r-full" />
+                                            <div className="absolute top-3 left-0 w-1 h-full bg-[var(--brand)]/50 rounded-r-full" />
                                             {request.message}
                                         </div>
                                     )}

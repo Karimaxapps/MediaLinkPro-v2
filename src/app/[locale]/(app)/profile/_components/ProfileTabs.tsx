@@ -37,8 +37,8 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                 <Card className="bg-white/5 border-white/10">
                     <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-[#C6A85E]/10 rounded-lg">
-                                <FileText className="h-4 w-4 text-[#C6A85E]" />
+                            <div className="p-1.5 bg-[var(--brand)]/10 rounded-lg">
+                                <FileText className="h-4 w-4 text-[var(--brand)]" />
                             </div>
                             <CardTitle className="text-lg text-white font-bold">Overview</CardTitle>
                         </div>
@@ -58,8 +58,8 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                 <Card className="bg-white/5 border-white/10 h-full">
                     <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-[#C6A85E]/10 rounded-lg">
-                                <Users className="h-4 w-4 text-[#C6A85E]" />
+                            <div className="p-1.5 bg-[var(--brand)]/10 rounded-lg">
+                                <Users className="h-4 w-4 text-[var(--brand)]" />
                             </div>
                             <CardTitle className="text-lg text-white font-bold">Profile Info</CardTitle>
                         </div>
@@ -67,11 +67,11 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                     <CardContent className="space-y-6">
                         <div className="space-y-3 pb-4 border-b border-white/5">
                             <div className="text-gray-300 font-medium flex items-center gap-2 pb-1">
-                                <MapPin className="h-4 w-4 text-[#C6A85E]" />
+                                <MapPin className="h-4 w-4 text-[var(--brand)]" />
                                 {profile.country || "Country not set"}
                             </div>
                             <div className="text-gray-300 font-medium flex items-center gap-2">
-                                <Users className="h-4 w-4 text-[#C6A85E]" />
+                                <Users className="h-4 w-4 text-[var(--brand)]" />
                                 <span className="text-white font-bold">{formatNumber(connectionCount)}</span> Connections
                             </div>
                         </div>
@@ -79,19 +79,19 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                         {/* Details List */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 text-sm text-gray-400">
-                                <Calendar className="h-4 w-4 text-[#C6A85E]" />
+                                <Calendar className="h-4 w-4 text-[var(--brand)]" />
                                 <span>Joined {formatDate(profile.created_at)}</span>
                             </div>
                             {profile.city && (
                                 <div className="flex items-center gap-3 text-sm text-gray-400">
-                                    <MapPin className="h-4 w-4 text-[#C6A85E]" />
+                                    <MapPin className="h-4 w-4 text-[var(--brand)]" />
                                     <span>{profile.city}</span>
                                 </div>
                             )}
 
                             {profile.portfolio_url && (
                                 <div className="flex items-center gap-3 text-sm text-gray-400">
-                                    <LinkIcon className="h-4 w-4 text-[#C6A85E]" />
+                                    <LinkIcon className="h-4 w-4 text-[var(--brand)]" />
                                     <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors truncate max-w-[200px]">
                                         Portfolio
                                     </a>
@@ -99,12 +99,12 @@ export async function OverviewTabContent({ profile }: OverviewTabContentProps) {
                             )}
                             {profile.contact_email_public && (
                                 <div className="flex items-center gap-3 text-sm text-gray-400">
-                                    <Mail className="h-4 w-4 text-[#C6A85E]" />
+                                    <Mail className="h-4 w-4 text-[var(--brand)]" />
                                     <span className="truncate">{profile.contact_email_public}</span>
                                 </div>
                             )}
                             <div className="flex items-center gap-3 text-sm text-gray-400">
-                                <Globe className="h-4 w-4 text-[#C6A85E]" />
+                                <Globe className="h-4 w-4 text-[var(--brand)]" />
                                 {profile.website ? (
                                     <a href={profile.website} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors truncate max-w-[200px]">
                                         {profile.website.replace(/^https?:\/\//, '')}

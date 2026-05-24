@@ -88,7 +88,7 @@ export function SetupDiagram({
             y1={50}
             x2={pos.left}
             y2={pos.top}
-            stroke="#C6A85E"
+            stroke="var(--brand)"
             strokeOpacity={0.55}
             strokeWidth={1.4}
             vectorEffect="non-scaling-stroke"
@@ -103,7 +103,7 @@ export function SetupDiagram({
         style={{ left: "50%", top: "50%" }}
       >
         <div className="flex flex-col items-center gap-2 w-32 text-center">
-          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[#C6A85E] bg-[#1a1a1a] shadow-[0_0_24px_rgba(198,168,94,0.45)]">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--brand)] bg-[#1a1a1a] shadow-[0_0_24px_color-mix(in srgb, var(--brand) 45%, transparent)]">
             {centerImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -112,13 +112,13 @@ export function SetupDiagram({
                 className="h-full w-full object-cover"
               />
             ) : (
-              renderFallbackIcon(centerSublabel ?? centerLabel, "h-9 w-9 text-[#C6A85E]")
+              renderFallbackIcon(centerSublabel ?? centerLabel, "h-9 w-9 text-[var(--brand)]")
             )}
           </div>
           <div className="flex flex-col items-center gap-1">
             <p className="text-sm font-semibold text-white leading-tight">{centerLabel}</p>
             {centerSublabel && (
-              <p className="text-[11px] text-[#C6A85E] leading-tight">{centerSublabel}</p>
+              <p className="text-[11px] text-[var(--brand)] leading-tight">{centerSublabel}</p>
             )}
             {(centerCompanyLogoUrl || centerCompanyName) && (
               <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/40 px-2 py-0.5 mt-0.5">
@@ -147,7 +147,7 @@ export function SetupDiagram({
         const inner = (
           <div className="flex flex-col items-center gap-1.5 w-28 text-center">
             {/* Product image */}
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-[#161616] transition-all group-hover:border-[#C6A85E]/70 group-hover:shadow-[0_0_16px_rgba(198,168,94,0.35)]">
+            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-[#161616] transition-all group-hover:border-[var(--brand)]/70 group-hover:shadow-[0_0_16px_color-mix(in srgb, var(--brand) 35%, transparent)]">
               {node.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={node.imageUrl} alt={node.label} className="h-full w-full object-cover" />

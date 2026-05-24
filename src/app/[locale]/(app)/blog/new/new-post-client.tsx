@@ -66,7 +66,7 @@ export function NewBlogPostClient({ linkableProducts, organizationId, organizati
       <div>
         <h1 className="text-2xl font-bold text-white">Write a post</h1>
         <p className="text-sm text-gray-400 mt-1">
-          Publishing as <span className="text-[#C6A85E] font-medium">{organizationName}</span>
+          Publishing as <span className="text-[var(--brand)] font-medium">{organizationName}</span>
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export function NewBlogPostClient({ linkableProducts, organizationId, organizati
             value={linkedProductId}
             onChange={(e) => setLinkedProductId(e.target.value)}
             disabled={linkableProducts.length === 0}
-            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-[#1F1F1F] [&>option]:text-white"
+            className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none disabled:opacity-50 disabled:cursor-not-allowed [&>option]:bg-[#1F1F1F] [&>option]:text-white"
           >
             <option value="" className="bg-[#1F1F1F] text-white">
               — None —
@@ -189,7 +189,7 @@ export function NewBlogPostClient({ linkableProducts, organizationId, organizati
             Save as draft
           </Button>
           <Button
-            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
             disabled={isPending || !title.trim() || !content.trim()}
             onClick={() => submit("published")}
           >

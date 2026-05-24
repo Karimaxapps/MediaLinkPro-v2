@@ -43,7 +43,7 @@ function countdownLabel(startISO: string, endISO: string): string {
 }
 
 const STRIPES =
-    "repeating-linear-gradient(45deg, rgba(198,168,94,0.07) 0px, rgba(198,168,94,0.07) 3px, transparent 3px, transparent 16px), #15130c";
+    "repeating-linear-gradient(45deg, color-mix(in srgb, var(--brand) 7%, transparent) 0px, color-mix(in srgb, var(--brand) 7%, transparent) 3px, transparent 3px, transparent 16px), #15130c";
 
 export function EventCard({ event, isGoing = false, attendees = [] }: EventCardProps) {
     const start = new Date(event.start_date);
@@ -60,7 +60,7 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
 
     return (
         <Link href={`/events/${event.slug}`} className="group block">
-            <div className="bg-[#121212] border border-white/10 rounded-2xl overflow-hidden hover:border-[#C6A85E]/40 transition-colors">
+            <div className="bg-[#121212] border border-white/10 rounded-2xl overflow-hidden hover:border-[var(--brand)]/40 transition-colors">
                 {/* Banner */}
                 <div
                     className="relative h-44 flex items-center justify-center"
@@ -76,14 +76,14 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
                 >
                     {/* Date badge */}
                     <div className="absolute top-4 left-4 bg-[#0c0c0c]/90 border border-white/10 rounded-lg w-12 py-1.5 text-center">
-                        <span className="block text-[9px] font-semibold uppercase tracking-widest text-[#C6A85E]">
+                        <span className="block text-[9px] font-semibold uppercase tracking-widest text-[var(--brand)]">
                             {month}
                         </span>
                         <span className="block text-xl font-bold text-white leading-none">{day}</span>
                     </div>
 
                     {/* Countdown badge */}
-                    <span className="absolute top-4 right-4 bg-[#0c0c0c]/90 border border-[#C6A85E]/30 rounded-full px-2.5 py-1 text-[11px] font-semibold text-[#C6A85E]">
+                    <span className="absolute top-4 right-4 bg-[#0c0c0c]/90 border border-[var(--brand)]/30 rounded-full px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
                         {countdown}
                     </span>
 
@@ -96,11 +96,11 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
 
                 {/* Body */}
                 <div className="p-5 space-y-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#C6A85E]">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--brand)]">
                         Upcoming{isGoing && " · You're going"}
                     </p>
 
-                    <h3 className="font-serif text-2xl text-white leading-tight group-hover:text-[#C6A85E] transition-colors line-clamp-2">
+                    <h3 className="font-serif text-2xl text-white leading-tight group-hover:text-[var(--brand)] transition-colors line-clamp-2">
                         {event.title}
                     </h3>
 
@@ -120,13 +120,13 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
                                 ).map((a, i) => (
                                     <Avatar
                                         key={i}
-                                        className="h-8 w-8 border-2 border-[#121212] bg-[#C6A85E]"
+                                        className="h-8 w-8 border-2 border-[#121212] bg-[var(--brand)]"
                                     >
                                         <AvatarImage
                                             src={a?.avatar_url ?? undefined}
                                             alt={a?.full_name ?? undefined}
                                         />
-                                        <AvatarFallback className="bg-[#C6A85E] text-black text-xs font-semibold">
+                                        <AvatarFallback className="bg-[var(--brand)] text-black text-xs font-semibold">
                                             {a?.full_name?.charAt(0).toUpperCase() ?? ""}
                                         </AvatarFallback>
                                     </Avatar>

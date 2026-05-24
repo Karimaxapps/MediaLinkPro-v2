@@ -73,7 +73,7 @@ export function ClaimProductButton({
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="bg-transparent border-[#C6A85E]/50 text-[#C6A85E] hover:bg-[#C6A85E]/10 hover:border-[#C6A85E] gap-2"
+                    className="bg-transparent border-[var(--brand)]/50 text-[var(--brand)] hover:bg-[var(--brand)]/10 hover:border-[var(--brand)] gap-2"
                 >
                     <Flag className="h-4 w-4" />
                     {isResubmit ? "Re-submit Claim" : "Claim this product"}
@@ -82,7 +82,7 @@ export function ClaimProductButton({
             <DialogContent className="bg-[#0B0F14] border-white/10 text-white sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <BadgeCheck className="h-5 w-5 text-[#C6A85E]" />
+                        <BadgeCheck className="h-5 w-5 text-[var(--brand)]" />
                         Claim Product Ownership
                     </DialogTitle>
                     <DialogDescription className="text-gray-400">
@@ -107,7 +107,7 @@ export function ClaimProductButton({
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Briefly explain why your organization should own this product..."
                         maxLength={500}
-                        className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                        className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     />
                     <div className="flex justify-end">
                         <span className="text-xs text-gray-500">{message.length}/500</span>
@@ -125,7 +125,7 @@ export function ClaimProductButton({
                     <Button
                         onClick={handleSubmit}
                         disabled={isPending}
-                        className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                        className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                     >
                         {isPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

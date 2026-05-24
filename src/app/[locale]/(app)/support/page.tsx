@@ -42,9 +42,9 @@ export default async function SupportHomePage() {
       icon: MessageSquare,
       label: t("contactSupport"),
       description: t("contactSupportDesc"),
-      color: "text-[#C6A85E]",
-      border: "border-[#C6A85E]/20",
-      bg: "bg-[#C6A85E]/10",
+      color: "text-[var(--brand)]",
+      border: "border-[var(--brand)]/20",
+      bg: "bg-[var(--brand)]/10",
     },
   ];
 
@@ -79,14 +79,14 @@ export default async function SupportHomePage() {
                 className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors group"
               >
                 <div>
-                  <div className="text-sm font-medium text-white group-hover:text-[#C6A85E] transition-colors">
+                  <div className="text-sm font-medium text-white group-hover:text-[var(--brand)] transition-colors">
                     {article.title}
                   </div>
                   {article.excerpt && (
                     <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">{article.excerpt}</div>
                   )}
                 </div>
-                <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-[#C6A85E] shrink-0 ml-4 transition-colors" />
+                <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-[var(--brand)] shrink-0 ml-4 transition-colors" />
               </Link>
             ))}
           </div>
@@ -98,7 +98,7 @@ export default async function SupportHomePage() {
           <p className="text-gray-400 text-sm">{t("noArticles")}</p>
           <Link
             href="/support/contact"
-            className="mt-4 inline-flex items-center gap-1.5 text-[#C6A85E] text-sm hover:underline"
+            className="mt-4 inline-flex items-center gap-1.5 text-[var(--brand)] text-sm hover:underline"
           >
             <MessageSquare className="h-3.5 w-3.5" />
             {t("contactSupport")}

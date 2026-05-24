@@ -19,7 +19,7 @@ export function ActivityFeed({ activities }: { activities: ActivityItem[] }) {
                             <div key={activity.id} className="flex items-start">
                                 <Avatar className="h-9 w-9">
                                     <AvatarImage src={activity.user?.avatar_url || ""} alt={activity.user?.name} />
-                                    <AvatarFallback className="bg-[#C6A85E] text-black font-medium">
+                                    <AvatarFallback className="bg-[var(--brand)] text-black font-medium">
                                         {activity.user?.name.substring(0, 2).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>

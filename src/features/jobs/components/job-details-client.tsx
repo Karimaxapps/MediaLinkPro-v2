@@ -63,7 +63,7 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
               {job.organizations && (
                 <Link
                   href={`/companies/${job.organizations.slug}`}
-                  className="text-[#C6A85E] hover:underline text-sm"
+                  className="text-[var(--brand)] hover:underline text-sm"
                 >
                   {job.organizations.name}
                 </Link>
@@ -112,7 +112,7 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
           <div className="flex items-center gap-2">
             {canManage && (
               <Link href={`/jobs/manage/${job.id}`}>
-                <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
+                <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
                   Manage applications
                 </Button>
               </Link>
@@ -126,13 +126,13 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
             ) : currentUserId ? (
               <Button
                 onClick={() => setApplyOpen(true)}
-                className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
               >
                 Apply now
               </Button>
             ) : (
               <Link href="/auth">
-                <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
+                <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
                   Sign in to apply
                 </Button>
               </Link>
@@ -169,9 +169,9 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
               [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2
               [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
               [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
-              [&_li]:marker:text-[#C6A85E]
-              [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
-              [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
+              [&_li]:marker:text-[var(--brand)]
+              [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
+              [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2
               [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(job.description) }}
           />

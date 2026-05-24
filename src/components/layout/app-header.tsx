@@ -41,7 +41,7 @@ export function AppHeader({
         <header className="sticky top-2.5 z-30 flex h-16 items-center gap-4 border border-white/10 bg-[#1F1F1F] px-6 mx-2.5 rounded-[10px]">
             <Link
                 href="/dashboard"
-                className="hidden md:flex items-center gap-2 font-semibold text-lg text-[#C6A85E] mr-4 min-w-fit hover:opacity-90 transition-opacity"
+                className="hidden md:flex items-center gap-2 font-semibold text-lg text-[var(--brand)] mr-4 min-w-fit hover:opacity-90 transition-opacity"
             >
                 <Image
                     src="/brand/logo.png"
@@ -63,7 +63,7 @@ export function AppHeader({
                             placeholder={t("searchPlaceholder")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-black/20 pl-8 md:w-[300px] lg:w-[400px] border-white/10 text-white focus:border-[#C6A85E]/50"
+                            className="w-full bg-black/20 pl-8 md:w-[300px] lg:w-[400px] border-white/10 text-white focus:border-[var(--brand)]/50"
                         />
                     </div>
                 </form>
@@ -73,7 +73,7 @@ export function AppHeader({
                     <Link href="/ai-setup">
                         <Button
                             variant="ghost"
-                            className="gap-2 px-2.5 text-[#C6A85E] hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                            className="gap-2 px-2.5 text-[var(--brand)] hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
                             aria-label={t("aiSetupBuilder")}
                             title={t("aiSetupBuilder")}
                         >

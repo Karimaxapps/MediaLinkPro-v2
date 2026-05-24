@@ -48,7 +48,7 @@ export function CreateGate({
     return (
       <Link
         href={`/companies/new?from=${encodeURIComponent(noun)}`}
-        className="inline-flex items-center gap-2 rounded-full border border-[#C6A85E]/40 bg-[#C6A85E]/[0.07] px-3.5 py-2 text-xs font-medium text-[#C6A85E] hover:bg-[#C6A85E]/[0.15] transition-colors"
+        className="inline-flex items-center gap-2 rounded-full border border-[var(--brand)]/40 bg-[var(--brand)]/[0.07] px-3.5 py-2 text-xs font-medium text-[var(--brand)] hover:bg-[var(--brand)]/[0.15] transition-colors"
         title={`Create a company profile to add ${nounPlural}`}
       >
         <Building2 className="size-3.5 shrink-0" />
@@ -65,14 +65,14 @@ export function CreateGate({
       {atLimit ? (
         <Button
           disabled
-          className="bg-[#C6A85E] text-black font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          className="bg-[var(--brand)] text-black font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         >
           <Plus className="h-4 w-4 mr-1.5" />
           {label}
         </Button>
       ) : (
         <Link href={href}>
-          <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
+          <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
             <Plus className="h-4 w-4 mr-1.5" />
             {label}
           </Button>

@@ -107,7 +107,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                         {/* Logo Upload */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium text-gray-200 flex items-center gap-2">
-                                <ImageIcon className="h-4 w-4 text-[#C6A85E]" />
+                                <ImageIcon className="h-4 w-4 text-[var(--brand)]" />
                                 Company Logo
                             </h3>
                             <div className="bg-white/5 p-4 rounded-lg border border-white/10 flex flex-col items-center">
@@ -357,7 +357,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="bg-white text-black hover:bg-gray-200 border-transparent">
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isLoading} className="bg-[#C6A85E] text-black hover:bg-[#B5964A]">
+                            <Button type="submit" disabled={isLoading} className="bg-[var(--brand)] text-black hover:bg-[#B5964A]">
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Save Changes
                             </Button>

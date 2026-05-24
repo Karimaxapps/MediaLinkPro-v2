@@ -184,19 +184,19 @@ export function MessagesClient({ userId, hasOrganization }: { userId: string, ha
             {/* Sidebar for conversations */}
             <div className="w-[320px] md:w-[380px] border-r border-white/10 flex flex-col bg-[#1F1F1F]">
                 <div className="p-6 border-b border-white/10">
-                    <h2 className="text-2xl font-semibold tracking-tight text-[#C6A85E] mb-4">Inbox</h2>
+                    <h2 className="text-2xl font-semibold tracking-tight text-[var(--brand)] mb-4">Inbox</h2>
                     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 bg-transparent p-0 h-auto border-b border-white/10 rounded-none">
                             <TabsTrigger
                                 value="personal"
-                                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#C6A85E] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 data-[state=active]:shadow-none px-0 py-2 font-medium"
+                                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand)] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 data-[state=active]:shadow-none px-0 py-2 font-medium"
                             >
                                 Personal
                             </TabsTrigger>
                             <TabsTrigger
                                 value="company"
                                 disabled={!hasOrganization && !hasCompanyConversations && activeTab !== "company"}
-                                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#C6A85E] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 disabled:opacity-50 data-[state=active]:shadow-none px-0 py-2 font-medium"
+                                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand)] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 disabled:opacity-50 data-[state=active]:shadow-none px-0 py-2 font-medium"
                             >
                                 Company
                             </TabsTrigger>
@@ -297,7 +297,7 @@ export function MessagesClient({ userId, hasOrganization }: { userId: string, ha
                                                             {new Date(msg.created_at!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
                                                     </div>
-                                                    <div className={`px-4 py-2 text-sm shadow-sm ${isMe ? "bg-[#C6A85E] text-[#121212] rounded-2xl rounded-tr-sm" : "bg-[#1F1F1F] text-white border border-white/10 rounded-2xl rounded-tl-sm"}`}>
+                                                    <div className={`px-4 py-2 text-sm shadow-sm ${isMe ? "bg-[var(--brand)] text-[#121212] rounded-2xl rounded-tr-sm" : "bg-[#1F1F1F] text-white border border-white/10 rounded-2xl rounded-tl-sm"}`}>
                                                         <p className="break-words whitespace-pre-wrap">{msg.content}</p>
                                                     </div>
                                                 </div>
@@ -310,7 +310,7 @@ export function MessagesClient({ userId, hasOrganization }: { userId: string, ha
 
                         {/* Message input area */}
                         <div className="p-4 bg-[#1F1F1F] border-t border-white/10 flex-shrink-0">
-                            <form onSubmit={handleSendMessage} className="flex items-center gap-3 w-full bg-[#121212] border border-white/10 rounded-xl p-1 shadow-sm focus-within:border-[#C6A85E]/50 transition-all">
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-3 w-full bg-[#121212] border border-white/10 rounded-xl p-1 shadow-sm focus-within:border-[var(--brand)]/50 transition-all">
                                 <Input
                                     placeholder="Type your message..."
                                     className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 text-white placeholder:text-gray-500 text-base py-6 px-4"

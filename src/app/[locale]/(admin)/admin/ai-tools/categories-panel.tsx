@@ -25,7 +25,7 @@ export function AiToolCategoriesPanel({ categories }: { categories: Category[] }
     const [slug, setSlug] = useState("");
     const [description, setDescription] = useState("");
 
-    const inputClass = "border-white/10 bg-black/20 text-white focus:border-[#C6A85E]/50";
+    const inputClass = "border-white/10 bg-black/20 text-white focus:border-[var(--brand)]/50";
 
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
@@ -91,7 +91,7 @@ export function AiToolCategoriesPanel({ categories }: { categories: Category[] }
                 <Button
                     type="submit"
                     disabled={isPending}
-                    className="gap-1 bg-[#C6A85E] font-semibold text-black hover:bg-[#B5964A]"
+                    className="gap-1 bg-[var(--brand)] font-semibold text-black hover:bg-[#B5964A]"
                 >
                     <Plus className="h-4 w-4" /> Add
                 </Button>

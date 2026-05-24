@@ -11,8 +11,8 @@ export default async function AuthPage() {
                 {/* Background layers */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F14] via-[#111820] to-[#0a0d10]" />
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#C6A85E]/10 rounded-full blur-[140px]" />
-                    <div className="absolute bottom-1/4 right-0 w-[300px] h-[300px] bg-[#C6A85E]/6 rounded-full blur-[100px]" />
+                    <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[var(--brand)]/10 rounded-full blur-[140px]" />
+                    <div className="absolute bottom-1/4 right-0 w-[300px] h-[300px] bg-[var(--brand)]/6 rounded-full blur-[100px]" />
                 </div>
 
                 {/* Abstract grid lines */}
@@ -20,17 +20,17 @@ export default async function AuthPage() {
                     className="absolute inset-0 opacity-[0.04]"
                     style={{
                         backgroundImage:
-                            "linear-gradient(#C6A85E 1px, transparent 1px), linear-gradient(90deg, #C6A85E 1px, transparent 1px)",
+                            "linear-gradient(var(--brand) 1px, transparent 1px), linear-gradient(90deg, var(--brand) 1px, transparent 1px)",
                         backgroundSize: "60px 60px",
                     }}
                 />
 
                 {/* Decorative circle ring */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-[#C6A85E]/10" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-[#C6A85E]/8" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full border border-[var(--brand)]/10" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-[var(--brand)]/8" />
 
                 {/* Logo */}
-                <div className="relative z-10 flex items-center gap-2 font-semibold text-xl text-[#C6A85E]">
+                <div className="relative z-10 flex items-center gap-2 font-semibold text-xl text-[var(--brand)]">
                     <Image src="/logo.png" alt="MediaLinkPro" width={28} height={28} className="rounded-sm" />
                     MediaLinkPro
                 </div>
@@ -39,14 +39,14 @@ export default async function AuthPage() {
                 <div className="relative z-10 space-y-6">
                     {/* Decorative top bar */}
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-[2px] bg-[#C6A85E]" />
-                        <div className="w-3 h-[2px] bg-[#C6A85E]/40" />
+                        <div className="w-8 h-[2px] bg-[var(--brand)]" />
+                        <div className="w-3 h-[2px] bg-[var(--brand)]/40" />
                     </div>
 
                     <div className="space-y-4">
                         <h1 className="text-5xl font-bold text-white leading-tight tracking-tight">
                             {t("connectVision")}<br />
-                            <span className="text-[#C6A85E]">{t("vision")}</span>
+                            <span className="text-[var(--brand)]">{t("vision")}</span>
                         </h1>
                         <p className="text-gray-400 text-lg leading-relaxed max-w-sm">
                             {t("tagline")}
@@ -58,7 +58,7 @@ export default async function AuthPage() {
                         {([t("featureTalent"), t("featureBrands"), t("featureEvents"), t("featureAnalytics")] as string[]).map((tag) => (
                             <span
                                 key={tag}
-                                className="px-3 py-1 rounded-full text-xs font-medium border border-[#C6A85E]/20 text-[#C6A85E]/80 bg-[#C6A85E]/5"
+                                className="px-3 py-1 rounded-full text-xs font-medium border border-[var(--brand)]/20 text-[var(--brand)]/80 bg-[var(--brand)]/5"
                             >
                                 {tag}
                             </span>
@@ -77,7 +77,7 @@ export default async function AuthPage() {
             {/* Right Panel — Form */}
             <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-12 relative">
                 <div className="absolute inset-0 bg-[#0d1117]" />
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#C6A85E]/4 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[var(--brand)]/4 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="relative z-10 w-full max-w-[420px]">
                     <AuthTabs />

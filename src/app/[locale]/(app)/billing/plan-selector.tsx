@@ -13,7 +13,7 @@ import {
 } from "@/lib/stripe/plans";
 import { BillingActions } from "./billing-actions";
 
-const GOLD = "#C6A85E";
+const GOLD = "var(--brand)";
 
 const PLAN_RANK: Record<PlanId, number> = {
   free: 0,
@@ -151,20 +151,20 @@ function PlanCard({
       className={
         "relative rounded-xl p-5 transition-all flex flex-col " +
         (isCurrent
-          ? "border-2 border-[#C6A85E] bg-[#C6A85E]/[0.05]"
+          ? "border-2 border-[var(--brand)] bg-[var(--brand)]/[0.05]"
           : highlighted
-            ? "border border-[#C6A85E]/60 bg-gradient-to-b from-[#C6A85E]/[0.06] to-transparent"
+            ? "border border-[var(--brand)]/60 bg-gradient-to-b from-[var(--brand)]/[0.06] to-transparent"
             : "border border-white/10 bg-white/[0.03] hover:border-white/20")
       }
       style={isCurrent || highlighted ? { boxShadow: `0 0 30px -12px ${GOLD}66` } : undefined}
     >
       {isCurrent && (
-        <div className="absolute -top-3 right-5 rounded-full bg-[#C6A85E] text-black text-xs font-bold px-2.5 py-0.5">
+        <div className="absolute -top-3 right-5 rounded-full bg-[var(--brand)] text-black text-xs font-bold px-2.5 py-0.5">
           Current Plan
         </div>
       )}
       {!isCurrent && plan.badge && highlighted && (
-        <div className="absolute -top-3 right-5 rounded-full bg-[#C6A85E] text-black text-xs font-bold px-2.5 py-0.5">
+        <div className="absolute -top-3 right-5 rounded-full bg-[var(--brand)] text-black text-xs font-bold px-2.5 py-0.5">
           {plan.badge}
         </div>
       )}

@@ -55,7 +55,7 @@ export default async function CompareProductsPage({ searchParams }: Props) {
             icon: <Building2 className="h-4 w-4" />,
             render: (p) =>
                 p.organizations ? (
-                    <Link href={`/companies/${p.organizations.slug}`} className="text-[#C6A85E] hover:underline">
+                    <Link href={`/companies/${p.organizations.slug}`} className="text-[var(--brand)] hover:underline">
                         {p.organizations.name}
                     </Link>
                 ) : (
@@ -138,7 +138,7 @@ export default async function CompareProductsPage({ searchParams }: Props) {
                                         <div>
                                             <Link
                                                 href={`/products/${p.slug}`}
-                                                className="font-semibold text-white hover:text-[#C6A85E] line-clamp-2 block"
+                                                className="font-semibold text-white hover:text-[var(--brand)] line-clamp-2 block"
                                             >
                                                 {p.name}
                                             </Link>
@@ -155,7 +155,7 @@ export default async function CompareProductsPage({ searchParams }: Props) {
                         {rows.map((row) => (
                             <tr key={row.label} className="hover:bg-white/[0.02]">
                                 <td className="sticky left-0 bg-white/5 backdrop-blur p-4 text-sm text-gray-300 border-b border-white/5 flex items-center gap-2">
-                                    {row.icon && <span className="text-[#C6A85E]">{row.icon}</span>}
+                                    {row.icon && <span className="text-[var(--brand)]">{row.icon}</span>}
                                     {row.label}
                                 </td>
                                 {ordered.map((p) => (
@@ -191,10 +191,10 @@ function EmptyCompareState() {
             <h1 className="text-2xl font-bold text-white">Product Comparison</h1>
             <p className="text-gray-400">
                 Select products to compare from the marketplace. Pass up to 4 product IDs in the{" "}
-                <code className="text-[#C6A85E]">?ids=</code> parameter, separated by commas.
+                <code className="text-[var(--brand)]">?ids=</code> parameter, separated by commas.
             </p>
             <Link href="/marketplace/products">
-                <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
+                <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
                     Go to Marketplace
                 </Button>
             </Link>

@@ -31,7 +31,7 @@ export function LandingPricing() {
             onClick={() => setTrack("individual")}
             className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
               track === "individual"
-                ? "bg-[#C6A85E] text-black"
+                ? "bg-[var(--brand)] text-black"
                 : "text-gray-400 hover:text-white"
             }`}
           >
@@ -41,7 +41,7 @@ export function LandingPricing() {
             onClick={() => setTrack("org")}
             className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
               track === "org"
-                ? "bg-[#C6A85E] text-black"
+                ? "bg-[var(--brand)] text-black"
                 : "text-gray-400 hover:text-white"
             }`}
           >
@@ -56,12 +56,12 @@ export function LandingPricing() {
             key={plan.id}
             className={`relative rounded-xl border p-6 space-y-4 flex flex-col ${
               plan.highlighted
-                ? "border-[#C6A85E] bg-gradient-to-br from-[#C6A85E]/10 to-white/5 shadow-[0_0_30px_rgba(198,168,94,0.15)]"
+                ? "border-[var(--brand)] bg-gradient-to-br from-[var(--brand)]/10 to-white/5 shadow-[0_0_30px_color-mix(in srgb, var(--brand) 15%, transparent)]"
                 : "border-white/10 bg-white/5"
             }`}
           >
             {plan.highlighted && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-xs uppercase tracking-wider text-black bg-[#C6A85E] font-semibold px-3 py-1 rounded-full">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-xs uppercase tracking-wider text-black bg-[var(--brand)] font-semibold px-3 py-1 rounded-full">
                 <Sparkles className="h-3 w-3" />
                 {t("mostPopular")}
               </div>
@@ -85,7 +85,7 @@ export function LandingPricing() {
             <ul className="space-y-2 text-sm text-gray-300 flex-1">
               {plan.features.slice(0, 4).map((f) => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-[#C6A85E] flex-shrink-0 mt-0.5" />
+                  <Check className="h-4 w-4 text-[var(--brand)] flex-shrink-0 mt-0.5" />
                   {f}
                 </li>
               ))}
@@ -94,7 +94,7 @@ export function LandingPricing() {
               <Button
                 className={`w-full ${
                   plan.highlighted
-                    ? "bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                    ? "bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                     : "bg-transparent border border-white/20 hover:bg-white/10 text-white"
                 }`}
               >
@@ -109,7 +109,7 @@ export function LandingPricing() {
 
       <p className="text-xs text-gray-500 text-center mt-6">
         {t("noCreditCard")}{" "}
-        <Link href="/pricing" className="text-[#C6A85E] hover:underline">
+        <Link href="/pricing" className="text-[var(--brand)] hover:underline">
           {t("seePlans")}
         </Link>
       </p>

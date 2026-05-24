@@ -59,11 +59,11 @@ export function AiToolBookmarkButton({
             aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
             className={cn(
                 "flex items-center gap-1.5 rounded-md border border-white/10 bg-black/40 px-2.5 py-1.5 text-sm text-gray-300 backdrop-blur-md transition-colors hover:bg-black/60 hover:text-white disabled:opacity-50",
-                bookmarked && "border-[#C6A85E]/40 text-[#C6A85E]",
+                bookmarked && "border-[var(--brand)]/40 text-[var(--brand)]",
                 className
             )}
         >
-            <Bookmark className={cn("h-4 w-4", bookmarked && "fill-[#C6A85E]")} />
+            <Bookmark className={cn("h-4 w-4", bookmarked && "fill-[var(--brand)]")} />
             {showCount && <span>{count}</span>}
         </button>
     );

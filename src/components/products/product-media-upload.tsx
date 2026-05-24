@@ -108,7 +108,7 @@ export function ProductMediaUpload({
             {/* Main Image Section */}
             <div className="space-y-4">
                 <h3 className="text-lg font-medium text-white flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5 text-[#C6A85E]" />
+                    <ImageIcon className="w-5 h-5 text-[var(--brand)]" />
                     Main Product Image
                     <span className="text-red-500">*</span>
                 </h3>
@@ -116,7 +116,7 @@ export function ProductMediaUpload({
                 <div className="flex items-start gap-6">
                     <div className={cn(
                         "relative w-40 h-40 rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-black/20 transition-all",
-                        !mainImageUrl && "hover:border-[#C6A85E]/50 hover:bg-black/30",
+                        !mainImageUrl && "hover:border-[var(--brand)]/50 hover:bg-black/30",
                         mainImageError && "border-red-500"
                     )}>
                         {mainImageUrl ? (
@@ -131,7 +131,7 @@ export function ProductMediaUpload({
                         ) : (
                             <label htmlFor="main-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2 p-2 text-center">
                                 {uploadingMain ? (
-                                    <Loader2 className="w-8 h-8 text-[#C6A85E] animate-spin" />
+                                    <Loader2 className="w-8 h-8 text-[var(--brand)] animate-spin" />
                                 ) : (
                                     <>
                                         <UploadCloud className="w-8 h-8 text-gray-400" />
@@ -188,7 +188,7 @@ export function ProductMediaUpload({
                         )}>
                             <label htmlFor="gallery-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2 text-center">
                                 {uploadingGallery ? (
-                                    <Loader2 className="w-6 h-6 text-[#C6A85E] animate-spin" />
+                                    <Loader2 className="w-6 h-6 text-[var(--brand)] animate-spin" />
                                 ) : (
                                     <>
                                         <UploadCloud className="w-6 h-6 text-gray-400" />

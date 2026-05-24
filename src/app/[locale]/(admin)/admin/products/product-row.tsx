@@ -66,7 +66,7 @@ export function AdminProductRow({ product }: { product: Product }) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[#C6A85E] hover:text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                            className="text-[var(--brand)] hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
                             title="Edit product"
                         >
                             <Pencil className="h-4 w-4" />

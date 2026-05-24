@@ -63,7 +63,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
           <Link href="/jobs/my-applications">
-            <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
+            <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
               My applications
             </Button>
           </Link>
@@ -115,7 +115,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
             onClick={() => setRemoteFilter(remoteFilter === true ? null : true)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border transition-colors ${
               remoteFilter === true
-                ? "bg-[#135bec] text-white border-[#135bec]"
+                ? "bg-[var(--brand-secondary)] text-white border-[var(--brand-secondary)]"
                 : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
             }`}
           >
@@ -194,7 +194,7 @@ function JobCard({ job }: { job: Job }) {
         </div>
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-white group-hover:text-[#C6A85E] line-clamp-2 transition-colors">
+            <h3 className="font-semibold text-white group-hover:text-[var(--brand)] line-clamp-2 transition-colors">
               {job.title}
             </h3>
             <span
@@ -213,7 +213,7 @@ function JobCard({ job }: { job: Job }) {
               <MapPin className="h-3.5 w-3.5" />
               {job.is_remote ? "Remote" : job.location || "Unspecified"}
             </span>
-            {salary && <span className="text-[#C6A85E]">{salary}</span>}
+            {salary && <span className="text-[var(--brand)]">{salary}</span>}
           </div>
           {job.description && (
             <p className="text-sm text-gray-400 line-clamp-2">{stripHtml(job.description)}</p>

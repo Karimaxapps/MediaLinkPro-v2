@@ -360,7 +360,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                 <div className="flex items-center justify-between relative">
                     <div className="absolute left-0 top-1/2 w-full h-0.5 bg-white/10 -z-10" />
                     <div
-                        className="absolute left-0 top-1/2 h-0.5 bg-[#C6A85E] -z-10 transition-all duration-300"
+                        className="absolute left-0 top-1/2 h-0.5 bg-[var(--brand)] -z-10 transition-all duration-300"
                         style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
                     />
 
@@ -375,7 +375,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     className={cn(
                                         "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
                                         isActive || isCompleted
-                                            ? "border-[#C6A85E] bg-[#C6A85E]/10 text-[#C6A85E]"
+                                            ? "border-[var(--brand)] bg-[var(--brand)]/10 text-[var(--brand)]"
                                             : "border-white/10 bg-[#0B0F14] text-gray-500"
                                     )}
                                 >
@@ -383,7 +383,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                 </div>
                                 <span className={cn(
                                     "text-xs mt-2 font-medium transition-colors duration-300",
-                                    isActive ? "text-[#C6A85E]" : "text-gray-500"
+                                    isActive ? "text-[var(--brand)]" : "text-gray-500"
                                 )}>
                                     {step.title}
                                 </span>
@@ -405,7 +405,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                         type="button"
                         onClick={handleSaveDraft}
                         disabled={isLoading}
-                        className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                        className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                     >
                         <Save className="w-4 h-4 mr-2" />
                         Save as Draft
@@ -448,7 +448,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         <Input
                                             id="name"
                                             {...form.register("name")}
-                                            className="bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                            className="bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                                             placeholder="e.g. MediaFlow Pro"
                                         />
                                         {errors.name && (
@@ -464,7 +464,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                             <Input
                                                 id="slug"
                                                 {...form.register("slug")}
-                                                className="pl-6 bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                                className="pl-6 bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                                                 placeholder="e.g. mediaflow-pro"
                                                 onChange={(e) => {
                                                     const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
@@ -549,7 +549,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                             <Input
                                                 id="sub_category"
                                                 {...form.register("sub_category")}
-                                                className="bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                                className="bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                                                 placeholder="Enter sub-category..."
                                             />
                                         )}
@@ -570,7 +570,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         {...form.register("short_description")}
                                         placeholder="Briefly describe your solution..."
                                         maxLength={150}
-                                        className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                        className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                                     />
                                     <div className="flex justify-end">
                                         <span className="text-xs text-muted-foreground">
@@ -593,7 +593,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="external_url"
                                         {...form.register("external_url")}
                                         placeholder="https://your-product-site.com"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                     {errors.external_url && (
                                         <p className="text-sm text-red-500">{errors.external_url.message}</p>
@@ -606,7 +606,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="documentation_url"
                                         {...form.register("documentation_url")}
                                         placeholder="https://docs.your-product.com"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                     {errors.external_url && (
                                         <p className="text-sm text-red-500">{errors.external_url.message}</p>
@@ -621,7 +621,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="certification_url"
                                         {...form.register("certification_url")}
                                         placeholder="https://certifications.com/your-product"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                     {errors.certification_url && (
                                         <p className="text-sm text-red-500">{errors.certification_url.message}</p>
@@ -665,7 +665,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                             id="promo_video_url"
                                             {...form.register("promo_video_url")}
                                             placeholder="https://youtube.com/watch?v=..."
-                                            className="pl-10 bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                            className="pl-10 bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                         />
                                     </div>
                                     {errors.promo_video_url && (
@@ -684,7 +684,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="support_url"
                                         {...form.register("support_url")}
                                         placeholder="https://support.your-product.com"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                 </div>
 
@@ -694,7 +694,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="documentation_url"
                                         {...form.register("documentation_url")}
                                         placeholder="https://docs.your-product.com"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                     {errors.documentation_url && (
                                         <p className="text-sm text-red-500">{errors.documentation_url.message}</p>
@@ -707,7 +707,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         id="course_url"
                                         {...form.register("course_url")}
                                         placeholder="https://academy.your-product.com"
-                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                        className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                     />
                                 </div>
 
@@ -724,7 +724,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                                         setValue('training_video_urls', newUrls, { shouldValidate: true });
                                                     }}
                                                     placeholder="https://youtube.com/..."
-                                                    className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                                    className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                                 />
                                                 <Button
                                                     type="button"
@@ -767,7 +767,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         value={watch("availability_status") ?? undefined}
                                         onValueChange={(value) => setValue("availability_status", value as InsertProduct["availability_status"], { shouldValidate: true })}
                                     >
-                                        <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
+                                        <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[var(--brand)]">
                                             <SelectValue placeholder="Select status" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -802,7 +802,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                                     type="number"
                                                     min="0"
                                                     step="0.01"
-                                                    className="bg-black/20 border-white/10 text-white focus-visible:ring-[#C6A85E]"
+                                                    className="bg-black/20 border-white/10 text-white focus-visible:ring-[var(--brand)]"
                                                     value={watch('price') || ''}
                                                     onChange={(e) => setValue('price', parseFloat(e.target.value))}
                                                 />
@@ -813,7 +813,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                                     value={watch("currency") ?? undefined}
                                                     onValueChange={(value) => setValue("currency", value)}
                                                 >
-                                                    <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
+                                                    <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[var(--brand)]">
                                                         <SelectValue placeholder="USD" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -833,7 +833,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                         value={watch("pricing_model") ?? undefined}
                                         onValueChange={(value) => setValue("pricing_model", value as InsertProduct["pricing_model"])}
                                     >
-                                        <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[#C6A85E]">
+                                        <SelectTrigger className="bg-black/20 border-white/10 text-white focus:ring-[var(--brand)]">
                                             <SelectValue placeholder="Select pricing model" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -851,7 +851,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                             <div className="space-y-6">
                                 <div className="grid gap-6 md:grid-cols-2">
                                     <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-[#C6A85E]">Basic Info</h3>
+                                        <h3 className="text-lg font-semibold text-[var(--brand)]">Basic Info</h3>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex justify-between border-b border-white/10 pb-2">
                                                 <span className="text-gray-400">Name</span>
@@ -869,7 +869,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h3 className="text-lg font-semibold text-[#C6A85E]">Commercial</h3>
+                                        <h3 className="text-lg font-semibold text-[var(--brand)]">Commercial</h3>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex justify-between border-b border-white/10 pb-2">
                                                 <span className="text-gray-400">Availability</span>
@@ -891,7 +891,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     </div>
 
                                     <div className="col-span-2 space-y-4">
-                                        <h3 className="text-lg font-semibold text-[#C6A85E]">Completeness Check</h3>
+                                        <h3 className="text-lg font-semibold text-[var(--brand)]">Completeness Check</h3>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                             {[
                                                 { label: 'Basic Info', valid: !!watch('name') && !!watch('main_category') },
@@ -935,8 +935,8 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     className={cn(
                                         "font-semibold",
                                         currentStep === 0
-                                            ? "opacity-50 cursor-not-allowed bg-[#C6A85E]/20 text-gray-500" // Disabled state
-                                            : "bg-[#C6A85E] hover:bg-[#B5964A] text-black" // Enabled state
+                                            ? "opacity-50 cursor-not-allowed bg-[var(--brand)]/20 text-gray-500" // Disabled state
+                                            : "bg-[var(--brand)] hover:bg-[#B5964A] text-black" // Enabled state
                                     )}
                                 >
                                     <ChevronLeft className="w-4 h-4 mr-2" />
@@ -947,7 +947,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                     <Button
                                         type="button"
                                         onClick={nextStep}
-                                        className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                                        className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                                     >
                                         Next
                                         <ChevronRight className="w-4 h-4 ml-2" />
@@ -958,7 +958,7 @@ export function ProductWizard({ organizations, userId, initialData, createAction
                                             type="button"
                                             onClick={() => onFinalSubmit('published')}
                                             disabled={isLoading}
-                                            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                                            className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                                         >
                                             {isLoading ? (
                                                 <Loader2 className="w-4 h-4 animate-spin" />

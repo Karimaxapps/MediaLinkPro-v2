@@ -161,7 +161,7 @@ export default function TermsPage() {
               If you have questions about these Terms, please contact us at{" "}
               <a
                 href="mailto:legal@medialinkpro.net"
-                className="text-[#C6A85E] hover:underline"
+                className="text-[var(--brand)] hover:underline"
               >
                 legal@medialinkpro.net
               </a>

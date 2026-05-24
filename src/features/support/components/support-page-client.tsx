@@ -91,12 +91,12 @@ export function SupportPageClient({ tickets }: Props) {
                                     className={cn(
                                         "flex flex-col items-start gap-1 rounded-lg border p-3 text-left transition-all",
                                         selectedType === value
-                                            ? "border-[#C6A85E] bg-[#C6A85E]/10"
+                                            ? "border-[var(--brand)] bg-[var(--brand)]/10"
                                             : "border-white/10 bg-white/5 hover:border-white/20"
                                     )}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <Icon className={cn("h-4 w-4", selectedType === value ? "text-[#C6A85E]" : "text-gray-400")} />
+                                        <Icon className={cn("h-4 w-4", selectedType === value ? "text-[var(--brand)]" : "text-gray-400")} />
                                         <span className={cn("text-sm font-medium", selectedType === value ? "text-white" : "text-gray-300")}>
                                             {label}
                                         </span>
@@ -114,7 +114,7 @@ export function SupportPageClient({ tickets }: Props) {
                             id="subject"
                             {...register("subject")}
                             placeholder="Brief summary of your request"
-                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#C6A85E]/50 focus:ring-1 focus:ring-[#C6A85E]/30 transition-colors"
+                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/30 transition-colors"
                         />
                         {errors.subject && <p className="text-xs text-red-400">{errors.subject.message}</p>}
                     </div>
@@ -127,7 +127,7 @@ export function SupportPageClient({ tickets }: Props) {
                             {...register("message")}
                             rows={5}
                             placeholder="Describe your feedback, suggestion, or issue in detail..."
-                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#C6A85E]/50 focus:ring-1 focus:ring-[#C6A85E]/30 transition-colors resize-none"
+                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/30 transition-colors resize-none"
                         />
                         {errors.message && <p className="text-xs text-red-400">{errors.message.message}</p>}
                     </div>
@@ -135,7 +135,7 @@ export function SupportPageClient({ tickets }: Props) {
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full rounded-lg bg-[#C6A85E] px-4 py-2.5 text-sm font-semibold text-black hover:bg-[#b8973e] disabled:opacity-50 transition-colors"
+                        className="w-full rounded-lg bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-black hover:bg-[#b8973e] disabled:opacity-50 transition-colors"
                     >
                         {isPending ? "Submitting…" : "Submit Request"}
                     </button>
@@ -179,8 +179,8 @@ export function SupportPageClient({ tickets }: Props) {
                                     <p className="text-xs text-gray-400 line-clamp-2">{ticket.message}</p>
 
                                     {ticket.admin_reply && (
-                                        <div className="rounded-lg border border-[#C6A85E]/20 bg-[#C6A85E]/5 p-3 space-y-1">
-                                            <p className="text-xs font-semibold text-[#C6A85E]">Admin Reply</p>
+                                        <div className="rounded-lg border border-[var(--brand)]/20 bg-[var(--brand)]/5 p-3 space-y-1">
+                                            <p className="text-xs font-semibold text-[var(--brand)]">Admin Reply</p>
                                             <p className="text-xs text-gray-300">{ticket.admin_reply}</p>
                                         </div>
                                     )}

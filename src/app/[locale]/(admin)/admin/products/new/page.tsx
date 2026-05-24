@@ -39,7 +39,7 @@ export default async function AdminAddProductPage() {
             <div>
                 <h1 className="text-2xl font-bold">Add Platform Product</h1>
                 <p className="text-sm text-gray-400 mt-1">
-                    This product will be owned by <span className="text-[#C6A85E]">MediaLinkPro</span> or attached to an unclaimed company stub.
+                    This product will be owned by <span className="text-[var(--brand)]">MediaLinkPro</span> or attached to an unclaimed company stub.
                 </p>
             </div>
 

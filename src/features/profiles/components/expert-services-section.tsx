@@ -68,9 +68,9 @@ export function ExpertServicesSection({
     return (
         <div className="space-y-6">
             {hourlyRate != null && hourlyRate > 0 && (
-                <div className="rounded-xl border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-5">
+                <div className="rounded-xl border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-5">
                     <div className="flex items-center gap-3">
-                        <DollarSign className="h-6 w-6 text-[#C6A85E]" />
+                        <DollarSign className="h-6 w-6 text-[var(--brand)]" />
                         <div>
                             <div className="text-xs uppercase tracking-wide text-gray-400">Hourly Rate</div>
                             <div className="text-2xl font-bold text-white">${hourlyRate}/hr</div>
@@ -83,7 +83,7 @@ export function ExpertServicesSection({
                 <div className="flex justify-end">
                     <Button
                         onClick={() => setShowForm(!showForm)}
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                         <Plus className="mr-1.5 h-4 w-4" />
                         Add Service
@@ -138,7 +138,7 @@ export function ExpertServicesSection({
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={isPending} className="bg-[#C6A85E] text-black hover:bg-[#b5975a]">
+                        <Button type="submit" disabled={isPending} className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
                             {isPending ? "Saving..." : "Save Service"}
                         </Button>
                         <Button
@@ -181,7 +181,7 @@ export function ExpertServicesSection({
                             )}
                             <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/5">
                                 {svc.price != null && (
-                                    <div className="flex items-center gap-1 text-sm text-[#C6A85E] font-medium">
+                                    <div className="flex items-center gap-1 text-sm text-[var(--brand)] font-medium">
                                         <DollarSign className="h-3.5 w-3.5" />
                                         {svc.price} {svc.currency}
                                     </div>

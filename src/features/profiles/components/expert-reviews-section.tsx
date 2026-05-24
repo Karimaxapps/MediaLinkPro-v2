@@ -74,7 +74,7 @@ export function ExpertReviewsSection({
                 {isAuthenticated && !isOwner && (
                     <Button
                         onClick={() => setShowForm(!showForm)}
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                         Write Review
                     </Button>
@@ -96,7 +96,7 @@ export function ExpertReviewsSection({
                         className="bg-black/20 border-white/10 text-white"
                     />
                     <div className="flex gap-2">
-                        <Button type="submit" disabled={isPending} className="bg-[#C6A85E] text-black hover:bg-[#b5975a]">
+                        <Button type="submit" disabled={isPending} className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
                             {isPending ? "Submitting..." : "Submit Review"}
                         </Button>
                         <Button
@@ -123,7 +123,7 @@ export function ExpertReviewsSection({
                             <div className="flex items-start gap-3">
                                 <Avatar className="h-10 w-10">
                                     <AvatarImage src={review.reviewer?.avatar_url ?? undefined} />
-                                    <AvatarFallback className="bg-[#C6A85E] text-black text-xs">
+                                    <AvatarFallback className="bg-[var(--brand)] text-black text-xs">
                                         {review.reviewer?.full_name?.[0] ?? "?"}
                                     </AvatarFallback>
                                 </Avatar>

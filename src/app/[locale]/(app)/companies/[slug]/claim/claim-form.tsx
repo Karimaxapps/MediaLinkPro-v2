@@ -41,7 +41,7 @@ export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
         </p>
         <Button
           onClick={() => router.push(`/companies/${slug}`)}
-          className="bg-[#C6A85E] text-black hover:bg-[#B5964A] font-semibold"
+          className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
         >
           Back to company page
         </Button>
@@ -65,7 +65,7 @@ export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="e.g. I'm the Head of Marketing at this company. My work email is jane@company.com. You can verify on our LinkedIn page."
-          className="h-32 bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+          className="h-32 bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
         />
         <p className="text-xs text-gray-500">
           Min 20 characters. Be specific — vague claims are typically rejected.
@@ -75,7 +75,7 @@ export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
         <Checkbox
           checked={notifyByEmail}
           onCheckedChange={(checked) => setNotifyByEmail(checked === true)}
-          className="mt-0.5 border-white/20 data-[state=checked]:bg-[#C6A85E] data-[state=checked]:border-[#C6A85E] data-[state=checked]:text-black"
+          className="mt-0.5 border-white/20 data-[state=checked]:bg-[var(--brand)] data-[state=checked]:border-[var(--brand)] data-[state=checked]:text-black"
         />
         <span className="text-sm text-gray-300">
           Email me when my claim is decided
@@ -88,7 +88,7 @@ export function ClaimForm({ stubId, slug }: { stubId: string; slug: string }) {
         <Button
           type="submit"
           disabled={isPending || message.trim().length < 20}
-          className="bg-[#C6A85E] text-black hover:bg-[#B5964A] font-semibold"
+          className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
         >
           {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit claim"}
         </Button>

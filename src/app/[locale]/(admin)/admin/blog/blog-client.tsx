@@ -70,7 +70,7 @@ export function BlogClient({ posts: initial }: { posts: AdminBlogPost[] }) {
             onClick={() => setStatusFilter(s)}
             className={`rounded-xl border p-4 text-left transition-colors ${
               statusFilter === s
-                ? "border-[#C6A85E]/50 bg-[#C6A85E]/10"
+                ? "border-[var(--brand)]/50 bg-[var(--brand)]/10"
                 : "border-white/10 bg-white/5 hover:bg-white/[0.07]"
             }`}
           >
@@ -91,13 +91,13 @@ export function BlogClient({ posts: initial }: { posts: AdminBlogPost[] }) {
             placeholder="Search by title or author..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#C6A85E]/50"
+            className="w-full pl-9 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[var(--brand)]/50"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-[#C6A85E]/50"
+          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-[var(--brand)]/50"
         >
           <option value="all">All Statuses</option>
           <option value="published">Published</option>
@@ -147,7 +147,7 @@ export function BlogClient({ posts: initial }: { posts: AdminBlogPost[] }) {
                       <div className="space-y-0.5 max-w-xs">
                         <p className="text-white font-medium line-clamp-1">{post.title}</p>
                         {post.category && (
-                          <p className="text-xs text-[#C6A85E]">{post.category}</p>
+                          <p className="text-xs text-[var(--brand)]">{post.category}</p>
                         )}
                       </div>
                     </td>
@@ -193,7 +193,7 @@ export function BlogClient({ posts: initial }: { posts: AdminBlogPost[] }) {
                               e.target.value as "draft" | "published" | "archived"
                             )
                           }
-                          className="text-xs px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 focus:outline-none focus:border-[#C6A85E]/50 disabled:opacity-50"
+                          className="text-xs px-2 py-1 rounded bg-white/5 border border-white/10 text-gray-300 focus:outline-none focus:border-[var(--brand)]/50 disabled:opacity-50"
                         >
                           <option value="published">Published</option>
                           <option value="draft">Draft</option>

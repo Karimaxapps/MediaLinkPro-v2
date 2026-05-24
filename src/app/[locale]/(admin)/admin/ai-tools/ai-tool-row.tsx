@@ -52,7 +52,7 @@ export function AdminAiToolRow({
             <td className="p-4 text-sm text-gray-400">{tool.status}</td>
             <td className="p-4 text-center">
                 {tool.is_featured && (
-                    <Star className="mx-auto h-4 w-4 fill-[#C6A85E] text-[#C6A85E]" />
+                    <Star className="mx-auto h-4 w-4 fill-[var(--brand)] text-[var(--brand)]" />
                 )}
             </td>
             <td className="p-4 text-right text-sm text-gray-300">

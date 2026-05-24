@@ -24,7 +24,7 @@ export default async function MyPostsPage() {
                     <p className="text-sm text-gray-400 mt-1">{posts.length} total</p>
                 </div>
                 <Link href="/blog/new">
-                    <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black">
+                    <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black">
                         <PenSquare className="mr-2 h-4 w-4" />
                         New post
                     </Button>
@@ -56,7 +56,7 @@ export default async function MyPostsPage() {
                                         {post.status}
                                     </span>
                                     {post.category && (
-                                        <span className="text-xs text-[#C6A85E]">{post.category}</span>
+                                        <span className="text-xs text-[var(--brand)]">{post.category}</span>
                                     )}
                                 </div>
                                 <h3 className="text-base font-semibold text-white truncate">{post.title}</h3>

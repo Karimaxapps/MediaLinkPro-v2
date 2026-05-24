@@ -114,7 +114,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
             onClick={() => setShowOnlineOnly(showOnlineOnly === true ? null : true)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border transition-colors ${
               showOnlineOnly === true
-                ? "bg-[#135bec] text-white border-[#135bec]"
+                ? "bg-[var(--brand-secondary)] text-white border-[var(--brand-secondary)]"
                 : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
             }`}
           >
@@ -174,7 +174,7 @@ function EventCard({ event }: { event: Event }) {
   const endDate = new Date(event.end_date);
   const isSameDay = startDate.toDateString() === endDate.toDateString();
   const isPast = endDate < new Date();
-  const color = EVENT_TYPE_COLORS[event.event_type as EventType] || "#C6A85E";
+  const color = EVENT_TYPE_COLORS[event.event_type as EventType] || "var(--brand)";
 
   return (
     <Link
@@ -206,7 +206,7 @@ function EventCard({ event }: { event: Event }) {
           {EVENT_TYPE_LABELS[event.event_type as EventType]}
         </div>
         {event.is_online && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 text-xs bg-[#135bec] text-white rounded-md">
+          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 text-xs bg-[var(--brand-secondary)] text-white rounded-md">
             <Globe className="h-3 w-3" />
             Online
           </div>
@@ -219,7 +219,7 @@ function EventCard({ event }: { event: Event }) {
       </div>
 
       <div className="p-4 space-y-3">
-        <h3 className="font-semibold text-white group-hover:text-[#C6A85E] transition-colors line-clamp-2">
+        <h3 className="font-semibold text-white group-hover:text-[var(--brand)] transition-colors line-clamp-2">
           {event.title}
         </h3>
 
@@ -250,7 +250,7 @@ function EventCard({ event }: { event: Event }) {
             <Users className="mr-1 h-3.5 w-3.5" />
             {event.interest_count ?? 0} interested
           </div>
-          <span className="text-xs text-[#C6A85E] font-medium group-hover:underline">
+          <span className="text-xs text-[var(--brand)] font-medium group-hover:underline">
             View Details
           </span>
         </div>

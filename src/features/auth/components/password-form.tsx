@@ -80,7 +80,7 @@ export function PasswordForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={isLoading} className="bg-[#C6A85E] text-black hover:bg-[#B5964A]">
+                <Button type="submit" disabled={isLoading} className="bg-[var(--brand)] text-black hover:bg-[#B5964A]">
                     {isLoading ? "Updating..." : "Update Password"}
                 </Button>
             </form>

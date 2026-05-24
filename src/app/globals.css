@@ -75,6 +75,14 @@
 }
 
 :root {
+  /* Brand palette — overridden at runtime by admin /admin/theme settings.
+     Source of truth for app-wide brand colors. */
+  --brand: #c6a85e;
+  --brand-secondary: #135bec;
+  --brand-success: #16a34a;
+  --brand-warning: #f59e0b;
+  --brand-destructive: #ef4444;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -167,13 +175,14 @@
   /* Firefox */
 }
 
-/* Themed scrollbar — dark track with gold thumb to match the webapp theme.
-   Applies globally; opt out with .scrollbar-hide on a per-element basis. */
+/* Themed scrollbar — neutral dark track and gray thumb so the scrollbar
+   blends into the page chrome (no brand color). Opt out per-element with
+   .scrollbar-hide. */
 html,
 body,
 *:not(.scrollbar-hide) {
   scrollbar-width: thin !important;
-  scrollbar-color: rgba(198, 168, 94, 0.55) rgba(255, 255, 255, 0.04) !important;
+  scrollbar-color: rgba(255, 255, 255, 0.18) rgba(255, 255, 255, 0.04) !important;
 }
 
 *:not(.scrollbar-hide)::-webkit-scrollbar {
@@ -187,7 +196,7 @@ body,
 }
 
 *:not(.scrollbar-hide)::-webkit-scrollbar-thumb {
-  background-color: rgba(198, 168, 94, 0.45);
+  background-color: rgba(255, 255, 255, 0.18);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -195,7 +204,7 @@ body,
 }
 
 *:not(.scrollbar-hide)::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(198, 168, 94, 0.85);
+  background-color: rgba(255, 255, 255, 0.32);
   background-clip: padding-box;
 }
 
@@ -231,14 +240,16 @@ body,
   padding: 2px;
   background: conic-gradient(
     from var(--ai-angle),
-    #c6a85e,
-    #135bec,
-    #8ab4f8,
-    #c6a85e,
-    #135bec,
-    #c6a85e
+    var(--brand),
+    var(--brand-secondary),
+    var(--brand-secondary),
+    var(--brand),
+    var(--brand-secondary),
+    var(--brand)
   );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation: ai-spin 3.2s linear infinite;
@@ -253,10 +264,10 @@ body,
   border-radius: inherit;
   background: conic-gradient(
     from var(--ai-angle),
-    #c6a85e,
-    #135bec,
-    #8ab4f8,
-    #c6a85e
+    var(--brand),
+    var(--brand-secondary),
+    var(--brand-secondary),
+    var(--brand)
   );
   filter: blur(16px);
   opacity: 0.45;

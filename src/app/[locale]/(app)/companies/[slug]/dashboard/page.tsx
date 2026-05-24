@@ -48,7 +48,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
         <Link href={`/companies/${slug}/billing`}>
           <Button
             variant="outline"
-            className="rounded-full border-[#C6A85E]/60 bg-[#C6A85E]/10 px-5 font-semibold text-[#C6A85E] shadow-sm shadow-[#C6A85E]/10 hover:border-[#D7BE78] hover:bg-[#C6A85E]/20 hover:text-[#F1D58A]"
+            className="rounded-full border-[var(--brand)]/60 bg-[var(--brand)]/10 px-5 font-semibold text-[var(--brand)] shadow-sm shadow-[var(--brand)]/10 hover:border-[#D7BE78] hover:bg-[var(--brand)]/20 hover:text-[#F1D58A]"
           >
             <CreditCard className="size-4 mr-2 text-current" />
             Billing & plan

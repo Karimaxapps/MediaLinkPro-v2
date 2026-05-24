@@ -18,7 +18,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
             <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
             <p className="text-sm text-gray-400 max-w-sm mb-6">{description}</p>
             {actionLabel && (
-                <Button onClick={onAction} className="bg-[#C6A85E] hover:bg-[#B5964A] text-black">
+                <Button onClick={onAction} className="bg-[var(--brand)] hover:bg-[#B5964A] text-black">
                     {actionLabel}
                 </Button>
             )}

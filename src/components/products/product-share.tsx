@@ -72,7 +72,7 @@ export function ProductShare({ productName, slug, companyName }: ProductSharePro
 
     if (!mounted) {
         return (
-            <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[#C6A85E] hover:text-[#B5964A] transition-colors">
+            <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[var(--brand)] hover:text-[#B5964A] transition-colors">
                 <Share2 className="w-5 h-5" />
             </Button>
         );
@@ -81,7 +81,7 @@ export function ProductShare({ productName, slug, companyName }: ProductSharePro
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[#C6A85E] hover:text-[#B5964A] transition-colors">
+                <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[var(--brand)] hover:text-[#B5964A] transition-colors">
                     <Share2 className="w-5 h-5" />
                 </Button>
             </DialogTrigger>
@@ -115,10 +115,10 @@ export function ProductShare({ productName, slug, companyName }: ProductSharePro
                             id="link"
                             defaultValue={shareUrl}
                             readOnly
-                            className="flex h-9 w-full rounded-md border border-white/10 bg-white/5 px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6A85E] disabled:cursor-not-allowed disabled:opacity-50 text-gray-300"
+                            className="flex h-9 w-full rounded-md border border-white/10 bg-white/5 px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-50 text-gray-300"
                         />
                     </div>
-                    <Button type="button" size="sm" className="px-3 bg-[#C6A85E] hover:bg-[#B5964D] text-black" onClick={copyLink}>
+                    <Button type="button" size="sm" className="px-3 bg-[var(--brand)] hover:bg-[#B5964D] text-black" onClick={copyLink}>
                         <span className="sr-only">Copy</span>
                         <LinkIcon className="h-4 w-4" />
                     </Button>

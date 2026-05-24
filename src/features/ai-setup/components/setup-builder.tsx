@@ -226,7 +226,7 @@ export function SetupBuilder({
       {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-          <Sparkles className="h-8 w-8 text-[#C6A85E]" />
+          <Sparkles className="h-8 w-8 text-[var(--brand)]" />
           AI Setup Builder
         </h1>
         <p className="text-gray-400 max-w-2xl">
@@ -351,7 +351,7 @@ export function SetupBuilder({
             <Button
               type="submit"
               disabled={isGenerating}
-              className="w-full h-12 rounded-full bg-[#C6A85E] hover:bg-[#b59750] text-black font-semibold text-base"
+              className="w-full h-12 rounded-full bg-[var(--brand)] hover:bg-[#b59750] text-black font-semibold text-base"
             >
               {isGenerating ? (
                 <>
@@ -467,7 +467,7 @@ export function SetupBuilder({
                 <Button
                   disabled={isConfirming}
                   onClick={() => onDecision(true)}
-                  className="bg-[#C6A85E] hover:bg-[#b59750] text-black font-semibold"
+                  className="bg-[var(--brand)] hover:bg-[#b59750] text-black font-semibold"
                 >
                   Yes, connect me with these vendors
                 </Button>
@@ -586,7 +586,7 @@ function SetupExample() {
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 space-y-6">
       <div className="flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-[#C6A85E]" />
+        <Sparkles className="h-5 w-5 text-[var(--brand)]" />
         <h2 className="text-lg font-semibold text-white">See how it works — example</h2>
       </div>
 
@@ -657,7 +657,7 @@ function SetupExample() {
                 {step.products.map((p) => (
                   <Badge
                     key={p}
-                    className="bg-[#C6A85E]/10 border border-[#C6A85E]/30 text-[#C6A85E]"
+                    className="bg-[var(--brand)]/10 border border-[var(--brand)]/30 text-[var(--brand)]"
                   >
                     {p}
                   </Badge>

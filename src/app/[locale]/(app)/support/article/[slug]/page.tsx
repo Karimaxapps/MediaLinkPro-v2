@@ -16,9 +16,9 @@ const articleClasses = `text-gray-200 leading-relaxed
   [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:scroll-mt-4
   [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
   [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
-  [&_li]:marker:text-[#C6A85E]
-  [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
-  [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
+  [&_li]:marker:text-[var(--brand)]
+  [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
+  [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2
   [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs`;
 
 type Props = { params: Promise<{ slug: string }> };
@@ -64,7 +64,7 @@ export default async function SupportArticlePage({ params }: Props) {
             {article.version_tag && (
               <>
                 <span className="text-gray-700">·</span>
-                <span className="text-[#C6A85E]">{article.version_tag}</span>
+                <span className="text-[var(--brand)]">{article.version_tag}</span>
               </>
             )}
           </div>

@@ -81,8 +81,8 @@ function StatCard({
 }) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 flex items-center gap-3">
-      <div className="p-2 rounded-lg bg-[#C6A85E]/10">
-        <Icon className="h-4 w-4 text-[#C6A85E]" />
+      <div className="p-2 rounded-lg bg-[var(--brand)]/10">
+        <Icon className="h-4 w-4 text-[var(--brand)]" />
       </div>
       <div>
         <p className="text-lg font-bold text-white leading-none">{value}</p>
@@ -303,7 +303,7 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
           <div className="flex items-center gap-3">
             <Avatar className="h-11 w-11 rounded-xl shrink-0">
               <AvatarImage src={company.logo_url ?? undefined} />
-              <AvatarFallback className="bg-[#C6A85E]/20 text-[#C6A85E] text-sm font-bold rounded-xl">
+              <AvatarFallback className="bg-[var(--brand)]/20 text-[var(--brand)] text-sm font-bold rounded-xl">
                 {company.name[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -327,16 +327,16 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
         <div className="px-4 py-5 space-y-6">
           {/* ── Unclaimed stub banner ── */}
           {(company.is_stub || (company.source !== "user" && !company.claimed_at)) && (
-            <div className="rounded-lg border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-4 flex items-center justify-between gap-3">
+            <div className="rounded-lg border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-4 flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-[#C6A85E]">Unclaimed stub</p>
+                <p className="text-sm font-medium text-[var(--brand)]">Unclaimed stub</p>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Seeded by admin — not yet claimed by an owner.
                 </p>
               </div>
               <a
                 href={`/admin/companies/stubs/edit/${company.slug}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#C6A85E] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#B5964A] transition-colors shrink-0"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--brand)] px-3 py-1.5 text-xs font-semibold text-black hover:bg-[#B5964A] transition-colors shrink-0"
               >
                 <Pencil className="h-3 w-3" />
                 Edit profile
@@ -368,12 +368,12 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
               disabled={isPending}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                 company.is_featured
-                  ? "border-[#C6A85E]/50 bg-[#C6A85E]/10 text-[#C6A85E]"
+                  ? "border-[var(--brand)]/50 bg-[var(--brand)]/10 text-[var(--brand)]"
                   : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/[0.07]"
               }`}
             >
               <div className="flex items-center gap-2">
-                <Star className={`h-4 w-4 ${company.is_featured ? "fill-[#C6A85E]" : ""}`} />
+                <Star className={`h-4 w-4 ${company.is_featured ? "fill-[var(--brand)]" : ""}`} />
                 <span className="text-sm font-medium">
                   {company.is_featured ? "Featured on feed" : "Not featured"}
                 </span>
@@ -490,7 +490,7 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
                 <Button
                   onClick={handleEditSave}
                   disabled={isPending}
-                  className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full"
+                  className="w-full bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold rounded-full"
                 >
                   {isPending ? "Saving…" : "Save changes"}
                 </Button>
@@ -631,7 +631,7 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
                 <Button
                   onClick={handleGift}
                   disabled={isPending}
-                  className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full"
+                  className="w-full bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold rounded-full"
                 >
                   {isPending ? "Granting…" : "Grant gift"}
                 </Button>
@@ -656,7 +656,7 @@ export function ManageCompanySheet({ company, open, onClose, onDeleted, onUpdate
                   size="sm"
                   disabled={isPending}
                   onClick={handleConvertToStub}
-                  className="bg-transparent border-[#C6A85E]/40 text-[#C6A85E] hover:bg-[#C6A85E]/10"
+                  className="bg-transparent border-[var(--brand)]/40 text-[var(--brand)] hover:bg-[var(--brand)]/10"
                 >
                   <Pencil className="h-3.5 w-3.5 mr-1.5" />
                   Convert to admin stub

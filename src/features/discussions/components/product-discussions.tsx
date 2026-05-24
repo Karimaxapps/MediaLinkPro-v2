@@ -104,7 +104,7 @@ export function ProductDiscussions({
                                 <div className="flex items-center gap-3 mb-2">
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage src={p.author?.avatar_url ?? undefined} />
-                                        <AvatarFallback className="bg-[#C6A85E] text-black text-xs">
+                                        <AvatarFallback className="bg-[var(--brand)] text-black text-xs">
                                             {(p.author?.full_name ?? p.author?.username ?? "U")[0]}
                                         </AvatarFallback>
                                     </Avatar>
@@ -135,7 +135,7 @@ export function ProductDiscussions({
                             <Button
                                 onClick={handleReply}
                                 disabled={isPending || !replyBody.trim()}
-                                className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+                                className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
                             >
                                 <Send className="mr-2 h-4 w-4" />
                                 Reply
@@ -152,14 +152,14 @@ export function ProductDiscussions({
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5 text-[#C6A85E]" />
+                    <MessageSquare className="h-5 w-5 text-[var(--brand)]" />
                     Discussions
                 </h3>
                 {canPost && !showNewForm && (
                     <Button
                         size="sm"
                         onClick={() => setShowNewForm(true)}
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
                     >
                         <Plus className="mr-1 h-4 w-4" />
                         New Thread
@@ -196,7 +196,7 @@ export function ProductDiscussions({
                         <Button
                             onClick={handleCreate}
                             disabled={isPending || !newTitle.trim() || !newBody.trim()}
-                            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+                            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
                         >
                             Create
                         </Button>

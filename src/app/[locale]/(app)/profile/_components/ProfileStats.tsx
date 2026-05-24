@@ -12,7 +12,7 @@ interface StatItemProps {
 
 function StatItem({ label, value, trend, progress }: StatItemProps) {
     return (
-        <Card className="bg-white/5 border-white/10 overflow-hidden group hover:border-[#C6A85E]/30 transition-all duration-300">
+        <Card className="bg-white/5 border-white/10 overflow-hidden group hover:border-[var(--brand)]/30 transition-all duration-300">
             <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
@@ -33,7 +33,7 @@ function StatItem({ label, value, trend, progress }: StatItemProps) {
                 <div className="space-y-1.5 pt-2">
                     <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-[#C6A85E] rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(198,168,94,0.3)]"
+                            className="h-full bg-[var(--brand)] rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_color-mix(in srgb, var(--brand) 30%, transparent)]"
                             style={{ width: `${progress}%` }}
                         />
                     </div>

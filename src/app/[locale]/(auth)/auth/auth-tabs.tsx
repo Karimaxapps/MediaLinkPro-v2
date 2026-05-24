@@ -138,7 +138,7 @@ export function AuthTabs() {
                             onClick={() => switchTab("signup")}
                             className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                                 tab === "signup"
-                                    ? "bg-[#C6A85E] text-black shadow-md"
+                                    ? "bg-[var(--brand)] text-black shadow-md"
                                     : "text-gray-400 hover:text-white"
                             }`}
                         >
@@ -148,7 +148,7 @@ export function AuthTabs() {
                             onClick={() => switchTab("login")}
                             className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                                 tab === "login"
-                                    ? "bg-[#C6A85E] text-black shadow-md"
+                                    ? "bg-[var(--brand)] text-black shadow-md"
                                     : "text-gray-400 hover:text-white"
                             }`}
                         >
@@ -192,7 +192,7 @@ export function AuthTabs() {
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             required
-                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                     </div>
 
@@ -205,7 +205,7 @@ export function AuthTabs() {
                             value={signupEmail}
                             onChange={(e) => setSignupEmail(e.target.value)}
                             required
-                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                     </div>
 
@@ -218,7 +218,7 @@ export function AuthTabs() {
                             value={signupPassword}
                             onChange={(e) => setSignupPassword(e.target.value)}
                             required
-                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                         <button
                             type="button"
@@ -238,7 +238,7 @@ export function AuthTabs() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
-                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                         <button
                             type="button"
@@ -254,15 +254,15 @@ export function AuthTabs() {
                             id="terms"
                             checked={termsAccepted}
                             onCheckedChange={(v) => setTermsAccepted(v === true)}
-                            className="mt-0.5 border-white/20 data-[state=checked]:bg-[#C6A85E] data-[state=checked]:border-[#C6A85E]"
+                            className="mt-0.5 border-white/20 data-[state=checked]:bg-[var(--brand)] data-[state=checked]:border-[var(--brand)]"
                         />
                         <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed cursor-pointer select-none">
                             {t("termsAcceptPrefix")}{" "}
-                            <Link href="/terms" target="_blank" className="text-[#C6A85E] hover:underline">
+                            <Link href="/terms" target="_blank" className="text-[var(--brand)] hover:underline">
                                 {t("termsLink")}
                             </Link>
                             {" "}{t("termsAcceptAnd")}{" "}
-                            <Link href="/privacy" target="_blank" className="text-[#C6A85E] hover:underline">
+                            <Link href="/privacy" target="_blank" className="text-[var(--brand)] hover:underline">
                                 {t("privacyLink")}
                             </Link>
                         </label>
@@ -271,7 +271,7 @@ export function AuthTabs() {
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-12 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl mt-2 transition-colors"
+                        className="w-full h-12 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl mt-2 transition-colors"
                     >
                         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("createBtn")}
                     </Button>
@@ -289,7 +289,7 @@ export function AuthTabs() {
                             value={loginEmail}
                             onChange={(e) => setLoginEmail(e.target.value)}
                             required
-                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                     </div>
 
@@ -301,7 +301,7 @@ export function AuthTabs() {
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
                             required
-                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                         <button
                             type="button"
@@ -316,7 +316,7 @@ export function AuthTabs() {
                         <button
                             type="button"
                             onClick={() => switchTab("forgotPassword")}
-                            className="text-xs text-[#C6A85E] hover:underline"
+                            className="text-xs text-[var(--brand)] hover:underline"
                         >
                             {t("forgotPassword")}
                         </button>
@@ -325,7 +325,7 @@ export function AuthTabs() {
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-12 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl transition-colors"
+                        className="w-full h-12 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl transition-colors"
                     >
                         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("signInBtn")}
                     </Button>
@@ -343,13 +343,13 @@ export function AuthTabs() {
                             value={forgotEmail}
                             onChange={(e) => setForgotEmail(e.target.value)}
                             required
-                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[#C6A85E]/50 focus:ring-0"
+                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
                         />
                     </div>
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-12 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl transition-colors"
+                        className="w-full h-12 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-bold text-sm rounded-xl transition-colors"
                     >
                         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("sendResetLink")}
                     </Button>
@@ -388,18 +388,18 @@ export function AuthTabs() {
             <p className="text-center text-sm text-gray-600">
                 {tab === "signup" ? (
                     <>{t("alreadyHaveAccount")}{" "}
-                        <button onClick={() => switchTab("login")} className="text-[#C6A85E] hover:underline font-medium">
+                        <button onClick={() => switchTab("login")} className="text-[var(--brand)] hover:underline font-medium">
                             {t("logIn")}
                         </button>
                     </>
                 ) : tab === "login" ? (
                     <>{t("dontHaveAccount")}{" "}
-                        <button onClick={() => switchTab("signup")} className="text-[#C6A85E] hover:underline font-medium">
+                        <button onClick={() => switchTab("signup")} className="text-[var(--brand)] hover:underline font-medium">
                             {t("signUp")}
                         </button>
                     </>
                 ) : (
-                    <button onClick={() => switchTab("login")} className="text-[#C6A85E] hover:underline font-medium">
+                    <button onClick={() => switchTab("login")} className="text-[var(--brand)] hover:underline font-medium">
                         {t("backToLogin")}
                     </button>
                 )}

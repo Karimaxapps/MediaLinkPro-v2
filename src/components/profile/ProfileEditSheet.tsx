@@ -110,19 +110,19 @@ export function ProfileEditSheet({ profile, children }: ProfileEditSheetProps) {
                             <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10 p-1">
                                 <TabsTrigger
                                     value="general"
-                                    className="data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
+                                    className="data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
                                 >
                                     General
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="professional"
-                                    className="data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
+                                    className="data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
                                 >
                                     Professional
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="social"
-                                    className="data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
+                                    className="data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black text-gray-400 hover:text-white transition-colors"
                                 >
                                     Contact
                                 </TabsTrigger>
@@ -166,7 +166,7 @@ export function ProfileEditSheet({ profile, children }: ProfileEditSheetProps) {
                         <SheetClose asChild>
                             <Button variant="outline" type="button" className="border-white/10 text-white hover:bg-white/5 hover:text-white bg-transparent">Cancel</Button>
                         </SheetClose>
-                        <Button type="submit" disabled={isSaving} className="bg-[#C6A85E] text-black hover:bg-[#b5964a]">
+                        <Button type="submit" disabled={isSaving} className="bg-[var(--brand)] text-black hover:bg-[#b5964a]">
                             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Save Changes
                         </Button>

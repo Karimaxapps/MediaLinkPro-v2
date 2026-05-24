@@ -47,7 +47,7 @@ export function FeedCompanyCard({
 
     return (
         <Link href={href} className="group block w-full h-full">
-            <div className="bg-[#1A1A1A] border border-white/10 rounded-xl p-5 flex flex-col gap-4 h-full hover:border-[#C6A85E]/40 transition-all duration-200">
+            <div className="bg-[#1A1A1A] border border-white/10 rounded-xl p-5 flex flex-col gap-4 h-full hover:border-[var(--brand)]/40 transition-all duration-200">
                 {/* Top row: logo + follow */}
                 <div className="flex items-start justify-between gap-3">
                     <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
@@ -68,7 +68,7 @@ export function FeedCompanyCard({
                             organizationId={id}
                             initialFollowing={is_following}
                             size="sm"
-                            className="bg-transparent text-[#C6A85E] hover:bg-[#C6A85E]/10 border-0 px-2"
+                            className="bg-transparent text-[var(--brand)] hover:bg-[var(--brand)]/10 border-0 px-2"
                         />
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export function FeedCompanyCard({
                 {/* Name + subtitle */}
                 <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                        <h3 className="text-white font-bold text-lg leading-tight truncate group-hover:text-[#C6A85E] transition-colors">
+                        <h3 className="text-white font-bold text-lg leading-tight truncate group-hover:text-[var(--brand)] transition-colors">
                             {name}
                         </h3>
                         <VerifiedBadge plan={plan} size="sm" className="shrink-0" />

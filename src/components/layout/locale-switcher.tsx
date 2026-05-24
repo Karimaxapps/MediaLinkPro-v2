@@ -117,7 +117,7 @@ export function LocaleSwitcher({ locales }: Props) {
             title={LOCALE_LABEL[loc] ?? loc}
             className={`justify-center cursor-pointer rounded-md px-1.5 py-1.5 hover:bg-white/10 focus:bg-white/10 text-white ${
               loc === locale
-                ? "ring-1 ring-[#C6A85E]/70 bg-white/5"
+                ? "ring-1 ring-[var(--brand)]/70 bg-white/5"
                 : ""
             }`}
           >

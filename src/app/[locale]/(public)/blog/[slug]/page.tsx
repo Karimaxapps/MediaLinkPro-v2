@@ -101,9 +101,9 @@ export default async function PublicBlogPostPage({ params }: Props) {
     [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-6 [&_h3]:mb-2
     [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1
     [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1
-    [&_li]:marker:text-[#C6A85E]
-    [&_blockquote]:border-l-2 [&_blockquote]:border-[#C6A85E] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
-    [&_a]:text-[#C6A85E] [&_a]:underline [&_a]:underline-offset-2
+    [&_li]:marker:text-[var(--brand)]
+    [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3
+    [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2
     [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs`;
 
   return (
@@ -124,7 +124,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
         {/* Post header */}
         <div className="space-y-4">
           {post.category && (
-            <div className="text-xs uppercase tracking-wider text-[#C6A85E] font-medium">
+            <div className="text-xs uppercase tracking-wider text-[var(--brand)] font-medium">
               {post.category}
             </div>
           )}
@@ -135,7 +135,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
           <div className="flex items-center gap-3 pt-2">
             <Avatar className="h-10 w-10">
               <AvatarImage src={post.author?.avatar_url ?? undefined} />
-              <AvatarFallback className="bg-[#C6A85E] text-black">
+              <AvatarFallback className="bg-[var(--brand)] text-black">
                 {(post.author?.full_name ?? post.author?.username ?? "A")[0]}
               </AvatarFallback>
             </Avatar>
@@ -176,7 +176,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
             {post.linked_product && (
               <Link
                 href={`/products/${post.linked_product.slug}`}
-                className="block rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/10 to-white/5 p-5 hover:from-[#C6A85E]/20 transition-colors"
+                className="block rounded-xl border border-[var(--brand)]/30 bg-gradient-to-br from-[var(--brand)]/10 to-white/5 p-5 hover:from-[var(--brand)]/20 transition-colors"
               >
                 <div className="flex items-start gap-4">
                   <div className="h-14 w-14 shrink-0 rounded-lg border border-white/10 bg-black/20 overflow-hidden flex items-center justify-center">
@@ -189,11 +189,11 @@ export default async function PublicBlogPostPage({ params }: Props) {
                         className="object-cover w-full h-full"
                       />
                     ) : (
-                      <Package className="h-6 w-6 text-[#C6A85E]" />
+                      <Package className="h-6 w-6 text-[var(--brand)]" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium mb-1">
+                    <div className="text-[10px] uppercase tracking-wider text-[var(--brand)] font-medium mb-1">
                       {t("featuredProduct")}
                     </div>
                     <div className="text-base font-semibold text-white">
@@ -247,8 +247,8 @@ export default async function PublicBlogPostPage({ params }: Props) {
 
             {/* Paywall CTA */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center space-y-5">
-              <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-[#C6A85E]/10 border border-[#C6A85E]/20 mx-auto">
-                <Lock className="h-5 w-5 text-[#C6A85E]" />
+              <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-[var(--brand)]/10 border border-[var(--brand)]/20 mx-auto">
+                <Lock className="h-5 w-5 text-[var(--brand)]" />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-white">{t("signInTitle")}</h3>
@@ -257,7 +257,7 @@ export default async function PublicBlogPostPage({ params }: Props) {
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <Link
                   href={`/auth?redirect=/blog/${post.slug}`}
-                  className="inline-flex items-center gap-2 bg-[#C6A85E] hover:bg-[#B5964A] text-black text-sm font-semibold px-6 py-2.5 rounded-full transition-colors"
+                  className="inline-flex items-center gap-2 bg-[var(--brand)] hover:bg-[#B5964A] text-black text-sm font-semibold px-6 py-2.5 rounded-full transition-colors"
                 >
                   {t("signInContinue")}
                 </Link>

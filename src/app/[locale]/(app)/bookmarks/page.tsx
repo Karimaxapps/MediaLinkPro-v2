@@ -28,7 +28,7 @@ export default async function BookmarkedPage() {
         <div className="container mx-auto py-8 space-y-10">
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-                    <Bookmark className="h-8 w-8 text-[#C6A85E]" />
+                    <Bookmark className="h-8 w-8 text-[var(--brand)]" />
                     My Bookmarks
                 </h1>
                 <p className="text-gray-400">
@@ -60,7 +60,7 @@ export default async function BookmarkedPage() {
                     {aiTools && aiTools.length > 0 && (
                         <section className="space-y-4">
                             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                                <Sparkles className="h-5 w-5 text-[#C6A85E]" />
+                                <Sparkles className="h-5 w-5 text-[var(--brand)]" />
                                 AI Production Tools
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

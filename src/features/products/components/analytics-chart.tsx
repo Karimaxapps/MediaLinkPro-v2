@@ -52,8 +52,8 @@ export function AnalyticsChart({ data }: { data: AnalyticsPoint[] }) {
             <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
                 <defs>
                     <linearGradient id="viewsGradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="#C6A85E" stopOpacity="0.35" />
-                        <stop offset="100%" stopColor="#C6A85E" stopOpacity="0" />
+                        <stop offset="0%" stopColor="var(--brand)" stopOpacity="0.35" />
+                        <stop offset="100%" stopColor="var(--brand)" stopOpacity="0" />
                     </linearGradient>
                 </defs>
 
@@ -77,9 +77,9 @@ export function AnalyticsChart({ data }: { data: AnalyticsPoint[] }) {
                 {/* Views area */}
                 <path d={viewsArea} fill="url(#viewsGradient)" />
                 {/* Views line */}
-                <path d={viewsPath} fill="none" stroke="#C6A85E" strokeWidth="2" />
+                <path d={viewsPath} fill="none" stroke="var(--brand)" strokeWidth="2" />
                 {/* Scans line */}
-                <path d={scansPath} fill="none" stroke="#135bec" strokeWidth="2" strokeDasharray="4 3" />
+                <path d={scansPath} fill="none" stroke="var(--brand-secondary)" strokeWidth="2" strokeDasharray="4 3" />
 
                 {/* X labels */}
                 {xLabelIndices.map((i) => (
@@ -98,11 +98,11 @@ export function AnalyticsChart({ data }: { data: AnalyticsPoint[] }) {
 
             <div className="flex items-center gap-4 text-xs text-gray-400 mt-2 px-2">
                 <div className="flex items-center gap-1.5">
-                    <span className="h-0.5 w-4 bg-[#C6A85E]" />
+                    <span className="h-0.5 w-4 bg-[var(--brand)]" />
                     Views
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <span className="h-0.5 w-4 bg-[#135bec]" style={{ borderTop: "1px dashed #135bec" }} />
+                    <span className="h-0.5 w-4 bg-[var(--brand-secondary)]" style={{ borderTop: "1px dashed var(--brand-secondary)" }} />
                     QR Scans
                 </div>
             </div>

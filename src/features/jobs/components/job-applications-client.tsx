@@ -56,7 +56,7 @@ export function JobApplicationsClient({ job, applications }: Props) {
         <h1 className="text-2xl font-bold text-white mb-1">{job.title}</h1>
         <p className="text-sm text-gray-400">
           {job.organizations?.name ?? "—"} ·{" "}
-          <span className="text-[#C6A85E]">
+          <span className="text-[var(--brand)]">
             {applications.length} application{applications.length !== 1 ? "s" : ""}
           </span>
         </p>
@@ -118,7 +118,7 @@ function FilterChip({
       }`}
       style={
         active
-          ? { backgroundColor: color ?? "#C6A85E", borderColor: color ?? "#C6A85E" }
+          ? { backgroundColor: color ?? "var(--brand)", borderColor: color ?? "var(--brand)" }
           : undefined
       }
     >
@@ -168,7 +168,7 @@ function ApplicationCard({ application }: { application: JobApplication }) {
             {applicant?.username ? (
               <Link
                 href={`/profiles/${applicant.username}`}
-                className="font-semibold text-white hover:text-[#C6A85E] transition-colors"
+                className="font-semibold text-white hover:text-[var(--brand)] transition-colors"
               >
                 {applicant.full_name ?? applicant.username}
               </Link>
@@ -199,15 +199,15 @@ function ApplicationCard({ application }: { application: JobApplication }) {
           className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
         >
           {application.resume_type === "pdf" ? (
-            <FileText className="h-4 w-4 text-[#C6A85E]" />
+            <FileText className="h-4 w-4 text-[var(--brand)]" />
           ) : (
-            <Link2 className="h-4 w-4 text-[#C6A85E]" />
+            <Link2 className="h-4 w-4 text-[var(--brand)]" />
           )}
           Open resume
         </a>
         {application.phone && (
           <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300">
-            <Mail className="h-4 w-4 text-[#C6A85E]" />
+            <Mail className="h-4 w-4 text-[var(--brand)]" />
             {application.phone}
           </div>
         )}
@@ -443,7 +443,7 @@ function ReplyDialog({
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as JobApplicationStatus)}
-            className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none"
+            className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none"
           >
             {(Object.keys(APPLICATION_STATUS_LABELS) as JobApplicationStatus[])
               .filter((k) => k !== "withdrawn" && k !== "submitted")
@@ -479,7 +479,7 @@ function ReplyDialog({
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
           >
             {isPending ? "Sending..." : "Send reply"}
           </Button>

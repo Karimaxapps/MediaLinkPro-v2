@@ -25,7 +25,7 @@ export function ManageJobsClient({ jobs }: { jobs: Job[] }) {
           <p className="text-sm text-gray-400">Your company postings and candidate submissions.</p>
         </div>
         <Link href="/jobs/new">
-          <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium">
+          <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
             Post a job
           </Button>
         </Link>
@@ -85,7 +85,7 @@ function JobRow({ job }: { job: Job }) {
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href={`/jobs/manage/${job.id}`}
-              className="text-lg font-semibold text-white hover:text-[#C6A85E] transition-colors"
+              className="text-lg font-semibold text-white hover:text-[var(--brand)] transition-colors"
             >
               {job.title}
             </Link>
@@ -101,7 +101,7 @@ function JobRow({ job }: { job: Job }) {
                   ? "bg-[#10b981]/15 text-[#10b981]"
                   : job.status === "closed"
                     ? "bg-gray-500/15 text-gray-400"
-                    : "bg-[#C6A85E]/15 text-[#C6A85E]"
+                    : "bg-[var(--brand)]/15 text-[var(--brand)]"
               }`}
             >
               {JOB_STATUS_LABELS[job.status]}
@@ -116,7 +116,7 @@ function JobRow({ job }: { job: Job }) {
               <MapPin className="h-3.5 w-3.5" />
               {job.is_remote ? "Remote" : job.location || "—"}
             </span>
-            <span className="flex items-center gap-1 text-[#C6A85E]">
+            <span className="flex items-center gap-1 text-[var(--brand)]">
               <Users className="h-3.5 w-3.5" />
               {job.application_count} applicant{job.application_count !== 1 ? "s" : ""}
             </span>
@@ -127,7 +127,7 @@ function JobRow({ job }: { job: Job }) {
 
       <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
         <Link href={`/jobs/manage/${job.id}`}>
-          <Button className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium text-sm">
+          <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium text-sm">
             View applications ({job.application_count})
           </Button>
         </Link>

@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ConnectCard } from "@/features/organizations/components/connect-card";
 import type { ConnectionStatus } from "@/features/connections/server/actions";
+import { shortActivityLabel } from "@/features/organizations/schema";
+import { cn } from "@/lib/utils";
 
 export type ConnectListItem = {
     id: string;
@@ -39,11 +41,16 @@ interface ConnectListClientProps {
     title: string;
 }
 
-/**
- * Builds the searchable haystack for an item — only the fields a user could
- * reasonably search by. Lower-cased once per render to keep the per-keystroke
- * filter loop allocation-free.
- */
+// ─── Activity filter ──────────────────────────────────────────────────────────
+// Chips are derived from the unique main_activity values present in the items,
+// so each company category (Broadcasters, Solution Providers, etc.) gets its
+// own relevant filter set automatically — no hardcoded mapping to maintain.
+
+type ActivityFilter = {
+    label: string;
+    count: number;
+};
+
 function buildHaystack(item: ConnectListItem, type: "organization" | "profile"): string {
     if (type === "organization") {
         return [item.name, item.tagline, item.main_activity, item.type, item.country]
@@ -66,18 +73,50 @@ function buildHaystack(item: ConnectListItem, type: "organization" | "profile"):
 
 export function ConnectListClient({ items, type, title }: ConnectListClientProps) {
     const [query, setQuery] = useState("");
+    const [activeActivity, setActiveActivity] = useState<string | null>(null);
+    const tabsRef = useRef<HTMLDivElement>(null);
 
-    // Pre-compute haystacks once when items/type change.
     const indexed = useMemo(
         () => items.map((item) => ({ item, hay: buildHaystack(item, type) })),
         [items, type],
     );
 
+    // Build the activity chips from the unique main_activity values present in
+    // the items. Each chip is one real category from the DB. Sorted by frequency
+    // (most-common first), then alphabetically for ties.
+    const activityFilters: ActivityFilter[] = useMemo(() => {
+        if (type !== "organization") return [];
+        const counts = new Map<string, number>();
+        for (const item of items) {
+            const a = item.main_activity?.trim();
+            if (!a) continue;
+            counts.set(a, (counts.get(a) ?? 0) + 1);
+        }
+        return Array.from(counts.entries())
+            .map(([label, count]) => ({ label, count }))
+            .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    }, [items, type]);
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
-        if (!q) return items;
-        return indexed.filter(({ hay }) => hay.includes(q)).map(({ item }) => item);
-    }, [query, indexed, items]);
+        let base = items;
+
+        // Apply activity filter first
+        if (activeActivity) {
+            base = base.filter(
+                (item) => item.main_activity?.toLowerCase() === activeActivity.toLowerCase()
+            );
+        }
+
+        if (!q) return base;
+        const activityIndexed = activeActivity
+            ? base.map((item) => ({ item, hay: buildHaystack(item, type) }))
+            : indexed.filter(({ item }) => base.includes(item));
+
+        return activityIndexed.filter(({ hay }) => hay.includes(q)).map(({ item }) => item);
+    }, [query, indexed, items, activeActivity, type]);
+
+    const showSectorFilters = type === "organization" && activityFilters.length > 0;
 
     return (
         <>
@@ -87,9 +126,9 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                     <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{title}</h1>
                     <p className="text-sm text-gray-400">
                         Connect with leading {title.toLowerCase()} in the industry
-                        {query && filtered.length !== items.length && (
+                        {(query || activeActivity) && filtered.length !== items.length && (
                             <span className="ml-1 text-gray-500">
-                                · {filtered.length} match{filtered.length === 1 ? "" : "es"}
+                                · {filtered.length} result{filtered.length === 1 ? "" : "s"}
                             </span>
                         )}
                     </p>
@@ -100,10 +139,66 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder={`Search ${title.toLowerCase()}...`}
-                        className="bg-black/20 border-white/10 text-white pl-8 focus:border-[#C6A85E]/50 w-full md:w-[300px]"
+                        className="bg-black/20 border-white/10 text-white pl-8 focus:border-[var(--brand)]/50 w-full md:w-[300px]"
                     />
                 </div>
             </div>
+
+            {/* Sector filter chips */}
+            {showSectorFilters && (
+                <div className="w-full min-w-0 overflow-hidden">
+                <div
+                    ref={tabsRef}
+                    className="flex w-full items-center gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+                    style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+                >
+                    {/* All */}
+                    <button
+                        onClick={() => setActiveActivity(null)}
+                        className={cn(
+                            "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium transition-all border shrink-0",
+                            activeActivity === null
+                                ? "bg-[var(--brand)] border-[var(--brand)] text-black"
+                                : "bg-white/5 border-white/10 text-gray-300 hover:border-white/30 hover:bg-white/10"
+                        )}
+                    >
+                        All
+                        <span className={cn(
+                            "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                            activeActivity === null ? "bg-black/20 text-black" : "bg-white/10 text-gray-400"
+                        )}>
+                            {items.length.toLocaleString()}
+                        </span>
+                    </button>
+
+                    {activityFilters.map(({ label, count }) => {
+                        const active = activeActivity === label;
+                        const short = shortActivityLabel(label);
+                        return (
+                            <button
+                                key={label}
+                                onClick={() => setActiveActivity(active ? null : label)}
+                                title={label}
+                                className={cn(
+                                    "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-medium transition-all border shrink-0",
+                                    active
+                                        ? "bg-[var(--brand)] border-[var(--brand)] text-black"
+                                        : "bg-white/5 border-white/10 text-gray-300 hover:border-white/30 hover:bg-white/10"
+                                )}
+                            >
+                                {short}
+                                <span className={cn(
+                                    "rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                                    active ? "bg-black/20 text-black" : "bg-white/10 text-gray-400"
+                                )}>
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+                </div>
+            )}
 
             {/* Results */}
             {filtered.length > 0 ? (
@@ -119,12 +214,12 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                             }
                             subtitle={
                                 type === "organization"
-                                    ? item.main_activity ?? null
+                                    ? item.tagline ?? null
                                     : item.job_title && item.company
                                       ? `${item.job_title} @ ${item.company}`
                                       : item.job_title || item.company || null
                             }
-                            description={type === "organization" ? item.tagline ?? null : item.bio ?? null}
+                            description={type === "organization" ? item.main_activity ?? null : item.bio ?? null}
                             imageUrl={type === "organization" ? item.logo_url ?? null : item.avatar_url ?? null}
                             location={item.country ?? null}
                             slug={(type === "organization" ? item.slug : item.username) ?? ""}
@@ -145,15 +240,21 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                         title={
                             query
                                 ? `No ${title.toLowerCase()} match "${query}"`
-                                : `No ${title.toLowerCase()} found`
+                                : activeActivity
+                                  ? `No ${title.toLowerCase()} in "${activeActivity}"`
+                                  : `No ${title.toLowerCase()} found`
                         }
                         description={
-                            query
-                                ? "Try a different keyword or clear the search."
+                            query || activeActivity
+                                ? "Try a different keyword or clear the filters."
                                 : "Try adjusting your search or check back later."
                         }
-                        actionLabel={query ? "Clear search" : "View All"}
-                        onAction={query ? () => setQuery("") : undefined}
+                        actionLabel={query || activeActivity ? "Clear filters" : "View All"}
+                        onAction={
+                            query || activeActivity
+                                ? () => { setQuery(""); setActiveActivity(null); }
+                                : undefined
+                        }
                     />
                 </div>
             )}

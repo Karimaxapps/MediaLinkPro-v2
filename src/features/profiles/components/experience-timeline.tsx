@@ -49,8 +49,8 @@ export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineP
         <Card className="bg-white/5 border-white/10">
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-[#C6A85E]/10 rounded-lg">
-                        <Briefcase className="h-4 w-4 text-[#C6A85E]" />
+                    <div className="p-1.5 bg-[var(--brand)]/10 rounded-lg">
+                        <Briefcase className="h-4 w-4 text-[var(--brand)]" />
                     </div>
                     <CardTitle className="text-lg text-white font-bold">Experience</CardTitle>
                 </div>
@@ -59,7 +59,7 @@ export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineP
                         <DialogTrigger asChild>
                             <Button
                                 size="sm"
-                                className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-8"
+                                className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold h-8"
                             >
                                 <Plus className="h-3.5 w-3.5 mr-1" />
                                 Add
@@ -117,34 +117,34 @@ function ExperienceItem({
     return (
         <li className="ml-6 group">
             {/* Timeline node */}
-            <span className="absolute -left-[7px] flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#C6A85E] ring-4 ring-[#0B0B0B]" />
+            <span className="absolute -left-[7px] flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[var(--brand)] ring-4 ring-[#0B0B0B]" />
 
-            <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:border-[#C6A85E]/30 transition-colors">
+            <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:border-[var(--brand)]/30 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-semibold text-white">
                             {experience.role}
                             {experience.is_current && (
-                                <span className="ml-2 inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#C6A85E]/15 text-[#C6A85E] rounded">
+                                <span className="ml-2 inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)]/15 text-[var(--brand)] rounded">
                                     Current
                                 </span>
                             )}
                         </h4>
                         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400">
                             <span className="flex items-center gap-1.5">
-                                <Building2 className="h-3 w-3 text-[#C6A85E]" />
+                                <Building2 className="h-3 w-3 text-[var(--brand)]" />
                                 <span className="text-gray-300">{experience.company}</span>
                             </span>
                             <span
                                 className="flex items-center gap-1.5"
                                 title={monthRange}
                             >
-                                <Calendar className="h-3 w-3 text-[#C6A85E]" />
+                                <Calendar className="h-3 w-3 text-[var(--brand)]" />
                                 {yearRange}
                             </span>
                             {experience.location && (
                                 <span className="flex items-center gap-1.5">
-                                    <MapPin className="h-3 w-3 text-[#C6A85E]" />
+                                    <MapPin className="h-3 w-3 text-[var(--brand)]" />
                                     {experience.location}
                                 </span>
                             )}
@@ -241,7 +241,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
             <form action={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="role" className="text-gray-300">
-                        Job title <span className="text-[#C6A85E]">*</span>
+                        Job title <span className="text-[var(--brand)]">*</span>
                     </Label>
                     <Input
                         id="role"
@@ -253,7 +253,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="company" className="text-gray-300">
-                        Company <span className="text-[#C6A85E]">*</span>
+                        Company <span className="text-[var(--brand)]">*</span>
                     </Label>
                     <Input
                         id="company"
@@ -267,7 +267,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                         <Label htmlFor="start_year" className="text-gray-300">
-                            Start year <span className="text-[#C6A85E]">*</span>
+                            Start year <span className="text-[var(--brand)]">*</span>
                         </Label>
                         <Input
                             id="start_year"
@@ -301,7 +301,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                     <Checkbox
                         checked={isCurrent}
                         onCheckedChange={(v) => setIsCurrent(v === true)}
-                        className="border-white/20 data-[state=checked]:bg-[#C6A85E] data-[state=checked]:text-black data-[state=checked]:border-[#C6A85E]"
+                        className="border-white/20 data-[state=checked]:bg-[var(--brand)] data-[state=checked]:text-black data-[state=checked]:border-[var(--brand)]"
                     />
                     <span className="text-sm text-gray-300">I currently work here</span>
                 </label>
@@ -338,7 +338,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                     <Button
                         type="submit"
                         disabled={isPending}
-                        className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold"
+                        className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                     >
                         {isPending ? "Saving…" : "Save experience"}
                     </Button>

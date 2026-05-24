@@ -116,7 +116,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
                 }}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-md border transition-colors ${
                   resumeType === "link"
-                    ? "bg-[#C6A85E]/20 border-[#C6A85E]/40 text-[#C6A85E]"
+                    ? "bg-[var(--brand)]/20 border-[var(--brand)]/40 text-[var(--brand)]"
                     : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
                 }`}
               >
@@ -132,7 +132,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
                 }}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-md border transition-colors ${
                   resumeType === "pdf"
-                    ? "bg-[#C6A85E]/20 border-[#C6A85E]/40 text-[#C6A85E]"
+                    ? "bg-[var(--brand)]/20 border-[var(--brand)]/40 text-[var(--brand)]"
                     : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10"
                 }`}
               >
@@ -150,7 +150,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
                 className="bg-black/20 border-white/10 text-white"
               />
             ) : (
-              <label className="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-white/10 bg-black/20 px-4 py-6 cursor-pointer hover:border-[#C6A85E]/40 hover:bg-white/5 transition-colors">
+              <label className="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-white/10 bg-black/20 px-4 py-6 cursor-pointer hover:border-[var(--brand)]/40 hover:bg-white/5 transition-colors">
                 <Upload className="h-5 w-5 text-gray-400" />
                 <span className="text-sm text-gray-300">
                   {uploading
@@ -204,7 +204,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
             <Button
               type="submit"
               disabled={isPending || uploading || !resumeUrl.trim()}
-              className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+              className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
             >
               {isPending ? "Submitting..." : "Submit application"}
             </Button>

@@ -93,7 +93,7 @@ function ApplicationRow({ application }: { application: JobApplication }) {
             {job && org ? (
               <Link
                 href={`/jobs/${org.slug}/${job.slug}`}
-                className="font-semibold text-white hover:text-[#C6A85E] transition-colors truncate block"
+                className="font-semibold text-white hover:text-[var(--brand)] transition-colors truncate block"
               >
                 {job.title}
               </Link>
@@ -122,9 +122,9 @@ function ApplicationRow({ application }: { application: JobApplication }) {
           className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
         >
           {application.resume_type === "pdf" ? (
-            <FileText className="h-4 w-4 text-[#C6A85E]" />
+            <FileText className="h-4 w-4 text-[var(--brand)]" />
           ) : (
-            <Link2 className="h-4 w-4 text-[#C6A85E]" />
+            <Link2 className="h-4 w-4 text-[var(--brand)]" />
           )}
           View your resume
         </a>

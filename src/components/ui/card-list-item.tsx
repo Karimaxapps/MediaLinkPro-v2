@@ -31,7 +31,7 @@ export function CardListItem({ title, subtitle, description, imageSrc, location,
                             <div className="space-y-1">
                                 <CardTitle className="text-xl font-semibold flex items-center gap-2">
                                     {title}
-                                    {verified && <Badge variant="secondary" className="bg-[#C6A85E] text-black hover:bg-[#B5964A] text-[10px] h-5 px-1.5">VERIFIED</Badge>}
+                                    {verified && <Badge variant="secondary" className="bg-[var(--brand)] text-black hover:bg-[#B5964A] text-[10px] h-5 px-1.5">VERIFIED</Badge>}
                                 </CardTitle>
                                 {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
                             </div>
@@ -60,7 +60,7 @@ export function CardListItem({ title, subtitle, description, imageSrc, location,
 
                     <div className="self-center">
                         <Link href={href}>
-                            <Button variant="ghost" className="text-[#C6A85E] hover:text-white hover:bg-white/10 group-hover:translate-x-1 transition-transform">
+                            <Button variant="ghost" className="text-[var(--brand)] hover:text-white hover:bg-white/10 group-hover:translate-x-1 transition-transform">
                                 View <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>

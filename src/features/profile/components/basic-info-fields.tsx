@@ -95,7 +95,7 @@ export function GeneralInfoFields({ register, errors, watch, setValue, initialUs
                 <Input
                     id="full_name"
                     {...register('full_name')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     placeholder="John Doe"
                 />
                 {errors.full_name && (
@@ -109,7 +109,7 @@ export function GeneralInfoFields({ register, errors, watch, setValue, initialUs
                     <Input
                         id="username"
                         {...register('username')}
-                        className={`bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E] pr-10 ${usernameAvailable === true ? 'border-green-500/50' :
+                        className={`bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)] pr-10 ${usernameAvailable === true ? 'border-green-500/50' :
                             usernameAvailable === false ? 'border-red-500/50' : ''
                             }`}
                         placeholder="johndoe"
@@ -155,7 +155,7 @@ export function GeneralInfoFields({ register, errors, watch, setValue, initialUs
                 <Input
                     id="city"
                     {...register('city')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                     placeholder="New York"
                 />
                 {errors.city && (
@@ -169,7 +169,7 @@ export function GeneralInfoFields({ register, errors, watch, setValue, initialUs
                     id="birth_date"
                     type="date"
                     {...register('birth_date')}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E] block"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)] block"
                 />
                 {errors.birth_date && (
                     <p className="text-sm text-red-500">{errors.birth_date.message as string}</p>

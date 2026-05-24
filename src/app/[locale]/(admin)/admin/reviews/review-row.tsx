@@ -42,7 +42,7 @@ export function AdminReviewRow({ review }: { review: Review }) {
                             <Star
                                 key={i}
                                 className={`h-4 w-4 ${
-                                    i < review.rating ? "fill-[#C6A85E] text-[#C6A85E]" : "text-gray-600"
+                                    i < review.rating ? "fill-[var(--brand)] text-[var(--brand)]" : "text-gray-600"
                                 }`}
                             />
                         ))}

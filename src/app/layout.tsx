@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getLocale } from "next-intl/server";
+import { getThemeSettings } from "@/features/admin/server/theme-settings";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,9 +61,15 @@ export default async function RootLayout({
 }>) {
   // Dynamically set html[lang] from the active locale (detected via browser Accept-Language)
   const locale = await getLocale();
+  const theme = await getThemeSettings();
+  const esc = (s: string) => s.replace(/[<>]/g, "");
+  const themeCss = `:root{--brand:${esc(theme.brand)};--brand-secondary:${esc(theme.brand_secondary)};--brand-success:${esc(theme.brand_success)};--brand-warning:${esc(theme.brand_warning)};--brand-destructive:${esc(theme.brand_destructive)};}`;
 
   return (
     <html lang={locale}>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: themeCss }} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );

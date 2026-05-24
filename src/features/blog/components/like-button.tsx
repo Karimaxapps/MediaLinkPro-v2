@@ -51,7 +51,7 @@ export function LikeButton({ postId, initialLiked, initialCount, isAuthenticated
         "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 select-none",
         "border",
         liked
-          ? "bg-[#C6A85E]/15 border-[#C6A85E]/50 text-[#C6A85E]"
+          ? "bg-[var(--brand)]/15 border-[var(--brand)]/50 text-[var(--brand)]"
           : "bg-transparent border-white/10 text-gray-400 hover:border-white/25 hover:text-white",
         isPending && "opacity-60 cursor-not-allowed"
       )}
@@ -59,7 +59,7 @@ export function LikeButton({ postId, initialLiked, initialCount, isAuthenticated
       <Heart
         className={cn(
           "h-4 w-4 transition-all duration-200",
-          liked ? "fill-[#C6A85E] stroke-[#C6A85E]" : "stroke-current"
+          liked ? "fill-[var(--brand)] stroke-[var(--brand)]" : "stroke-current"
         )}
       />
       <span>{count > 0 ? count : "Like"}</span>

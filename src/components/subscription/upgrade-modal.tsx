@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getPlanById, formatPrice, type PlanId } from "@/lib/stripe/plans";
 
-const GOLD = "#C6A85E";
+const GOLD = "var(--brand)";
 
 type Props = {
   open: boolean;
@@ -38,7 +38,7 @@ export function UpgradeModal({ open, onClose, feature, requiredPlan, description
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md bg-[#121212] border-white/10 text-white">
         <DialogHeader>
-          <div className="flex items-center gap-2 text-[#C6A85E] text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[var(--brand)] text-xs font-semibold uppercase tracking-wider">
             <Sparkles className="size-4" />
             Upgrade required
           </div>
@@ -49,7 +49,7 @@ export function UpgradeModal({ open, onClose, feature, requiredPlan, description
         </DialogHeader>
 
         <div
-          className="mt-2 rounded-xl border border-[#C6A85E]/40 bg-gradient-to-b from-[#C6A85E]/[0.07] to-transparent p-4"
+          className="mt-2 rounded-xl border border-[var(--brand)]/40 bg-gradient-to-b from-[var(--brand)]/[0.07] to-transparent p-4"
           style={{ boxShadow: `0 0 30px -12px ${GOLD}55` }}
         >
           <div className="flex items-baseline justify-between">
@@ -85,7 +85,7 @@ export function UpgradeModal({ open, onClose, feature, requiredPlan, description
           </Link>
           <Link href={`/billing?highlight=${requiredPlan}`} className="sm:flex-1">
             <Button
-              className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full"
+              className="w-full bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold rounded-full"
               onClick={onClose}
             >
               Upgrade now

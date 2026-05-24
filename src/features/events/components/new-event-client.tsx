@@ -115,7 +115,7 @@ export function NewEventClient({
                         <select
                             value={form.organization_id}
                             onChange={(e) => update("organization_id", e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none"
+                            className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none"
                         >
                             {organizations.map((o) => (
                                 <option key={o.id} value={o.id}>
@@ -154,7 +154,7 @@ export function NewEventClient({
                     <select
                         value={form.event_type}
                         onChange={(e) => update("event_type", e.target.value as EventType)}
-                        className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none"
+                        className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none"
                     >
                         {Object.entries(EVENT_TYPE_LABELS).map(([key, label]) => (
                             <option key={key} value={key}>
@@ -278,16 +278,16 @@ export function NewEventClient({
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
-                            className="w-full aspect-[16/6] rounded-lg border-2 border-dashed border-white/10 bg-black/20 hover:border-[#C6A85E]/50 hover:bg-black/30 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full aspect-[16/6] rounded-lg border-2 border-dashed border-white/10 bg-black/20 hover:border-[var(--brand)]/50 hover:bg-black/30 transition-colors flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isUploading ? (
                                 <>
-                                    <Loader2 className="h-6 w-6 animate-spin text-[#C6A85E]" />
+                                    <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
                                     <span className="text-sm">Uploading…</span>
                                 </>
                             ) : (
                                 <>
-                                    <ImagePlus className="h-6 w-6 text-[#C6A85E]" />
+                                    <ImagePlus className="h-6 w-6 text-[var(--brand)]" />
                                     <span className="text-sm font-medium">Upload cover image</span>
                                     <span className="text-xs text-gray-500">
                                         PNG, JPG, WEBP or GIF · max {MAX_COVER_MB} MB · 16:6 recommended
@@ -329,7 +329,7 @@ export function NewEventClient({
                     <Button
                         type="submit"
                         disabled={isPending || isUploading}
-                        className="bg-[#C6A85E] hover:bg-[#b5975a] text-black font-medium"
+                        className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                         {isPending ? "Creating..." : isUploading ? "Uploading image…" : "Create Event"}
                     </Button>

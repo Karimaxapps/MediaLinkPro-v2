@@ -93,6 +93,95 @@ export const MAIN_ACTIVITIES_BY_TYPE: Record<OrgType, string[]> = {
   ],
 };
 
+/**
+ * Short, chip-friendly labels for each main_activity. Used in listing-page
+ * filter chips so the row doesn't get overrun by 30-char strings. The full
+ * value still lives in the DB and is shown on hover (title attribute).
+ * Keep this in sync with MAIN_ACTIVITIES_BY_TYPE above when adding new values.
+ */
+export const MAIN_ACTIVITY_SHORT_LABELS: Record<string, string> = {
+  // Broadcaster
+  "Television broadcasting": "TV",
+  "Radio broadcasting": "Radio",
+  "Digital / OTT streaming": "OTT",
+  "News broadcasting": "News",
+  "Sports broadcasting": "Sports",
+  "Live event broadcasting": "Live events",
+  "Public service broadcasting": "Public service",
+  "Community broadcasting": "Community",
+  "Podcast / audio network": "Podcast",
+  "Broadcast operations / playout": "Operations",
+
+  // Production / Post-prod
+  "Video production": "Video",
+  "Film production": "Film",
+  "TV production": "TV",
+  "Live production": "Live",
+  "Outside broadcast / OB van services": "OB",
+  "Post-production": "Post",
+  "Editing": "Editing",
+  "Color grading": "Color",
+  "Visual effects / VFX": "VFX",
+  "Motion graphics": "Motion gfx",
+  "Sound design / audio post": "Audio post",
+  "Dubbing / localization": "Dubbing",
+  "Subtitling / captioning": "Subtitles",
+  "Studio rental": "Studio rental",
+  "Equipment rental": "Equipment rental",
+  "Media archiving / digitization": "Archiving",
+
+  // Solution Provider
+  "Broadcast equipment manufacturer": "Equipment",
+  "Software vendor": "Software",
+  "SaaS platform": "SaaS",
+  "Cloud media services": "Cloud",
+  "Streaming technology": "Streaming",
+  "Playout automation": "Playout",
+  "Media asset management": "MAM",
+  "Video editing tools": "Editing tools",
+  "Graphics / CG systems": "Graphics",
+  "Audio technology": "Audio",
+  "Camera / lens systems": "Cameras",
+  "Lighting equipment": "Lighting",
+  "Storage / backup solutions": "Storage",
+  "Networking / IP video": "Networking",
+  "Encoding / transcoding": "Encoding",
+  "Monitoring / quality control": "Monitoring",
+  "AI media tools": "AI",
+  "Systems integration": "Integration",
+  "Consulting / professional services": "Consulting",
+  "Support / maintenance services": "Support",
+
+  // Media Association
+  "Industry association": "Industry",
+  "Trade organization": "Trade",
+  "Standards body": "Standards",
+  "Professional network": "Network",
+  "Festival / awards organization": "Festival",
+  "Advocacy organization": "Advocacy",
+  "Community group": "Community",
+  "Research organization": "Research",
+  "Government / public media body": "Public body",
+
+  // Training Center
+  "Broadcast training": "Broadcast",
+  "Film / TV production training": "Film/TV",
+  "Post-production training": "Post",
+  "Journalism training": "Journalism",
+  "Audio production training": "Audio",
+  "Engineering / technical training": "Engineering",
+  "Certification provider": "Certifications",
+  "Online courses": "Online",
+  "University / academic program": "University",
+  "Workshop / bootcamp provider": "Workshops",
+};
+
+/** Get a chip-friendly label for any main_activity value. Falls back to the
+ *  original string if it's a custom "Other…" value not in the map. */
+export function shortActivityLabel(activity: string): string {
+  return MAIN_ACTIVITY_SHORT_LABELS[activity] ?? activity;
+}
+
 export const companyIdentitySchema = z.object({
     name: z.string().min(2, "Company name must be at least 2 characters"),
     slug: z.string().min(3, "Slug must be at least 3 characters").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight, Palette } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 
 const NAV = [
@@ -19,6 +20,7 @@ const NAV = [
     { href: "/admin/languages", label: "Languages", icon: Globe },
     { href: "/admin/support", label: "Support", icon: MessageSquare },
     { href: "/admin/feature-flags", label: "Feature Flags", icon: ToggleRight },
+    { href: "/admin/theme", label: "Theme", icon: Palette },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -49,12 +51,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="min-h-screen bg-[#0B0F14] text-white">
             <header className="border-b border-white/10 bg-white/5 backdrop-blur">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <ShieldCheck className="h-5 w-5 text-[#C6A85E]" />
-                        <span className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-                            Admin Console
+                    <Link href="/dashboard" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+                        <Image
+                            src="/brand/logo.png"
+                            alt="MediaLinkPro"
+                            width={32}
+                            height={32}
+                            priority
+                            className="h-8 w-8 object-contain"
+                        />
+                        <span className="font-semibold text-white">MediaLinkPro</span>
+                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[var(--brand)] bg-[var(--brand)]/10 border border-[var(--brand)]/20 rounded px-1.5 py-0.5">
+                            <ShieldCheck className="h-3 w-3" />
+                            Admin
                         </span>
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-3">
                         <NotificationsPopover />
                         <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white">

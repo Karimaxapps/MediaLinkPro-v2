@@ -30,11 +30,11 @@ import {
 import { useTranslations } from "next-intl";
 
 // ─── Gold tokens ──────────────────────────────────────────────────────────────
-const GOLD = "#C6A85E";
-const GOLD_10 = "rgba(198,168,94,0.10)";
-const GOLD_20 = "rgba(198,168,94,0.20)";
-const GOLD_30 = "rgba(198,168,94,0.30)";
-const GOLD_GLOW = `0 0 18px rgba(198,168,94,0.28)`;
+const GOLD = "var(--brand)";
+const GOLD_10 = "color-mix(in srgb, var(--brand) 10%, transparent)";
+const GOLD_20 = "color-mix(in srgb, var(--brand) 20%, transparent)";
+const GOLD_30 = "color-mix(in srgb, var(--brand) 30%, transparent)";
+const GOLD_GLOW = `0 0 18px color-mix(in srgb, var(--brand) 28%, transparent)`;
 
 const SEGMENT_IDS = [
   "broadcasters",
@@ -801,7 +801,7 @@ export function AudienceTabs() {
             style={{
               background: "rgba(15,15,15,0.7)",
               border: `1px solid ${GOLD_20}`,
-              boxShadow: `0 0 40px rgba(198,168,94,0.06), inset 0 1px 0 rgba(198,168,94,0.08)`,
+              boxShadow: `0 0 40px color-mix(in srgb, var(--brand) 6%, transparent), inset 0 1px 0 color-mix(in srgb, var(--brand) 8%, transparent)`,
             }}
           >
             {/* Panel header */}

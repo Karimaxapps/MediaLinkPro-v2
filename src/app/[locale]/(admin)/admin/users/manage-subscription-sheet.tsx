@@ -123,7 +123,7 @@ export function ManageSubscriptionSheet({ user, open, onClose }: Props) {
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.avatar_url ?? undefined} />
-              <AvatarFallback className="bg-[#C6A85E] text-black text-sm">
+              <AvatarFallback className="bg-[var(--brand)] text-black text-sm">
                 {(user.full_name ?? user.username ?? "?")[0]}
               </AvatarFallback>
             </Avatar>
@@ -156,7 +156,7 @@ export function ManageSubscriptionSheet({ user, open, onClose }: Props) {
                 {user.stripe_customer_id ? (
                   <button
                     onClick={copyCustomerId}
-                    className="font-mono text-xs hover:text-[#C6A85E] flex items-center gap-1.5"
+                    className="font-mono text-xs hover:text-[var(--brand)] flex items-center gap-1.5"
                     title="Click to copy"
                   >
                     {user.stripe_customer_id}
@@ -171,7 +171,7 @@ export function ManageSubscriptionSheet({ user, open, onClose }: Props) {
                   href={`https://dashboard.stripe.com/customers/${user.stripe_customer_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-[#C6A85E] hover:underline pt-1"
+                  className="inline-flex items-center gap-1.5 text-xs text-[var(--brand)] hover:underline pt-1"
                 >
                   Open in Stripe dashboard
                   <ExternalLink className="size-3" />
@@ -292,7 +292,7 @@ export function ManageSubscriptionSheet({ user, open, onClose }: Props) {
               <Button
                 onClick={handleGift}
                 disabled={isPending}
-                className="w-full bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold rounded-full"
+                className="w-full bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold rounded-full"
               >
                 {isPending ? "Granting..." : "Grant gift"}
               </Button>

@@ -22,7 +22,7 @@ export async function PublicNav({ activePath }: { activePath?: string }) {
   return (
     <nav className="sticky top-0 z-30 backdrop-blur-md bg-[#0B0B0B]/70 border-b border-white/5">
       <div className="relative flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
-        <Link href="/" className="text-xl font-bold text-[#C6A85E]">
+        <Link href="/" className="text-xl font-bold text-[var(--brand)]">
           MediaLinkPro
         </Link>
 
@@ -33,8 +33,8 @@ export async function PublicNav({ activePath }: { activePath?: string }) {
               href={link.href}
               className={
                 activePath === link.href
-                  ? "text-sm font-medium text-[#C6A85E]"
-                  : "text-sm font-medium text-gray-400 hover:text-[#C6A85E] transition-colors"
+                  ? "text-sm font-medium text-[var(--brand)]"
+                  : "text-sm font-medium text-gray-400 hover:text-[var(--brand)] transition-colors"
               }
             >
               {link.label}
@@ -48,7 +48,7 @@ export async function PublicNav({ activePath }: { activePath?: string }) {
             {t("signIn")}
           </Link>
           <Link href="/auth">
-            <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
+            <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold px-6 rounded-full">
               {t("getStarted")}
             </Button>
           </Link>

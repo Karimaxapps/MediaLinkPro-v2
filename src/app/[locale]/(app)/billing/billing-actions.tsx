@@ -73,7 +73,7 @@ export function BillingActions({
   if (showManage) {
     return (
       <Button
-        className="rounded-full border border-[#C6A85E]/60 bg-[#C6A85E] px-5 font-semibold text-black shadow-sm shadow-[#C6A85E]/20 hover:border-[#D7BE78] hover:bg-[#B5964A] hover:text-black"
+        className="rounded-full border border-[var(--brand)]/60 bg-[var(--brand)] px-5 font-semibold text-black shadow-sm shadow-[var(--brand)]/20 hover:border-[#D7BE78] hover:bg-[#B5964A] hover:text-black"
         disabled={isPending}
         onClick={handleManage}
       >
@@ -89,7 +89,7 @@ export function BillingActions({
         ? "bg-transparent hover:bg-white/10 text-gray-300 border border-white/15"
         : variant === "free"
           ? "bg-transparent hover:bg-white/10 text-white border border-white/15"
-          : "bg-[#C6A85E] hover:bg-[#B5964A] text-black";
+          : "bg-[var(--brand)] hover:bg-[#B5964A] text-black";
 
   return (
     <Button

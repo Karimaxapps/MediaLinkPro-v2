@@ -99,7 +99,7 @@ export function ProfileHeader({ profile, plan }: ProfileHeaderProps) {
 
                         {isUploading && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-2xl z-20 pointer-events-none">
-                                <Loader2 className="h-8 w-8 text-[#C6A85E] animate-spin" />
+                                <Loader2 className="h-8 w-8 text-[var(--brand)] animate-spin" />
                             </div>
                         )}
                     </div>
@@ -115,7 +115,7 @@ export function ProfileHeader({ profile, plan }: ProfileHeaderProps) {
 
 
                         <div className="flex flex-col gap-1 mt-1">
-                            <div className="flex items-center gap-2 text-[#C6A85E]">
+                            <div className="flex items-center gap-2 text-[var(--brand)]">
                                 <Briefcase className="h-4 w-4" />
                                 <span className="text-base font-medium">
                                     {primaryRole}
@@ -132,7 +132,7 @@ export function ProfileHeader({ profile, plan }: ProfileHeaderProps) {
                             )}
 
                             <div className="flex items-center gap-2 text-gray-400">
-                                <Building2 className="h-4 w-4 text-[#C6A85E]" />
+                                <Building2 className="h-4 w-4 text-[var(--brand)]" />
                                 <span className="text-sm font-medium">
                                     {profile.company || "Company not set"}
                                 </span>

@@ -27,7 +27,7 @@ export default function AppError({
 <div className="flex gap-4">
         <button
           onClick={reset}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-medium rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-medium rounded-lg transition-colors"
         >
           <RefreshCw className="h-4 w-4" />
           Try Again

@@ -111,7 +111,7 @@ export function AdminSupportClient({ tickets, stats, initialStatus, initialType 
                             className={cn(
                                 "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                                 initialStatus === value || (value === "all" && initialStatus === "all")
-                                    ? "bg-[#C6A85E] text-black"
+                                    ? "bg-[var(--brand)] text-black"
                                     : "bg-white/5 text-gray-400 hover:bg-white/10"
                             )}
                         >
@@ -187,7 +187,7 @@ export function AdminSupportClient({ tickets, stats, initialStatus, initialType 
                                         <td className="px-4 py-3">
                                             <p className="text-sm text-white font-medium truncate max-w-[200px]">{ticket.subject}</p>
                                             {ticket.admin_reply && (
-                                                <p className="text-xs text-[#C6A85E]">Replied</p>
+                                                <p className="text-xs text-[var(--brand)]">Replied</p>
                                             )}
                                         </td>
                                         <td className="px-4 py-3 hidden sm:table-cell">
@@ -291,7 +291,7 @@ function TicketSheet({
                                     {...register("reply")}
                                     rows={5}
                                     placeholder="Write your reply to the user…"
-                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#C6A85E]/50 focus:ring-1 focus:ring-[#C6A85E]/30 transition-colors resize-none"
+                                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/30 transition-colors resize-none"
                                 />
                                 {errors.reply && <p className="text-xs text-red-400">{errors.reply.message}</p>}
                             </div>
@@ -300,7 +300,7 @@ function TicketSheet({
                                 <label className="text-sm text-gray-400">Update Status</label>
                                 <select
                                     {...register("status")}
-                                    className="w-full rounded-lg border border-white/10 bg-[#0B0F14] px-3 py-2 text-sm text-white outline-none focus:border-[#C6A85E]/50"
+                                    className="w-full rounded-lg border border-white/10 bg-[#0B0F14] px-3 py-2 text-sm text-white outline-none focus:border-[var(--brand)]/50"
                                 >
                                     <option value="open">Open</option>
                                     <option value="in_progress">In Progress</option>
@@ -312,7 +312,7 @@ function TicketSheet({
                             <button
                                 type="submit"
                                 disabled={isPending}
-                                className="w-full rounded-lg bg-[#C6A85E] px-4 py-2.5 text-sm font-semibold text-black hover:bg-[#b8973e] disabled:opacity-50 transition-colors"
+                                className="w-full rounded-lg bg-[var(--brand)] px-4 py-2.5 text-sm font-semibold text-black hover:bg-[#b8973e] disabled:opacity-50 transition-colors"
                             >
                                 {isPending ? "Sending…" : "Send Reply"}
                             </button>

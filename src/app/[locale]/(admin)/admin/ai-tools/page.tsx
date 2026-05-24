@@ -25,7 +25,7 @@ export default async function AdminAiToolsPage() {
                     <p className="mt-1 text-sm text-gray-400">{tools.length} tools</p>
                 </div>
                 <Link href="/admin/ai-tools/new">
-                    <Button className="gap-2 bg-[#C6A85E] font-semibold text-black hover:bg-[#B5964A]">
+                    <Button className="gap-2 bg-[var(--brand)] font-semibold text-black hover:bg-[#B5964A]">
                         <Plus className="h-4 w-4" />
                         Add AI Tool
                     </Button>

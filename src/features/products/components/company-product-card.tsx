@@ -50,7 +50,7 @@ export function CompanyProductCard({ product }: CompanyProductCardProps) {
 
     return (
         <>
-            <Card className="bg-white/5 border-white/10 overflow-hidden hover:border-[#C6A85E]/50 transition-all duration-300 h-full flex flex-col p-0 gap-0 relative group">
+            <Card className="bg-white/5 border-white/10 overflow-hidden hover:border-[var(--brand)]/50 transition-all duration-300 h-full flex flex-col p-0 gap-0 relative group">
                 <Link href={`/products/${product.slug}`} className="flex-1 flex flex-col group cursor-pointer">
                     <CardHeader className="p-0">
                         <div className="relative h-48 w-full bg-gray-900 group-hover:opacity-90 transition-opacity overflow-hidden">
@@ -81,7 +81,7 @@ export function CompanyProductCard({ product }: CompanyProductCardProps) {
                     <CardContent className="p-4 flex-1 flex flex-col justify-between space-y-4">
                         <div className="space-y-2">
                             <div className="flex justify-between items-start gap-2">
-                                <h3 className="font-bold text-lg text-white group-hover:text-[#C6A85E] transition-colors line-clamp-1">
+                                <h3 className="font-bold text-lg text-white group-hover:text-[var(--brand)] transition-colors line-clamp-1">
                                     {product.name}
                                 </h3>
                                 {/* Total Views Badge */}
@@ -109,7 +109,7 @@ export function CompanyProductCard({ product }: CompanyProductCardProps) {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-[#C6A85E]"
+                            className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-[var(--brand)]"
                             asChild
                         >
                             <Link href={`/products/${product.slug}/edit`}>

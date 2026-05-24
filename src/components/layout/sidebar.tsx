@@ -24,16 +24,16 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 function SidebarUpgradeCard() {
     return (
         <Link href="/billing" className="group block">
-            <div className="relative overflow-hidden rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/15 via-[#1F1F1F] to-[#8a6f2d]/10 p-3.5 transition-all hover:border-[#C6A85E]/60 hover:shadow-[0_0_24px_-6px_rgba(198,168,94,0.5)]">
-                <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#C6A85E]/20 blur-2xl transition-opacity group-hover:opacity-80" />
-                <div className="pointer-events-none absolute -bottom-8 -left-4 h-16 w-16 rounded-full bg-[#C6A85E]/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-xl border border-[var(--brand)]/30 bg-gradient-to-br from-[var(--brand)]/15 via-[#1F1F1F] to-[#8a6f2d]/10 p-3.5 transition-all hover:border-[var(--brand)]/60 hover:shadow-[0_0_24px_-6px_color-mix(in srgb, var(--brand) 50%, transparent)]">
+                <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[var(--brand)]/20 blur-2xl transition-opacity group-hover:opacity-80" />
+                <div className="pointer-events-none absolute -bottom-8 -left-4 h-16 w-16 rounded-full bg-[var(--brand)]/10 blur-2xl" />
 
                 <div className="relative">
                     <div className="mb-2 flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#E6C77A] to-[#B5964A] shadow-inner shadow-black/20">
                             <Sparkles className="h-3.5 w-3.5 text-black" />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#C6A85E]">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand)]">
                             Go Pro
                         </span>
                     </div>
@@ -45,7 +45,7 @@ function SidebarUpgradeCard() {
                         Unlimited connections, conversations & expert services.
                     </p>
 
-                    <div className="flex items-center justify-between rounded-md bg-gradient-to-r from-[#C6A85E] to-[#B5964A] px-2.5 py-1.5 text-[11px] font-semibold text-black transition-transform group-hover:translate-x-0.5">
+                    <div className="flex items-center justify-between rounded-md bg-gradient-to-r from-[var(--brand)] to-[#B5964A] px-2.5 py-1.5 text-[11px] font-semibold text-black transition-transform group-hover:translate-x-0.5">
                         <span>Upgrade plan</span>
                         <ArrowRight className="h-3.5 w-3.5" />
                     </div>
@@ -88,7 +88,7 @@ function NavItems({
                                             variant="ghost"
                                             className={cn(
                                                 "w-full justify-start text-gray-400 hover:text-white hover:bg-white/5",
-                                                pathname === item.href && "bg-white/10 text-[#C6A85E]"
+                                                pathname === item.href && "bg-white/10 text-[var(--brand)]"
                                             )}
                                             disabled={item.disabled}
                                         >
@@ -106,7 +106,7 @@ function NavItems({
                                                             variant="ghost"
                                                             className={cn(
                                                                 "w-full justify-start text-gray-300 hover:text-white hover:bg-white/5 px-4 h-9 min-w-0",
-                                                                pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
+                                                                pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[var(--brand)]"
                                                             )}
                                                         >
                                                             <Building2 className="mr-2 h-4 w-4 shrink-0" />
@@ -138,7 +138,7 @@ function NavItems({
                                                                 variant="ghost"
                                                                 className={cn(
                                                                     "w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 h-9",
-                                                                    pathname === `/companies/${organizations[0].slug}/dashboard` && "bg-white/10 text-[#C6A85E]"
+                                                                    pathname === `/companies/${organizations[0].slug}/dashboard` && "bg-white/10 text-[var(--brand)]"
                                                                 )}
                                                             >
                                                                 <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -150,7 +150,7 @@ function NavItems({
                                                                 variant="ghost"
                                                                 className={cn(
                                                                     "w-full justify-start text-gray-400 hover:text-white hover:bg-white/5 h-9",
-                                                                    pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[#C6A85E]"
+                                                                    pathname === `/companies/${organizations[0].slug}` && "bg-white/10 text-[var(--brand)]"
                                                                 )}
                                                             >
                                                                 <Building2 className="mr-2 h-4 w-4" />
@@ -166,7 +166,7 @@ function NavItems({
                                                     variant="ghost"
                                                     className={cn(
                                                         "w-full justify-start text-gray-400 hover:text-white hover:bg-white/5",
-                                                        pathname === "/companies/new" && "bg-white/10 text-[#C6A85E]"
+                                                        pathname === "/companies/new" && "bg-white/10 text-[var(--brand)]"
                                                     )}
                                                 >
                                                     <PlusCircle className="mr-2 h-4 w-4" />
@@ -236,7 +236,7 @@ export function MobileSidebar({ organizations }: { organizations?: SidebarOrgani
             <SheetContent side="left" className="bg-[#1F1F1F] border-r-white/10 text-white w-64 p-0 overflow-x-hidden">
                 <div className="space-y-4 py-4">
                     <div className="px-3 py-2">
-                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-[#C6A85E] flex items-center gap-2">
+                        <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-[var(--brand)] flex items-center gap-2">
                             <Image
                                 src="/brand/logo.png"
                                 alt="MediaLinkPro"

@@ -22,20 +22,20 @@ import {
 import { useTranslations } from "next-intl";
 
 // ─── Shared tokens ────────────────────────────────────────────────────────────
-const GOLD = "#C6A85E";
-const GOLD_10 = "rgba(198,168,94,0.10)";
-const GOLD_15 = "rgba(198,168,94,0.15)";
-const GOLD_20 = "rgba(198,168,94,0.20)";
-const GOLD_GLOW = "0 0 30px rgba(198,168,94,0.18)";
+const GOLD = "var(--brand)";
+const GOLD_10 = "color-mix(in srgb, var(--brand) 10%, transparent)";
+const GOLD_15 = "color-mix(in srgb, var(--brand) 15%, transparent)";
+const GOLD_20 = "color-mix(in srgb, var(--brand) 20%, transparent)";
+const GOLD_GLOW = "0 0 30px color-mix(in srgb, var(--brand) 18%, transparent)";
 const CARD_BASE =
-  "relative overflow-hidden rounded-2xl border border-[#C6A85E]/15 bg-[#0f0f0f] backdrop-blur-sm";
+  "relative overflow-hidden rounded-2xl border border-[var(--brand)]/15 bg-[#0f0f0f] backdrop-blur-sm";
 
 const cardVariants = {
-  rest: { y: 0, boxShadow: "0 0 30px rgba(198,168,94,0.04)" },
+  rest: { y: 0, boxShadow: "0 0 30px color-mix(in srgb, var(--brand) 4%, transparent)" },
   hover: {
     y: -4,
-    boxShadow: "0 0 36px rgba(198,168,94,0.20)",
-    borderColor: "rgba(198,168,94,0.35)",
+    boxShadow: "0 0 36px color-mix(in srgb, var(--brand) 20%, transparent)",
+    borderColor: "color-mix(in srgb, var(--brand) 35%, transparent)",
     transition: { duration: 0.25, ease: [0, 0, 0.58, 1] as const },
   },
 };
@@ -222,7 +222,7 @@ function ExpertDirectoryTile() {
               className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white"
               style={{
                 background: e.bg,
-                boxShadow: `0 0 0 2px ${GOLD}, 0 0 0 4px rgba(198,168,94,0.15)`,
+                boxShadow: `0 0 0 2px ${GOLD}, 0 0 0 4px color-mix(in srgb, var(--brand) 15%, transparent)`,
               }}
             >
               {e.initials}
@@ -254,7 +254,7 @@ function ExpertDirectoryTile() {
               {e.initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-zinc-300 group-hover:text-[#C6A85E] transition-colors truncate">
+              <p className="text-xs font-semibold text-zinc-300 group-hover:text-[var(--brand)] transition-colors truncate">
                 {e.name} · <span className="font-normal text-zinc-500">{e.role}</span>
               </p>
               <div className="flex gap-1 mt-1">
@@ -268,7 +268,7 @@ function ExpertDirectoryTile() {
                 ))}
               </div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-[#C6A85E] transition-colors shrink-0" />
+            <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-[var(--brand)] transition-colors shrink-0" />
           </motion.div>
         ))}
       </div>
@@ -317,7 +317,7 @@ function SmartDiscoveryTile() {
           <motion.div
             key={i}
             className="absolute rounded-full border"
-            style={{ borderColor: `rgba(198,168,94,${0.2 - i * 0.06})` }}
+            style={{ borderColor: `color-mix(in srgb, var(--brand) ${(0.2 - i * 0.06) * 100}%, transparent)` }}
             animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.2, 0.6] }}
             transition={{
               duration: 2.5,

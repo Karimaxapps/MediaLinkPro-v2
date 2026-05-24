@@ -96,7 +96,7 @@ export function AiToolsClient({
             <div className="flex flex-col items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 p-4 md:flex-row">
                 <div>
                     <h1 className="mb-1 flex items-center gap-2 text-2xl font-bold tracking-tight text-white">
-                        <Sparkles className="h-6 w-6 text-[#C6A85E]" />
+                        <Sparkles className="h-6 w-6 text-[var(--brand)]" />
                         AI Production Tools
                     </h1>
                     <p className="text-sm text-gray-400">
@@ -115,7 +115,7 @@ export function AiToolsClient({
                             setSearchQuery(e.target.value);
                             setVisibleCount(ITEMS_PER_PAGE);
                         }}
-                        className="w-full border-white/10 bg-black/20 pl-8 text-white focus:border-[#C6A85E]/50 md:w-[300px]"
+                        className="w-full border-white/10 bg-black/20 pl-8 text-white focus:border-[var(--brand)]/50 md:w-[300px]"
                     />
                 </div>
             </div>
@@ -137,7 +137,7 @@ export function AiToolsClient({
                             onClick={() => toggleCategory(cat.id)}
                             className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
                                 selectedCategories.includes(cat.id)
-                                    ? "border-[#C6A85E] bg-[#C6A85E] font-medium text-black"
+                                    ? "border-[var(--brand)] bg-[var(--brand)] font-medium text-black"
                                     : "border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white"
                             }`}
                         >
@@ -166,7 +166,7 @@ export function AiToolsClient({
                                     }}
                                     className={`w-full px-3 py-2 text-left text-sm transition-colors ${
                                         sortBy === option.value
-                                            ? "bg-[#C6A85E]/10 text-[#C6A85E]"
+                                            ? "bg-[var(--brand)]/10 text-[var(--brand)]"
                                             : "text-gray-300 hover:bg-white/5"
                                     }`}
                                 >

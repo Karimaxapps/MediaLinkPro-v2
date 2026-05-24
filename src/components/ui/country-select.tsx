@@ -26,7 +26,7 @@ export function CountrySelect({ value, onChange, disabled }: CountrySelectProps)
 
     return (
         <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger className="w-full bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:ring-[#C6A85E] focus:border-[#C6A85E]">
+            <SelectTrigger className="w-full bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:ring-[var(--brand)] focus:border-[var(--brand)]">
                 <SelectValue placeholder="Select a country" />
             </SelectTrigger>
             <SelectContent className="bg-[#0B0F14] border-white/10 text-white max-h-[300px]">

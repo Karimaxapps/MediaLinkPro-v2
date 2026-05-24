@@ -117,7 +117,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                             onClick={() => setTab(t.id)}
                             className={`px-3 py-1.5 rounded-md border transition-colors ${
                                 tab === t.id
-                                    ? "border-[#C6A85E]/50 bg-[#C6A85E]/10 text-[#C6A85E]"
+                                    ? "border-[var(--brand)]/50 bg-[var(--brand)]/10 text-[var(--brand)]"
                                     : "border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
                             }`}
                         >
@@ -176,7 +176,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="flex items-center gap-2 text-white hover:text-[#C6A85E] transition-colors font-medium text-sm"
+                                                className="flex items-center gap-2 text-white hover:text-[var(--brand)] transition-colors font-medium text-sm"
                                             >
                                                 {isOrg ? (
                                                     <Building2 className="h-4 w-4 shrink-0 text-gray-500" />
@@ -190,7 +190,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                                 variant="outline"
                                                 className={`mt-1 text-[10px] h-5 ${
                                                     isOrg
-                                                        ? "border-[#C6A85E]/40 text-[#C6A85E] bg-[#C6A85E]/10"
+                                                        ? "border-[var(--brand)]/40 text-[var(--brand)] bg-[var(--brand)]/10"
                                                         : "border-blue-500/40 text-blue-300 bg-blue-500/10"
                                                 }`}
                                             >
@@ -205,7 +205,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="text-xs text-gray-500 hover:text-[#C6A85E]"
+                                                    className="text-xs text-gray-500 hover:text-[var(--brand)]"
                                                 >
                                                     Owns: {req.requesting_org_name}
                                                 </a>
@@ -258,7 +258,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                                                     actorName: requesterLabel,
                                                                 })
                                                             }
-                                                            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold gap-1 h-8 px-3"
+                                                            className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold gap-1 h-8 px-3"
                                                         >
                                                             <GitMerge className="h-3.5 w-3.5" />
                                                             Merge
@@ -372,7 +372,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                                 value={adminNote}
                                 onChange={(e) => setAdminNote(e.target.value)}
                                 placeholder="e.g. Welcome aboard! / Please verify your company ownership first."
-                                className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                             />
                         </div>
 
@@ -456,7 +456,7 @@ function RequestDetailDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         {isOrg ? (
-                            <Building2 className="h-5 w-5 text-[#C6A85E]" />
+                            <Building2 className="h-5 w-5 text-[var(--brand)]" />
                         ) : (
                             <Package className="h-5 w-5 text-blue-300" />
                         )}
@@ -474,7 +474,7 @@ function RequestDetailDialog({
                     <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
                         <Avatar className="h-12 w-12 border border-white/10">
                             <AvatarImage src={avatar || ""} alt={name} />
-                            <AvatarFallback className="bg-[#C6A85E] text-black font-bold">
+                            <AvatarFallback className="bg-[var(--brand)] text-black font-bold">
                                 {name.substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
@@ -495,7 +495,7 @@ function RequestDetailDialog({
                                 href={`/profiles/${username}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] hover:text-[#B5964A] whitespace-nowrap"
+                                className="inline-flex items-center gap-1 text-xs font-medium text-[var(--brand)] hover:text-[#B5964A] whitespace-nowrap"
                             >
                                 View profile
                                 <ExternalLink className="h-3 w-3" />
@@ -539,12 +539,12 @@ function RequestDetailDialog({
                                     onChange={(e) => setReply(e.target.value)}
                                     placeholder="Write a message — it goes straight to the requester's messaging inbox."
                                     maxLength={2000}
-                                    className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[#C6A85E] focus-visible:border-[#C6A85E]"
+                                    className="h-24 resize-none bg-black/20 border-white/10 text-white placeholder:text-gray-600 focus-visible:ring-[var(--brand)] focus-visible:border-[var(--brand)]"
                                 />
                                 {sentConversationId && (
                                     <Link
                                         href="/messages"
-                                        className="inline-flex items-center gap-1 text-xs font-medium text-[#C6A85E] hover:text-[#B5964A]"
+                                        className="inline-flex items-center gap-1 text-xs font-medium text-[var(--brand)] hover:text-[#B5964A]"
                                     >
                                         View conversation in inbox
                                         <ExternalLink className="h-3 w-3" />
@@ -571,7 +571,7 @@ function RequestDetailDialog({
                         <Button
                             onClick={handleSend}
                             disabled={isSending || reply.trim().length === 0}
-                            className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold gap-2"
+                            className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold gap-2"
                         >
                             {isSending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />

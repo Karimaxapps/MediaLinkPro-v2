@@ -36,7 +36,7 @@ export function ProductTable({ products, productsQuota }: Props) {
               onClick={() => router.push("/products/new")}
               size="sm"
               disabled={atLimit}
-              className="bg-[#C6A85E] hover:bg-[#B5974D] text-black disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[var(--brand)] hover:bg-[#B5974D] text-black disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add New Product

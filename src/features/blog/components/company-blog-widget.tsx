@@ -39,7 +39,7 @@ export async function CompanyBlogWidget({ orgId, blogQuota }: Props) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <FileText className="h-4 w-4 text-[#C6A85E]" />
+            <FileText className="h-4 w-4 text-[var(--brand)]" />
             Blog Posts
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
@@ -50,7 +50,7 @@ export async function CompanyBlogWidget({ orgId, blogQuota }: Props) {
           <Link href="/blog">
             <Button
               variant="outline"
-              className="bg-transparent border-white/10 text-white hover:bg-white/10 text-xs"
+              className="bg-transparent border-white/10 text-gray-400 hover:text-gray-200 hover:bg-white/10 text-xs"
             >
               View all
             </Button>

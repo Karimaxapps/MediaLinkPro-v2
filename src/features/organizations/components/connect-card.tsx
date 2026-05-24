@@ -49,7 +49,7 @@ export function ConnectCard({
     return (
         <div className="relative group h-full">
             <Link href={href} className="block h-full">
-                <Card className="bg-[#1A1A1A] border-white/10 overflow-hidden hover:border-[#C6A85E]/50 transition-colors h-full">
+                <Card className="bg-[#1A1A1A] border-white/10 overflow-hidden hover:border-[var(--brand)]/50 transition-colors h-full">
                     <CardContent className="p-4 flex items-start gap-4">
                         {/* Image Section - Left Side */}
                         <div className="w-16 h-16 relative shrink-0">
@@ -71,30 +71,30 @@ export function ConnectCard({
                         <div className={`flex-1 min-w-0 ${type === "profile" ? "pr-28" : "pr-28"}`}>
                             <div className="flex justify-between items-start">
                                 <div className="min-w-0 w-full">
-                                    <h3 className="text-white font-medium text-base group-hover:text-[#C6A85E] transition-colors truncate flex items-center gap-1.5">
+                                    <h3 className="text-white font-medium text-base group-hover:text-[var(--brand)] transition-colors truncate flex items-center gap-1.5">
                                         {title}
                                         <VerifiedBadge plan={plan} size="sm" />
                                     </h3>
                                     {subtitle && (
-                                        <p className="text-[#C6A85E] text-xs font-medium line-clamp-2 mt-0.5 leading-snug">
+                                        <p className="text-gray-300 text-xs line-clamp-2 mt-0.5 leading-snug italic">
                                             {subtitle}
                                         </p>
                                     )}
                                 </div>
                             </div>
 
-                            {location && (
-                                <div className="flex items-center text-xs text-gray-500 mt-1">
-                                    <MapPin className="w-3 h-3 mr-1" />
-                                    {location}
+                            {description && (
+                                <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                                    <Briefcase className="w-3 h-3 shrink-0" />
+                                    <span className="line-clamp-1">{description}</span>
                                 </div>
                             )}
 
-                            {/* Badges/Description */}
-                            {description && (
-                                <p className="text-gray-400 text-xs line-clamp-1 mt-2 leading-tight">
-                                    {description}
-                                </p>
+                            {location && (
+                                <div className="flex items-center text-xs text-gray-500 mt-1">
+                                    <MapPin className="w-3 h-3 mr-1 shrink-0" />
+                                    {location}
+                                </div>
                             )}
                         </div>
                     </CardContent>

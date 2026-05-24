@@ -71,7 +71,7 @@ export default async function ProductAnalyticsPage({ params, searchParams }: Pro
                                     variant="outline"
                                     className={
                                         active
-                                            ? "bg-[#C6A85E] hover:bg-[#b5975a] text-black border-[#C6A85E]"
+                                            ? "bg-[var(--brand)] hover:bg-[#b5975a] text-black border-[var(--brand)]"
                                             : "border-white/10 text-white hover:bg-white/10"
                                     }
                                 >
@@ -88,26 +88,26 @@ export default async function ProductAnalyticsPage({ params, searchParams }: Pro
                 <KpiCard
                     title="Total Views"
                     value={analytics.totalViews.toLocaleString()}
-                    icon={<Eye className="h-4 w-4 text-[#C6A85E]" />}
+                    icon={<Eye className="h-4 w-4 text-[var(--brand)]" />}
                     delta={viewsDelta}
                     subtitle={`${analytics.uniqueViews} unique`}
                 />
                 <KpiCard
                     title="QR Scans"
                     value={analytics.totalScans.toLocaleString()}
-                    icon={<QrCode className="h-4 w-4 text-[#C6A85E]" />}
+                    icon={<QrCode className="h-4 w-4 text-[var(--brand)]" />}
                     delta={scansDelta}
                 />
                 <KpiCard
                     title="Demo Requests"
                     value={analytics.demoRequests.toLocaleString()}
-                    icon={<MousePointerClick className="h-4 w-4 text-[#C6A85E]" />}
+                    icon={<MousePointerClick className="h-4 w-4 text-[var(--brand)]" />}
                     subtitle={`${analytics.conversionRate.toFixed(1)}% conversion`}
                 />
                 <KpiCard
                     title="Bookmarks"
                     value={analytics.bookmarks.toLocaleString()}
-                    icon={<Bookmark className="h-4 w-4 text-[#C6A85E]" />}
+                    icon={<Bookmark className="h-4 w-4 text-[var(--brand)]" />}
                     subtitle="All time"
                 />
             </div>
@@ -116,7 +116,7 @@ export default async function ProductAnalyticsPage({ params, searchParams }: Pro
             <Card className="bg-white/5 border-white/10 text-white">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <BarChart3 className="h-4 w-4 text-[#C6A85E]" />
+                        <BarChart3 className="h-4 w-4 text-[var(--brand)]" />
                         Traffic Overview
                     </CardTitle>
                     <CardDescription className="text-gray-400">
@@ -147,7 +147,7 @@ export default async function ProductAnalyticsPage({ params, searchParams }: Pro
                         label="Page Views"
                         value={analytics.totalViews}
                         max={analytics.totalViews}
-                        color="#C6A85E"
+                        color="var(--brand)"
                     />
                     <FunnelBar
                         label="Unique Visitors"
@@ -165,7 +165,7 @@ export default async function ProductAnalyticsPage({ params, searchParams }: Pro
                         label="Demo Requests"
                         value={analytics.demoRequests}
                         max={analytics.totalViews}
-                        color="#135bec"
+                        color="var(--brand-secondary)"
                     />
                 </CardContent>
             </Card>

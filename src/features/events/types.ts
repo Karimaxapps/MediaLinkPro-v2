@@ -78,8 +78,8 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
 };
 
 export const EVENT_TYPE_COLORS: Record<EventType, string> = {
-    conference: "#C6A85E",
-    webinar: "#135bec",
+    conference: "var(--brand)",
+    webinar: "var(--brand-secondary)",
     workshop: "#10b981",
     meetup: "#f59e0b",
     trade_show: "#8b5cf6",

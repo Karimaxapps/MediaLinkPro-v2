@@ -85,7 +85,7 @@ export function SearchResultsClient({
                             onClick={() => setActiveTab(tab.key)}
                             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                                 activeTab === tab.key
-                                    ? "bg-[#C6A85E] text-black"
+                                    ? "bg-[var(--brand)] text-black"
                                     : "text-gray-400 hover:text-white hover:bg-white/5"
                             }`}
                         >
@@ -108,7 +108,7 @@ export function SearchResultsClient({
             {showProducts && results.products.length > 0 && (
                 <section className="space-y-3">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Package className="h-5 w-5 text-[#C6A85E]" />
+                        <Package className="h-5 w-5 text-[var(--brand)]" />
                         Products
                         <span className="text-sm text-gray-400 font-normal">({results.products.length})</span>
                     </h2>
@@ -138,7 +138,7 @@ export function SearchResultsClient({
                                             </span>
                                         )}
                                         {product.product_type && (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-[#C6A85E]/10 text-[#C6A85E]">
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--brand)]/10 text-[var(--brand)]">
                                                 {product.product_type}
                                             </span>
                                         )}
@@ -154,7 +154,7 @@ export function SearchResultsClient({
             {showCompanies && results.organizations.length > 0 && (
                 <section className="space-y-3">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-[#C6A85E]" />
+                        <Building2 className="h-5 w-5 text-[var(--brand)]" />
                         Companies
                         <span className="text-sm text-gray-400 font-normal">({results.organizations.length})</span>
                     </h2>
@@ -191,7 +191,7 @@ export function SearchResultsClient({
             {showPeople && results.profiles.length > 0 && (
                 <section className="space-y-3">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <User className="h-5 w-5 text-[#C6A85E]" />
+                        <User className="h-5 w-5 text-[var(--brand)]" />
                         People
                         <span className="text-sm text-gray-400 font-normal">({results.profiles.length})</span>
                     </h2>
@@ -231,7 +231,7 @@ export function SearchResultsClient({
             {showExperts && results.experts.length > 0 && (
                 <section className="space-y-3">
                     <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Award className="h-5 w-5 text-[#C6A85E]" />
+                        <Award className="h-5 w-5 text-[var(--brand)]" />
                         Experts
                         <span className="text-sm text-gray-400 font-normal">({results.experts.length})</span>
                     </h2>
@@ -255,7 +255,7 @@ export function SearchResultsClient({
                                     {expert.skills && expert.skills.length > 0 && (
                                         <div className="flex gap-1 mt-1 flex-wrap">
                                             {expert.skills.slice(0, 3).map((skill) => (
-                                                <span key={skill} className="text-xs px-2 py-0.5 rounded-full bg-[#C6A85E]/10 text-[#C6A85E]">
+                                                <span key={skill} className="text-xs px-2 py-0.5 rounded-full bg-[var(--brand)]/10 text-[var(--brand)]">
                                                     {skill}
                                                 </span>
                                             ))}

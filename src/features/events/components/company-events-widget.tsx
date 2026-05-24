@@ -24,7 +24,7 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-[#C6A85E]" />
+            <Calendar className="h-4 w-4 text-[var(--brand)]" />
             Events
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
@@ -64,7 +64,7 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
                 href={`/events/${e.slug}`}
                 className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.02] p-3 hover:bg-white/[0.05] transition-colors"
               >
-                <div className="shrink-0 size-10 rounded-md bg-[#C6A85E]/15 text-[#C6A85E] flex flex-col items-center justify-center">
+                <div className="shrink-0 size-10 rounded-md bg-[var(--brand)]/15 text-[var(--brand)] flex flex-col items-center justify-center">
                   <span className="text-[10px] uppercase font-semibold leading-none">
                     {format(new Date(e.start_date), "MMM")}
                   </span>

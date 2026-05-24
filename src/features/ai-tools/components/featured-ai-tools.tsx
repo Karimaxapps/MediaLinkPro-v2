@@ -24,7 +24,7 @@ export function FeaturedAiTools({ tools }: { tools: AiTool[] }) {
         <h2 className="text-xl font-semibold text-white">Featured AI Tools</h2>
         <Link
           href="/ai-tools"
-          className="text-sm font-medium text-[#C6A85E] transition-colors hover:text-[#C6A85E]/80"
+          className="text-sm font-medium text-gray-400 transition-colors hover:text-gray-200"
         >
           View all
         </Link>

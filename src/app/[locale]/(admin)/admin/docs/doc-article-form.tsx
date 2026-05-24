@@ -122,7 +122,7 @@ export function DocArticleForm({ article }: Props) {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as DocCategory)}
-              className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[#C6A85E]/50 outline-none [&>option]:bg-[#1F1F1F]"
+              className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none [&>option]:bg-[#1F1F1F]"
             >
               {DOC_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
@@ -161,7 +161,7 @@ export function DocArticleForm({ article }: Props) {
               <div
                 onClick={() => setIsPublic(!isPublic)}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  isPublic ? "bg-[#C6A85E]" : "bg-white/10"
+                  isPublic ? "bg-[var(--brand)]" : "bg-white/10"
                 }`}
               >
                 <span
@@ -192,7 +192,7 @@ export function DocArticleForm({ article }: Props) {
 
         <div className="flex justify-end pt-2">
           <Button
-            className="bg-[#C6A85E] hover:bg-[#b5975a] text-black"
+            className="bg-[var(--brand)] hover:bg-[#b5975a] text-black"
             disabled={isPending || !title.trim() || !content.trim()}
             onClick={submit}
           >

@@ -10,7 +10,7 @@ export function StatsCards({ stats }: { stats: DashboardStats }) {
                     <CardTitle className="text-sm font-medium text-gray-400">
                         Profile Views
                     </CardTitle>
-                    <Eye className="h-4 w-4 text-[#C6A85E]" />
+                    <Eye className="h-4 w-4 text-[var(--brand)]" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.profileViews}</div>
@@ -24,7 +24,7 @@ export function StatsCards({ stats }: { stats: DashboardStats }) {
                     <CardTitle className="text-sm font-medium text-gray-400">
                         Total Followers
                     </CardTitle>
-                    <Users className="h-4 w-4 text-[#C6A85E]" />
+                    <Users className="h-4 w-4 text-[var(--brand)]" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.followers}</div>
@@ -38,7 +38,7 @@ export function StatsCards({ stats }: { stats: DashboardStats }) {
                     <CardTitle className="text-sm font-medium text-gray-400">
                         Total Products
                     </CardTitle>
-                    <Package className="h-4 w-4 text-[#C6A85E]" />
+                    <Package className="h-4 w-4 text-[var(--brand)]" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.totalProducts}</div>
@@ -52,7 +52,7 @@ export function StatsCards({ stats }: { stats: DashboardStats }) {
                     <CardTitle className="text-sm font-medium text-gray-400">
                         Demo Requests
                     </CardTitle>
-                    <FileText className="h-4 w-4 text-[#C6A85E]" />
+                    <FileText className="h-4 w-4 text-[var(--brand)]" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.totalDemoRequests}</div>

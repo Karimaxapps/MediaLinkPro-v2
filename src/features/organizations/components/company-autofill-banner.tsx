@@ -122,11 +122,11 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[#C6A85E]" />
+          <Sparkles className="h-4 w-4 text-[var(--brand)]" />
           <span className="text-sm font-medium text-gray-200">
             Import from your website
           </span>
-          <span className="rounded-full bg-[#C6A85E]/10 px-2 py-0.5 text-[10px] font-medium text-[#C6A85E]">
+          <span className="rounded-full bg-[var(--brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--brand)]">
             optional
           </span>
         </div>
@@ -159,7 +159,7 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
           size="sm"
           onClick={handleImport}
           disabled={state === "loading" || !url.trim()}
-          className="h-9 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold shrink-0"
+          className="h-9 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold shrink-0"
         >
           {state === "loading" ? (
             <Loader2 className="h-4 w-4 animate-spin" />

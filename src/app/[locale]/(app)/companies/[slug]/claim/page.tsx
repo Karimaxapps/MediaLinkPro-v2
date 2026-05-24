@@ -69,7 +69,7 @@ export default async function ClaimCompanyPage({
 
       <div>
         <h1 className="text-2xl font-bold text-white">
-          Claim ownership of <span className="text-[#C6A85E]">{orgRow.name}</span>
+          Claim ownership of <span className="text-[var(--brand)]">{orgRow.name}</span>
         </h1>
         <p className="text-sm text-gray-400 mt-2">
           An admin will review your request. Tell us how you&apos;re affiliated
@@ -79,13 +79,13 @@ export default async function ClaimCompanyPage({
       </div>
 
       {existingOrg && (
-        <div className="rounded-lg border border-[#C6A85E]/30 bg-[#C6A85E]/5 p-4 text-sm text-gray-200">
+        <div className="rounded-lg border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-4 text-sm text-gray-200">
           <p className="font-semibold text-white">Heads up</p>
           <p className="mt-1">
             You already own{" "}
             <Link
               href={`/companies/${existingOrg.slug}`}
-              className="text-[#C6A85E] hover:underline"
+              className="text-[var(--brand)] hover:underline"
             >
               {existingOrg.name}
             </Link>

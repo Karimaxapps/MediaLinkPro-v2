@@ -61,7 +61,7 @@ export function ShareButtons({ url, title, excerpt }: ShareButtonsProps) {
           rel="noopener noreferrer"
           title={t.label}
           aria-label={t.label}
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-300 hover:text-[#C6A85E] hover:border-[#C6A85E]/40 transition-colors"
+          className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-300 hover:text-[var(--brand)] hover:border-[var(--brand)]/40 transition-colors"
         >
           <t.icon className="h-4 w-4" />
         </a>
@@ -71,7 +71,7 @@ export function ShareButtons({ url, title, excerpt }: ShareButtonsProps) {
         onClick={handleCopy}
         title="Copy link"
         aria-label="Copy link"
-        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-300 hover:text-[#C6A85E] hover:border-[#C6A85E]/40 transition-colors"
+        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 text-gray-300 hover:text-[var(--brand)] hover:border-[var(--brand)]/40 transition-colors"
       >
         {copied ? <Check className="h-4 w-4 text-[#10b981]" /> : <Link2 className="h-4 w-4" />}
       </button>

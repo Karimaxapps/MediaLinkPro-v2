@@ -67,7 +67,7 @@ export function ConfirmDialog({
                         disabled={loading}
                         className={`${variant === "destructive"
                             ? "bg-red-500 hover:bg-red-600 focus:ring-red-500 text-white"
-                            : "bg-[#C6A85E] hover:bg-[#B5964A] text-black"
+                            : "bg-[var(--brand)] hover:bg-[#B5964A] text-black"
                             }`}
                     >
                         {loading ? "Processing..." : confirmText}

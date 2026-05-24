@@ -7,8 +7,8 @@ interface VerifiedBadgeProps {
   size?: "sm" | "md" | "lg";
 }
 
-const BLUE = "#135bec";
-const GOLD = "#C6A85E";
+const BLUE = "var(--brand-secondary)";
+const GOLD = "var(--brand)";
 
 const sizeClass = {
   sm: "h-4 w-4",

@@ -152,7 +152,7 @@ export function EditResourceDialog({ resource, onSuccess }: EditResourceDialogPr
                         </Button>
                         <Button
                             type="submit"
-                            className="bg-[#C6A85E] text-black hover:bg-[#B5964A]"
+                            className="bg-[var(--brand)] text-black hover:bg-[#B5964A]"
                             disabled={isLoading}
                         >
                             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

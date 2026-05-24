@@ -19,7 +19,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
             href={`/products/${product.slug}`}
             className="group block h-full"
         >
-            <Card className="bg-white/5 border-white/10 overflow-hidden hover:border-[#C6A85E]/50 transition-all duration-300 h-full flex flex-col p-0 gap-0 relative">
+            <Card className="bg-white/5 border-white/10 overflow-hidden hover:border-[var(--brand)]/50 transition-all duration-300 h-full flex flex-col p-0 gap-0 relative">
                 <CardHeader className="p-0">
                     <div className={`relative w-full bg-gray-900 group-hover:opacity-90 transition-opacity overflow-hidden ${compact ? "h-32" : "h-48"}`}>
                         {(product.gallery_urls && product.gallery_urls.length > 0) || product.logo_url ? (
@@ -48,7 +48,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
 
                 <CardContent className={`flex-1 flex flex-col justify-between ${compact ? "p-3 space-y-2" : "p-4 space-y-4"}`}>
                     <div className={compact ? "space-y-1" : "space-y-2"}>
-                        <h3 className={`font-bold text-white group-hover:text-[#C6A85E] transition-colors line-clamp-1 ${compact ? "text-sm" : "text-lg"}`}>
+                        <h3 className={`font-bold text-white group-hover:text-[var(--brand)] transition-colors line-clamp-1 ${compact ? "text-sm" : "text-lg"}`}>
                             {product.name}
                         </h3>
 

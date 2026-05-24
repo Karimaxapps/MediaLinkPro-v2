@@ -240,7 +240,7 @@ export function AdminUsersClient({
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={u.avatar_url ?? undefined} />
-                          <AvatarFallback className="bg-[#C6A85E] text-black text-xs">
+                          <AvatarFallback className="bg-[var(--brand)] text-black text-xs">
                             {(u.full_name ?? u.username ?? "?")[0]}
                           </AvatarFallback>
                         </Avatar>
@@ -319,14 +319,14 @@ function StatChip({
   onClick: () => void;
   accent?: "warn";
 }) {
-  const accentText = accent === "warn" ? "text-yellow-400" : "text-[#C6A85E]";
+  const accentText = accent === "warn" ? "text-yellow-400" : "text-[var(--brand)]";
   return (
     <button
       onClick={onClick}
       className={
         "rounded-xl border px-4 py-3 text-left transition-all " +
         (active
-          ? "border-[#C6A85E] bg-[#C6A85E]/[0.07]"
+          ? "border-[var(--brand)] bg-[var(--brand)]/[0.07]"
           : "border-white/10 bg-white/[0.03] hover:border-white/20")
       }
     >

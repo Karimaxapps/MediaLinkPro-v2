@@ -77,9 +77,9 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
         <div className="container max-w-5xl py-10 space-y-8">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row gap-8 items-start">
-                <Avatar className="w-32 h-32 border-4 border-[#C6A85E]/20 bg-muted flex items-center justify-center">
+                <Avatar className="w-32 h-32 border-4 border-[var(--brand)]/20 bg-muted flex items-center justify-center">
                     <AvatarImage src={profile.avatar_url || ''} alt={profile.full_name || username} />
-                    <AvatarFallback className="text-4xl bg-[#C6A85E] text-black flex items-center justify-center w-full h-full">
+                    <AvatarFallback className="text-4xl bg-[var(--brand)] text-black flex items-center justify-center w-full h-full">
                         <User className="h-16 w-16" />
                     </AvatarFallback>
                 </Avatar>
@@ -88,11 +88,11 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
                     <div className="flex justify-between items-start">
                         <div>
                             <h1 className="text-4xl font-bold text-white tracking-tight">{profile.full_name}</h1>
-                            <p className="text-xl text-[#C6A85E] font-medium mt-1">@{profile.username}</p>
+                            <p className="text-xl text-[var(--brand)] font-medium mt-1">@{profile.username}</p>
 
                             {profile.company && (
                                 <div className="flex items-center text-gray-400 mt-1">
-                                    <Building2 className="w-4 h-4 mr-1.5 text-[#C6A85E]" />
+                                    <Building2 className="w-4 h-4 mr-1.5 text-[var(--brand)]" />
                                     <span className="text-base">{profile.company}</span>
                                 </div>
                             )}
@@ -108,7 +108,7 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
 
                     <div className="flex flex-wrap gap-4 text-sm text-gray-400">
                         {profile.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-[#C6A85E] transition-colors">
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-[var(--brand)] transition-colors">
                                 <LinkIcon className="w-4 h-4 mr-1.5" />
                                 {new URL(profile.website).hostname}
                             </a>
@@ -155,7 +155,7 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
                         )}
 
                         {profile.portfolio_url && (
-                            <a href={profile.portfolio_url} target="_blank" rel="noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[#C6A85E] hover:text-black transition-all text-gray-400">
+                            <a href={profile.portfolio_url} target="_blank" rel="noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-[var(--brand)] hover:text-black transition-all text-gray-400">
                                 <Globe className="w-5 h-5" />
                             </a>
                         )}
@@ -166,7 +166,7 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
 
 
                     {!isOwner && (
-                        <Button className="w-full bg-[#C6A85E] text-black hover:bg-[#B5964A]" size="lg">
+                        <Button className="w-full bg-[var(--brand)] text-black hover:bg-[#B5964A]" size="lg">
                             Contact Expert
                         </Button>
                     )}

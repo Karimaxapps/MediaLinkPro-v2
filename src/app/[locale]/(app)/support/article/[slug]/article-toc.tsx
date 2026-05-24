@@ -29,7 +29,7 @@ export function ArticleToc({ content }: { content: string }) {
             <a
               key={h.id}
               href={`#${h.id}`}
-              className={`text-xs text-gray-500 hover:text-[#C6A85E] transition-colors leading-relaxed ${
+              className={`text-xs text-gray-500 hover:text-[var(--brand)] transition-colors leading-relaxed ${
                 h.level === 3 ? "pl-3" : ""
               }`}
             >

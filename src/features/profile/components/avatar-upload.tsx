@@ -28,7 +28,7 @@ export function AvatarUpload({ currentUserId, currentAvatarUrl, onUploadSuccess,
     return (
         <div className={`flex flex-col items-center gap-4 ${className}`}>
             <div className="relative group cursor-pointer">
-                <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[#C6A85E] transition-colors">
+                <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[var(--brand)] transition-colors">
                     <AvatarImage src={currentAvatarUrl || ''} className="object-cover" />
                     <AvatarFallback className="bg-white/5 text-white">
                         <User className="w-10 h-10 text-gray-400" />
@@ -58,7 +58,7 @@ export function AvatarUpload({ currentUserId, currentAvatarUrl, onUploadSuccess,
             <label htmlFor="avatar-upload">
                 <Button
                     variant="outline"
-                    className="border-white/10 text-white hover:bg-white/5 hover:text-[#C6A85E] bg-transparent"
+                    className="border-white/10 text-white hover:bg-white/5 hover:text-[var(--brand)] bg-transparent"
                     disabled={isUploading}
                     asChild // Render as span to avoid button-in-label issues if any, but Input is hidden so Button triggers label
                 >

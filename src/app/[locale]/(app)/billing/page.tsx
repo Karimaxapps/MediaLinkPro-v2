@@ -44,10 +44,10 @@ export default async function BillingPage({ searchParams }: Props) {
       )}
 
       {/* Current plan status card */}
-      <div className="rounded-xl border border-[#C6A85E]/30 bg-gradient-to-br from-[#C6A85E]/5 to-white/5 p-6">
+      <div className="rounded-xl border border-[var(--brand)]/30 bg-gradient-to-br from-[var(--brand)]/5 to-white/5 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
-            <div className="text-xs uppercase tracking-wider text-[#C6A85E]">Current plan</div>
+            <div className="text-xs uppercase tracking-wider text-[var(--brand)]">Current plan</div>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-2xl font-bold text-white">{plan.name}</span>
               {sub.plan !== "free" && (
@@ -107,7 +107,7 @@ export default async function BillingPage({ searchParams }: Props) {
       <div className="text-center text-xs text-gray-500 space-y-1 pt-4">
         <p>
           Need help choosing? Contact us at{" "}
-          <a href="mailto:hello@medialinkpro.net" className="text-[#C6A85E] hover:underline">
+          <a href="mailto:hello@medialinkpro.net" className="text-[var(--brand)] hover:underline">
             hello@medialinkpro.net
           </a>
         </p>

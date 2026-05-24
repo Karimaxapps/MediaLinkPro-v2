@@ -73,7 +73,7 @@ export function ReviewForm({ productId, existingReview, onSubmitted }: ReviewFor
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Summarize your experience..."
                     maxLength={200}
-                    className="bg-black/20 border-white/10 text-white focus:border-[#C6A85E]/50"
+                    className="bg-black/20 border-white/10 text-white focus:border-[var(--brand)]/50"
                 />
             </div>
 
@@ -87,7 +87,7 @@ export function ReviewForm({ productId, existingReview, onSubmitted }: ReviewFor
                     placeholder="Share more about your experience with this product..."
                     maxLength={2000}
                     rows={4}
-                    className="bg-black/20 border-white/10 text-white focus:border-[#C6A85E]/50 resize-none"
+                    className="bg-black/20 border-white/10 text-white focus:border-[var(--brand)]/50 resize-none"
                 />
                 <p className="text-xs text-gray-500 text-right">{body.length}/2000</p>
             </div>
@@ -96,7 +96,7 @@ export function ReviewForm({ productId, existingReview, onSubmitted }: ReviewFor
             <Button
                 type="submit"
                 disabled={isSubmitting || rating === 0}
-                className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-medium"
+                className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-medium"
             >
                 <Send className="h-4 w-4 mr-2" />
                 {isSubmitting ? "Submitting..." : isEditing ? "Update Review" : "Submit Review"}

@@ -58,7 +58,7 @@ export async function SponsoredCard({
                         </p>
                     )}
                 </div>
-                <span className="shrink-0 bg-[#C6A85E] hover:bg-[#b5975a] text-black text-xs font-semibold rounded-full px-3 py-1.5 shadow transition-colors">
+                <span className="shrink-0 bg-[var(--brand)] hover:bg-[#b5975a] text-black text-xs font-semibold rounded-full px-3 py-1.5 shadow transition-colors">
                     {ad.cta_label ?? "Learn more"}
                 </span>
             </div>

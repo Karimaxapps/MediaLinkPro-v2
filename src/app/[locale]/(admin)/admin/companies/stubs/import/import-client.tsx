@@ -151,7 +151,7 @@ export function StubImportClient() {
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Companies
         </Link>
         <h1 className="text-2xl font-bold text-white flex items-center gap-2 mt-2">
-          <Building2 className="h-6 w-6 text-[#C6A85E]" />
+          <Building2 className="h-6 w-6 text-[var(--brand)]" />
           Bulk Import Stub Companies
         </h1>
         <p className="text-sm text-gray-400 mt-1">
@@ -164,8 +164,8 @@ export function StubImportClient() {
         <div className="text-sm text-gray-300">
           <p className="font-semibold text-white mb-2">CSV format</p>
           <p>
-            First row is the header. <code className="text-[#C6A85E]">name</code>{" "}
-            is required. <code className="text-[#C6A85E]">slug</code> is
+            First row is the header. <code className="text-[var(--brand)]">name</code>{" "}
+            is required. <code className="text-[var(--brand)]">slug</code> is
             auto-generated from name if omitted. Supported columns:
           </p>
           <p className="mt-2 font-mono text-xs text-gray-400 break-words">
@@ -182,7 +182,7 @@ export function StubImportClient() {
               const f = e.target.files?.[0];
               if (f) onFile(f);
             }}
-            className="block w-full text-sm text-gray-300 file:mr-4 file:rounded-md file:border-0 file:bg-[#C6A85E] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-black hover:file:bg-[#B5964A]"
+            className="block w-full text-sm text-gray-300 file:mr-4 file:rounded-md file:border-0 file:bg-[var(--brand)] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-black hover:file:bg-[#B5964A]"
           />
         </label>
 
@@ -202,7 +202,7 @@ export function StubImportClient() {
             <Button
               onClick={onImport}
               disabled={isPending}
-              className="bg-[#C6A85E] text-black hover:bg-[#B5964A] font-semibold"
+              className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
             >
               {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

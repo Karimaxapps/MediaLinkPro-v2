@@ -91,9 +91,9 @@ export const JOB_TYPE_LABELS: Record<JobType, string> = {
 };
 
 export const JOB_TYPE_COLORS: Record<JobType, string> = {
-  full_time: "#C6A85E",
+  full_time: "var(--brand)",
   part_time: "#10b981",
-  contract: "#135bec",
+  contract: "var(--brand-secondary)",
   freelance: "#8b5cf6",
   internship: "#f59e0b",
   temporary: "#ef4444",
@@ -115,8 +115,8 @@ export const APPLICATION_STATUS_LABELS: Record<JobApplicationStatus, string> = {
 };
 
 export const APPLICATION_STATUS_COLORS: Record<JobApplicationStatus, string> = {
-  submitted: "#135bec",
-  reviewed: "#C6A85E",
+  submitted: "var(--brand-secondary)",
+  reviewed: "var(--brand)",
   interview_scheduled: "#8b5cf6",
   rejected: "#ef4444",
   accepted: "#10b981",

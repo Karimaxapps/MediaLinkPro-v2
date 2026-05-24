@@ -594,7 +594,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         user={user}
                                         userProfile={userProfile}
                                         trigger={
-                                            <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none">
+                                            <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold h-11 px-6 rounded-lg w-full md:w-auto flex-1 md:flex-none">
                                                 Request Demo or Quote
                                             </Button>
                                         }
@@ -626,19 +626,19 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
                                 className={cn(
                                     "bg-white/5 border-white/10 hover:bg-white/10 transition-colors h-11 w-11 rounded-lg",
-                                    isBookmarked && "border-[#C6A85E]/50"
+                                    isBookmarked && "border-[var(--brand)]/50"
                                 )}
                                 onClick={!isBookmarkLoading ? handleToggleBookmark : undefined}
                                 disabled={isBookmarkLoading}
                             >
-                                <Bookmark className={cn("w-5 h-5 text-[#C6A85E]", isBookmarked && "fill-current")} />
+                                <Bookmark className={cn("w-5 h-5 text-[var(--brand)]", isBookmarked && "fill-current")} />
                             </Button>
                         </div>
 
                         {isOwner && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
                                 <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-[#C6A85E]">
+                                    <div className="flex items-center gap-2 text-[var(--brand)]">
                                         <Eye className="w-4 h-4 shrink-0" />
                                         <span className="text-sm font-medium whitespace-nowrap">Views</span>
                                     </div>
@@ -646,8 +646,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 </Card>
 
                                 <DemoRequestsDialog productId={product.id}>
-                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]/50">
-                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[var(--brand)]/50">
+                                        <div className="flex items-center gap-2 text-[var(--brand)]">
                                             <Mail className="w-4 h-4 shrink-0" />
                                             <span className="text-sm font-medium whitespace-nowrap">Requests</span>
                                         </div>
@@ -658,10 +658,10 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 <ProductBookmarksDialog productId={product.id}>
                                     <Card
                                         className={cn(
-                                            "bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]"
+                                            "bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[var(--brand)]"
                                         )}
                                     >
-                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                        <div className="flex items-center gap-2 text-[var(--brand)]">
                                             <Bookmark className={cn("w-4 h-4 shrink-0", isBookmarked && "fill-current")} />
                                             <span className="text-sm font-medium whitespace-nowrap">Bookmarks</span>
                                         </div>
@@ -670,8 +670,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                 </ProductBookmarksDialog>
 
                                 <ProductScansDialog productId={product.id}>
-                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[#C6A85E]/50">
-                                        <div className="flex items-center gap-2 text-[#C6A85E]">
+                                    <Card className="bg-white/5 border-white/10 h-full py-3 px-4 flex items-center justify-between cursor-pointer transition-colors hover:border-[var(--brand)]/50">
+                                        <div className="flex items-center gap-2 text-[var(--brand)]">
                                             <Scan className="w-4 h-4 shrink-0" />
                                             <span className="text-sm font-medium whitespace-nowrap">QR scan</span>
                                         </div>
@@ -719,7 +719,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         onClick={() => setActiveImage(url)}
                                         className={cn(
                                             "w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 relative transition-all bg-[#121212]",
-                                            activeImage === url ? "border-[#C6A85E]" : "border-white/5 opacity-60 hover:opacity-100"
+                                            activeImage === url ? "border-[var(--brand)]" : "border-white/5 opacity-60 hover:opacity-100"
                                         )}
                                     >
                                         <Image src={url} alt={`Gallery ${i}`} fill className="object-contain p-2" />
@@ -730,7 +730,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         onClick={() => setActiveImage('video')}
                                         className={cn(
                                             "w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 relative transition-all bg-[#121212] flex items-center justify-center group",
-                                            activeImage === 'video' ? "border-[#C6A85E]" : "border-white/5 opacity-60 hover:opacity-100"
+                                            activeImage === 'video' ? "border-[var(--brand)]" : "border-white/5 opacity-60 hover:opacity-100"
                                         )}
                                     >
                                         <Play className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
@@ -751,11 +751,11 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                         {/* Tabs */}
                         <Tabs defaultValue="overview" className="w-full" id="product-tabs">
                             <TabsList className="bg-white/5 border border-white/10 w-full justify-start overflow-x-auto scrollbar-hide">
-                                <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Overview</TabsTrigger>
-                                <TabsTrigger value="training" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Official Resources</TabsTrigger>
-                                <TabsTrigger value="community" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Community Resources</TabsTrigger>
-                                <TabsTrigger value="reviews" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Reviews</TabsTrigger>
-                                <TabsTrigger value="discussions" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Discussions</TabsTrigger>
+                                <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Overview</TabsTrigger>
+                                <TabsTrigger value="training" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Official Resources</TabsTrigger>
+                                <TabsTrigger value="community" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Community Resources</TabsTrigger>
+                                <TabsTrigger value="reviews" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Reviews</TabsTrigger>
+                                <TabsTrigger value="discussions" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Discussions</TabsTrigger>
                                 <TabsTrigger value="users" className="hidden">Product Users</TabsTrigger>
                             </TabsList>
 
@@ -777,8 +777,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                     {product.certification_url && (
                                         <Card className="bg-white/5 border-white/10 text-white">
                                             <CardHeader className="flex flex-row items-center gap-4 space-y-0">
-                                                <div className="p-2 bg-[#C6A85E]/10 rounded-lg">
-                                                    <Award className="w-6 h-6 text-[#C6A85E]" />
+                                                <div className="p-2 bg-[var(--brand)]/10 rounded-lg">
+                                                    <Award className="w-6 h-6 text-[var(--brand)]" />
                                                 </div>
                                                 <div>
                                                     <CardTitle className="text-lg">Certifications</CardTitle>
@@ -786,7 +786,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <a href={product.certification_url} target="_blank" rel="noopener noreferrer" className="text-[#C6A85E] hover:underline flex items-center gap-2">
+                                                <a href={product.certification_url} target="_blank" rel="noopener noreferrer" className="text-[var(--brand)] hover:underline flex items-center gap-2">
                                                     View Certifications <ArrowUpRight className="w-4 h-4" />
                                                 </a>
                                             </CardContent>
@@ -805,7 +805,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         <Card className="bg-white/5 border-white/10 text-white h-full">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2">
-                                                    <GraduationCap className="w-5 h-5 text-[#C6A85E]" />
+                                                    <GraduationCap className="w-5 h-5 text-[var(--brand)]" />
                                                     Resources
                                                 </CardTitle>
                                             </CardHeader>
@@ -855,7 +855,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                             <Card className="bg-white/5 border-white/10 text-white col-span-1 md:col-span-2">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2">
-                                                        <Video className="w-5 h-5 text-[#C6A85E]" />
+                                                        <Video className="w-5 h-5 text-[var(--brand)]" />
                                                         Training Videos
                                                     </CardTitle>
                                                 </CardHeader>
@@ -928,7 +928,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         {mounted && (
                                             <Dialog open={isAddVideoOpen} onOpenChange={setIsAddVideoOpen}>
                                                 <DialogTrigger asChild>
-                                                    <Button size="sm" className="bg-[#C6A85E] hover:bg-[#B5964A] text-black">
+                                                    <Button size="sm" className="bg-[var(--brand)] hover:bg-[#B5964A] text-black">
                                                         <Plus className="w-4 h-4 mr-2" /> Add Video
                                                     </Button>
                                                 </DialogTrigger>
@@ -962,7 +962,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                         </div>
                                                         <DialogFooter>
                                                             <Button type="button" variant="ghost" onClick={() => setIsAddVideoOpen(false)}>Cancel</Button>
-                                                            <Button type="submit" disabled={isAddingVideo} className="bg-[#C6A85E] hover:bg-[#B5964A] text-black">
+                                                            <Button type="submit" disabled={isAddingVideo} className="bg-[var(--brand)] hover:bg-[#B5964A] text-black">
                                                                 {isAddingVideo ? "Adding..." : "Add Video"}
                                                             </Button>
                                                         </DialogFooter>
@@ -1023,7 +1023,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                                             onClick={() => handleUpvote(resource.id)}
                                                                             className={cn(
                                                                                 "flex items-center gap-2 h-9 px-3 rounded-lg border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all",
-                                                                                resource.is_upvoted && "text-[#C6A85E] border-[#C6A85E]/30 bg-[#C6A85E]/5 hover:text-[#C6A85E] hover:bg-[#C6A85E]/10",
+                                                                                resource.is_upvoted && "text-[var(--brand)] border-[var(--brand)]/30 bg-[var(--brand)]/5 hover:text-[var(--brand)] hover:bg-[var(--brand)]/10",
                                                                                 animatingResources[resource.id] && "animate-upvote-pop"
                                                                             )}
                                                                         >
@@ -1058,7 +1058,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                                     <div className="flex items-start justify-between gap-4">
                                                                         <div className="min-w-0">
                                                                             <h4 className="text-base font-semibold text-white truncate mb-1">
-                                                                                <a href={resource.url} target="_blank" rel="noopener noreferrer" className="hover:text-[#C6A85E] transition-colors">
+                                                                                <a href={resource.url} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--brand)] transition-colors">
                                                                                     {resource.title}
                                                                                 </a>
                                                                             </h4>
@@ -1076,7 +1076,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                                                 onClick={() => handleUpvote(resource.id)}
                                                                                 className={cn(
                                                                                     "flex items-center gap-1.5 h-8 px-2 text-gray-400 hover:text-white hover:bg-white/10",
-                                                                                    resource.is_upvoted && "text-[#C6A85E] hover:text-[#C6A85E] bg-[#C6A85E]/10",
+                                                                                    resource.is_upvoted && "text-[var(--brand)] hover:text-[var(--brand)] bg-[var(--brand)]/10",
                                                                                     animatingResources[resource.id] && "animate-upvote-pop"
                                                                                 )}
                                                                             >
@@ -1109,7 +1109,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                 </div>
                                                 <h3 className="text-lg font-medium text-white">No videos yet</h3>
                                                 <p className="text-gray-500 mb-4">Be the first to share a video for this community.</p>
-                                                <Button size="sm" onClick={() => setIsAddVideoOpen(true)} className="bg-[#C6A85E] hover:bg-[#B5964A] text-black">
+                                                <Button size="sm" onClick={() => setIsAddVideoOpen(true)} className="bg-[var(--brand)] hover:bg-[#B5964A] text-black">
                                                     <Plus className="w-4 h-4 mr-2" /> Add Video
                                                 </Button>
                                             </div>
@@ -1140,13 +1140,13 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                         <Card className="bg-white/5 border-white/10 text-white">
                             <CardHeader className="pb-3 border-b border-white/10 flex flex-row items-center justify-between space-y-0">
                                 <CardTitle className="text-lg flex items-center gap-2">
-                                    <Users className="w-5 h-5 text-[#C6A85E]" />
+                                    <Users className="w-5 h-5 text-[var(--brand)]" />
                                     Product Users
                                 </CardTitle>
                                 {!isExpert && (
                                     <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                                         <DialogTrigger asChild>
-                                            <Button size="sm" className="h-8 bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
+                                            <Button size="sm" className="h-8 bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold">
                                                 Join
                                             </Button>
                                         </DialogTrigger>
@@ -1174,7 +1174,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                 <Button
                                                     onClick={handleJoinExperts}
                                                     disabled={isJoining}
-                                                    className="bg-[#C6A85E] text-black hover:bg-[#B5964A] w-full"
+                                                    className="bg-[var(--brand)] text-black hover:bg-[#B5964A] w-full"
                                                 >
                                                     {isJoining ? "Joining..." : "Join Community"}
                                                 </Button>
@@ -1234,12 +1234,12 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                                 {expert.profile?.full_name || "Unknown User"}
                                                             </h4>
                                                             {expert.is_verified && (
-                                                                <CheckCircle className="w-3 h-3 text-[#C6A85E]" />
+                                                                <CheckCircle className="w-3 h-3 text-[var(--brand)]" />
                                                             )}
                                                         </div>
                                                         <p className="text-xs text-gray-400 truncate">
                                                             {expert.expertise_level && (
-                                                                <span className="text-[#C6A85E] mr-1">[{expert.expertise_level}]</span>
+                                                                <span className="text-[var(--brand)] mr-1">[{expert.expertise_level}]</span>
                                                             )}
                                                             {expert.profile?.headline || "Product User"}
                                                         </p>
@@ -1274,7 +1274,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                         {/* Commercial / Pricing Info */}
                         <Card className="bg-white/5 border-white/10 text-white">
                             <CardHeader className="pb-3 border-b border-white/10">
-                                <CardTitle className="text-lg text-[#C6A85E]">Pricing & Availability</CardTitle>
+                                <CardTitle className="text-lg text-[var(--brand)]">Pricing & Availability</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 pt-4">
                                 <div className="flex justify-between border-b border-white/10 pb-3 text-sm">
@@ -1303,10 +1303,10 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                             <Card className="bg-white/5 border-white/10 text-white">
                                 <CardHeader className="pb-3 border-b border-white/10 flex flex-row items-center justify-between space-y-0">
                                     <CardTitle className="text-lg flex items-center gap-2">
-                                        <Newspaper className="w-5 h-5 text-[#C6A85E]" />
+                                        <Newspaper className="w-5 h-5 text-[var(--brand)]" />
                                         Featured in Blog
                                     </CardTitle>
-                                    <Link href="/blog" className="text-xs text-[#C6A85E] hover:underline shrink-0">
+                                    <Link href="/blog" className="text-xs text-gray-400 hover:text-gray-200 transition-colors shrink-0">
                                         View all
                                     </Link>
                                 </CardHeader>
@@ -1316,9 +1316,9 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                             <Link
                                                 key={post.id}
                                                 href={`/blog/${post.slug}`}
-                                                className="group snap-start shrink-0 w-[220px] rounded-xl border border-white/10 bg-black/20 overflow-hidden hover:border-[#C6A85E]/40 transition-colors"
+                                                className="group snap-start shrink-0 w-[220px] rounded-xl border border-white/10 bg-black/20 overflow-hidden hover:border-[var(--brand)]/40 transition-colors"
                                             >
-                                                <div className="relative aspect-video w-full bg-[#C6A85E]/10">
+                                                <div className="relative aspect-video w-full bg-[var(--brand)]/10">
                                                     {post.cover_image_url ? (
                                                         <Image
                                                             src={post.cover_image_url}
@@ -1328,17 +1328,17 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
-                                                            <Newspaper className="w-8 h-8 text-[#C6A85E]/40" />
+                                                            <Newspaper className="w-8 h-8 text-[var(--brand)]/40" />
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="p-3">
                                                     {post.category && (
-                                                        <div className="text-[10px] uppercase tracking-wider text-[#C6A85E] font-medium mb-1">
+                                                        <div className="text-[10px] uppercase tracking-wider text-[var(--brand)] font-medium mb-1">
                                                             {post.category}
                                                         </div>
                                                     )}
-                                                    <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[#C6A85E] transition-colors leading-snug">
+                                                    <h4 className="text-sm font-semibold text-white line-clamp-2 group-hover:text-[var(--brand)] transition-colors leading-snug">
                                                         {post.title}
                                                     </h4>
                                                     <div className="text-[10px] text-gray-500 mt-2 flex items-center gap-1.5">
@@ -1362,17 +1362,17 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
 
                         {/* Organization Info / Owner Tips */}
                         {isOwner ? (
-                            <Card className="bg-[#C6A85E]/10 border-[#C6A85E]/20 text-white sticky top-24">
-                                <CardHeader className="pb-3 border-b border-[#C6A85E]/10">
-                                    <CardTitle className="text-lg flex items-center gap-2 text-[#C6A85E]">
+                            <Card className="bg-[var(--brand)]/10 border-[var(--brand)]/20 text-white sticky top-24">
+                                <CardHeader className="pb-3 border-b border-[var(--brand)]/10">
+                                    <CardTitle className="text-lg flex items-center gap-2 text-[var(--brand)]">
                                         <Lightbulb className="w-5 h-5" />
                                         Owner Tips
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-6 pt-6">
                                     <div className="flex gap-4 items-start">
-                                        <div className="bg-[#C6A85E]/20 p-2.5 rounded-lg shrink-0 mt-1">
-                                            <QrCode className="w-5 h-5 text-[#C6A85E]" />
+                                        <div className="bg-[var(--brand)]/20 p-2.5 rounded-lg shrink-0 mt-1">
+                                            <QrCode className="w-5 h-5 text-[var(--brand)]" />
                                         </div>
                                         <p className="text-sm text-gray-300 leading-relaxed">
                                             <span className="text-white font-medium block mb-1">Boost Engagement</span>
@@ -1381,8 +1381,8 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                     </div>
 
                                     <div className="flex gap-4 items-start">
-                                        <div className="bg-[#C6A85E]/20 p-2.5 rounded-lg shrink-0 mt-1">
-                                            <Bookmark className="w-5 h-5 text-[#C6A85E]" />
+                                        <div className="bg-[var(--brand)]/20 p-2.5 rounded-lg shrink-0 mt-1">
+                                            <Bookmark className="w-5 h-5 text-[var(--brand)]" />
                                         </div>
                                         <p className="text-sm text-gray-300 leading-relaxed">
                                             <span className="text-white font-medium block mb-1">Track Interest</span>

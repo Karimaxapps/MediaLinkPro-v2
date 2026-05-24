@@ -152,7 +152,7 @@ export default function PrivacyPage() {
             </ul>
             <p className="mt-3">
               To exercise any of these rights, contact us at{" "}
-              <a href="mailto:privacy@medialinkpro.net" className="text-[#C6A85E] hover:underline">
+              <a href="mailto:privacy@medialinkpro.net" className="text-[var(--brand)] hover:underline">
                 privacy@medialinkpro.net
               </a>
               .
@@ -192,7 +192,7 @@ export default function PrivacyPage() {
             <p>
               If you have questions or concerns about this Privacy Policy or our data practices,
               please contact us at{" "}
-              <a href="mailto:privacy@medialinkpro.net" className="text-[#C6A85E] hover:underline">
+              <a href="mailto:privacy@medialinkpro.net" className="text-[var(--brand)] hover:underline">
                 privacy@medialinkpro.net
               </a>
               .

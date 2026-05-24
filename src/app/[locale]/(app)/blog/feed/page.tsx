@@ -19,7 +19,7 @@ export default async function DashboardBlogFeedPage() {
     <div className="space-y-8">
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div className="space-y-1">
-          <p className="text-xs uppercase tracking-widest text-[#C6A85E] font-semibold">
+          <p className="text-xs uppercase tracking-widest text-[var(--brand)] font-semibold">
             {t("label")}
           </p>
           <h1 className="text-3xl font-bold text-white">{t("heading")}</h1>
@@ -35,7 +35,7 @@ export default async function DashboardBlogFeedPage() {
             </Button>
           </Link>
           <Link href="/blog/new">
-            <Button className="bg-[#C6A85E] hover:bg-[#B5964A] text-black font-semibold">
+            <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold">
               <PenSquare className="mr-2 h-4 w-4" />
               New post
             </Button>
@@ -66,18 +66,18 @@ export default async function DashboardBlogFeedPage() {
                   />
                 </div>
               ) : (
-                <div className="aspect-video bg-gradient-to-br from-[#C6A85E]/10 to-white/5 flex items-center justify-center">
-                  <PenSquare className="h-10 w-10 text-[#C6A85E]/30" />
+                <div className="aspect-video bg-gradient-to-br from-[var(--brand)]/10 to-white/5 flex items-center justify-center">
+                  <PenSquare className="h-10 w-10 text-[var(--brand)]/30" />
                 </div>
               )}
 
               <div className="p-5 space-y-2">
                 {post.category && (
-                  <div className="text-xs uppercase tracking-wider text-[#C6A85E] font-medium">
+                  <div className="text-xs uppercase tracking-wider text-[var(--brand)] font-medium">
                     {post.category}
                   </div>
                 )}
-                <h2 className="text-base font-semibold text-white group-hover:text-[#C6A85E] transition-colors line-clamp-2 leading-snug">
+                <h2 className="text-base font-semibold text-white group-hover:text-[var(--brand)] transition-colors line-clamp-2 leading-snug">
                   {post.title}
                 </h2>
                 {post.excerpt && (

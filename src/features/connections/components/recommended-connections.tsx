@@ -12,10 +12,10 @@ export async function RecommendedConnectionsWidget({ limit = 5 }: { limit?: numb
         <section className="rounded-xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-[#C6A85E]" />
+                    <Sparkles className="h-4 w-4 text-[var(--brand)]" />
                     People You May Know
                 </h3>
-                <Link href="/connect/media-professionals" className="text-xs text-[#C6A85E] hover:underline">
+                <Link href="/connect/media-professionals" className="text-xs text-gray-400 hover:text-gray-200 transition-colors">
                     See all
                 </Link>
             </div>
@@ -28,19 +28,19 @@ export async function RecommendedConnectionsWidget({ limit = 5 }: { limit?: numb
                     >
                         <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarImage src={p.avatar_url ?? undefined} />
-                            <AvatarFallback className="bg-[#C6A85E] text-black text-xs">
+                            <AvatarFallback className="bg-[var(--brand)] text-black text-xs">
                                 {p.full_name?.[0] ?? p.username?.[0] ?? "?"}
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-white group-hover:text-[#C6A85E] transition-colors truncate">
+                            <div className="text-sm font-medium text-white group-hover:text-[var(--brand)] transition-colors truncate">
                                 {p.full_name ?? p.username ?? "Unknown"}
                             </div>
                             {p.headline && (
                                 <div className="text-xs text-gray-400 truncate">{p.headline}</div>
                             )}
                             {p.reasons.length > 0 && (
-                                <div className="flex items-center gap-1 mt-1 text-xs text-[#C6A85E]/80">
+                                <div className="flex items-center gap-1 mt-1 text-xs text-[var(--brand)]/80">
                                     <Users className="h-3 w-3 flex-shrink-0" />
                                     <span className="truncate">{p.reasons[0]}</span>
                                 </div>

@@ -189,11 +189,11 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
             {/* Hero Section */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                 {/* Visual Background */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#C6A85E]/10 rounded-full blur-3xl -z-10" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--brand)]/10 rounded-full blur-3xl -z-10" />
 
-                <Avatar className="h-24 w-24 border-2 border-[#C6A85E] rounded-xl">
+                <Avatar className="h-24 w-24 border-2 border-[var(--brand)] rounded-xl">
                     <AvatarImage src={org.logo_url || ""} alt={org.name} />
-                    <AvatarFallback className="bg-[#C6A85E] text-black text-2xl font-bold rounded-xl">
+                    <AvatarFallback className="bg-[var(--brand)] text-black text-2xl font-bold rounded-xl">
                         {org.name.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
@@ -212,9 +212,9 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                         {org.main_activity}
                     </p>
                     <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                        <Badge variant="secondary" className="bg-[#C6A85E] text-black hover:bg-[#B5964A]">{org.type || "Company"}</Badge>
+                        <Badge variant="secondary" className="bg-[var(--brand)] text-black hover:bg-[#B5964A]">{org.type || "Company"}</Badge>
                         <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
-                            <Users className="h-3.5 w-3.5 text-[#C6A85E]" />
+                            <Users className="h-3.5 w-3.5 text-[var(--brand)]" />
                             <span className="font-semibold text-white">{followerCount.toLocaleString()}</span>
                             {followerCount === 1 ? "follower" : "followers"}
                         </span>
@@ -248,9 +248,9 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 <div className="lg:col-span-2 space-y-6">
                     <Tabs defaultValue="overview" className="w-full">
                         <TabsList className="bg-white/5 border border-white/10 w-full justify-start overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Overview</TabsTrigger>
-                            <TabsTrigger value="products" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Products</TabsTrigger>
-                            <TabsTrigger value="jobs" className="text-white data-[state=active]:bg-[#C6A85E] data-[state=active]:text-black">Jobs</TabsTrigger>
+                            <TabsTrigger value="overview" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Overview</TabsTrigger>
+                            <TabsTrigger value="products" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Products</TabsTrigger>
+                            <TabsTrigger value="jobs" className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black">Jobs</TabsTrigger>
 
                         </TabsList>
 
@@ -332,17 +332,17 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                             {/* Official Website */}
                             {org.website && (
                                 <a href={org.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-300 hover:text-white group transition-colors">
-                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[#C6A85E]/20 text-[#C6A85E] transition-colors">
+                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[var(--brand)]/20 text-[var(--brand)] transition-colors">
                                         <Globe className="h-4 w-4" />
                                     </div>
-                                    <span className="font-medium text-[#C6A85E] group-hover:text-[#B5964A] transition-colors">Official Website</span>
+                                    <span className="font-medium text-[var(--brand)] group-hover:text-[#B5964A] transition-colors">Official Website</span>
                                 </a>
                             )}
 
                             {/* Public Email */}
                             {org.contact_email && (
                                 <a href={`mailto:${org.contact_email}`} className="flex items-center gap-3 text-gray-300 hover:text-white group transition-colors">
-                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[#C6A85E]/20 text-[#C6A85E] transition-colors">
+                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[var(--brand)]/20 text-[var(--brand)] transition-colors">
                                         <Mail className="h-4 w-4" />
                                     </div>
                                     <span className="font-medium break-all">{org.contact_email}</span>
@@ -352,7 +352,7 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                             {/* Public Phone */}
                             {org.phone && (
                                 <a href={`tel:${org.phone}`} className="flex items-center gap-3 text-gray-300 hover:text-white group transition-colors">
-                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[#C6A85E]/20 text-[#C6A85E] transition-colors">
+                                    <div className="p-2 bg-white/10 rounded-lg group-hover:bg-[var(--brand)]/20 text-[var(--brand)] transition-colors">
                                         <Phone className="h-4 w-4" />
                                     </div>
                                     <span className="font-medium">{org.phone}</span>
@@ -440,13 +440,13 @@ function CompanyJobCard({ job, orgSlug }: { job: Job; orgSlug: string }) {
             className="group block rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/[0.07]"
         >
             <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-[#C6A85E]">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-black/20 text-[var(--brand)]">
                     <Briefcase className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 space-y-1">
-                            <h3 className="line-clamp-2 font-semibold text-white transition-colors group-hover:text-[#C6A85E]">
+                            <h3 className="line-clamp-2 font-semibold text-white transition-colors group-hover:text-[var(--brand)]">
                                 {job.title}
                             </h3>
                             <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
@@ -460,7 +460,7 @@ function CompanyJobCard({ job, orgSlug }: { job: Job; orgSlug: string }) {
                                     <MapPin className="h-3.5 w-3.5" />
                                     {job.is_remote ? "Remote" : job.location || "Unspecified"}
                                 </span>
-                                {salary && <span className="text-[#C6A85E]">{salary}</span>}
+                                {salary && <span className="text-[var(--brand)]">{salary}</span>}
                             </div>
                         </div>
                         <span
@@ -477,7 +477,7 @@ function CompanyJobCard({ job, orgSlug }: { job: Job; orgSlug: string }) {
 
                     <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-gray-500">
                         <span>Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
-                        <span className="inline-flex items-center gap-1 font-medium text-[#C6A85E]">
+                        <span className="inline-flex items-center gap-1 font-medium text-[var(--brand)]">
                             View role
                             <ExternalLink className="h-3 w-3" />
                         </span>
@@ -555,13 +555,13 @@ async function CompanyMembersCard({ orgId }: { orgId: string }) {
                         <div className="flex items-center gap-3 bg-white/5 p-3 rounded-lg border border-white/5">
                             <Avatar className="h-10 w-10 border border-white/10">
                                 <AvatarImage src={owner.profiles.avatar_url || ""} />
-                                <AvatarFallback className="bg-[#C6A85E] text-black font-bold">
+                                <AvatarFallback className="bg-[var(--brand)] text-black font-bold">
                                     {owner.profiles.full_name?.substring(0, 2).toUpperCase() || "AD"}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
                                 <p className="font-medium text-white text-sm">{owner.profiles.full_name || "Unknown User"}</p>
-                                <Badge variant="secondary" className="mt-1 text-[10px] h-5 bg-[#C6A85E]/20 text-[#C6A85E] hover:bg-[#C6A85E]/30 border-none">
+                                <Badge variant="secondary" className="mt-1 text-[10px] h-5 bg-[var(--brand)]/20 text-[var(--brand)] hover:bg-[var(--brand)]/30 border-none">
                                     Owner
                                 </Badge>
                             </div>

@@ -59,7 +59,7 @@ export function ProductQRCode({ productId, productName, slug }: ProductQRCodePro
 
     if (!mounted) {
         return (
-            <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[#C6A85E] hover:text-[#B5964A] transition-colors">
+            <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[var(--brand)] hover:text-[#B5964A] transition-colors">
                 <QrCode className="w-5 h-5" />
             </Button>
         );
@@ -68,7 +68,7 @@ export function ProductQRCode({ productId, productName, slug }: ProductQRCodePro
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[#C6A85E] hover:text-[#B5964A] transition-colors">
+                <Button variant="outline" size="icon" className="h-11 w-11 border-white/10 bg-white/5 hover:bg-white/10 text-[var(--brand)] hover:text-[#B5964A] transition-colors">
                     <QrCode className="w-5 h-5" />
                 </Button>
             </DialogTrigger>

@@ -35,7 +35,7 @@ export function CompanyLogoUpload({ userId, currentLogoUrl, onUploadSuccess, cla
     return (
         <div className={`flex flex-col items-center gap-4 ${className}`}>
             <div className="relative group cursor-pointer">
-                <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[#C6A85E] transition-colors">
+                <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[var(--brand)] transition-colors">
                     <AvatarImage src={currentLogoUrl || ''} className="object-cover" />
                     <AvatarFallback className="bg-white/5 text-white">
                         <Building2 className="w-10 h-10 text-gray-400" />
@@ -66,7 +66,7 @@ export function CompanyLogoUpload({ userId, currentLogoUrl, onUploadSuccess, cla
                 <Button
                     variant="outline"
                     type="button"
-                    className="border-white/10 text-white hover:bg-white/5 hover:text-[#C6A85E] bg-transparent"
+                    className="border-white/10 text-white hover:bg-white/5 hover:text-[var(--brand)] bg-transparent"
                     disabled={isUploading}
                     asChild
                 >

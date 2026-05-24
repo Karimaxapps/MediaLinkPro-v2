@@ -59,8 +59,8 @@ export default async function CreateCompanyPage({ searchParams }: Props) {
   return (
     <div className="container max-w-4xl py-10">
       {hint && (
-        <div className="mb-6 rounded-xl border border-[#C6A85E]/30 bg-[#C6A85E]/[0.07] p-4 flex items-start gap-3">
-          <Building2 className="size-5 text-[#C6A85E] shrink-0 mt-0.5" />
+        <div className="mb-6 rounded-xl border border-[var(--brand)]/30 bg-[var(--brand)]/[0.07] p-4 flex items-start gap-3">
+          <Building2 className="size-5 text-[var(--brand)] shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-white">
               A company profile is required to add {hint.feature}.

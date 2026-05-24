@@ -65,7 +65,7 @@ function IsoDashboard() {
       {/* Outer glow halo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-72 h-72 rounded-full bg-[#00FFFF]/5 blur-3xl" />
-        <div className="absolute w-48 h-48 rounded-full bg-[#C6A85E]/8 blur-2xl" />
+        <div className="absolute w-48 h-48 rounded-full bg-[var(--brand)]/8 blur-2xl" />
       </div>
 
       {/* Main isometric frame */}
@@ -122,7 +122,7 @@ function IsoDashboard() {
         >
           <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between bg-[#0d1d2e]">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#C6A85E]" />
+              <div className="w-2 h-2 rounded-full bg-[var(--brand)]" />
               <div className="w-2 h-2 rounded-full bg-[#00FFFF]" />
               <div className="w-2 h-2 rounded-full bg-white/20" />
             </div>
@@ -142,7 +142,7 @@ function IsoDashboard() {
                   icon: Zap,
                   label: "New match found",
                   sub: "Vizrt Encoder Pro · 2m ago",
-                  color: "#C6A85E",
+                  color: "var(--brand)",
                 },
                 {
                   icon: Users,
@@ -202,14 +202,14 @@ function IsoDashboard() {
 
         {/* ── Product Card ─────────────────────────────────── */}
         <div
-          className="absolute -bottom-28 -right-28 w-52 bg-[#12100a] border border-[#C6A85E]/30 rounded-xl p-4 shadow-[0_0_24px_rgba(198,168,94,0.15)]"
+          className="absolute -bottom-28 -right-28 w-52 bg-[#12100a] border border-[var(--brand)]/30 rounded-xl p-4 shadow-[0_0_24px_color-mix(in srgb, var(--brand) 15%, transparent)]"
           style={{ transform: "translateZ(20px)" }}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[9px] font-mono text-[#C6A85E] uppercase tracking-wider">
+            <span className="text-[9px] font-mono text-[var(--brand)] uppercase tracking-wider">
               Featured Product
             </span>
-            <Star className="w-3 h-3 text-[#C6A85E] fill-[#C6A85E]" />
+            <Star className="w-3 h-3 text-[var(--brand)] fill-[var(--brand)]" />
           </div>
           <div className="text-[11px] font-bold text-white mb-1">StreamEncoder X9</div>
           <div className="text-[9px] text-gray-400 mb-3 leading-relaxed">
@@ -217,7 +217,7 @@ function IsoDashboard() {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex -space-x-1">
-              {["#00FFFF", "#C6A85E", "#22c55e"].map((c, i) => (
+              {["#00FFFF", "var(--brand)", "#22c55e"].map((c, i) => (
                 <div
                   key={i}
                   className="w-4 h-4 rounded-full border border-[#12100a]"
@@ -239,7 +239,7 @@ function IsoDashboard() {
           <defs>
             <linearGradient id="linkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#00FFFF" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#C6A85E" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--brand)" stopOpacity="0.8" />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="2" result="blur" />
@@ -278,11 +278,11 @@ function IsoDashboard() {
         <motion.div
           animate={{ y: [0, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute -top-10 right-4 px-2.5 py-1.5 rounded-full bg-[#C6A85E]/20 border border-[#C6A85E]/40 flex items-center gap-1.5"
+          className="absolute -top-10 right-4 px-2.5 py-1.5 rounded-full bg-[var(--brand)]/20 border border-[var(--brand)]/40 flex items-center gap-1.5"
           style={{ transform: "translateZ(40px)" }}
         >
-          <Wifi className="w-3 h-3 text-[#C6A85E]" />
-          <span className="text-[9px] font-bold text-[#C6A85E]">847 live connections</span>
+          <Wifi className="w-3 h-3 text-[var(--brand)]" />
+          <span className="text-[9px] font-bold text-[var(--brand)]">847 live connections</span>
         </motion.div>
       </motion.div>
     </div>
@@ -370,7 +370,7 @@ export function HeroSection() {
 
       {/* ── Ambient glows ──────────────────────────────────── */}
       <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-[#00FFFF]/4 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#C6A85E]/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--brand)]/5 rounded-full blur-[140px] pointer-events-none" />
 
       {/* ── Scanline effect ────────────────────────────────── */}
       <div
@@ -385,8 +385,8 @@ export function HeroSection() {
       {/* ── Corner decorations ─────────────────────────────── */}
       <div className="absolute top-8 left-8 w-6 h-6 border-l-2 border-t-2 border-[#00FFFF]/40" />
       <div className="absolute top-8 right-8 w-6 h-6 border-r-2 border-t-2 border-[#00FFFF]/40" />
-      <div className="absolute bottom-20 left-8 w-6 h-6 border-l-2 border-b-2 border-[#C6A85E]/30" />
-      <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-[#C6A85E]/30" />
+      <div className="absolute bottom-20 left-8 w-6 h-6 border-l-2 border-b-2 border-[var(--brand)]/30" />
+      <div className="absolute bottom-20 right-8 w-6 h-6 border-r-2 border-b-2 border-[var(--brand)]/30" />
 
       {/* ── Main hero content ──────────────────────────────── */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center min-h-[calc(100vh-80px)]">
@@ -421,7 +421,7 @@ export function HeroSection() {
               {t("find")}{" "}
               <span
                 className="font-extrabold"
-                style={{ color: "#C6A85E", textShadow: "0 0 24px rgba(198,168,94,0.45)" }}
+                style={{ color: "var(--brand)", textShadow: "0 0 24px color-mix(in srgb, var(--brand) 45%, transparent)" }}
               >
                 {findText}
               </span>
@@ -443,12 +443,12 @@ export function HeroSection() {
             <Link href="/auth">
               <Button
                 className="relative px-8 py-6 text-base font-bold text-black rounded-xl overflow-hidden group"
-                style={{ background: "linear-gradient(135deg, #C6A85E, #B5964A)" }}
+                style={{ background: "linear-gradient(135deg, var(--brand), #B5964A)" }}
               >
                 <span
                   className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{
-                    boxShadow: "0 0 30px rgba(198,168,94,0.6), inset 0 0 30px rgba(198,168,94,0.1)",
+                    boxShadow: "0 0 30px color-mix(in srgb, var(--brand) 60%, transparent), inset 0 0 30px color-mix(in srgb, var(--brand) 10%, transparent)",
                   }}
                 />
                 {t("joinNetwork")}
@@ -458,7 +458,7 @@ export function HeroSection() {
             <Link href="/marketplace/products">
               <Button
                 variant="outline"
-                className="px-8 py-6 text-base font-semibold rounded-xl border-white/20 bg-transparent text-white hover:border-[#C6A85E]/50 hover:text-[#C6A85E] hover:bg-[#C6A85E]/5 transition-all"
+                className="px-8 py-6 text-base font-semibold rounded-xl border-white/20 bg-transparent text-white hover:border-[var(--brand)]/50 hover:text-[var(--brand)] hover:bg-[var(--brand)]/5 transition-all"
               >
                 {t("browseMarketplace")}
               </Button>

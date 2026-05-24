@@ -125,7 +125,7 @@ export function AiToolForm({
         });
     };
 
-    const inputClass = "border-white/10 bg-black/20 text-white focus:border-[#C6A85E]/50";
+    const inputClass = "border-white/10 bg-black/20 text-white focus:border-[var(--brand)]/50";
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -267,7 +267,7 @@ export function AiToolForm({
                                 onClick={() => togglePlatform(p)}
                                 className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
                                     platforms.includes(p)
-                                        ? "border-[#C6A85E] bg-[#C6A85E] font-medium text-black"
+                                        ? "border-[var(--brand)] bg-[var(--brand)] font-medium text-black"
                                         : "border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
                                 }`}
                             >
@@ -386,7 +386,7 @@ export function AiToolForm({
                 <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-[#C6A85E] font-semibold text-black hover:bg-[#B5964A]"
+                    className="bg-[var(--brand)] font-semibold text-black hover:bg-[#B5964A]"
                 >
                     {isPending ? "Saving..." : initialData ? "Update AI Tool" : "Create AI Tool"}
                 </Button>

@@ -73,7 +73,7 @@ function PlanUpgradeCard({ plan }: { plan?: PlanId }) {
   const { badge, Icon, title, description, price, cta, href } = promo;
 
   return (
-    <Card className="bg-gradient-to-br from-[#C6A85E] to-[#B5964A] border-none text-black overflow-hidden relative">
+    <Card className="bg-gradient-to-br from-[var(--brand)] to-[#B5964A] border-none text-black overflow-hidden relative">
       <div className="absolute top-0 right-0 p-4 opacity-20">
         <Icon className="h-16 w-16" />
       </div>
@@ -157,12 +157,12 @@ export function DashboardSidebar({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center justify-between">
             <span className="flex items-center">
-              <Building2 className="mr-2 h-4 w-4 text-[#C6A85E]" />
+              <Building2 className="mr-2 h-4 w-4 text-[var(--brand)]" />
               Latest joined companies
             </span>
             <Link
               href="/connect/solution-providers"
-              className="text-xs text-gray-500 hover:text-[#C6A85E]"
+              className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
               View all
             </Link>
@@ -184,13 +184,13 @@ export function DashboardSidebar({
                     className="object-contain"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-sm text-[#C6A85E] text-[10px] font-bold">
+                  <div className="w-full h-full flex items-center justify-center bg-white/5 border border-white/10 rounded-sm text-[var(--brand)] text-[10px] font-bold">
                     {company.name.substring(0, 2).toUpperCase()}
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate group-hover:text-[#C6A85E] transition-colors">
+                <p className="text-sm font-medium truncate group-hover:text-[var(--brand)] transition-colors">
                   {company.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate capitalize">
@@ -207,12 +207,12 @@ export function DashboardSidebar({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold flex items-center justify-between">
             <span className="flex items-center">
-              <User className="mr-2 h-4 w-4 text-[#C6A85E]" />
+              <User className="mr-2 h-4 w-4 text-[var(--brand)]" />
               Latest Professionals
             </span>
             <Link
               href="/connect/media-professionals"
-              className="text-xs text-gray-500 hover:text-[#C6A85E]"
+              className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
               View all
             </Link>
@@ -232,7 +232,7 @@ export function DashboardSidebar({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate group-hover:text-[#C6A85E] transition-colors">
+                <p className="text-sm font-medium truncate group-hover:text-[var(--brand)] transition-colors">
                   {user.full_name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
@@ -259,7 +259,7 @@ export function DashboardSidebar({
             href="https://lazaarworks.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-500 hover:text-[#C6A85E]"
+            className="text-gray-500 hover:text-[var(--brand)]"
           >
             LazaarWorks
           </a>
