@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, Building2 } from "lucide-react";
+import { Loader2, ArrowLeft, Building2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,6 +58,7 @@ type StubOrg = {
 export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId: string }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [formError, setFormError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: org.name,
     slug: org.slug,
@@ -83,8 +84,32 @@ export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId:
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // Client-side check for required fields the schema enforces but native HTML
+  // validation can't (custom Select components, etc). Returns null when OK.
+  const validateClient = (): string | null => {
+    if (!form.name.trim()) return "Name is required.";
+    if (!form.slug.trim()) return "Slug is required.";
+    if (!form.type) return "Type is required.";
+    if (form.type === "Broadcaster" && !form.broadcaster_type) {
+      return "Please pick a broadcaster type (Television or Radio).";
+    }
+    if (!form.main_activity?.trim()) return "Main activity is required.";
+    if (!form.website?.trim()) return "Website is required.";
+    if (!form.country) return "Country is required.";
+    return null;
+  };
+
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+
+    const clientErr = validateClient();
+    if (clientErr) {
+      setFormError(clientErr);
+      toast.error(clientErr);
+      return;
+    }
+
     startTransition(async () => {
       const payload: CompanyWizardValues = {
         ...form,
@@ -98,7 +123,9 @@ export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId:
         toast.success("Stub updated.");
         router.push("/admin/companies");
       } else {
-        toast.error(result.error ?? "Failed to update stub.");
+        const msg = result.error ?? "Failed to update stub.";
+        setFormError(msg);
+        toast.error(msg);
       }
     });
   };
@@ -311,22 +338,33 @@ export function StubEditClient({ org, userId: _userId }: { org: StubOrg; userId:
           </Field>
         </div>
 
-        <div className="pt-2 flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push("/admin/companies")}
-            className="bg-transparent border-white/20 text-gray-300 hover:text-white"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
-          >
-            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}
-          </Button>
+        <div className="pt-2 flex flex-col items-end gap-2">
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/admin/companies")}
+              className="bg-transparent border-white/20 text-gray-300 hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="bg-[var(--brand)] text-black hover:bg-[#B5964A] font-semibold"
+            >
+              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}
+            </Button>
+          </div>
+          {formError && (
+            <p
+              role="alert"
+              className="inline-flex items-start gap-1.5 text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded-md px-2.5 py-2"
+            >
+              <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+              <span>{formError}</span>
+            </p>
+          )}
         </div>
       </form>
     </div>

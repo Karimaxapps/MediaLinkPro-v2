@@ -12,6 +12,19 @@ import * as Sentry from "@sentry/nextjs";
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     await import("../sentry.server.config");
+
+    // Set a global fetch timeout so Supabase/external calls fail fast instead
+    // of hanging for 30+ minutes when the network or Supabase is unreachable.
+    // Without this, UND_ERR_HEADERS_TIMEOUT fires only after the OS-level
+    // socket timeout (effectively forever in dev).
+    const { setGlobalDispatcher, Agent } = await import("undici");
+    setGlobalDispatcher(
+      new Agent({
+        headersTimeout: 30_000,  // 30s to receive response headers
+        connectTimeout: 10_000,  // 10s to establish TCP connection
+        bodyTimeout: 60_000,     // 60s for response body (uploads/downloads)
+      })
+    );
   }
   if (process.env.NEXT_RUNTIME === "edge") {
     await import("../sentry.edge.config");

@@ -146,6 +146,24 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      // invoice.paid is the canonical "payment succeeded" signal for both
+      // initial subscriptions and renewals. We re-sync the subscription so
+      // the plan column always reflects the latest active plan, even if the
+      // checkout.session.completed webhook fired before the subscription was
+      // fully provisioned.
+      case "invoice.paid": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const subscriptionId =
+          typeof invoice.subscription === "string"
+            ? invoice.subscription
+            : invoice.subscription?.id ?? null;
+        if (subscriptionId) {
+          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          await upsertSubscriptionFromStripe(sub);
+        }
+        break;
+      }
+
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         const customer = invoice.customer as string | null;

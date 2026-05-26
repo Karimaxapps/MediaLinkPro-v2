@@ -433,6 +433,167 @@ export async function getOrganizationsByType(typeSlug: string) {
   });
 }
 
+export type FeaturedByTypeOrg = {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  tagline: string | null;
+  main_activity: string | null;
+  country: string | null;
+  type: string | null;
+  followers_count: number;
+  is_following: boolean;
+  plan: string | null;
+  products: { id: string; name: string; slug: string; short_description: string | null; logo_url: string | null }[];
+  followers_preview: { user_id: string; avatar_url: string | null; full_name: string | null }[];
+};
+
+export async function getFeaturedOrganizationsByType(
+  typeSlug: string,
+  limit: number = 2,
+): Promise<FeaturedByTypeOrg[]> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const admin = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("organizations")
+    .select(
+      "id, name, slug, logo_url, tagline, main_activity, country, type, followers_count",
+    )
+    .eq("type", typeSlug)
+    .eq("is_featured" as never, true)
+    .order("followers_count", { ascending: false })
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !data?.length) {
+    if (error) console.error("Error fetching featured orgs by type:", error);
+    return [];
+  }
+
+  const orgIds = data.map((o) => o.id);
+
+  // Owner → subscription plan lookup (mirrors getOrganizationsByType)
+  const { data: ownerRows } = await admin
+    .from("organization_members")
+    .select("organization_id, user_id")
+    .in("organization_id", orgIds)
+    .eq("role", "owner");
+  const ownerMap = new Map(
+    (ownerRows ?? []).map((r) => [r.organization_id, r.user_id]),
+  );
+  const ownerIds = [...new Set((ownerRows ?? []).map((r) => r.user_id))];
+  type SubRow = { user_id: string; plan: string | null; status: string | null };
+  let subMap = new Map<string, SubRow>();
+  if (ownerIds.length > 0) {
+    const { data: subs } = await (admin
+      .from("subscriptions" as never)
+      .select("user_id, plan, status")
+      .in("user_id", ownerIds) as unknown as Promise<{ data: SubRow[] | null }>);
+    subMap = new Map((subs ?? []).map((s) => [s.user_id, s]));
+  }
+  const planFor = (orgId: string): string | null => {
+    const ownerId = ownerMap.get(orgId);
+    if (!ownerId) return null;
+    const sub = subMap.get(ownerId);
+    const isActive = sub?.status === "active" || sub?.status === "trialing";
+    return sub?.plan && isActive ? sub.plan : null;
+  };
+
+  const [productsResult, followersResult] = await Promise.all([
+    supabase
+      .from("products")
+      .select("id, name, slug, short_description, logo_url, organization_id, created_at")
+      .in("organization_id", orgIds)
+      .eq("status", "published")
+      .eq("is_public", true)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("organization_followers")
+      .select("organization_id, profile_id, created_at")
+      .in("organization_id", orgIds)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const productsByOrg = new Map<string, FeaturedByTypeOrg["products"]>();
+  for (const row of (productsResult.data ?? []) as Array<{
+    id: string;
+    name: string;
+    slug: string;
+    short_description: string | null;
+    logo_url: string | null;
+    organization_id: string;
+  }>) {
+    const arr = productsByOrg.get(row.organization_id) ?? [];
+    if (arr.length < 2) {
+      arr.push({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        short_description: row.short_description,
+        logo_url: row.logo_url,
+      });
+      productsByOrg.set(row.organization_id, arr);
+    }
+  }
+
+  const followedSet = await getFollowedOrganizationIds(orgIds);
+
+  const followersByOrg = new Map<string, string[]>();
+  for (const row of (followersResult.data ?? []) as Array<{
+    organization_id: string;
+    profile_id: string;
+  }>) {
+    const arr = followersByOrg.get(row.organization_id) ?? [];
+    if (arr.length < 3) {
+      arr.push(row.profile_id);
+      followersByOrg.set(row.organization_id, arr);
+    }
+  }
+
+  const allFollowerIds = Array.from(
+    new Set(Array.from(followersByOrg.values()).flat()),
+  );
+  let profileMap = new Map<string, { avatar_url: string | null; full_name: string | null }>();
+  if (allFollowerIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, avatar_url, full_name")
+      .in("id", allFollowerIds);
+    profileMap = new Map(
+      (profiles ?? []).map((p) => [
+        (p as { id: string }).id,
+        {
+          avatar_url: (p as { avatar_url: string | null }).avatar_url,
+          full_name: (p as { full_name: string | null }).full_name,
+        },
+      ]),
+    );
+  }
+
+  return data.map((org) => ({
+    id: org.id,
+    name: org.name,
+    slug: org.slug,
+    logo_url: org.logo_url,
+    tagline: org.tagline,
+    main_activity: org.main_activity,
+    country: org.country,
+    type: org.type,
+    followers_count: org.followers_count ?? 0,
+    is_following: followedSet.has(org.id),
+    plan: planFor(org.id),
+    products: productsByOrg.get(org.id) ?? [],
+    followers_preview: (followersByOrg.get(org.id) ?? []).map((uid) => ({
+      user_id: uid,
+      avatar_url: profileMap.get(uid)?.avatar_url ?? null,
+      full_name: profileMap.get(uid)?.full_name ?? null,
+    })),
+  }));
+}
+
 export async function getFeaturedOrganizations(limit: number = 10) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);

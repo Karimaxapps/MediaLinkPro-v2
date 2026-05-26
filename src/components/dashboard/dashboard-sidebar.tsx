@@ -102,6 +102,7 @@ interface Company {
   name: string;
   logo_url?: string | null;
   type?: string | null;
+  main_activity?: string | null;
 }
 
 interface SidebarUser {
@@ -125,6 +126,7 @@ interface DashboardSidebarProps {
   eventAttendees?: EventAttendee[];
   adSlot?: ReactNode;
   userPlan?: PlanId;
+  recommendedConnections?: ReactNode;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -137,6 +139,7 @@ export function DashboardSidebar({
   eventAttendees,
   adSlot,
   userPlan,
+  recommendedConnections,
 }: DashboardSidebarProps) {
   return (
     <aside className="space-y-6">
@@ -194,13 +197,16 @@ export function DashboardSidebar({
                   {company.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate capitalize">
-                  {company.type?.replace("-", " ")}
+                  {company.main_activity ?? company.type?.replace("-", " ")}
                 </p>
               </div>
             </Link>
           ))}
         </CardContent>
       </Card>
+
+      {/* People You May Know */}
+      {recommendedConnections}
 
       {/* Latest Users */}
       <Card className="bg-white/5 border-white/10 text-white">
@@ -250,21 +256,6 @@ export function DashboardSidebar({
       {/* Ads Banner */}
       <AdPlaceholder height={300} />
 
-      <div className="pt-4 text-center">
-        <p className="text-[10px] text-gray-600">
-          © {new Date().getFullYear()} Copyright Reserved MediaLink Pro.
-          <br />
-          Designed by{" "}
-          <a
-            href="https://lazaarworks.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-[var(--brand)]"
-          >
-            LazaarWorks
-          </a>
-        </p>
-      </div>
     </aside>
   );
 }

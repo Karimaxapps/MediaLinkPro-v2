@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import {
     requireSiteAdmin,
     listAdminAiToolCategories,
+    listOrganizationsForSelect,
     getAdminAiToolById,
     createAiToolAsAdmin,
     updateAiToolAsAdmin,
@@ -17,8 +18,9 @@ export default async function AdminEditAiToolPage({
     await requireSiteAdmin();
     const { id } = await params;
 
-    const [categories, tool] = await Promise.all([
+    const [categories, organizations, tool] = await Promise.all([
         listAdminAiToolCategories(),
+        listOrganizationsForSelect(),
         getAdminAiToolById(id),
     ]);
 
@@ -35,6 +37,7 @@ export default async function AdminEditAiToolPage({
 
             <AiToolForm
                 categories={categories as AiToolCategory[]}
+                organizations={organizations}
                 createAction={createAiToolAsAdmin}
                 updateAction={updateAiToolAsAdmin}
                 initialData={tool as unknown as AiTool}

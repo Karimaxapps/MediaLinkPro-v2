@@ -25,6 +25,12 @@ interface ConnectCardProps {
     isFollowing?: boolean;
     /** Follower count for the organization. Org cards only. */
     followerCount?: number;
+    /** Up to ~3 most recent followers for an avatar stack. Org cards only. */
+    followersPreview?: {
+        profile_id: string;
+        avatar_url: string | null;
+        full_name: string | null;
+    }[];
     plan?: string | null;
 }
 
@@ -42,6 +48,7 @@ export function ConnectCard({
     requestId,
     isFollowing = false,
     followerCount = 0,
+    followersPreview = [],
     plan,
 }: ConnectCardProps) {
     const href = type === 'organization' ? `/companies/${slug}` : `/profiles/${slug}`;
@@ -94,6 +101,38 @@ export function ConnectCard({
                                 <div className="flex items-center text-xs text-gray-500 mt-1">
                                     <MapPin className="w-3 h-3 mr-1 shrink-0" />
                                     {location}
+                                </div>
+                            )}
+
+                            {type === "organization" && followerCount > 0 && (
+                                <div className="flex items-center gap-2 mt-2">
+                                    {followersPreview.length > 0 && (
+                                        <div className="flex -space-x-1.5">
+                                            {followersPreview.slice(0, 3).map((f) => (
+                                                <div
+                                                    key={f.profile_id}
+                                                    className="h-5 w-5 rounded-full ring-2 ring-[#1A1A1A] overflow-hidden bg-white/10 flex items-center justify-center text-[9px] font-semibold text-gray-300"
+                                                    title={f.full_name ?? undefined}
+                                                >
+                                                    {f.avatar_url ? (
+                                                        <Image
+                                                            src={f.avatar_url}
+                                                            alt={f.full_name ?? "Follower"}
+                                                            width={20}
+                                                            height={20}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        (f.full_name ?? "?").charAt(0).toUpperCase()
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <span className="text-[11px] text-gray-500">
+                                        {followerCount.toLocaleString()} follower
+                                        {followerCount === 1 ? "" : "s"}
+                                    </span>
                                 </div>
                             )}
                         </div>

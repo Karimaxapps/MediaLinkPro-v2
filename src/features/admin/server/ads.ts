@@ -47,6 +47,8 @@ export async function adminCreateCampaign(input: {
     placement: AdCampaign["placement"];
     target_category?: string;
     status?: AdCampaign["status"];
+    starts_at?: string | null;
+    ends_at?: string | null;
 }): Promise<{ success: boolean; error?: string }> {
     const guard = await requireAdmin();
     if (!guard.ok) return { success: false, error: guard.error };
@@ -67,6 +69,8 @@ export async function adminCreateCampaign(input: {
         placement: input.placement,
         target_category: input.target_category?.trim() || null,
         status: input.status ?? "active",
+        starts_at: input.starts_at ?? null,
+        ends_at: input.ends_at ?? null,
     } as never);
 
     if (error) return { success: false, error: error.message };
@@ -88,6 +92,8 @@ export async function adminUpdateCampaign(
         placement: AdCampaign["placement"];
         target_category: string | null;
         status: AdCampaign["status"];
+        starts_at: string | null;
+        ends_at: string | null;
     }>
 ): Promise<{ success: boolean; error?: string }> {
     const guard = await requireAdmin();

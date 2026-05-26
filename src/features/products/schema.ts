@@ -17,7 +17,7 @@ export const insertProductSchema = z.object({
     // New fields
     product_type: requiredOption(PRODUCT_TYPES, "Please select a product type"),
     main_category: requiredOption(MAIN_CATEGORIES, "Please select a main category"),
-    sub_category: z.string().min(1, "Please select a sub-category").nullish(),
+    sub_category: z.string().nullish().or(z.literal("")),
     short_description: z.string().max(150, "Short description must be 150 characters or less").nullish(),
     external_url: z.string().url("Please enter a valid URL").nullish().or(z.literal("")),
     documentation_url: z.string().url("Please enter a valid URL").nullish().or(z.literal("")),

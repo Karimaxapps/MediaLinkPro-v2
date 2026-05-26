@@ -19,6 +19,7 @@ export const insertAiToolSchema = z.object({
     cover_image_url: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
     gallery_urls: z.array(z.string().url()).max(8, "You can add up to 8 images").optional().default([]),
     category_id: z.string().uuid().optional().or(z.literal("")),
+    organization_id: z.string().uuid().optional().or(z.literal("")),
     main_link: z.string().url("Please enter a valid URL"),
     pricing_model: z.enum(PRICING_MODELS as unknown as [string, ...string[]]).optional().or(z.literal("")),
     pricing_url: z.string().url("Please enter a valid URL").optional().or(z.literal("")),

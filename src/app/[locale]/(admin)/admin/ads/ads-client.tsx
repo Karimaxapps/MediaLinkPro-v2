@@ -13,6 +13,7 @@ import {
   Trash2,
   Pause,
   Play,
+  Pencil,
   ExternalLink,
   MousePointerClick,
   Eye,
@@ -162,8 +163,9 @@ const STATUS_COLORS: Record<AdCampaign["status"], string> = {
 export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(campaigns.length === 0);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [form, setForm] = useState({
+  const emptyForm = {
     name: "",
     title: "",
     body: "",
@@ -172,7 +174,10 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
     image_url: "",
     placement: "jobs_sidebar" as AdCampaign["placement"],
     status: "active" as AdCampaign["status"],
-  });
+    starts_at: "",
+    ends_at: "",
+  };
+  const [form, setForm] = useState(emptyForm);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -231,13 +236,80 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
     }
   };
 
-  const handleCreate = (e: React.FormEvent) => {
+  const resetForm = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setUploadError(null);
+  };
+
+  const toLocalInput = (iso: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const fromLocalInput = (v: string): string | null => {
+    if (!v) return null;
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d.toISOString();
+  };
+
+  const startEdit = (c: AdCampaign) => {
+    setEditingId(c.id);
+    setForm({
+      name: c.name,
+      title: c.title,
+      body: c.body ?? "",
+      cta_label: c.cta_label ?? "Learn more",
+      cta_url: c.cta_url,
+      image_url: c.image_url ?? "",
+      placement: c.placement,
+      status: c.status === "ended" ? "paused" : c.status,
+      starts_at: toLocalInput(c.starts_at),
+      ends_at: toLocalInput(c.ends_at),
+    });
+    setShowForm(true);
+    setUploadError(null);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.title.trim() || !form.cta_url.trim()) {
       toast.error("Name, title, and CTA URL are required");
       return;
     }
+    const startsIso = fromLocalInput(form.starts_at);
+    const endsIso = fromLocalInput(form.ends_at);
+    if (startsIso && endsIso && new Date(endsIso) <= new Date(startsIso)) {
+      toast.error("End date must be after start date");
+      return;
+    }
     startTransition(async () => {
+      if (editingId) {
+        const result = await adminUpdateCampaign(editingId, {
+          name: form.name,
+          title: form.title,
+          body: form.body || null,
+          cta_label: form.cta_label || null,
+          cta_url: form.cta_url,
+          image_url: form.image_url || null,
+          placement: form.placement,
+          status: form.status,
+          starts_at: startsIso,
+          ends_at: endsIso,
+        });
+        if (result.success) {
+          toast.success("Campaign updated");
+          resetForm();
+          setShowForm(false);
+          router.refresh();
+        } else {
+          toast.error(result.error ?? "Failed to update");
+        }
+        return;
+      }
       const result = await adminCreateCampaign({
         name: form.name,
         title: form.title,
@@ -247,19 +319,12 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
         image_url: form.image_url || undefined,
         placement: form.placement,
         status: form.status,
+        starts_at: startsIso,
+        ends_at: endsIso,
       });
       if (result.success) {
         toast.success("Campaign created");
-        setForm({
-          name: "",
-          title: "",
-          body: "",
-          cta_label: "Learn more",
-          cta_url: "",
-          image_url: "",
-          placement: "jobs_sidebar",
-          status: "active",
-        });
+        resetForm();
         setShowForm(false);
         router.refresh();
       } else {
@@ -304,7 +369,10 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
           </p>
         </div>
         <Button
-          onClick={() => setShowForm((s) => !s)}
+          onClick={() => {
+            resetForm();
+            setShowForm((s) => !s);
+          }}
           className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
         >
           <Plus className="mr-1.5 h-4 w-4" />
@@ -314,10 +382,12 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
 
       {showForm && (
         <form
-          onSubmit={handleCreate}
+          onSubmit={handleSubmit}
           className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-6"
         >
-          <h2 className="text-lg font-semibold">New campaign</h2>
+          <h2 className="text-lg font-semibold">
+            {editingId ? "Edit campaign" : "New campaign"}
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -493,6 +563,35 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
             </div>
           </div>
 
+          {/* Running period */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-gray-300">Start date</Label>
+              <Input
+                type="datetime-local"
+                value={form.starts_at}
+                onChange={(e) => update("starts_at", e.target.value)}
+                className="bg-black/20 border-white/10 text-white [color-scheme:dark]"
+              />
+              <p className="text-[10px] text-gray-500">
+                Leave empty to start immediately.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-300">End date</Label>
+              <Input
+                type="datetime-local"
+                value={form.ends_at}
+                onChange={(e) => update("ends_at", e.target.value)}
+                min={form.starts_at || undefined}
+                className="bg-black/20 border-white/10 text-white [color-scheme:dark]"
+              />
+              <p className="text-[10px] text-gray-500">
+                Leave empty for no end date.
+              </p>
+            </div>
+          </div>
+
           {/* Live placement preview */}
           <PlacementPreview
             placement={form.placement}
@@ -508,12 +607,21 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
               disabled={isPending}
               className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
             >
-              {isPending ? "Creating..." : "Create campaign"}
+              {isPending
+                ? editingId
+                  ? "Saving..."
+                  : "Creating..."
+                : editingId
+                  ? "Save changes"
+                  : "Create campaign"}
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                resetForm();
+                setShowForm(false);
+              }}
               className="bg-transparent border-white/10 text-white hover:bg-white/10"
             >
               Cancel
@@ -582,9 +690,30 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
                     </span>
                   )}
                 </div>
+                {(c.starts_at || c.ends_at) && (
+                  <p className="text-[11px] text-gray-500 mt-1.5">
+                    {c.starts_at
+                      ? `From ${new Date(c.starts_at).toLocaleString()}`
+                      : "From now"}
+                    {" · "}
+                    {c.ends_at
+                      ? `until ${new Date(c.ends_at).toLocaleString()}`
+                      : "no end date"}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => startEdit(c)}
+                  disabled={isPending}
+                  className="bg-transparent border-white/10 text-white hover:bg-white/10 text-xs"
+                >
+                  <Pencil className="h-3.5 w-3.5 mr-1" />
+                  Edit
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

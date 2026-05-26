@@ -13,9 +13,5 @@ export default async function AiToolsPage() {
         getAiToolCategories(),
     ]);
 
-    return (
-        <div className="container mx-auto py-8">
-            <AiToolsClient tools={tools} categories={categories} />
-        </div>
-    );
+    return <AiToolsClient tools={tools} categories={categories} />;
 }

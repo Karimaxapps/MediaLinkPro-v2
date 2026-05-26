@@ -41,17 +41,19 @@ export function AppHeader({
         <header className="sticky top-2.5 z-30 flex h-16 items-center gap-4 border border-white/10 bg-[#1F1F1F] px-6 mx-2.5 rounded-[10px]">
             <Link
                 href="/dashboard"
-                className="hidden md:flex items-center gap-2 font-semibold text-lg text-[var(--brand)] mr-4 min-w-fit hover:opacity-90 transition-opacity"
+                className="hidden md:flex items-center gap-2.5 mr-4 min-w-fit hover:opacity-90 transition-opacity"
             >
                 <Image
                     src="/brand/logo.png"
                     alt="MediaLinkPro"
-                    width={32}
-                    height={32}
+                    width={36}
+                    height={36}
                     priority
-                    className="h-8 w-8 object-contain"
+                    className="h-9 w-auto object-contain"
                 />
-                MediaLinkPro
+                <span className="text-xl font-bold tracking-tight text-white">
+                    MediaLink<span className="text-[var(--brand)]">Pro</span>
+                </span>
             </Link>
             <MobileSidebar organizations={organizations} />
             <div className="w-full flex-1 md:flex md:justify-center">

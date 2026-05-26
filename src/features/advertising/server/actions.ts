@@ -98,11 +98,14 @@ export async function getActiveAdForPlacement(
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    const nowIso = new Date().toISOString();
     let query = supabase
         .from("ad_campaigns" as never)
         .select("*")
         .eq("status", "active")
         .eq("placement", placement)
+        .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+        .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
         .limit(10);
 
     if (category) {

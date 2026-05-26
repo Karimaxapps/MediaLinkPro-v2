@@ -1,8 +1,12 @@
 import { getPublicProfiles } from "@/features/profiles/server/actions";
-import { getOrganizationsByType } from "@/features/organizations/server/actions";
+import {
+    getOrganizationsByType,
+    getFeaturedOrganizationsByType,
+} from "@/features/organizations/server/actions";
 import { getConnectionStatus } from "@/features/connections/server/actions";
 import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
+import { FeaturedProviderCard } from "@/features/organizations/components/featured-provider-card";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
@@ -45,6 +49,8 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     const title = categoryTitles[category];
     let items: ConnectListItem[] = [];
     let type: 'organization' | 'profile' = 'organization';
+    const dbType = categoryToDbType[category];
+    const featuredOrgs = dbType ? await getFeaturedOrganizationsByType(dbType, 2) : [];
 
     if (category === 'media-professionals') {
         const cookieStore = await cookies();
@@ -68,7 +74,6 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
         items = itemsWithStatus;
 
     } else {
-        const dbType = categoryToDbType[category];
         if (dbType) {
             const orgs = await getOrganizationsByType(dbType);
             type = 'organization';
@@ -79,25 +84,70 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
             const orgIds = orgs.map((o) => o.id);
             const cookieStore = await cookies();
             const supabase = createClient(cookieStore);
-            const [followedSet, countsResult] = await Promise.all([
+            const [followedSet, followersResult] = await Promise.all([
                 getFollowedOrganizationIds(orgIds),
                 orgIds.length > 0
                     ? supabase
                           .from("organization_followers")
-                          .select("organization_id")
+                          .select("organization_id, profile_id, created_at")
                           .in("organization_id", orgIds)
-                    : Promise.resolve({ data: [] as { organization_id: string }[] }),
+                          .order("created_at", { ascending: false })
+                    : Promise.resolve({
+                          data: [] as {
+                              organization_id: string;
+                              profile_id: string;
+                              created_at: string;
+                          }[],
+                      }),
             ]);
 
             const counts = new Map<string, number>();
-            for (const row of (countsResult.data ?? []) as { organization_id: string }[]) {
+            const previewIdsByOrg = new Map<string, string[]>();
+            for (const row of (followersResult.data ?? []) as {
+                organization_id: string;
+                profile_id: string;
+            }[]) {
                 counts.set(row.organization_id, (counts.get(row.organization_id) ?? 0) + 1);
+                const arr = previewIdsByOrg.get(row.organization_id) ?? [];
+                if (arr.length < 3) {
+                    arr.push(row.profile_id);
+                    previewIdsByOrg.set(row.organization_id, arr);
+                }
+            }
+
+            // One round-trip to fetch all preview profiles (avatars + name)
+            const previewIds = Array.from(
+                new Set(Array.from(previewIdsByOrg.values()).flat()),
+            );
+            let profileMap = new Map<
+                string,
+                { avatar_url: string | null; full_name: string | null }
+            >();
+            if (previewIds.length > 0) {
+                const { data: profileRows } = await supabase
+                    .from("profiles")
+                    .select("id, avatar_url, full_name")
+                    .in("id", previewIds);
+                profileMap = new Map(
+                    (profileRows ?? []).map((p) => [
+                        (p as { id: string }).id,
+                        {
+                            avatar_url: (p as { avatar_url: string | null }).avatar_url,
+                            full_name: (p as { full_name: string | null }).full_name,
+                        },
+                    ]),
+                );
             }
 
             items = orgs.map((o) => ({
                 ...o,
                 isFollowing: followedSet.has(o.id),
                 followerCount: counts.get(o.id) ?? 0,
+                followersPreview: (previewIdsByOrg.get(o.id) ?? []).map((pid) => ({
+                    profile_id: pid,
+                    avatar_url: profileMap.get(pid)?.avatar_url ?? null,
+                    full_name: profileMap.get(pid)?.full_name ?? null,
+                })),
             }));
         }
     }
@@ -107,7 +157,30 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                 {/* Main Content (header + search + list, all client-side filtered) */}
                 <div className="lg:col-span-3 space-y-6">
-                    <ConnectListClient items={items} type={type} title={title} />
+                    <ConnectListClient
+                        items={items}
+                        type={type}
+                        title={title}
+                        featuredSlot={
+                            featuredOrgs.length > 0 ? (
+                                <section className="space-y-3">
+                                    <div className="flex items-end justify-between">
+                                        <h2 className="text-xl font-bold tracking-tight text-white">
+                                            Featured {title}
+                                        </h2>
+                                        <span className="text-xs text-gray-500">
+                                            Selected by editors
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {featuredOrgs.map((org) => (
+                                            <FeaturedProviderCard key={org.id} org={org} />
+                                        ))}
+                                    </div>
+                                </section>
+                            ) : null
+                        }
+                    />
                 </div>
 
                 {/* Sidebar */}

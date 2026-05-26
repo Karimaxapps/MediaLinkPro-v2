@@ -49,6 +49,7 @@ export async function getMySubscription(): Promise<UserSubscription> {
       "plan, status, cancel_at_period_end, current_period_end, stripe_customer_id, billing_interval"
     )
     .eq("user_id", user.id)
+    .is("organization_id", null)
     .maybeSingle();
 
   const admin = createAdminClient();
@@ -56,6 +57,7 @@ export async function getMySubscription(): Promise<UserSubscription> {
     .from("subscriptions" as never)
     .select("gifted_until, gifted_note")
     .eq("user_id", user.id)
+    .is("organization_id", null)
     .maybeSingle();
 
   const base = userRow as Omit<UserSubscription, "gifted_until" | "gifted_note"> | null;
@@ -376,6 +378,7 @@ export async function createBillingPortalSession(): Promise<void> {
     .from("subscriptions" as never)
     .select("stripe_customer_id")
     .eq("user_id", user.id)
+    .is("organization_id", null)
     .maybeSingle();
 
   const customerId = (existing as { stripe_customer_id?: string | null } | null)

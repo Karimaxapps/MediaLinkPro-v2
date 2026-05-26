@@ -32,6 +32,11 @@ export type ConnectListItem = {
     // Organization-only follow state
     isFollowing?: boolean;
     followerCount?: number;
+    followersPreview?: {
+        profile_id: string;
+        avatar_url: string | null;
+        full_name: string | null;
+    }[];
     plan?: string | null;
 };
 
@@ -39,6 +44,7 @@ interface ConnectListClientProps {
     items: ConnectListItem[];
     type: "organization" | "profile";
     title: string;
+    featuredSlot?: React.ReactNode;
 }
 
 // ─── Activity filter ──────────────────────────────────────────────────────────
@@ -71,7 +77,7 @@ function buildHaystack(item: ConnectListItem, type: "organization" | "profile"):
         .toLowerCase();
 }
 
-export function ConnectListClient({ items, type, title }: ConnectListClientProps) {
+export function ConnectListClient({ items, type, title, featuredSlot }: ConnectListClientProps) {
     const [query, setQuery] = useState("");
     const [activeActivity, setActiveActivity] = useState<string | null>(null);
     const tabsRef = useRef<HTMLDivElement>(null);
@@ -143,6 +149,9 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                     />
                 </div>
             </div>
+
+            {/* Featured slot (rendered between header and filter chips) */}
+            {featuredSlot}
 
             {/* Sector filter chips */}
             {showSectorFilters && (
@@ -229,6 +238,7 @@ export function ConnectListClient({ items, type, title }: ConnectListClientProps
                             requestId={item.requestId}
                             isFollowing={item.isFollowing}
                             followerCount={item.followerCount}
+                            followersPreview={item.followersPreview}
                             plan={item.plan}
                         />
                     ))}

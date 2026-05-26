@@ -1,6 +1,7 @@
 import {
     requireSiteAdmin,
     listAdminAiToolCategories,
+    listOrganizationsForSelect,
     createAiToolAsAdmin,
     updateAiToolAsAdmin,
 } from "@/features/admin/server/actions";
@@ -9,7 +10,10 @@ import type { AiToolCategory } from "@/features/ai-tools/types";
 
 export default async function AdminNewAiToolPage() {
     await requireSiteAdmin();
-    const categories = await listAdminAiToolCategories();
+    const [categories, organizations] = await Promise.all([
+        listAdminAiToolCategories(),
+        listOrganizationsForSelect(),
+    ]);
 
     return (
         <div className="space-y-6">
@@ -22,6 +26,7 @@ export default async function AdminNewAiToolPage() {
 
             <AiToolForm
                 categories={categories as AiToolCategory[]}
+                organizations={organizations}
                 createAction={createAiToolAsAdmin}
                 updateAction={updateAiToolAsAdmin}
             />

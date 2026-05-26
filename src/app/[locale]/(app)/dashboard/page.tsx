@@ -78,12 +78,8 @@ export default async function DashboardPage() {
       featuredAiTools={featuredAiTools}
       heroBanner={<DashboardHeroBanner />}
       sidebarAd={<SponsoredCard placement="feed" minHeight={296} />}
-      sidebarExtras={
-        <>
-          <DashboardJobApplicationsWidget limit={5} />
-          <RecommendedConnectionsWidget limit={5} />
-        </>
-      }
+      sidebarExtras={<DashboardJobApplicationsWidget limit={5} />}
+      recommendedConnections={<RecommendedConnectionsWidget limit={5} />}
     />
   );
 }

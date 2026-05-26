@@ -56,6 +56,7 @@ export function DashboardClient({
     inFeedAd,
     sidebarAd,
     sidebarExtras,
+    recommendedConnections,
 }: {
     userFirstName?: string,
     userPlan?: PlanId,
@@ -73,6 +74,7 @@ export function DashboardClient({
     inFeedAd?: ReactNode,
     sidebarAd?: ReactNode,
     sidebarExtras?: ReactNode,
+    recommendedConnections?: ReactNode,
 }) {
     const productsScrollRef = useRef<HTMLDivElement>(null);
     const servicesScrollRef = useRef<HTMLDivElement>(null);
@@ -345,6 +347,7 @@ export function DashboardClient({
                     eventAttendees={eventAttendees}
                     adSlot={sidebarAd}
                     userPlan={userPlan}
+                    recommendedConnections={recommendedConnections}
                 />
             </div>
         </div>

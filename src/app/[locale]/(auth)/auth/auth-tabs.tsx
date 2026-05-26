@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Loader2, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : "An unexpected error occurred";
@@ -26,7 +26,6 @@ export function AuthTabs() {
     const t = useTranslations("auth");
 
     // Sign up state
-    const [fullName, setFullName] = useState("");
     const [signupEmail, setSignupEmail] = useState("");
     const [signupPassword, setSignupPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -85,7 +84,6 @@ export function AuthTabs() {
                 password: signupPassword,
                 options: {
                     emailRedirectTo: `${location.origin}/auth/callback`,
-                    data: { full_name: fullName },
                 },
             });
             if (signUpError) { setError(signUpError.message); return; }
@@ -183,19 +181,6 @@ export function AuthTabs() {
             {/* Sign Up Form */}
             {tab === "signup" && (
                 <form onSubmit={handleSignup} className="space-y-4">
-                    {/* Full Name */}
-                    <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                        <Input
-                            type="text"
-                            placeholder={t("fullName")}
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-gray-600 rounded-xl focus:border-[var(--brand)]/50 focus:ring-0"
-                        />
-                    </div>
-
                     {/* Email */}
                     <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />

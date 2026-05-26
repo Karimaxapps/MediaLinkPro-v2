@@ -24,6 +24,7 @@ type ResourceRow = { resource_type: string; title: string; url: string };
 
 interface AiToolFormProps {
     categories: AiToolCategory[];
+    organizations?: { id: string; name: string; slug: string; logo_url: string | null }[];
     createAction?: (prevState: ActionState, formData: FormData) => Promise<ActionState>;
     updateAction?: (id: string, formData: FormData) => Promise<ActionState>;
     initialData?: AiTool;
@@ -33,6 +34,7 @@ interface AiToolFormProps {
 
 export function AiToolForm({
     categories,
+    organizations = [],
     createAction,
     updateAction,
     initialData,
@@ -50,6 +52,7 @@ export function AiToolForm({
     const [coverImageUrl, setCoverImageUrl] = useState(initialData?.cover_image_url ?? "");
     const [galleryText, setGalleryText] = useState((initialData?.gallery_urls ?? []).join("\n"));
     const [categoryId, setCategoryId] = useState(initialData?.category_id ?? "");
+    const [organizationId, setOrganizationId] = useState(initialData?.organization_id ?? "");
     const [mainLink, setMainLink] = useState(initialData?.main_link ?? "");
     const [pricingModel, setPricingModel] = useState(initialData?.pricing_model ?? "");
     const [pricingUrl, setPricingUrl] = useState(initialData?.pricing_url ?? "");
@@ -91,6 +94,7 @@ export function AiToolForm({
             .filter(Boolean)
             .forEach((url) => formData.append("gallery_urls", url));
         formData.set("category_id", categoryId);
+        formData.set("organization_id", organizationId);
         formData.set("main_link", mainLink);
         formData.set("pricing_model", pricingModel);
         formData.set("pricing_url", pricingUrl);
@@ -170,20 +174,40 @@ export function AiToolForm({
                         className={inputClass}
                     />
                 </div>
-                <div className="space-y-2">
-                    <Label>Category</Label>
-                    <Select value={categoryId} onValueChange={setCategoryId}>
-                        <SelectTrigger className={inputClass}>
-                            <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {categories.map((cat) => (
-                                <SelectItem key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label>Category</Label>
+                        <Select value={categoryId} onValueChange={setCategoryId}>
+                            <SelectTrigger className={inputClass}>
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories.map((cat) => (
+                                    <SelectItem key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    {organizations.length > 0 && (
+                        <div className="space-y-2">
+                            <Label>Company / Organization</Label>
+                            <Select value={organizationId} onValueChange={setOrganizationId}>
+                                <SelectTrigger className={inputClass}>
+                                    <SelectValue placeholder="Link to a company profile" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="">— None —</SelectItem>
+                                    {organizations.map((org) => (
+                                        <SelectItem key={org.id} value={org.id}>
+                                            {org.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
                 </div>
             </section>
 

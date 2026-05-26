@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
@@ -230,7 +230,7 @@ export async function listAdminUsers(
       if (idSet.has(u.id) && u.email) emailMap.set(u.id, u.email);
     }
   } catch {
-    // Non-fatal — email just won't show if this fails
+    // Non-fatal â€” email just won't show if this fails
   }
 
   // Merge
@@ -355,7 +355,7 @@ export async function giftSubscription(
     billing_interval: "month",
     status: "active",
     gifted_until: giftedUntil,
-    // "dev-bypass" is not a real profile UUID — use null so the FK doesn't reject it
+    // "dev-bypass" is not a real profile UUID â€” use null so the FK doesn't reject it
     gifted_by: adminUserId === "dev-bypass" ? null : adminUserId,
     gifted_note: note.trim(),
     cancel_at_period_end: false,
@@ -696,7 +696,7 @@ export async function convertToAdminStub(orgId: string): Promise<ActionState> {
   await requireSiteAdmin();
   const admin = createAdminClient();
 
-  // Only convert ownerless companies — if someone already owns it, leave it alone
+  // Only convert ownerless companies â€” if someone already owns it, leave it alone
   const { data: member } = await admin
     .from("organization_members")
     .select("user_id")
@@ -821,7 +821,7 @@ export async function giftOrgSubscription(
   durationDays: number,
   note: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Reuse the existing giftSubscription — it validates plan, days, note and upserts subscriptions
+  // Reuse the existing giftSubscription â€” it validates plan, days, note and upserts subscriptions
   return giftSubscription(ownerId, plan, durationDays, note);
 }
 
@@ -1201,7 +1201,7 @@ export async function listAdminOwnershipRequests(
       resolved_by: r.resolved_by,
       requesting_org_name: org?.name ?? (r.requesting_org_id ? "Unknown" : "(no org)"),
       requesting_org_slug: org?.slug ?? "",
-      product_name: product?.name ?? stub?.name ?? "—",
+      product_name: product?.name ?? stub?.name ?? "â€”",
       product_slug: product?.slug ?? stub?.slug ?? "",
       stub_org_name: stub?.name,
       stub_org_slug: stub?.slug,
@@ -1306,7 +1306,7 @@ export async function resolveOwnershipRequest(
   return { success: true };
 }
 
-// ── AI Production Tools ──────────────────────────────────────────────────────
+// â”€â”€ AI Production Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export async function listAdminAiTools(limit: number = 100) {
   await requireSiteAdmin();
@@ -1329,6 +1329,16 @@ export async function listAdminAiTools(limit: number = 100) {
     created_at: string | null;
     category_id: string | null;
   }>;
+}
+
+export async function listOrganizationsForSelect() {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("organizations")
+    .select("id, name, slug, logo_url")
+    .order("name", { ascending: true });
+  return (data ?? []) as Array<{ id: string; name: string; slug: string; logo_url: string | null }>;
 }
 
 export async function listAdminAiToolCategories() {
@@ -1360,6 +1370,7 @@ export async function getAdminAiToolById(id: string) {
 
 function parseAiToolFormData(formData: FormData) {
   const categoryId = formData.get("category_id");
+  const organizationId = formData.get("organization_id");
   const pricingModel = formData.get("pricing_model");
   return {
     name: formData.get("name"),
@@ -1370,6 +1381,7 @@ function parseAiToolFormData(formData: FormData) {
     cover_image_url: formData.get("cover_image_url") || "",
     gallery_urls: (formData.getAll("gallery_urls") as string[]).filter(Boolean),
     category_id: categoryId ? String(categoryId) : "",
+    organization_id: organizationId ? String(organizationId) : "",
     main_link: formData.get("main_link"),
     pricing_model: pricingModel ? String(pricingModel) : "",
     pricing_url: formData.get("pricing_url") || "",
@@ -1410,10 +1422,11 @@ export async function createAiToolAsAdmin(
     return { success: false, error: "Invalid data: " + errorMessage };
   }
 
-  const { category_id, ...rest } = validated.data;
+  const { category_id, organization_id, ...rest } = validated.data;
   const insertData = {
     ...rest,
     category_id: category_id || null,
+    organization_id: organization_id || null,
     pricing_model: rest.pricing_model || null,
   };
 
@@ -1453,10 +1466,11 @@ export async function updateAiToolAsAdmin(
     return { success: false, error: "Invalid data: " + errorMessage };
   }
 
-  const { category_id, ...rest } = validated.data;
+  const { category_id, organization_id, ...rest } = validated.data;
   const updateData = {
     ...rest,
     category_id: category_id || null,
+    organization_id: organization_id || null,
     pricing_model: rest.pricing_model || null,
     updated_at: new Date().toISOString(),
   };
@@ -1544,3 +1558,4 @@ export async function deleteAiToolCategory(categoryId: string) {
   revalidatePath("/admin/ai-tools");
   return { success: true };
 }
+

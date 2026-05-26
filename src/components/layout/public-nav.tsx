@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
@@ -22,8 +23,18 @@ export async function PublicNav({ activePath }: { activePath?: string }) {
   return (
     <nav className="sticky top-0 z-30 backdrop-blur-md bg-[#0B0B0B]/70 border-b border-white/5">
       <div className="relative flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
-        <Link href="/" className="text-xl font-bold text-[var(--brand)]">
-          MediaLinkPro
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/brand/logo.png"
+            alt="MediaLinkPro"
+            width={40}
+            height={40}
+            className="h-9 w-auto object-contain"
+            priority
+          />
+          <span className="text-xl font-bold tracking-tight text-white">
+            MediaLink<span className="text-[var(--brand)]">Pro</span>
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">

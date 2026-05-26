@@ -31,6 +31,7 @@ export interface AiTool {
     cover_image_url?: string | null;
     gallery_urls: string[];
     category_id?: string | null;
+    organization_id?: string | null;
     main_link: string;
     pricing_model?: string | null;
     pricing_url?: string | null;
@@ -44,4 +45,12 @@ export interface AiTool {
     updated_at: string;
     ai_tool_categories?: AiToolCategory | null;
     ai_tool_resources?: AiToolResource[];
+    organization?: {
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+    } | null;
+    /** 'ai_tools' = admin-curated; 'product' = company-submitted product of type AI Tool */
+    source?: 'ai_tools' | 'product';
 }

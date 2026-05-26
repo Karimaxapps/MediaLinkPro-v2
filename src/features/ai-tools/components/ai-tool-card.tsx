@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PRICING_MODEL_LABELS } from "../constants";
 import type { AiTool } from "../types";
 import { AiToolBookmarkButton } from "./ai-tool-bookmark-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AiToolCardProps {
   tool: AiTool;
@@ -14,9 +16,13 @@ interface AiToolCardProps {
 
 export function AiToolCard({ tool }: AiToolCardProps) {
   const image = tool.cover_image_url || tool.gallery_urls?.[0] || tool.logo_url || "";
+  const router = useRouter();
 
   return (
-    <Link href={`/ai-tools/${tool.slug}`} className="group block h-full">
+    <div
+      className="group block h-full cursor-pointer"
+      onClick={() => router.push(`/ai-tools/${tool.slug}`)}
+    >
       <Card className="relative flex h-full w-full flex-col gap-0 overflow-hidden border-white/10 bg-white/5 p-0 transition-all duration-300 hover:border-[var(--brand)]/50">
         <CardHeader className="p-0">
           <div className="relative h-32 w-full overflow-hidden bg-gray-900 transition-opacity group-hover:opacity-90">
@@ -67,20 +73,37 @@ export function AiToolCard({ tool }: AiToolCardProps) {
             {tool.tagline && <p className="line-clamp-1 text-[11px] text-gray-400">{tool.tagline}</p>}
           </div>
 
-          {tool.platforms && tool.platforms.length > 0 && (
-            <div className="mt-auto flex flex-wrap gap-1 border-t border-white/5 pt-2">
-              {tool.platforms.slice(0, 3).map((platform) => (
-                <span
-                  key={platform}
-                  className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-400"
-                >
-                  {platform}
-                </span>
-              ))}
-            </div>
-          )}
+          <div className="mt-auto space-y-2 border-t border-white/5 pt-2">
+            {tool.organization && (
+              <Link
+                href={`/companies/${tool.organization.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+              >
+                <Avatar className="h-4 w-4">
+                  <AvatarImage src={tool.organization.logo_url ?? undefined} alt={tool.organization.name} />
+                  <AvatarFallback className="text-[8px] bg-white/10 text-gray-400">
+                    {tool.organization.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-[10px] text-gray-400 line-clamp-1">{tool.organization.name}</span>
+              </Link>
+            )}
+            {tool.platforms && tool.platforms.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {tool.platforms.slice(0, 3).map((platform) => (
+                  <span
+                    key={platform}
+                    className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-400"
+                  >
+                    {platform}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
-    </Link>
+    </div>
   );
 }

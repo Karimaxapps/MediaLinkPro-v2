@@ -30,9 +30,11 @@ export default async function AuthPage() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-[var(--brand)]/8" />
 
                 {/* Logo */}
-                <div className="relative z-10 flex items-center gap-2 font-semibold text-xl text-[var(--brand)]">
-                    <Image src="/logo.png" alt="MediaLinkPro" width={28} height={28} className="rounded-sm" />
-                    MediaLinkPro
+                <div className="relative z-10 flex items-center gap-2.5">
+                    <Image src="/brand/logo.png" alt="MediaLinkPro" width={36} height={36} className="h-9 w-auto object-contain" />
+                    <span className="text-xl font-bold tracking-tight text-white">
+                        MediaLink<span className="text-[var(--brand)]">Pro</span>
+                    </span>
                 </div>
 
                 {/* Center content */}

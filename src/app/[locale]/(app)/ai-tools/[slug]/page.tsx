@@ -13,6 +13,7 @@ import {
     FileText,
     Globe,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -108,6 +109,20 @@ export default async function AiToolDetailPage({
                                 </h1>
                                 {tool.tagline && (
                                     <p className="mt-1 text-gray-400">{tool.tagline}</p>
+                                )}
+                                {tool.organization && (
+                                    <Link
+                                        href={`/companies/${tool.organization.slug}`}
+                                        className="mt-2 inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        <Avatar className="h-5 w-5">
+                                            <AvatarImage src={tool.organization.logo_url ?? undefined} alt={tool.organization.name} />
+                                            <AvatarFallback className="text-[9px] bg-white/10 text-gray-400">
+                                                {tool.organization.name.slice(0, 2).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span>{tool.organization.name}</span>
+                                    </Link>
                                 )}
                             </div>
                         </div>

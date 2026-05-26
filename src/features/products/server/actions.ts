@@ -8,6 +8,7 @@ import { ActionState } from "@/features/types";
 import { redirect } from "next/navigation";
 import { Product } from "../types";
 import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
+import { getOrgUsage } from "@/features/billing/server/usage";
 
 // http(s)-only URL: rejects javascript:, data:, file:, etc. which are unsafe
 // when rendered as <a href> or <iframe src>.
@@ -132,6 +133,15 @@ export async function createProduct(
   if (!gate.allowed) {
     return {
       error: blockedFeatureMessage("list_product", gate.requiredPlan!),
+      success: false,
+    };
+  }
+
+  const usage = await getOrgUsage(validated.data.organization_id);
+  if (usage.products.exhausted) {
+    const limit = usage.products.limit as number;
+    return {
+      error: `Your plan allows up to ${limit} product listing${limit === 1 ? "" : "s"}. Upgrade your plan to add more.`,
       success: false,
     };
   }

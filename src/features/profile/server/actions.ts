@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { Database } from "@/types/supabase";
 import { revalidatePath } from "next/cache";
+import { sendEmail } from "@/lib/email/send";
+import { emailTemplates } from "@/lib/email/templates";
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
@@ -150,7 +152,25 @@ export async function updateMyProfile(data: ExtendedProfileData) {
 
 // Keep mostly for compatibility if referenced elsewhere, but update to use new type
 export async function completeOnboarding(data: ExtendedProfileData) {
-    return await updateMyProfile(data);
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    // Fetch current profile to detect first-time completion
+    const { data: { user } } = await supabase.auth.getUser();
+    const isFirstCompletion = user ? await (async () => {
+        const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+        return !data?.full_name;
+    })() : false;
+
+    const result = await updateMyProfile(data);
+
+    if (result.success && isFirstCompletion && user?.email) {
+        const firstName = data.full_name?.split(" ")[0] ?? "there";
+        const tpl = emailTemplates.welcome(firstName);
+        await sendEmail({ to: user.email, ...tpl });
+    }
+
+    return result;
 }
 
 export async function getAuthEmail() {
