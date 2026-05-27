@@ -153,10 +153,10 @@ export async function POST(request: NextRequest) {
       // fully provisioned.
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId =
-          typeof invoice.subscription === "string"
-            ? invoice.subscription
-            : invoice.subscription?.id ?? null;
+        // Stripe API 2026-04-22: invoice.subscription was moved to
+        // invoice.parent.subscription_details.subscription
+        const subRef = invoice.parent?.subscription_details?.subscription ?? null;
+        const subscriptionId = typeof subRef === "string" ? subRef : (subRef?.id ?? null);
         if (subscriptionId) {
           const sub = await stripe.subscriptions.retrieve(subscriptionId);
           await upsertSubscriptionFromStripe(sub);
