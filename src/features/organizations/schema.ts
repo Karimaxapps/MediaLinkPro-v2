@@ -3,7 +3,7 @@ import { z } from "zod";
 /** Single source of truth for company types — used in wizard, edit form, and admin panel. */
 export const ORG_TYPES = [
     "Broadcaster",
-    "Production / Post-prod",
+    "Production / Post-production",
     "Solution Provider",
     "Media Association",
     "Training Center",
@@ -28,7 +28,8 @@ export const MAIN_ACTIVITIES_BY_TYPE: Record<OrgType, string[]> = {
     "Podcast / audio network",
     "Broadcast operations / playout",
   ],
-  "Production / Post-prod": [
+  "Production / Post-production": [
+    "Full production service",
     "Video production",
     "Film production",
     "TV production",
@@ -112,7 +113,8 @@ export const MAIN_ACTIVITY_SHORT_LABELS: Record<string, string> = {
   "Podcast / audio network": "Podcast",
   "Broadcast operations / playout": "Operations",
 
-  // Production / Post-prod
+  // Production / Post-production
+  "Full production service": "Full service",
   "Video production": "Video",
   "Film production": "Film",
   "TV production": "TV",

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ConnectCard } from "@/features/organizations/components/connect-card";
 import type { ConnectionStatus } from "@/features/connections/server/actions";
 import { shortActivityLabel } from "@/features/organizations/schema";
+import { regionForCountry } from "@/features/organizations/data/regions";
 import { cn } from "@/lib/utils";
 
 export type ConnectListItem = {
@@ -44,6 +45,8 @@ interface ConnectListClientProps {
     items: ConnectListItem[];
     type: "organization" | "profile";
     title: string;
+    /** Determines the filter chips: "activity" (default) or "region". */
+    groupBy?: "activity" | "region";
     featuredSlot?: React.ReactNode;
 }
 
@@ -77,7 +80,13 @@ function buildHaystack(item: ConnectListItem, type: "organization" | "profile"):
         .toLowerCase();
 }
 
-export function ConnectListClient({ items, type, title, featuredSlot }: ConnectListClientProps) {
+export function ConnectListClient({
+    items,
+    type,
+    title,
+    groupBy = "activity",
+    featuredSlot,
+}: ConnectListClientProps) {
     const [query, setQuery] = useState("");
     const [activeActivity, setActiveActivity] = useState<string | null>(null);
     const tabsRef = useRef<HTMLDivElement>(null);
@@ -89,29 +98,38 @@ export function ConnectListClient({ items, type, title, featuredSlot }: ConnectL
 
     // Build the activity chips from the unique main_activity values present in
     // the items. Each chip is one real category from the DB. Sorted by frequency
-    // (most-common first), then alphabetically for ties.
+    // (most-common first), then alphabetically for ties. When groupBy="region"
+    // we bucket by geographic region (derived from the country) instead.
     const activityFilters: ActivityFilter[] = useMemo(() => {
         if (type !== "organization") return [];
         const counts = new Map<string, number>();
         for (const item of items) {
-            const a = item.main_activity?.trim();
-            if (!a) continue;
-            counts.set(a, (counts.get(a) ?? 0) + 1);
+            const key =
+                groupBy === "region"
+                    ? regionForCountry(item.country) ?? "Other"
+                    : item.main_activity?.trim();
+            if (!key) continue;
+            counts.set(key, (counts.get(key) ?? 0) + 1);
         }
         return Array.from(counts.entries())
             .map(([label, count]) => ({ label, count }))
             .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-    }, [items, type]);
+    }, [items, type, groupBy]);
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
         let base = items;
 
-        // Apply activity filter first
         if (activeActivity) {
-            base = base.filter(
-                (item) => item.main_activity?.toLowerCase() === activeActivity.toLowerCase()
-            );
+            base = base.filter((item) => {
+                if (groupBy === "region") {
+                    const r = regionForCountry(item.country) ?? "Other";
+                    return r.toLowerCase() === activeActivity.toLowerCase();
+                }
+                return (
+                    item.main_activity?.toLowerCase() === activeActivity.toLowerCase()
+                );
+            });
         }
 
         if (!q) return base;
@@ -120,7 +138,7 @@ export function ConnectListClient({ items, type, title, featuredSlot }: ConnectL
             : indexed.filter(({ item }) => base.includes(item));
 
         return activityIndexed.filter(({ hay }) => hay.includes(q)).map(({ item }) => item);
-    }, [query, indexed, items, activeActivity, type]);
+    }, [query, indexed, items, activeActivity, type, groupBy]);
 
     const showSectorFilters = type === "organization" && activityFilters.length > 0;
 
@@ -182,7 +200,8 @@ export function ConnectListClient({ items, type, title, featuredSlot }: ConnectL
 
                     {activityFilters.map(({ label, count }) => {
                         const active = activeActivity === label;
-                        const short = shortActivityLabel(label);
+                        const short =
+                            groupBy === "region" ? label : shortActivityLabel(label);
                         return (
                             <button
                                 key={label}

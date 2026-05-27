@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 const categoryToDbType: Record<string, string> = {
     'broadcasters': 'Broadcaster',
     'solution-providers': 'Solution Provider',
-    'production-companies': 'Production Company',
+    'production-companies': 'Production / Post-production',
     'media-associations': 'Media Association'
 };
 
@@ -153,7 +153,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 space-y-8">
+        <div className="w-full px-4 py-8 space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                 {/* Main Content (header + search + list, all client-side filtered) */}
                 <div className="lg:col-span-3 space-y-6">
@@ -161,12 +161,13 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
                         items={items}
                         type={type}
                         title={title}
+                        groupBy={category === "media-associations" ? "region" : "activity"}
                         featuredSlot={
                             featuredOrgs.length > 0 ? (
                                 <section className="space-y-3">
                                     <div className="flex items-end justify-between">
                                         <h2 className="text-xl font-bold tracking-tight text-white">
-                                            Featured {title}
+                                            Featured Companies
                                         </h2>
                                         <span className="text-xs text-gray-500">
                                             Selected by editors
