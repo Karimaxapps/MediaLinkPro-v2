@@ -51,9 +51,11 @@ export const config = {
     /*
      * Match all paths except:
      * - API routes (/api/...)
+     * - QR scan tracking route (/scan/... — locale-agnostic, redirects itself)
+     * - App-association files (/.well-known/... — must be served raw, no locale)
      * - Next.js internals (_next/static, _next/image)
      * - Static assets (favicon, images, etc.)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|apple-icon|icon|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|scan|\\.well-known|_next/static|_next/image|favicon.ico|apple-icon|icon|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
