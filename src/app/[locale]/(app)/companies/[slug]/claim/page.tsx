@@ -44,19 +44,19 @@ export default async function ClaimCompanyPage({
     redirect(`/${locale}/auth?next=/companies/${slug}/claim`);
   }
 
-  // Surface whether they already have a primary org (banner only — backend re-validates)
-  const { data: ownedMembership } = await supabase
+  // Users who already manage a company (owner/admin of any org) cannot claim
+  // another. Block access to the claim page — the action re-validates too.
+  const { data: managedMembership } = await supabase
     .from("organization_members")
-    .select("organization_id, organizations(name, slug)")
+    .select("id")
     .eq("user_id", user!.id)
-    .eq("role", "owner")
+    .in("role", ["owner", "admin"])
+    .limit(1)
     .maybeSingle();
 
-  const existingOrg = ownedMembership
-    ? ((ownedMembership as unknown) as {
-        organizations: { name: string; slug: string } | null;
-      }).organizations
-    : null;
+  if (managedMembership) {
+    redirect(`/${locale}/companies/${slug}`);
+  }
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -72,28 +72,10 @@ export default async function ClaimCompanyPage({
           Claim ownership of <span className="text-[var(--brand)]">{orgRow.name}</span>
         </h1>
         <p className="text-sm text-gray-400 mt-2">
-          An admin will review your request. Tell us how you&apos;re affiliated
-          with this company — a work email, role, or anything that helps
-          verify your ownership.
+          An admin will review your request. Tell us how you&apos;re affiliated with this company —
+          a work email, role, or anything that helps verify your ownership.
         </p>
       </div>
-
-      {existingOrg && (
-        <div className="rounded-lg border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-4 text-sm text-gray-200">
-          <p className="font-semibold text-white">Heads up</p>
-          <p className="mt-1">
-            You already own{" "}
-            <Link
-              href={`/companies/${existingOrg.slug}`}
-              className="text-[var(--brand)] hover:underline"
-            >
-              {existingOrg.name}
-            </Link>
-            . If approved, this stub will be merged into your existing company
-            (blank fields filled in, old URL redirects to your profile).
-          </p>
-        </div>
-      )}
 
       <ClaimForm stubId={orgRow.id} slug={orgRow.slug} />
     </div>

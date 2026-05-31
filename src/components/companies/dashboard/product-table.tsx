@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ProductWithStats } from "@/features/organizations/server/dashboard-actions";
-import { Eye, Bookmark, Scan, FileText, Plus } from "lucide-react";
+import { Eye, Bookmark, Scan, FileText, Plus, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -55,12 +47,13 @@ export function ProductTable({ products, productsQuota }: Props) {
                 <th className="px-6 py-3">Views</th>
                 <th className="px-6 py-3">Bookmarks</th>
                 <th className="px-6 py-3">Scans</th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
                     No products found.
                   </td>
                 </tr>
@@ -103,6 +96,20 @@ export function ProductTable({ products, productsQuota }: Props) {
                         <Scan className="h-4 w-4 text-gray-400" />
                         <span>{product.scans}</span>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/products/${product.slug}/analytics`);
+                        }}
+                        className="bg-transparent border-white/10 text-white hover:bg-white/10"
+                      >
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Analytics
+                      </Button>
                     </td>
                   </tr>
                 ))

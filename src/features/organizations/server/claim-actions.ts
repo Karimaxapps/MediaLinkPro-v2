@@ -47,15 +47,22 @@ export async function submitOrgClaimAction(
     return { error: "This company is no longer claimable.", success: false };
   }
 
-  // Find user's existing owned org (if any)
-  const { data: existingMember } = await admin
+  // Users who already manage a company (owner/admin of any org) cannot claim
+  // another one. Enforced server-side so the page guard can't be bypassed.
+  const { data: managedMembership } = await admin
     .from("organization_members")
     .select("organization_id")
     .eq("user_id", user.id)
-    .eq("role", "owner")
+    .in("role", ["owner", "admin"])
+    .limit(1)
     .maybeSingle();
-  const requestingOrgId =
-    (existingMember as { organization_id: string } | null)?.organization_id ?? null;
+  if (managedMembership) {
+    return {
+      error: "You already manage a company and can't claim another.",
+      success: false,
+    };
+  }
+  const requestingOrgId = null;
 
   // Prevent duplicate pending claim by this user
   const { data: dup } = await admin
@@ -73,17 +80,15 @@ export async function submitOrgClaimAction(
     };
   }
 
-  const { error: insertError } = await admin
-    .from("content_ownership_requests" as never)
-    .insert({
-      content_type: "organization",
-      content_id: stubOrgId,
-      requesting_org_id: requestingOrgId,
-      requesting_user_id: user.id,
-      status: "pending",
-      message: message?.trim() || null,
-      notify_by_email: notifyByEmail,
-    } as never);
+  const { error: insertError } = await admin.from("content_ownership_requests" as never).insert({
+    content_type: "organization",
+    content_id: stubOrgId,
+    requesting_org_id: requestingOrgId,
+    requesting_user_id: user.id,
+    status: "pending",
+    message: message?.trim() || null,
+    notify_by_email: notifyByEmail,
+  } as never);
 
   if (insertError) {
     return {
@@ -159,7 +164,8 @@ export async function sendClaimReplyToRequester(
       .in("conversation_id", myConvIds)
       .eq("profile_id", requesterUserId)
       .limit(1);
-    conversationId = (shared?.[0] as { conversation_id: string } | undefined)?.conversation_id ?? null;
+    conversationId =
+      (shared?.[0] as { conversation_id: string } | undefined)?.conversation_id ?? null;
   }
 
   // Create a new conversation if none exists.
@@ -328,19 +334,16 @@ export async function resolveOrgClaimAction(
     if (ownedNow) {
       return {
         success: false,
-        error:
-          "Claimer now owns an organization. Reject this claim or use merge.",
+        error: "Claimer now owns an organization. Reject this claim or use merge.",
       };
     }
 
     // Add membership + flip stub flag
-    const { error: memErr } = await admin
-      .from("organization_members")
-      .insert({
-        organization_id: stubId,
-        user_id: userIdClaimer,
-        role: "owner",
-      });
+    const { error: memErr } = await admin.from("organization_members").insert({
+      organization_id: stubId,
+      user_id: userIdClaimer,
+      role: "owner",
+    });
     if (memErr) {
       return { success: false, error: "Membership failed: " + memErr.message };
     }
@@ -413,15 +416,13 @@ export async function resolveOrgClaimAction(
 
     // Create slug redirect (only if slugs differ)
     if (stubRow.slug && stubRow.slug !== existingRow.slug) {
-      await admin
-        .from("organization_slug_redirects" as never)
-        .upsert(
-          {
-            old_slug: stubRow.slug,
-            org_id: existingOrgId,
-          } as never,
-          { onConflict: "old_slug" }
-        );
+      await admin.from("organization_slug_redirects" as never).upsert(
+        {
+          old_slug: stubRow.slug,
+          org_id: existingOrgId,
+        } as never,
+        { onConflict: "old_slug" }
+      );
     }
 
     // Mark stub as merged

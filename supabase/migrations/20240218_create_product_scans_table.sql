@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS product_scans (
 -- RLS for product_scans
 ALTER TABLE product_scans ENABLE ROW LEVEL SECURITY;
 
--- Product owners can view scans for their products
+-- Product owners can view scans for their products (so the owner-facing
+-- "who scanned this product" list can read scanner rows)
+DROP POLICY IF EXISTS "Product owners can view scans for their products" ON product_scans;
 CREATE POLICY "Product owners can view scans for their products"
 ON product_scans FOR SELECT
 USING (
@@ -26,12 +28,13 @@ USING (
 );
 
 -- Anyone can insert scans (public access for anonymous scanning)
+DROP POLICY IF EXISTS "Anyone can insert scans" ON product_scans;
 CREATE POLICY "Anyone can insert scans"
 ON product_scans FOR INSERT
 WITH CHECK (true);
 
--- Add scanner_id column to product_scans if not exists (in case table was created differently before, good practice for idempotent migrations)
--- (Already included in create table above, but ensuring consistency)
-
--- Optional: Index for faster lookups by product
+-- Indexes for the owner-facing scan list: lookups by product, by scanner,
+-- and ordering by recency.
 CREATE INDEX IF NOT EXISTS idx_product_scans_product_id ON product_scans(product_id);
+CREATE INDEX IF NOT EXISTS idx_product_scans_scanner_id ON product_scans(scanner_id);
+CREATE INDEX IF NOT EXISTS idx_product_scans_scanned_at ON product_scans(product_id, scanned_at DESC);
