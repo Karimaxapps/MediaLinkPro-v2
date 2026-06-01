@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { env } from "@/lib/env";
 
@@ -23,6 +23,25 @@ export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) =
                         // This can be ignored if you have middleware refreshing
                         // user sessions.
                     }
+                },
+            },
+        }
+    );
+};
+
+// Cookie-free anon client — safe to use inside `unstable_cache`/cached contexts
+// (which forbid reading `cookies()`). Reads public data under RLS, no user session.
+export const createAnonClient = () => {
+    return createServerClient(
+        supabaseUrl,
+        env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+            cookies: {
+                getAll() {
+                    return [];
+                },
+                setAll() {
+                    // No session cookies to manage for an anon client.
                 },
             },
         }

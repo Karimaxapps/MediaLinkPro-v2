@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     getLatestServices(10),
     getFeaturedOrganizations(10),
     getLatestOrganizations(3),
-    getLatestProfiles(3),
+    getLatestProfiles(3, user.id),
     getUpcomingEvents(1),
     listPublishedPosts(10),
     getFeaturedAiTools(10),

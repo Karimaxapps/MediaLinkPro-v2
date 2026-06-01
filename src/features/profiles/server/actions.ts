@@ -1,7 +1,8 @@
 'use server';
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAnonClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { unstable_cache } from "next/cache";
 import { updateProfileSchema, expertProfileSchema } from "../schema";
 import { ActionState } from "@/features/types";
 
@@ -72,7 +73,7 @@ export async function getExpertProfile(userId: string) {
     return data;
 }
 
-export async function upsertExpertProfile(prevState: ActionState, payload: any): Promise<ActionState> {
+export async function upsertExpertProfile(prevState: ActionState, payload: unknown): Promise<ActionState> {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
@@ -150,23 +151,48 @@ export async function getProfileByUsername(username: string) {
     return data;
 }
 
-export async function getLatestProfiles(limit: number = 3) {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
+type LatestProfile = {
+    id: string;
+    full_name: string | null;
+    username: string;
+    avatar_url: string | null;
+    job_title: string | null;
+};
 
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, username, avatar_url, job_title')
-        .neq('username', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
+// Cached pool of the newest professionals. Refreshed at most once per hour and
+// shared across all visitors (no per-user data inside, so the cache stays generic).
+// Uses the cookie-free anon client because `unstable_cache` cannot read cookies().
+const getLatestProfilesPool = unstable_cache(
+    async (poolSize: number): Promise<LatestProfile[]> => {
+        const supabase = createAnonClient();
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id, full_name, username, avatar_url, job_title')
+            .neq('username', null)
+            .order('created_at', { ascending: false })
+            .limit(poolSize);
 
-    if (error) {
-        console.error("Error fetching latest profiles:", error);
-        return [];
-    }
+        if (error) {
+            console.error("Error fetching latest profiles:", error);
+            return [];
+        }
+        // `.neq('username', null)` guarantees username is non-null at runtime.
+        return (data ?? []) as LatestProfile[];
+    },
+    ['latest-profiles-pool'],
+    { revalidate: 3600, tags: ['latest-profiles'] }
+);
 
-    return data;
+/**
+ * Latest professionals for the dashboard sidebar.
+ * Pulls a slightly larger cached pool (refreshed hourly), then excludes the
+ * current viewer in-memory so the list never shows the user themselves.
+ */
+export async function getLatestProfiles(limit: number = 3, excludeUserId?: string) {
+    // Fetch a buffer beyond `limit` so removing the current user still yields enough.
+    const pool = await getLatestProfilesPool(limit + 5);
+    const filtered = excludeUserId ? pool.filter((p) => p.id !== excludeUserId) : pool;
+    return filtered.slice(0, limit);
 }
 
 export async function checkUsernameAvailability(username: string) {
