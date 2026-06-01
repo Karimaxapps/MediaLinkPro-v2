@@ -2,11 +2,7 @@ import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { routing } from "@/i18n/routing";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.NEXT_PUBLIC_APP_URL ||
-  "https://medialinkpro.net";
+import { SITE_URL } from "@/lib/seo";
 
 /** Build hreflang alternates for a canonical path (e.g. "/" or "/pricing"). */
 function localeAlternates(path: string): Record<string, string> {
@@ -96,6 +92,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
+    // Expert profiles share the profiles table but live on a separate route
+    const expertPages: MetadataRoute.Sitemap = (profiles ?? []).map((profile) => ({
+      url: `${SITE_URL}/experts/${profile.username}`,
+      lastModified: new Date(profile.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+
     // Fetch organizations
     const { data: organizations } = await supabase
       .from("organizations")
@@ -125,7 +129,69 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...staticPages, ...productPages, ...profilePages, ...orgPages, ...blogPages];
+    // Open job postings (route: /jobs/[orgSlug]/[slug])
+    const { data: jobs } = await supabase
+      .from("jobs")
+      .select("slug, updated_at, organizations(slug)")
+      .eq("status", "open")
+      .order("updated_at", { ascending: false })
+      .limit(500);
+
+    const jobPages: MetadataRoute.Sitemap = (jobs ?? [])
+      .map((job) => {
+        const org = job.organizations as { slug?: string } | null;
+        if (!org?.slug || !job.slug) return null;
+        return {
+          url: `${SITE_URL}/jobs/${org.slug}/${job.slug}`,
+          lastModified: new Date(job.updated_at),
+          changeFrequency: "daily" as const,
+          priority: 0.6,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+    // Published public events
+    const { data: events } = await supabase
+      .from("events")
+      .select("slug, updated_at")
+      .eq("status", "published")
+      .eq("is_public", true)
+      .order("updated_at", { ascending: false })
+      .limit(500);
+
+    const eventPages: MetadataRoute.Sitemap = (events ?? []).map((event) => ({
+      url: `${SITE_URL}/events/${event.slug}`,
+      lastModified: new Date(event.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+
+    // Published AI tools
+    const { data: aiTools } = await supabase
+      .from("ai_tools")
+      .select("slug, updated_at")
+      .eq("status", "published")
+      .order("updated_at", { ascending: false })
+      .limit(500);
+
+    const aiToolPages: MetadataRoute.Sitemap = (aiTools ?? []).map((tool) => ({
+      url: `${SITE_URL}/ai-tools/${tool.slug}`,
+      lastModified: new Date(tool.updated_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+
+    return [
+      ...staticPages,
+      ...productPages,
+      ...profilePages,
+      ...expertPages,
+      ...orgPages,
+      ...blogPages,
+      ...jobPages,
+      ...eventPages,
+      ...aiToolPages,
+    ];
   } catch {
     // If DB is unavailable, return static pages only
     return staticPages;

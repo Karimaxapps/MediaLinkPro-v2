@@ -9,6 +9,8 @@ import { JobDetailsClient } from "@/features/jobs/components/job-details-client"
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
 type Props = { params: Promise<{ orgSlug: string; slug: string }> };
 
@@ -19,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${job.title} — ${job.organizations?.name ?? "MediaLinkPro"}`,
     description: job.description?.slice(0, 160) ?? undefined,
+    alternates: { canonical: `/jobs/${orgSlug}/${job.slug ?? slug}` },
   };
 }
 
@@ -49,8 +52,47 @@ export default async function JobDetailPage({ params }: Props) {
 
   const sidebarAd = await getActiveAdForPlacement("job_details_sidebar");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    url: absoluteUrl(`/jobs/${orgSlug}/${job.slug}`),
+    datePosted: job.created_at,
+    ...(job.expires_at ? { validThrough: job.expires_at } : {}),
+    ...(job.description ? { description: job.description } : {}),
+    ...(job.job_type ? { employmentType: job.job_type.toUpperCase() } : {}),
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.organizations?.name ?? "MediaLinkPro",
+      ...(job.organizations?.slug
+        ? { sameAs: `${SITE_URL}/companies/${job.organizations.slug}` }
+        : {}),
+      ...(job.organizations?.logo_url ? { logo: job.organizations.logo_url } : {}),
+    },
+    ...(job.is_remote
+      ? { jobLocationType: "TELECOMMUTE" }
+      : job.location
+        ? { jobLocation: { "@type": "Place", address: job.location } }
+        : {}),
+    ...(job.salary_min || job.salary_max
+      ? {
+          baseSalary: {
+            "@type": "MonetaryAmount",
+            currency: job.currency ?? "USD",
+            value: {
+              "@type": "QuantitativeValue",
+              ...(job.salary_min ? { minValue: job.salary_min } : {}),
+              ...(job.salary_max ? { maxValue: job.salary_max } : {}),
+              unitText: "YEAR",
+            },
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="space-y-4">
+      <JsonLd data={jsonLd} />
       <Link
         href="/jobs"
         className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"

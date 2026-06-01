@@ -24,6 +24,8 @@ import {
 import { AiToolBookmarkButton } from "@/features/ai-tools/components/ai-tool-bookmark-button";
 import { PRICING_MODEL_LABELS, RESOURCE_TYPE_LABELS } from "@/features/ai-tools/constants";
 import type { AiToolResource } from "@/features/ai-tools/types";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 
 const RESOURCE_ICONS: Record<string, typeof BookOpen> = {
     documentation: BookOpen,
@@ -45,6 +47,7 @@ export async function generateMetadata({
     return {
         title: `${tool.name} | AI Production Tools`,
         description: tool.tagline ?? undefined,
+        alternates: { canonical: `/ai-tools/${tool.slug ?? slug}` },
     };
 }
 
@@ -70,8 +73,27 @@ export default async function AiToolDetailPage({
 
     const heroImage = tool.cover_image_url || tool.gallery_urls?.[0] || "";
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: tool.name,
+        applicationCategory: "AI production tool",
+        url: absoluteUrl(`/ai-tools/${tool.slug}`),
+        ...(tool.tagline || tool.description
+            ? { description: tool.tagline || tool.description }
+            : {}),
+        ...(tool.logo_url || heroImage ? { image: tool.logo_url || heroImage } : {}),
+        ...(tool.platforms && tool.platforms.length > 0
+            ? { operatingSystem: tool.platforms.join(", ") }
+            : {}),
+        ...(tool.pricing_model === "free"
+            ? { offers: { "@type": "Offer", price: "0", priceCurrency: "USD" } }
+            : {}),
+    };
+
     return (
         <div className="container mx-auto max-w-5xl space-y-8 py-8">
+            <JsonLd data={jsonLd} />
             <Link
                 href="/ai-tools"
                 className="inline-flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"

@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { BLUR_DATA_URL } from "@/lib/image";
 import { AddResourceDialog } from "@/features/products/components/add-resource-dialog";
 import { EditResourceDialog } from "@/features/products/components/edit-resource-dialog";
 import { getProductOfficialResources, deleteProductResource, removeProductTrainingVideo } from "@/features/products/server/actions";
@@ -701,6 +702,9 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         src={activeImage || product.logo_url}
                                         alt="Product Media"
                                         fill
+                                        sizes="(max-width: 1024px) 100vw, 50vw"
+                                        placeholder="blur"
+                                        blurDataURL={BLUR_DATA_URL}
                                         className="object-cover"
                                     />
                                 ) : (
@@ -722,7 +726,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                             activeImage === url ? "border-[var(--brand)]" : "border-white/5 opacity-60 hover:opacity-100"
                                         )}
                                     >
-                                        <Image src={url} alt={`Gallery ${i}`} fill className="object-contain p-2" />
+                                        <Image src={url} alt={`Gallery ${i}`} fill sizes="80px" className="object-contain p-2" />
                                     </button>
                                 ))}
                                 {product.promo_video_url && (
@@ -1324,6 +1328,9 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                                             src={post.cover_image_url}
                                                             alt={post.title}
                                                             fill
+                                                            sizes="220px"
+                                                            placeholder="blur"
+                                                            blurDataURL={BLUR_DATA_URL}
                                                             className="object-cover"
                                                         />
                                                     ) : (

@@ -107,7 +107,7 @@ export function BlogClient({ posts: initial }: { posts: AdminBlogPost[] }) {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-white/10 overflow-hidden">
+      <div className="rounded-xl border border-white/10 overflow-x-auto">
         {filtered.length === 0 ? (
           <div className="p-16 text-center text-gray-500">
             <PenSquare className="h-10 w-10 mx-auto mb-3 text-gray-700" />

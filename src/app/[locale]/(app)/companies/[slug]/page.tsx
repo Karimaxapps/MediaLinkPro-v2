@@ -39,9 +39,7 @@ import type { Metadata } from "next";
 import { ProductList } from "@/features/products/components/product-list";
 import { listOpenJobs } from "@/features/jobs/server/actions";
 import { JOB_TYPE_COLORS, JOB_TYPE_LABELS, type Job } from "@/features/jobs/types";
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
+import { SITE_URL } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -73,6 +71,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/companies/${org.slug}` },
     openGraph: {
       title,
       description,

@@ -94,7 +94,7 @@ export function AdminEventsClient({ events }: { events: Event[] }) {
                 <p className="text-sm text-gray-400 mt-1">{events.length} most recent</p>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+            <div className="rounded-xl border border-white/10 bg-white/5 overflow-x-auto">
                 <table className="w-full">
                     <thead>
                         <tr className="border-b border-white/10 text-xs uppercase text-gray-500">

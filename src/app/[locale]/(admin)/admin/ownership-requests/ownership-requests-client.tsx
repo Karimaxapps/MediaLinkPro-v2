@@ -133,7 +133,7 @@ export function OwnershipRequestsClient({ requests, readOnly = false }: Props) {
                     No requests here.
                 </div>
             ) : (
-                <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+                <div className="rounded-xl border border-white/10 bg-white/5 overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-white/10 text-xs uppercase text-gray-500">

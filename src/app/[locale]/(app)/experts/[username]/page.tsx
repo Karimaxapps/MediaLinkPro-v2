@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +50,57 @@ async function getCurrentUserId() {
     return user?.id;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+    const { username } = await params;
+    const profile = await getProfileByUsername(username);
+
+    if (!profile) {
+        return { title: "Expert Not Found | MediaLinkPro" };
+    }
+
+    const name = profile.full_name || profile.username;
+    const location = [profile.city, profile.country].filter(Boolean).join(", ");
+    const title = `${name}${profile.company ? ` · ${profile.company}` : ""} | MediaLinkPro`;
+    const description =
+        profile.bio ||
+        profile.about ||
+        [
+            `${name} is a media professional on MediaLinkPro`,
+            profile.company ? `at ${profile.company}` : null,
+            location ? `based in ${location}` : null,
+            profile.skills && profile.skills.length > 0
+                ? `specializing in ${profile.skills.slice(0, 5).join(", ")}`
+                : null,
+        ]
+            .filter(Boolean)
+            .join(" ") + ".";
+
+    const ogImage = profile.avatar_url
+        ? [{ url: profile.avatar_url, width: 400, height: 400, alt: name }]
+        : undefined;
+
+    return {
+        title,
+        description,
+        keywords: profile.skills && profile.skills.length > 0 ? profile.skills : undefined,
+        alternates: { canonical: `/experts/${profile.username}` },
+        openGraph: {
+            title,
+            description,
+            type: "profile",
+            siteName: "MediaLinkPro",
+            url: `/experts/${profile.username}`,
+            images: ogImage,
+        },
+        twitter: {
+            card: profile.avatar_url ? "summary_large_image" : "summary",
+            title,
+            description,
+            images: profile.avatar_url ? [profile.avatar_url] : undefined,
+        },
+    };
+}
+
 export default async function ExpertProfilePage({ params }: { params: Promise<{ username: string }> }) {
     const { username } = await params;
     const profile = await getProfileByUsername(username);
@@ -73,8 +127,43 @@ export default async function ExpertProfilePage({ params }: { params: Promise<{ 
         portfolio: portfolio.length,
     });
 
+    const sameAs = [
+        profile.website,
+        profile.linkedin_url,
+        profile.x_url,
+        profile.instagram_url,
+        profile.facebook_url,
+        profile.tiktok_url,
+        profile.portfolio_url,
+    ].filter(Boolean);
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        mainEntity: {
+            "@type": "Person",
+            name: profile.full_name || profile.username,
+            url: absoluteUrl(`/experts/${profile.username}`),
+            ...(profile.bio || profile.about ? { description: profile.bio || profile.about } : {}),
+            ...(profile.avatar_url ? { image: profile.avatar_url } : {}),
+            ...(profile.company ? { worksFor: { "@type": "Organization", name: profile.company } } : {}),
+            ...(profile.skills && profile.skills.length > 0 ? { knowsAbout: profile.skills } : {}),
+            ...(profile.city || profile.country
+                ? {
+                      address: {
+                          "@type": "PostalAddress",
+                          ...(profile.city ? { addressLocality: profile.city } : {}),
+                          ...(profile.country ? { addressCountry: profile.country } : {}),
+                      },
+                  }
+                : {}),
+            ...(sameAs.length > 0 ? { sameAs } : {}),
+        },
+    };
+
     return (
         <div className="container max-w-5xl py-10 space-y-8">
+            <JsonLd data={jsonLd} />
             {/* Header Section */}
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 <Avatar className="w-32 h-32 border-4 border-[var(--brand)]/20 bg-muted flex items-center justify-center">

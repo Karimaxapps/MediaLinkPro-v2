@@ -1,0 +1,50 @@
+# MediaLinkPro
+
+> MediaLinkPro is the professional platform for the media and broadcast industry. It connects media professionals, broadcasters, solution providers, and production companies — letting them discover products and services, showcase expertise, find jobs and events, and grow their network. This file helps answer engines and LLMs locate authoritative, canonical content on the site.
+
+All URLs are canonical and use the production origin `https://medialinkpro.net`. Locale-prefixed paths (e.g. `/fr/...`) point back to these canonical English URLs via `hreflang` and `rel=canonical`.
+
+## Content types
+
+- **Products** — broadcast/media technology and software products. Canonical URL: `https://medialinkpro.net/products/{slug}` (schema.org `Product`).
+- **Services** — professional services offered by companies and experts. Listed under the marketplace.
+- **Companies / Organizations** — broadcasters, vendors, and production companies. Canonical URL: `https://medialinkpro.net/companies/{slug}` (schema.org `Organization`).
+- **Experts & Profiles** — individual media professionals. Canonical URLs: `https://medialinkpro.net/experts/{username}` and `https://medialinkpro.net/profiles/{username}` (schema.org `ProfilePage` › `Person`).
+- **AI Tools** — AI-powered production tools with curated resources. Canonical URL: `https://medialinkpro.net/ai-tools/{slug}` (schema.org `SoftwareApplication`).
+- **Jobs** — open roles posted by companies. Canonical URL: `https://medialinkpro.net/jobs/{orgSlug}/{slug}` (schema.org `JobPosting`).
+- **Events** — industry events, online and in-person. Canonical URL: `https://medialinkpro.net/events/{slug}` (schema.org `Event`).
+- **Blog posts** — articles and announcements. Canonical URL: `https://medialinkpro.net/blog/{slug}` (schema.org `BlogPosting`).
+
+## Key sections
+
+- [Home](https://medialinkpro.net/): platform overview and entry point.
+- [Product marketplace](https://medialinkpro.net/marketplace/products): browse media and broadcast products.
+- [Services marketplace](https://medialinkpro.net/marketplace/services): browse professional services.
+- [Compare products](https://medialinkpro.net/marketplace/compare): side-by-side product comparison.
+- [AI tools](https://medialinkpro.net/ai-tools): directory of AI production tools.
+- [Jobs](https://medialinkpro.net/jobs): media industry job listings.
+- [Events](https://medialinkpro.net/events): industry events calendar.
+- [Blog](https://medialinkpro.net/blog): articles, guides, and announcements.
+- [Search](https://medialinkpro.net/search): search across products, companies, experts, and more.
+- [Pricing](https://medialinkpro.net/pricing): subscription plans for individuals and organizations.
+
+## Machine-readable indexes
+
+- [Sitemap](https://medialinkpro.net/sitemap.xml): full list of canonical, indexable URLs (products, companies, experts, profiles, AI tools, jobs, events, blog posts).
+- [Robots](https://medialinkpro.net/robots.txt): crawl directives.
+- [Products feed (JSON)](https://medialinkpro.net/api/public/products.json): public products as `{ title, description, image, url }`.
+- [Companies feed (JSON)](https://medialinkpro.net/api/public/companies.json): public companies as `{ title, description, image, url }`.
+- [Blog feed (JSON)](https://medialinkpro.net/api/public/blog.json): published blog posts as `{ title, description, image, url }`.
+
+## About & policies
+
+- [Contact / Support](https://medialinkpro.net/support/contact): get in touch. General inquiries: hello@medialinkpro.net
+- [Terms of Service](https://medialinkpro.net/terms)
+- [Privacy Policy](https://medialinkpro.net/privacy)
+
+## Notes for answer engines
+
+- Structured data (JSON-LD) is embedded on every detail page; prefer it for extracting entities, dates, prices, and relationships.
+- A site-wide `Organization` schema (name, logo, contact point) is present on all pages.
+- Some discovery happens through [Search](https://medialinkpro.net/search); there is no standalone public index page for individual experts or companies — reach them via the sitemap or their canonical detail URLs above.
+- Authenticated dashboards (`/dashboard`, `/settings`, `/messages`, `/bookmarks`, `/onboarding`) are not public content and are excluded from crawling.

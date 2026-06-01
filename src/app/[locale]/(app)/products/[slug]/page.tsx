@@ -5,6 +5,8 @@ import { getProductBySlug } from "@/features/products/server/actions";
 import { listPostsForProduct } from "@/features/blog/server/actions";
 import { ProductDetailsClient } from "@/components/products/product-details-client";
 import { getOwnershipRequestStatus } from "@/features/ownership-requests/server/actions";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 
 import { Metadata } from "next";
 
@@ -41,9 +43,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title,
         description,
+        alternates: { canonical: `/products/${product.slug}` },
         openGraph: {
             title,
             description,
+            url: `/products/${product.slug}`,
             images,
             type: 'website',
             siteName: 'MediaLinkPro',
@@ -116,8 +120,27 @@ export default async function ProductDetailsPage({ params }: PageProps) {
 
     const relatedPosts = await listPostsForProduct(product.id, 6);
 
+    const brand = product.organizations as { name?: string } | null;
+    const productImages = [
+        product.logo_url,
+        ...(product.gallery_urls ?? []),
+    ].filter(Boolean) as string[];
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        url: absoluteUrl(`/products/${product.slug}`),
+        ...(product.short_description || product.description
+            ? { description: product.short_description || product.description }
+            : {}),
+        ...(productImages.length > 0 ? { image: productImages } : {}),
+        ...(brand?.name ? { brand: { "@type": "Brand", name: brand.name } } : {}),
+    };
+
     return (
         <div className="space-y-8">
+            <JsonLd data={jsonLd} />
             <ProductDetailsClient
                 product={product}
                 user={user}
