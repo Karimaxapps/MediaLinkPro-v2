@@ -14,11 +14,11 @@ import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { JsonLd } from "@/components/seo/json-ld";
+import { SITE_URL } from "@/lib/seo";
+import { BLUR_DATA_URL } from "@/lib/image";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://medialinkpro.net";
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -106,8 +106,31 @@ export default async function PublicBlogPostPage({ params }: Props) {
     [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2
     [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs`;
 
+  const coverUrl = post.cover_image_url
+    ? post.cover_image_url.startsWith("http")
+      ? post.cover_image_url
+      : `${SITE_URL}${post.cover_image_url}`
+    : null;
+  const authorName = post.author?.full_name ?? post.author?.username ?? "MediaLinkPro";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    url: `${SITE_URL}/blog/${post.slug}`,
+    mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+    ...(post.excerpt ? { description: post.excerpt } : {}),
+    ...(coverUrl ? { image: coverUrl } : {}),
+    ...(post.published_at ? { datePublished: post.published_at } : {}),
+    ...(post.updated_at ? { dateModified: post.updated_at } : {}),
+    author: { "@type": "Person", name: authorName },
+    publisher: { "@type": "Organization", name: "MediaLinkPro" },
+    ...(post.tags && post.tags.length > 0 ? { keywords: post.tags.join(", ") } : {}),
+  };
+
   return (
     <div className="min-h-screen bg-[#0B0B0B] text-white">
+      <JsonLd data={jsonLd} />
       <PublicNav activePath="/blog" />
       <ViewTracker postId={post.id} />
 
@@ -163,7 +186,15 @@ export default async function PublicBlogPostPage({ params }: Props) {
         {/* Cover image */}
         {post.cover_image_url && (
           <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10">
-            <Image src={post.cover_image_url} alt={post.title} fill className="object-cover" />
+            <Image
+              src={post.cover_image_url}
+              alt={post.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              placeholder="blur"
+              blurDataURL={BLUR_DATA_URL}
+              className="object-cover"
+            />
           </div>
         )}
 

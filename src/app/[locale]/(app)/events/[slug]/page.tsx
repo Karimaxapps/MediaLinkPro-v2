@@ -7,6 +7,8 @@ import {
     getMyEventInterest,
 } from "@/features/events/server/actions";
 import { EventDetailsClient } from "@/features/events/components/event-details-client";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -17,6 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: event.title,
         description: event.description ?? `${event.title} — MediaLinkPro event`,
+        alternates: { canonical: `/events/${event.slug ?? slug}` },
         openGraph: {
             title: event.title,
             description: event.description ?? undefined,
@@ -36,12 +39,34 @@ export default async function EventDetailPage({ params }: Props) {
         getMyEventInterest(event.id),
     ]);
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: event.title,
+        url: absoluteUrl(`/events/${event.slug}`),
+        startDate: event.start_date,
+        ...(event.end_date ? { endDate: event.end_date } : {}),
+        eventAttendanceMode: event.is_online
+            ? "https://schema.org/OnlineEventAttendanceMode"
+            : "https://schema.org/OfflineEventAttendanceMode",
+        ...(event.description ? { description: event.description } : {}),
+        ...(event.cover_image_url ? { image: event.cover_image_url } : {}),
+        ...(event.location
+            ? event.is_online
+                ? { location: { "@type": "VirtualLocation", url: event.location } }
+                : { location: { "@type": "Place", name: event.location, address: event.location } }
+            : {}),
+    };
+
     return (
-        <EventDetailsClient
-            event={event}
-            initialRegistration={registration}
-            initialInterests={interests}
-            initialMyInterest={myInterest}
-        />
+        <>
+            <JsonLd data={jsonLd} />
+            <EventDetailsClient
+                event={event}
+                initialRegistration={registration}
+                initialInterests={interests}
+                initialMyInterest={myInterest}
+            />
+        </>
     );
 }
