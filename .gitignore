@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Temporary error capture (instrumentation.ts)
 runtime-errors.log
+
+# Claude Code agent worktrees (must never be tracked)
+.claude/worktrees/
