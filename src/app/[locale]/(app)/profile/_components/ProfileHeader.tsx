@@ -2,10 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Pencil, Users, Briefcase, Building2, Image as ImageIcon, Loader2, Camera } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
-import { cn } from "@/lib/utils";
 import { ProfileEditSheet } from "@/components/profile/ProfileEditSheet";
 import { Database } from "@/types/supabase";
 import { useProfileUpload } from "@/hooks/use-profile-upload";
@@ -109,7 +107,13 @@ export function ProfileHeader({ profile, plan }: ProfileHeaderProps) {
                         <div className="flex flex-wrap items-center gap-3">
                             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                                 {profile.full_name || "User Name"}
-                                <VerifiedBadge plan={plan} />
+                                <VerifiedBadge
+                                    plan={plan}
+                                    verificationStatus={
+                                        (profile as { verification_status?: string | null })
+                                            .verification_status
+                                    }
+                                />
                             </h1>
                         </div>
 

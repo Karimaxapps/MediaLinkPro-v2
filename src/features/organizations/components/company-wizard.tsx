@@ -37,6 +37,7 @@ import {
   type CompanyWizardValues,
   ORG_TYPES,
   BROADCASTER_TYPES,
+  BROADCASTER_GENRES,
 } from "../schema";
 import { createCompanyWizardAction } from "../server/actions";
 import { CompanyAutofillBanner } from "./company-autofill-banner";
@@ -348,8 +349,11 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   <Select
                     onValueChange={(val: string) => {
                       setValue("type", val as (typeof ORG_TYPES)[number], { shouldValidate: true });
-                      // Clear broadcaster_type when switching away from Broadcaster
-                      if (val !== "Broadcaster") setValue("broadcaster_type", undefined);
+                      // Clear broadcaster-only fields when switching away
+                      if (val !== "Broadcaster") {
+                        setValue("broadcaster_type", undefined);
+                        setValue("broadcaster_genre", undefined);
+                      }
                     }}
                     defaultValue={watch("type")}
                   >
@@ -402,6 +406,39 @@ export function CompanyWizard({ userId }: { userId: string }) {
                     </Select>
                     {errors.broadcaster_type && (
                       <p className="text-red-500 text-xs">{errors.broadcaster_type.message}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Broadcaster genre — shown only when type = Broadcaster */}
+                {watch("type") === "Broadcaster" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="broadcaster_genre">Genre</Label>
+                    <Select
+                      onValueChange={(val: string) =>
+                        setValue("broadcaster_genre", val as (typeof BROADCASTER_GENRES)[number], {
+                          shouldValidate: true,
+                        })
+                      }
+                      defaultValue={watch("broadcaster_genre")}
+                    >
+                      <SelectTrigger className="bg-black/20 border-white/10">
+                        <SelectValue placeholder="e.g. News, Sports, Entertainment…" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
+                        {BROADCASTER_GENRES.map((g) => (
+                          <SelectItem
+                            key={g}
+                            value={g}
+                            className="focus:bg-white/10 focus:text-white cursor-pointer"
+                          >
+                            {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.broadcaster_genre && (
+                      <p className="text-red-500 text-xs">{errors.broadcaster_genre.message}</p>
                     )}
                   </div>
                 )}

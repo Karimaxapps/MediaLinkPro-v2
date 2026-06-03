@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { checkPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
 
 export async function fetchUnreadMessageCount() {
   const cookieStore = await cookies();
@@ -164,6 +163,61 @@ export async function sendMessage(formData: FormData) {
     return { error: "Not authenticated" };
   }
 
+  // ── Universal anti-spam gate ────────────────────────────────────────────
+  // Applies to everyone, Free and Verified Pro alike. A user may send up to
+  // 3 messages to someone new; once the other party replies the thread opens
+  // to unlimited. Connected professionals (an accepted connection) are exempt
+  // and message freely from the start.
+  const MAX_UNANSWERED = 3;
+
+  // Has anyone other than the current user already spoken in this thread?
+  const { data: replies } = await supabase
+    .from("messages")
+    .select("id")
+    .eq("conversation_id", conversationId)
+    .neq("sender_profile_id", user.id)
+    .limit(1);
+  const recipientHasReplied = (replies?.length ?? 0) > 0;
+
+  if (!recipientHasReplied) {
+    // Exempt connected professionals. Find the other participant's profile.
+    const { data: participants } = await supabase
+      .from("conversation_participants")
+      .select("profile_id")
+      .eq("conversation_id", conversationId);
+    const otherProfileId = (participants ?? [])
+      .map((p) => p.profile_id)
+      .find((pid): pid is string => !!pid && pid !== user.id);
+
+    let isConnected = false;
+    if (otherProfileId) {
+      const { data: conn } = await supabase
+        .from("connections")
+        .select("id")
+        .eq("status", "accepted")
+        .or(
+          `and(requester_id.eq.${user.id},recipient_id.eq.${otherProfileId}),and(requester_id.eq.${otherProfileId},recipient_id.eq.${user.id})`
+        )
+        .limit(1);
+      isConnected = (conn?.length ?? 0) > 0;
+    }
+
+    if (!isConnected) {
+      const { count } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conversationId)
+        .eq("sender_profile_id", user.id);
+
+      if ((count ?? 0) >= MAX_UNANSWERED) {
+        return {
+          error:
+            "You've reached the 3-message limit for this conversation. Please wait for a reply before sending more.",
+        };
+      }
+    }
+  }
+
   const { error } = await supabase.from("messages").insert({
     conversation_id: conversationId,
     content,
@@ -201,13 +255,6 @@ export async function startConversation(
 
   if (!user) {
     return { error: "Not authenticated" };
-  }
-
-  const gate = await checkPlanLimit(user.id, "initiate_message");
-  if (!gate.allowed) {
-    return {
-      error: blockedFeatureMessage("initiate_message", gate.requiredPlan!),
-    };
   }
 
   if (!targetProfileId && !targetOrganizationId) {

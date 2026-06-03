@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getMyProfile } from "@/features/profile/server/actions";
-import { getLatestProducts, getLatestServices } from "@/features/products/server/actions";
+import { getLatestProducts, getLatestServices, getFeaturedProducts } from "@/features/products/server/actions";
 import { getLatestOrganizations, getFeaturedOrganizations } from "@/features/organizations/server/actions";
 import { getLatestProfiles } from "@/features/profiles/server/actions";
 import { getUpcomingEvents, getMyEventInterest, listEventInterests } from "@/features/events/server/actions";
@@ -35,8 +35,9 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for the feed
-  const [latestProducts, latestServices, featuredCompanies, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools, userPlan] = await Promise.all([
+  const [latestProducts, featuredProducts, latestServices, featuredCompanies, latestCompanies, latestUsers, upcomingEvents, latestBlogPosts, featuredAiTools, userPlan] = await Promise.all([
     getLatestProducts(10),
+    getFeaturedProducts(10),
     getLatestServices(10),
     getFeaturedOrganizations(10),
     getLatestOrganizations(3),
@@ -67,6 +68,7 @@ export default async function DashboardPage() {
       userFirstName={profile.full_name ?? undefined}
       userPlan={userPlan}
       initialProducts={latestProducts}
+      featuredProducts={featuredProducts}
       latestServices={latestServices}
       featuredCompanies={featuredCompanies}
       latestCompanies={latestCompanies}

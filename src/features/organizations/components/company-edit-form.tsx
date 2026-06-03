@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { companyWizardSchema, CompanyWizardValues, ORG_TYPES, BROADCASTER_TYPES } from "@/features/organizations/schema"
+import { companyWizardSchema, CompanyWizardValues, ORG_TYPES, BROADCASTER_TYPES, BROADCASTER_GENRES } from "@/features/organizations/schema"
 import { updateOrganization } from "@/features/organizations/server/actions"
 import { Button } from "@/components/ui/button"
 import {
@@ -50,6 +50,8 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
             logo_url: org.logo_url || "",
             tagline: org.tagline || "",
             type: org.type,
+            broadcaster_type: org.broadcaster_type || undefined,
+            broadcaster_genre: org.broadcaster_genre || undefined,
             main_activity: org.main_activity || "",
             description: org.description || "",
             website: org.website || "",
@@ -151,7 +153,10 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                             <Select
                                                 onValueChange={(val) => {
                                                     field.onChange(val);
-                                                    if (val !== "Broadcaster") form.setValue("broadcaster_type", undefined);
+                                                    if (val !== "Broadcaster") {
+                                                        form.setValue("broadcaster_type", undefined);
+                                                        form.setValue("broadcaster_genre", undefined);
+                                                    }
                                                 }}
                                                 defaultValue={field.value}
                                             >
@@ -204,6 +209,32 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                                 <SelectContent className="bg-black border-white/10 text-white">
                                                     {BROADCASTER_TYPES.map((bt) => (
                                                         <SelectItem key={bt} value={bt}>{bt}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+
+                            {/* Broadcaster genre — shown only when type = Broadcaster */}
+                            {form.watch("type") === "Broadcaster" && (
+                                <FormField
+                                    control={form.control}
+                                    name="broadcaster_genre"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-gray-300">Genre</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                        <SelectValue placeholder="e.g. News, Sports, Entertainment…" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent className="bg-black border-white/10 text-white">
+                                                    {BROADCASTER_GENRES.map((g) => (
+                                                        <SelectItem key={g} value={g}>{g}</SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>

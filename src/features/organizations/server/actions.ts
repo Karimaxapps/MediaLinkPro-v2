@@ -2,7 +2,6 @@
 
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 
@@ -12,6 +11,33 @@ const createOrgSchema = z.object({
 });
 
 import { ActionState } from "@/features/types";
+
+/**
+ * Returns a slug → logo_url map for the given organization slugs.
+ * Used by the landing-page trust band to show real company logos.
+ */
+export async function getOrganizationLogosBySlugs(
+  slugs: string[]
+): Promise<Record<string, string>> {
+  if (slugs.length === 0) return {};
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const { data, error } = await supabase
+    .from("organizations")
+    .select("slug, logo_url")
+    .in("slug", slugs);
+
+  if (error) {
+    console.error("Error fetching org logos for trust band:", error);
+    return {};
+  }
+
+  const map: Record<string, string> = {};
+  for (const org of data ?? []) {
+    if (org.slug && org.logo_url) map[org.slug] = org.logo_url;
+  }
+  return map;
+}
 
 export async function createOrganization(
   prevState: ActionState,
@@ -204,6 +230,7 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
     tagline,
     type,
     broadcaster_type,
+    broadcaster_genre,
     main_activity,
     description,
     website,
@@ -239,6 +266,7 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
       tagline,
       type,
       broadcaster_type: type === "Broadcaster" ? (broadcaster_type ?? null) : null,
+      broadcaster_genre: type === "Broadcaster" ? (broadcaster_genre ?? null) : null,
       main_activity,
       description,
       website,
@@ -318,6 +346,7 @@ export async function updateOrganization(
     tagline,
     type,
     broadcaster_type,
+    broadcaster_genre,
     main_activity,
     description,
     website,
@@ -362,6 +391,7 @@ export async function updateOrganization(
       tagline,
       type,
       broadcaster_type: type === "Broadcaster" ? (broadcaster_type ?? null) : null,
+      broadcaster_genre: type === "Broadcaster" ? (broadcaster_genre ?? null) : null,
       main_activity,
       description,
       website,
@@ -396,7 +426,7 @@ export async function getOrganizationsByType(typeSlug: string) {
 
   const { data, error } = await supabase
     .from("organizations")
-    .select("id, name, slug, logo_url, tagline, main_activity, country, description, type")
+    .select("id, name, slug, logo_url, tagline, main_activity, country, description, type, broadcaster_genre")
     .eq("type", typeSlug);
 
   if (error || !data?.length) {

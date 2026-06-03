@@ -8,6 +8,12 @@ export type AnalyticsLevel = "none" | "standard" | "advanced";
 
 export type PlanLimits = {
   connections: number | "unlimited";
+  // Individual-track caps (enforced for users, not orgs):
+  jobApplicationsPerMonth: number | "unlimited";
+  demoRequestsPerMonth: number | "unlimited";
+  expertProductListings: number | "unlimited";
+  verifiedBadge: boolean;
+  // Org-track caps:
   products: number | "unlimited";
   demoQuoteRequestsPerProductPerMonth: number | "unlimited";
   jobPostsPerMonth: number | "unlimited";
@@ -35,6 +41,7 @@ export type Plan = {
   priceMonthly: number; // cents
   priceAnnual: number; // cents (total per year)
   priceAnnualMonthly: number; // cents per month when billed annually
+  originalPriceMonthly?: number; // cents — shown struck-through to signal a limited offer
   stripePriceIdMonthly: string | null;
   stripePriceIdAnnual: string | null;
   features: string[];
@@ -58,13 +65,19 @@ export const PLANS: Plan[] = [
     features: [
       "Full personal profile & portfolio",
       "Browse marketplace, jobs & events",
-      "Up to 50 connections",
+      "Unlimited connection requests",
+      "10 job applications per month",
+      "10 product demo/quote requests per month",
+      "List yourself as expert on 1 product",
       "Receive & reply to messages",
-      "Apply to jobs",
       "Bookmark listings",
     ],
     limits: {
-      connections: 50,
+      connections: "unlimited",
+      jobApplicationsPerMonth: 10,
+      demoRequestsPerMonth: 10,
+      expertProductListings: 1,
+      verifiedBadge: false,
       products: 0,
       demoQuoteRequestsPerProductPerMonth: 0,
       jobPostsPerMonth: 0,
@@ -88,24 +101,28 @@ export const PLANS: Plan[] = [
   {
     id: "individual_pro",
     track: "individual",
-    name: "Individual Pro",
+    name: "Verified Pro",
     tagline: "For active media professionals",
-    priceMonthly: 1900,
-    priceAnnual: 18200,
-    priceAnnualMonthly: 1517,
+    priceMonthly: 499,
+    priceAnnual: 4990,
+    priceAnnualMonthly: 416,
+    originalPriceMonthly: 1900,
     stripePriceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_INDIVIDUAL_PRO_MONTHLY ?? null,
     stripePriceIdAnnual: process.env.NEXT_PUBLIC_STRIPE_PRICE_INDIVIDUAL_PRO_ANNUAL ?? null,
     features: [
       "Everything in Free",
-      "Unlimited connections",
-      "Initiate conversations",
-      "List expert services",
-      "Profile & post analytics",
+      "Verified Pro badge",
+      "50 job applications per month",
+      "Unlimited product demo/quote requests",
+      "List yourself as expert on up to 20 products",
       "Priority placement in Connect discovery",
-      "Ad-free experience",
     ],
     limits: {
       connections: "unlimited",
+      jobApplicationsPerMonth: 50,
+      demoRequestsPerMonth: "unlimited",
+      expertProductListings: 20,
+      verifiedBadge: true,
       products: 0,
       demoQuoteRequestsPerProductPerMonth: 0,
       jobPostsPerMonth: 0,
@@ -114,18 +131,19 @@ export const PLANS: Plan[] = [
       teamSeats: 0,
       adCreditsPerMonth: 0,
       expertServiceListing: true,
-      analyticsLevel: "standard",
+      analyticsLevel: "none",
       analyticsExport: false,
       priorityDiscovery: true,
-      adsHidden: true,
+      adsHidden: false,
       multipleOrgProfiles: 0,
       dedicatedAccountManager: false,
       priorityFeatureAccess: false,
       featuredOnSocial: false,
       featuredOnLanding: false,
     },
-    cta: "Upgrade to Pro",
+    cta: "Get Verified",
     highlighted: true,
+    badge: "Limited launch offer",
   },
   {
     id: "org_free",
@@ -149,6 +167,10 @@ export const PLANS: Plan[] = [
     ],
     limits: {
       connections: "unlimited",
+      jobApplicationsPerMonth: "unlimited",
+      demoRequestsPerMonth: "unlimited",
+      expertProductListings: "unlimited",
+      verifiedBadge: true,
       products: 3,
       demoQuoteRequestsPerProductPerMonth: 5,
       jobPostsPerMonth: 5,
@@ -193,6 +215,10 @@ export const PLANS: Plan[] = [
     ],
     limits: {
       connections: "unlimited",
+      jobApplicationsPerMonth: "unlimited",
+      demoRequestsPerMonth: "unlimited",
+      expertProductListings: "unlimited",
+      verifiedBadge: true,
       products: 10,
       demoQuoteRequestsPerProductPerMonth: 50,
       jobPostsPerMonth: 20,
@@ -240,6 +266,10 @@ export const PLANS: Plan[] = [
     ],
     limits: {
       connections: "unlimited",
+      jobApplicationsPerMonth: "unlimited",
+      demoRequestsPerMonth: "unlimited",
+      expertProductListings: "unlimited",
+      verifiedBadge: true,
       products: "unlimited",
       demoQuoteRequestsPerProductPerMonth: "unlimited",
       jobPostsPerMonth: "unlimited",
@@ -265,7 +295,9 @@ export const PLANS: Plan[] = [
 
 export function formatPrice(cents: number): string {
   if (cents === 0) return "Free";
-  return `$${(cents / 100).toFixed(0)}`;
+  const dollars = cents / 100;
+  // Show cents only when the amount isn't a whole dollar (e.g. $4.99, but $99 not $99.00).
+  return Number.isInteger(dollars) ? `$${dollars}` : `$${dollars.toFixed(2)}`;
 }
 
 export function getPlanById(id: PlanId): Plan {

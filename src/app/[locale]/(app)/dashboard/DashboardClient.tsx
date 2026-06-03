@@ -43,6 +43,7 @@ export function DashboardClient({
     userFirstName,
     userPlan,
     initialProducts,
+    featuredProducts = [],
     latestServices = [],
     featuredCompanies = [],
     latestCompanies,
@@ -53,7 +54,6 @@ export function DashboardClient({
     latestBlogPosts = [],
     featuredAiTools = [],
     heroBanner,
-    inFeedAd,
     sidebarAd,
     sidebarExtras,
     recommendedConnections,
@@ -61,6 +61,7 @@ export function DashboardClient({
     userFirstName?: string,
     userPlan?: PlanId,
     initialProducts: Product[],
+    featuredProducts?: Product[],
     latestServices?: Product[],
     featuredCompanies?: FeedCompany[],
     latestCompanies: FeedCompany[],
@@ -71,12 +72,12 @@ export function DashboardClient({
     latestBlogPosts?: BlogPost[],
     featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
-    inFeedAd?: ReactNode,
     sidebarAd?: ReactNode,
     sidebarExtras?: ReactNode,
     recommendedConnections?: ReactNode,
 }) {
     const productsScrollRef = useRef<HTMLDivElement>(null);
+    const featuredProductsScrollRef = useRef<HTMLDivElement>(null);
     const servicesScrollRef = useRef<HTMLDivElement>(null);
     const companiesScrollRef = useRef<HTMLDivElement>(null);
     const blogScrollRef = useRef<HTMLDivElement>(null);
@@ -138,6 +139,45 @@ export function DashboardClient({
                         </div>
                     )}
                 </div>
+
+                {/* Featured Products Section — admin-curated, only shown when at least one is featured */}
+                {featuredProducts.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-xl font-semibold text-white">Featured Products</h2>
+                            <Link href="/marketplace/products" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
+                                View all
+                            </Link>
+                        </div>
+                        <div className="relative group/section">
+                            <div
+                                ref={featuredProductsScrollRef}
+                                className="flex overflow-x-auto gap-6 pb-4 snap-x [&::-webkit-scrollbar]:hidden"
+                                style={{ scrollbarWidth: 'none' }}
+                            >
+                                {featuredProducts.map((product) => (
+                                    <div key={product.id} className="w-[200px] snap-start shrink-0">
+                                        <ProductCard product={product} compact />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={() => scroll(featuredProductsScrollRef, 'left')}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 border border-white/10 text-white flex items-center justify-center opacity-0 group-hover/section:opacity-100 transition-opacity z-10 hover:bg-black/70 backdrop-blur-sm"
+                            >
+                                <ChevronLeft className="w-6 h-6" />
+                            </button>
+                            <button
+                                onClick={() => scroll(featuredProductsScrollRef, 'right')}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 border border-white/10 text-white flex items-center justify-center opacity-0 group-hover/section:opacity-100 transition-opacity z-10 hover:bg-black/70 backdrop-blur-sm"
+                            >
+                                <ChevronRight className="w-6 h-6" />
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Featured Companies Section — only shown when admin has featured at least one */}
                 {featuredCompanies.length > 0 && (

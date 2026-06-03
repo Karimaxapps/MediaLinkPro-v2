@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { User, Lock, Bell, Eye, Users, Building } from "lucide-react";
+import { User, Lock, Bell, Eye, Users, Building, BadgeCheck } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { getTranslations } from "next-intl/server";
 
@@ -17,6 +17,7 @@ export default async function SettingsLayout({ children }: SettingsLayoutProps) 
             title: t("userSettings"),
             items: [
                 { title: t("profile"),          href: "/settings/profile",       icon: User },
+                { title: "Verification",         href: "/settings/verification",  icon: BadgeCheck },
                 { title: t("security"),          href: "/settings/security",      icon: Lock },
                 { title: t("notifications"),     href: "/settings/notifications", icon: Bell },
                 { title: t("privacy"),           href: "/settings/privacy",       icon: Eye },

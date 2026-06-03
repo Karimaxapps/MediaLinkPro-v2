@@ -31,8 +31,8 @@ const UPGRADE_PROMOS: Record<PlanId, UpgradePromo | null> = {
     Icon: Zap,
     title: "Unlock Your Full Potential",
     description: "Unlimited connections, initiate conversations & list your expert services.",
-    price: "From $19 / month",
-    cta: "Upgrade to Individual Pro",
+    price: "From $4.99 / month",
+    cta: "Upgrade to Verified Pro",
     href: "/billing",
   },
   individual_pro: {

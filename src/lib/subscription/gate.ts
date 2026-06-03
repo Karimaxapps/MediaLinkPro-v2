@@ -13,7 +13,6 @@ export const PLAN_HIERARCHY: PlanId[] = [
 ];
 
 export type FeatureKey =
-  | "initiate_message"
   | "blog_post"
   | "expert_service"
   | "list_product"
@@ -29,7 +28,6 @@ export type FeatureKey =
  * "minimum required" plan we surface in the upgrade modal.
  */
 export const FEATURE_REQUIREMENTS: Record<FeatureKey, PlanId[]> = {
-  initiate_message: ["individual_pro", "org_free", "org_growth", "org_enterprise"],
   blog_post: ["org_free", "org_growth", "org_enterprise"],
   expert_service: ["individual_pro"],
   list_product: ["org_free", "org_growth", "org_enterprise"],
@@ -45,7 +43,6 @@ export const FEATURE_REQUIREMENTS: Record<FeatureKey, PlanId[]> = {
  * Human-readable labels for the upgrade modal title.
  */
 export const FEATURE_LABELS: Record<FeatureKey, string> = {
-  initiate_message: "Initiate Conversations",
   blog_post: "Publish Blog Posts",
   expert_service: "List Expert Services",
   list_product: "List a Product",

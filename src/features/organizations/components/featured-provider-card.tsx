@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, MapPin } from "lucide-react";
-import { shortActivityLabel } from "@/features/organizations/schema";
 import type { FeaturedByTypeOrg } from "@/features/organizations/server/actions";
 import { FollowButton } from "@/features/organizations/components/follow-button";
+import { MarqueeText } from "@/components/ui/marquee-text";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -16,7 +16,8 @@ interface Props {
  * tagline, featured products grid, HQ row, followed-by avatars + CTA.
  */
 export function FeaturedProviderCard({ org }: Props) {
-    const activityLabel = org.main_activity ? shortActivityLabel(org.main_activity) : "Featured";
+    // Show the exact main_activity value from the DB (no shortening).
+    const activityLabel = org.main_activity?.trim() || "Featured";
 
     return (
         <div className="relative flex flex-col rounded-2xl border border-white/10 bg-[#0F0F10] overflow-hidden hover:border-[var(--brand)]/40 transition-colors">
@@ -55,39 +56,34 @@ export function FeaturedProviderCard({ org }: Props) {
                     )}
                 </Link>
                 <div
-                    className="group/marquee w-44 overflow-hidden rounded-full border border-white/10 bg-black/60 backdrop-blur py-1"
-                    style={{ ["--marquee-duration" as string]: "60s" }}
+                    className="w-44 overflow-hidden rounded-full border border-white/10 bg-black/60 backdrop-blur py-1"
                     title={activityLabel}
                 >
-                    <div className="flex w-max whitespace-nowrap [animation:var(--animate-marquee)] group-hover/marquee:[animation-play-state:paused]">
-                        <span className="px-3 text-xs font-semibold text-white shrink-0">
-                            {activityLabel}
-                        </span>
-                        <span
-                            aria-hidden
-                            className="px-3 text-xs font-semibold text-white shrink-0"
-                        >
-                            {activityLabel}
-                        </span>
-                    </div>
+                    {/* Scrolls only when the label overflows; constant speed
+                        (px/sec) regardless of label length, so every card matches. */}
+                    <MarqueeText
+                        text={activityLabel}
+                        speed={30}
+                        className="px-3 text-xs font-semibold text-white text-center"
+                    />
                 </div>
             </div>
 
-            <div className="relative z-10 px-5 pt-4 pb-5 flex flex-col gap-4">
+            <div className="relative z-10 px-5 pt-4 pb-5 flex flex-1 flex-col gap-4">
 
-                {/* Tagline */}
-                {org.tagline && (
-                    <p className="font-serif text-xl leading-snug text-white">
-                        {org.tagline}
+                {/* Tagline — always rendered with a reserved 2-line height and
+                    clamped to 2 lines, so the sections below align across cards. */}
+                <p className="font-serif text-xl leading-snug text-white line-clamp-2 min-h-[3.5rem]">
+                    {org.tagline}
+                </p>
+
+                {/* Featured products — reserve a consistent height so the HQ row
+                    below it lines up across cards regardless of product count. */}
+                <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-300">
+                        Featured products
                     </p>
-                )}
-
-                {/* Featured products */}
-                {org.products.length > 0 && (
-                    <div className="space-y-2">
-                        <p className="text-sm font-semibold text-gray-300">
-                            Featured products
-                        </p>
+                    {org.products.length > 0 ? (
                         <div className="grid grid-cols-2 gap-2">
                             {org.products.slice(0, 2).map((p) => (
                                 <Link
@@ -127,20 +123,22 @@ export function FeaturedProviderCard({ org }: Props) {
                                 </Link>
                             ))}
                         </div>
-                    </div>
-                )}
+                    ) : (
+                        <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] h-14" />
+                    )}
+                </div>
 
-                {/* Location */}
-                {org.country && (
-                    <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                        <span className="text-xs font-medium text-gray-500">HQ</span>
-                        <span className="text-white">{org.country}</span>
-                    </div>
-                )}
+                {/* Location — always rendered (HQ falls back to "—") so the row
+                    sits at the same position across cards. */}
+                <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-3.5 w-3.5 text-gray-500" />
+                    <span className="text-xs font-medium text-gray-500">HQ</span>
+                    <span className="text-white">{org.country ?? "—"}</span>
+                </div>
 
-                {/* Followers + View profile */}
-                <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/5">
+                {/* Followers + View profile — pinned to the bottom so the footer
+                    aligns across cards regardless of how much content is above. */}
+                <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-white/5">
                     <div className="flex items-center gap-2 min-w-0">
                         <span className="text-xs font-medium text-gray-500">Followed by</span>
                         {org.followers_preview.length > 0 ? (

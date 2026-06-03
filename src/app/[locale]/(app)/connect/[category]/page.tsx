@@ -161,7 +161,13 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
                         items={items}
                         type={type}
                         title={title}
-                        groupBy={category === "media-associations" ? "region" : "activity"}
+                        groupBy={
+                            category === "broadcasters"
+                                ? "genre"
+                                : category === "media-associations"
+                                  ? "region"
+                                  : "activity"
+                        }
                         featuredSlot={
                             featuredOrgs.length > 0 ? (
                                 <section className="space-y-3">

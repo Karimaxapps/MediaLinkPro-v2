@@ -2,21 +2,53 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PublicNav } from "@/components/layout/public-nav";
+import { PublicFooter } from "@/components/layout/public-footer";
 import { HeroSection } from "@/components/landing/hero-section";
+import { TRUST_BAND_SLUGS } from "@/components/landing/trust-band-logos";
 import { AudienceTabs } from "@/components/landing/audience-tabs";
-import { BentoGrid } from "@/components/landing/bento-grid";
+import { BentoGrid, type BentoProduct, type BentoExpert } from "@/components/landing/bento-grid";
 import { LandingPricing } from "@/components/landing/landing-pricing";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { getLatestProducts } from "@/features/products/server/actions";
+import { getLatestProfiles } from "@/features/profiles/server/actions";
+import { getOrganizationLogosBySlugs } from "@/features/organizations/server/actions";
 
-export default function LandingPage() {
-  const t = useTranslations("landing");
+/** Build up-to-2-letter initials from a name, e.g. "James Reed" → "JR". */
+function initialsFromName(name: string | null): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
+}
+
+export default async function LandingPage() {
+  const t = await getTranslations("landing");
+
+  // Pull real published products + recent profiles to showcase in the bento grid.
+  const [latestProducts, latestProfiles, trustLogos] = await Promise.all([
+    getLatestProducts(3),
+    getLatestProfiles(4),
+    getOrganizationLogosBySlugs(TRUST_BAND_SLUGS),
+  ]);
+
+  const bentoProducts: BentoProduct[] = (latestProducts ?? []).map((p) => ({
+    name: p.name,
+    category: p.main_category ?? p.organizations?.name ?? null,
+    image: p.logo_url ?? p.organizations?.logo_url ?? null,
+  }));
+
+  const bentoExperts: BentoExpert[] = (latestProfiles ?? []).map((u) => ({
+    name: u.full_name ?? u.username ?? "Member",
+    role: u.job_title ?? null,
+    initials: initialsFromName(u.full_name),
+    avatar: u.avatar_url ?? null,
+  }));
 
   return (
     <main className="min-h-screen bg-[#0B0B0B] text-white overflow-hidden">
       <PublicNav />
 
       {/* ── NEW HERO ─────────────────────────────────────── */}
-      <HeroSection />
+      <HeroSection trustLogos={trustLogos} />
 
       {/* ── AUDIENCE TABS ─────────────────────────────────── */}
       <div id="for-you" className="scroll-mt-20">
@@ -25,7 +57,7 @@ export default function LandingPage() {
 
       {/* ── BENTO GRID ───────────────────────────────────── */}
       <div id="features" className="scroll-mt-20">
-        <BentoGrid />
+        <BentoGrid products={bentoProducts} experts={bentoExperts} />
       </div>
 
       {/* How it works */}
@@ -75,22 +107,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-          <span className="text-[var(--brand)] font-semibold">MediaLinkPro</span>
-          <span>
-            &copy; {new Date().getFullYear()} MediaLinkPro. {t("copyright")}
-          </span>
-          <div className="flex items-center gap-4">
-            <Link href="/terms" className="hover:text-[var(--brand)] transition-colors duration-200">
-              {t("terms")}
-            </Link>
-            <Link href="/privacy" className="hover:text-[var(--brand)] transition-colors duration-200">
-              {t("privacy")}
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </main>
   );
 }

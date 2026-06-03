@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Check, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -22,13 +22,15 @@ import { useTranslations } from "next-intl";
 
 const GOLD = "var(--brand)";
 
-const AD_PLACEMENTS = [
-  { name: "Dashboard Hero", price: "$2,500/mo" },
-  { name: "Jobs Sidebar", price: "$35 CPM" },
-  { name: "Marketplace", price: "$28 CPM" },
-  { name: "Events Sidebar", price: "$22 CPM" },
-  { name: "Feed", price: "$20 CPM" },
-];
+// Hidden for now — advertising is internal and fully managed by the admin.
+// Restore alongside the "Ad placements callout" section below to re-enable.
+// const AD_PLACEMENTS = [
+//   { name: "Dashboard Hero", price: "$2,500/mo" },
+//   { name: "Jobs Sidebar", price: "$35 CPM" },
+//   { name: "Marketplace", price: "$28 CPM" },
+//   { name: "Events Sidebar", price: "$22 CPM" },
+//   { name: "Feed", price: "$20 CPM" },
+// ];
 
 export function PricingContent() {
   const t = useTranslations("pricing");
@@ -39,6 +41,7 @@ export function PricingContent() {
 
   const visiblePlans = useMemo(() => getPlansForTrack(track), [track]);
   const orgPlans = useMemo(() => getPlansForTrack("org"), []);
+  const individualPlans = useMemo(() => getPlansForTrack("individual"), []);
 
   const FAQS = Array.from({ length: 6 }, (_, i) => ({
     q: t(`faq${i + 1}q` as Parameters<typeof t>[0]),
@@ -97,6 +100,65 @@ export function PricingContent() {
           ))}
         </div>
       </section>
+
+      {/* Individual comparison table */}
+      {track === "individual" && (
+        <section className="px-6 md:px-12 pb-20 max-w-3xl mx-auto">
+          <div className="overflow-x-auto rounded-xl border border-white/10 bg-white/[0.02]">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10 text-left">
+                  <th className="px-6 py-4 text-gray-400 font-medium">{t("feature")}</th>
+                  {individualPlans.map((p) => (
+                    <th key={p.id} className="px-6 py-4 text-white font-semibold">
+                      {p.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                <ComparisonRow
+                  label="Connection requests"
+                  values={individualPlans.map((p) =>
+                    fmtLimit(p.limits.connections, t("unlimited"))
+                  )}
+                />
+                <ComparisonRow
+                  label="Job applications per month"
+                  values={individualPlans.map((p) =>
+                    fmtLimit(p.limits.jobApplicationsPerMonth, t("unlimited"))
+                  )}
+                />
+                <ComparisonRow
+                  label="Product demo/quote requests per month"
+                  values={individualPlans.map((p) =>
+                    fmtLimit(p.limits.demoRequestsPerMonth, t("unlimited"))
+                  )}
+                />
+                <ComparisonRow
+                  label="List yourself as expert on products"
+                  values={individualPlans.map((p) =>
+                    fmtLimit(p.limits.expertProductListings, t("unlimited"))
+                  )}
+                />
+                <ComparisonRow
+                  label="Verified Pro badge"
+                  values={individualPlans.map((p) => fmtBool(p.limits.verifiedBadge))}
+                />
+                <ComparisonRow
+                  label="Priority placement in Connect discovery"
+                  values={individualPlans.map((p) => fmtBool(p.limits.priorityDiscovery))}
+                />
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-center text-xs text-gray-500">
+            Messaging works the same on every plan: you can send up to 3 messages to someone new —
+            once they reply, the conversation becomes unlimited. Connected professionals always
+            message freely.
+          </p>
+        </section>
+      )}
 
       {/* Org-only sections */}
       {track === "org" && (
@@ -211,8 +273,8 @@ export function PricingContent() {
             )}
           </section>
 
-          {/* Ad placements callout */}
-          <section className="px-6 md:px-12 pb-20 max-w-6xl mx-auto">
+          {/* Ad placements callout — hidden for now: advertising is internal and fully managed by the admin */}
+          {/* <section className="px-6 md:px-12 pb-20 max-w-6xl mx-auto">
             <div
               className="relative rounded-2xl border border-[var(--brand)]/40 bg-gradient-to-b from-[var(--brand)]/[0.06] to-transparent p-8 md:p-10"
               style={{ boxShadow: `0 0 40px -10px ${GOLD}33` }}
@@ -245,7 +307,7 @@ export function PricingContent() {
                 </Link>
               </div>
             </div>
-          </section>
+          </section> */}
         </>
       )}
 
@@ -360,10 +422,20 @@ function PlanCard({
           <div className="text-4xl font-bold">{t("free")}</div>
         ) : (
           <>
-            <div className="flex items-baseline gap-1">
+            <div className="flex items-baseline gap-2">
+              {plan.originalPriceMonthly && (
+                <span className="text-xl font-semibold text-gray-500 line-through">
+                  {formatPrice(plan.originalPriceMonthly)}
+                </span>
+              )}
               <span className="text-4xl font-bold">{formatPrice(monthlyDisplayCents)}</span>
               <span className="text-gray-400">{t("perMonth")}</span>
             </div>
+            {plan.originalPriceMonthly && (
+              <p className="mt-1 text-xs font-medium text-[var(--brand)]">
+                Limited launch offer — usually {formatPrice(plan.originalPriceMonthly)}/mo
+              </p>
+            )}
             {isAnnual && (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="text-sm text-gray-400">

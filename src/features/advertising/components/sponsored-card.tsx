@@ -41,11 +41,6 @@ export async function SponsoredCard({
             {/* Gradient overlay — darkens bottom so text is readable */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
 
-            {/* Sponsored badge */}
-            <div className="absolute top-2.5 right-2.5 text-[9px] uppercase tracking-wider text-white/90 bg-black/50 backdrop-blur px-2 py-0.5 rounded">
-                Sponsored
-            </div>
-
             {/* Text + CTA stacked above the image */}
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
                 <div className="min-w-0 flex-1">

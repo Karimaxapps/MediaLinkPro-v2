@@ -12,7 +12,7 @@ export async function DashboardHeroBanner() {
 
     if (!ad) {
         return (
-            <div className="relative w-full h-[200px] md:h-[250px] rounded-xl overflow-hidden shadow-lg border border-white/10 group">
+            <div className="relative w-full aspect-[5/1] rounded-xl overflow-hidden shadow-lg border border-white/10 group">
                 <Image
                     src="/ads/promo_banner.png"
                     alt="Premium Tools Promo"
@@ -20,11 +20,11 @@ export async function DashboardHeroBanner() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-white font-bold text-xl md:text-2xl mb-2">
+                <div className="absolute bottom-4 left-5 right-5 md:bottom-5 md:left-6 md:right-6">
+                    <h3 className="text-white font-bold text-lg md:text-xl mb-1">
                         Unlock Premium Tools
                     </h3>
-                    <p className="text-white/80 text-sm">
+                    <p className="text-white/80 text-xs md:text-sm line-clamp-1">
                         Upgrade your account for exclusive access to advanced features.
                     </p>
                 </div>
@@ -38,7 +38,7 @@ export async function DashboardHeroBanner() {
     return (
         <Link
             href={`/api/ads/click?id=${ad.id}&url=${encodeURIComponent(ad.cta_url)}`}
-            className="relative block w-full h-[200px] md:h-[250px] rounded-xl overflow-hidden shadow-lg border border-white/10 group"
+            className="relative block w-full aspect-[5/1] rounded-xl overflow-hidden shadow-lg border border-white/10 group"
         >
             {ad.image_url ? (
                 <Image
@@ -51,17 +51,16 @@ export async function DashboardHeroBanner() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--brand)]/20 via-[var(--brand-secondary)]/20 to-[#8b5cf6]/20" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-            <div className="absolute top-3 right-3 text-[10px] uppercase tracking-wider text-[var(--brand)] bg-black/40 backdrop-blur px-2 py-0.5 rounded">
-                Sponsored
-            </div>
-            <div className="absolute bottom-6 left-6 right-6">
-                <h3 className="text-white font-bold text-xl md:text-2xl mb-2 line-clamp-2">
-                    {ad.title}
-                </h3>
-                {ad.body && (
-                    <p className="text-white/80 text-sm mb-3 line-clamp-2">{ad.body}</p>
-                )}
-                <span className="inline-block bg-[var(--brand)] text-black text-xs font-semibold px-3 py-1.5 rounded-full">
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 md:p-5">
+                <div className="min-w-0 flex-1 drop-shadow">
+                    <h3 className="text-white font-bold text-lg md:text-xl mb-1 line-clamp-1">
+                        {ad.title}
+                    </h3>
+                    {ad.body && (
+                        <p className="text-white/80 text-xs md:text-sm line-clamp-1">{ad.body}</p>
+                    )}
+                </div>
+                <span className="shrink-0 bg-[var(--brand)] text-black text-xs font-semibold px-4 py-1.5 rounded-full shadow">
                     {ad.cta_label ?? "Learn more"} →
                 </span>
             </div>

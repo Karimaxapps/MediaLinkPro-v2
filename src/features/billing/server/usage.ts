@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/server";
-import { getOrgPlan } from "@/lib/subscription/gate";
+import { getOrgPlan, getUserPlan } from "@/lib/subscription/gate";
 import { getPlanById } from "@/lib/stripe/plans";
 
 export type Quota = {
@@ -80,5 +80,50 @@ export async function getOrgUsage(orgId: string): Promise<OrgUsage> {
     jobsThisMonth: buildQuota(jobCount.count ?? 0, limits.jobPostsPerMonth, "month"),
     eventsThisMonth: buildQuota(eventCount.count ?? 0, limits.eventsPerMonth, "month"),
     blogPostsThisMonth: buildQuota(blogCount.count ?? 0, limits.blogPostsPerMonth, "month"),
+  };
+}
+
+export type UserUsage = {
+  jobApplicationsThisMonth: Quota;
+  demoRequestsThisMonth: Quota;
+  expertListings: Quota; // total cap on product_experts rows
+};
+
+/**
+ * Compute current-period usage for an individual user, scoped to their plan
+ * limits. Used to gate job applications, demo/quote requests, and product
+ * expert listings on the Free vs Verified Pro tiers.
+ */
+export async function getUserUsage(userId: string): Promise<UserUsage> {
+  const admin = createAdminClient();
+  const planId = await getUserPlan(userId);
+  const limits = getPlanById(planId).limits;
+  const monthStart = startOfMonthISO();
+
+  const [appCount, demoCount, expertCount] = await Promise.all([
+    admin
+      .from("job_applications" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("applicant_id", userId)
+      .gte("created_at", monthStart),
+    admin
+      .from("demo_requests" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("requester_id", userId)
+      .gte("created_at", monthStart),
+    admin
+      .from("product_experts" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId),
+  ]);
+
+  return {
+    jobApplicationsThisMonth: buildQuota(
+      appCount.count ?? 0,
+      limits.jobApplicationsPerMonth,
+      "month"
+    ),
+    demoRequestsThisMonth: buildQuota(demoCount.count ?? 0, limits.demoRequestsPerMonth, "month"),
+    expertListings: buildQuota(expertCount.count ?? 0, limits.expertProductListings, "lifetime"),
   };
 }

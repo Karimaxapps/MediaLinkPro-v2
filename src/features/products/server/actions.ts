@@ -5,10 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { insertProductSchema } from "../schema";
 import { ActionState } from "@/features/types";
-import { redirect } from "next/navigation";
 import { Product } from "../types";
 import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
-import { getOrgUsage } from "@/features/billing/server/usage";
+import { getOrgUsage, getUserUsage } from "@/features/billing/server/usage";
 
 // http(s)-only URL: rejects javascript:, data:, file:, etc. which are unsafe
 // when rendered as <a href> or <iframe src>.
@@ -379,6 +378,9 @@ export async function getProductResources(productId: string) {
 }
 
 export async function addCommunityResource(productId: string, url: string): Promise<ActionState> {
+  void productId;
+  void url;
+
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
@@ -585,6 +587,16 @@ export async function joinProductExperts(
   } = await supabase.auth.getUser();
   if (!user) {
     return { error: "Not authenticated", success: false };
+  }
+
+  // Enforce the cap on how many products a user can list expertise on
+  // (Free 1 / Verified Pro 20).
+  const { expertListings } = await getUserUsage(user.id);
+  if (expertListings.exhausted) {
+    return {
+      error: `You can list yourself as an expert on up to ${expertListings.limit} product${expertListings.limit === 1 ? "" : "s"} on your current plan. Upgrade to Verified Pro for up to 20.`,
+      success: false,
+    };
   }
 
   const { error } = await supabase.from("product_experts").insert({
@@ -1186,6 +1198,9 @@ export async function getLatestProducts(limit: number = 5) {
 
   // Exclude `product_type = 'Service'` so services live in their own
   // dashboard row. NULL-typed rows are kept (defensive for legacy data).
+  // Fetch a larger pool than `limit` so we can collapse duplicate companies
+  // (one product per organization) and still return a full row.
+  const POOL = Math.max(limit * 6, 36);
   const { data, error } = await supabase
     .from("products")
     .select(
@@ -1203,14 +1218,60 @@ export async function getLatestProducts(limit: number = 5) {
     .eq("is_public", true)
     .or("product_type.is.null,product_type.neq.Service")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(POOL);
 
   if (error) {
     console.error("Error fetching latest products:", error);
     return [];
   }
 
-  return data;
+  // Keep only the most recent product per company so consecutive cards are
+  // always from different organizations. Results are already newest-first.
+  const seenOrgs = new Set<string>();
+  const deduped: typeof data = [];
+  for (const product of data) {
+    if (seenOrgs.has(product.organization_id)) continue;
+    seenOrgs.add(product.organization_id);
+    deduped.push(product);
+    if (deduped.length >= limit) break;
+  }
+
+  return deduped;
+}
+
+/**
+ * Returns admin-selected featured products (max 10) for the dashboard
+ * "Featured Products" row. Mirrors getFeaturedOrganizations.
+ */
+export async function getFeaturedProducts(limit: number = 10) {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+            *,
+            organizations (
+                id,
+                name,
+                slug,
+                logo_url
+            )
+        `
+    )
+    .eq("is_featured" as never, true)
+    .eq("status", "published")
+    .eq("is_public", true)
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching featured products:", error);
+    return [];
+  }
+
+  return data ?? [];
 }
 
 /**
