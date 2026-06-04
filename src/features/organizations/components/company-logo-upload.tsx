@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Camera, Loader2, Building2 } from 'lucide-react';
 import { useImageUpload } from '@/hooks/use-image-upload';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 interface CompanyLogoUploadProps {
@@ -15,6 +16,7 @@ interface CompanyLogoUploadProps {
 }
 
 export function CompanyLogoUpload({ userId, currentLogoUrl, onUploadSuccess, className }: CompanyLogoUploadProps) {
+    const t = useTranslations("companies");
     const { uploadImage, isUploading } = useImageUpload({
         userId,
         onSuccess: onUploadSuccess
@@ -25,7 +27,7 @@ export function CompanyLogoUpload({ userId, currentLogoUrl, onUploadSuccess, cla
         if (!file) return;
 
         if (!['image/jpeg', 'image/png'].includes(file.type)) {
-            toast.error('Only JPG, JPEG, and PNG files are supported');
+            toast.error(t("logoFormatError"));
             return;
         }
 
@@ -71,13 +73,11 @@ export function CompanyLogoUpload({ userId, currentLogoUrl, onUploadSuccess, cla
                     asChild
                 >
                     <span className="cursor-pointer">
-                        {isUploading ? 'Uploading...' : 'Upload Logo'}
+                        {isUploading ? t("uploading") : t("uploadLogo")}
                     </span>
                 </Button>
             </label>
-            <p className="text-xs text-gray-500 text-center">
-                300 x 300px recommended. JPGs, JPEGs, and PNGs supported.
-            </p>
+            <p className="text-xs text-gray-500 text-center">{t("logoHint")}</p>
         </div>
     );
 }

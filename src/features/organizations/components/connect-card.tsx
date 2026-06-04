@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { ConnectButton } from "@/features/connections/components/connect-button";
 import { ConnectionStatus } from "@/features/connections/server/actions";
 import { FollowButton } from "@/features/organizations/components/follow-button";
@@ -51,6 +52,7 @@ export function ConnectCard({
     followersPreview = [],
     plan,
 }: ConnectCardProps) {
+    const t = useTranslations("companies");
     const href = type === 'organization' ? `/companies/${slug}` : `/profiles/${slug}`;
 
     return (
@@ -117,7 +119,7 @@ export function ConnectCard({
                                                     {f.avatar_url ? (
                                                         <Image
                                                             src={f.avatar_url}
-                                                            alt={f.full_name ?? "Follower"}
+                                                            alt={f.full_name ?? t("follower")}
                                                             width={20}
                                                             height={20}
                                                             className="h-full w-full object-cover"
@@ -130,8 +132,7 @@ export function ConnectCard({
                                         </div>
                                     )}
                                     <span className="text-[11px] text-gray-500">
-                                        {followerCount.toLocaleString()} follower
-                                        {followerCount === 1 ? "" : "s"}
+                                        {t("followerCount", { count: followerCount })}
                                     </span>
                                 </div>
                             )}

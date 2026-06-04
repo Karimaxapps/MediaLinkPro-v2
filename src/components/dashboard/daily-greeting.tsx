@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -45,14 +46,21 @@ function getDayOfYear(date: Date): number {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-function getGreeting(hour: number, firstName: string): string {
-  const name = firstName || "";
-  const suffix = name ? `, ${name}!` : "! Ready to connect?";
+function getGreeting(
+  hour: number,
+  firstName: string,
+  t: ReturnType<typeof useTranslations<"dashboard">>,
+): string {
+  let greeting: string;
+  if (hour >= 5 && hour < 12) greeting = t("greetingMorning");
+  else if (hour >= 12 && hour < 17) greeting = t("greetingAfternoon");
+  else if (hour >= 17 && hour < 22) greeting = t("greetingEvening");
+  else greeting = t("greetingDefault");
 
-  if (hour >= 5 && hour < 12) return `Good morning${suffix}`;
-  if (hour >= 12 && hour < 17) return `Good afternoon${suffix}`;
-  if (hour >= 17 && hour < 22) return `Good evening${suffix}`;
-  return `Welcome back${suffix}`;
+  const name = firstName || "";
+  return name
+    ? t("greetingWithName", { greeting, name })
+    : t("greetingNoName", { greeting });
 }
 
 function getTodayKey(): string {
@@ -66,6 +74,7 @@ interface DailyGreetingProps {
 }
 
 export function DailyGreeting({ firstName }: DailyGreetingProps) {
+  const t = useTranslations("dashboard");
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(true);
   const [greeting, setGreeting] = useState("");
@@ -83,14 +92,14 @@ export function DailyGreeting({ firstName }: DailyGreetingProps) {
 
     // Calculate time-aware greeting
     const now = new Date();
-    setGreeting(getGreeting(now.getHours(), firstName?.trim().split(" ")[0] ?? ""));
+    setGreeting(getGreeting(now.getHours(), firstName?.trim().split(" ")[0] ?? "", t));
 
     // Calculate date-anchored quote (stable for the whole day)
     const dayIndex = getDayOfYear(now);
     setInsight(mediaInsights[dayIndex % mediaInsights.length]);
 
     setMounted(true);
-  }, [firstName]);
+  }, [firstName, t]);
 
   function dismiss() {
     // Persist dismiss for today only
@@ -132,7 +141,7 @@ export function DailyGreeting({ firstName }: DailyGreetingProps) {
           {/* Right: dismiss button */}
           <button
             onClick={dismiss}
-            aria-label="Dismiss greeting"
+            aria-label={t("dismissGreeting")}
             className="shrink-0 p-1 rounded text-gray-600 hover:text-gray-400 hover:bg-white/5 transition-colors"
           >
             <X className="w-4 h-4" />

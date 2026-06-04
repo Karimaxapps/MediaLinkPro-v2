@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { sanitizeHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,9 +19,7 @@ import {
 import { ApplyJobDialog } from "./apply-job-dialog";
 import {
   APPLICATION_STATUS_COLORS,
-  APPLICATION_STATUS_LABELS,
   JOB_TYPE_COLORS,
-  JOB_TYPE_LABELS,
   type Job,
   type JobApplication,
 } from "../types";
@@ -33,6 +32,7 @@ type Props = {
 };
 
 export function JobDetailsClient({ job, currentUserId, myApplication, canManage }: Props) {
+  const t = useTranslations("jobs");
   const [applyOpen, setApplyOpen] = useState(false);
   const [applied, setApplied] = useState(Boolean(myApplication));
 
@@ -77,29 +77,29 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
             className="px-2.5 py-1 rounded text-xs font-medium flex-shrink-0"
             style={{ backgroundColor: `${color}20`, color }}
           >
-            {JOB_TYPE_LABELS[job.job_type]}
+            {t(`jobTypes.${job.job_type}`)}
           </span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           <InfoTile
             icon={<MapPin className="h-4 w-4" />}
-            label="Location"
-            value={job.is_remote ? "Remote" : job.location || "—"}
+            label={t("location")}
+            value={job.is_remote ? t("remote") : job.location || "—"}
           />
           <InfoTile
             icon={<Briefcase className="h-4 w-4" />}
-            label="Department"
+            label={t("department")}
             value={job.department || "—"}
           />
           <InfoTile
             icon={<Globe className="h-4 w-4" />}
-            label="Salary"
-            value={salary || "Not specified"}
+            label={t("salary")}
+            value={salary || t("notSpecified")}
           />
           <InfoTile
             icon={<Users className="h-4 w-4" />}
-            label="Applicants"
+            label={t("applicants")}
             value={`${job.application_count}`}
           />
         </div>
@@ -107,20 +107,20 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
         <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-white/10">
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <Calendar className="h-3.5 w-3.5" />
-            Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+            {t("postedRelative", {
+              time: formatDistanceToNow(new Date(job.created_at), { addSuffix: true }),
+            })}
           </div>
           <div className="flex items-center gap-2">
             {canManage && (
               <Link href={`/jobs/manage/${job.id}`}>
                 <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
-                  Manage applications
+                  {t("manageApplications")}
                 </Button>
               </Link>
             )}
             {!isOpen ? (
-              <span className="text-sm text-gray-400">
-                This role is no longer accepting applications.
-              </span>
+              <span className="text-sm text-gray-400">{t("roleClosed")}</span>
             ) : applied ? (
               <AppliedBadge application={myApplication} />
             ) : currentUserId ? (
@@ -128,12 +128,12 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
                 onClick={() => setApplyOpen(true)}
                 className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
               >
-                Apply now
+                {t("applyNow")}
               </Button>
             ) : (
               <Link href="/auth">
                 <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium">
-                  Sign in to apply
+                  {t("signInToApply")}
                 </Button>
               </Link>
             )}
@@ -143,7 +143,7 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
 
       {job.skills && job.skills.length > 0 && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-          <h2 className="text-lg font-semibold text-white mb-3">Required skills</h2>
+          <h2 className="text-lg font-semibold text-white mb-3">{t("requiredSkills")}</h2>
           <div className="flex flex-wrap gap-2">
             {job.skills.map((skill) => (
               <span
@@ -159,7 +159,7 @@ export function JobDetailsClient({ job, currentUserId, myApplication, canManage 
 
       {job.description && (
         <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-          <h2 className="text-lg font-semibold text-white mb-3">About this role</h2>
+          <h2 className="text-lg font-semibold text-white mb-3">{t("aboutRole")}</h2>
           <div
             className="text-sm text-gray-300 leading-relaxed space-y-4
               [&_p]:my-3
@@ -207,13 +207,14 @@ function InfoTile({ icon, label, value }: { icon: React.ReactNode; label: string
 }
 
 function AppliedBadge({ application }: { application: JobApplication | null }) {
+  const t = useTranslations("jobs");
   const status = application?.status ?? "submitted";
-  const label = APPLICATION_STATUS_LABELS[status];
+  const label = t(`appStatuses.${status}`);
   const color = APPLICATION_STATUS_COLORS[status];
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/5 border border-white/10">
       <Check className="h-4 w-4 text-[#10b981]" />
-      <span className="text-sm text-gray-300">You applied</span>
+      <span className="text-sm text-gray-300">{t("youApplied")}</span>
       <span
         className="px-2 py-0.5 rounded text-xs font-medium"
         style={{ backgroundColor: `${color}20`, color }}

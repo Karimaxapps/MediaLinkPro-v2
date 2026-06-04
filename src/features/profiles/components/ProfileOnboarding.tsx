@@ -16,10 +16,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export function ProfileOnboarding({ initialData }: { initialData?: Partial<UpdateProfile> }) {
+    const t = useTranslations('profiles');
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -49,11 +51,11 @@ export function ProfileOnboarding({ initialData }: { initialData?: Partial<Updat
             if (result.error) {
                 toast.error(result.error);
             } else {
-                toast.success('Profile setup complete!');
+                toast.success(t('setupComplete'));
                 router.refresh();
             }
-        } catch (error) {
-            toast.error('Something went wrong. Please try again.');
+        } catch {
+            toast.error(t('somethingWrong'));
         } finally {
             setIsSubmitting(false);
         }
@@ -64,10 +66,10 @@ export function ProfileOnboarding({ initialData }: { initialData?: Partial<Updat
             <Card className="w-full max-w-md bg-white/5 border-white/10 text-white backdrop-blur-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        Complete Your Profile
+                        {t('completeProfile')}
                     </CardTitle>
                     <CardDescription className="text-gray-400">
-                        Please set your name and username to continue.
+                        {t('completeProfileDesc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -78,10 +80,10 @@ export function ProfileOnboarding({ initialData }: { initialData?: Partial<Updat
                                 name="full_name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Full Name</FormLabel>
+                                        <FormLabel className="text-gray-300">{t('fullName')}</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="John Doe"
+                                                placeholder={t('fullNamePlaceholder')}
                                                 {...field}
                                                 className="bg-white/10 border-white/10 text-white placeholder:text-gray-500 focus:border-blue-500/50 focus:bg-white/15 transition-all"
                                             />
@@ -96,10 +98,10 @@ export function ProfileOnboarding({ initialData }: { initialData?: Partial<Updat
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Username</FormLabel>
+                                        <FormLabel className="text-gray-300">{t('username')}</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="johndoe"
+                                                placeholder={t('usernamePlaceholder')}
                                                 {...field}
                                                 className="bg-white/10 border-white/10 text-white placeholder:text-gray-500 focus:border-blue-500/50 focus:bg-white/15 transition-all"
                                             />
@@ -114,7 +116,7 @@ export function ProfileOnboarding({ initialData }: { initialData?: Partial<Updat
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium py-2 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? 'Saving...' : 'Continue to Dashboard'}
+                                {isSubmitting ? t('saving') : t('continueToDashboard')}
                             </Button>
                         </form>
                     </Form>

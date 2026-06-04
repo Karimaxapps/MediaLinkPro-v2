@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, RefObject } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Eye, PenSquare } from "lucide-react";
@@ -76,6 +77,7 @@ export function DashboardClient({
     sidebarExtras?: ReactNode,
     recommendedConnections?: ReactNode,
 }) {
+    const t = useTranslations("dashboard");
     const productsScrollRef = useRef<HTMLDivElement>(null);
     const featuredProductsScrollRef = useRef<HTMLDivElement>(null);
     const servicesScrollRef = useRef<HTMLDivElement>(null);
@@ -100,14 +102,14 @@ export function DashboardClient({
                 {/* Latest Products Section */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-white">Latest Products</h2>
+                        <h2 className="text-xl font-semibold text-white">{t("latestProducts")}</h2>
                         <Link href="/marketplace/products" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
-                            View all
+                            {t("viewAll")}
                         </Link>
                     </div>
                     {initialProducts.length === 0 ? (
                         <div className="bg-white/5 border border-white/10 rounded-xl p-12 text-center text-gray-400">
-                            No products found. Be the first to add one!
+                            {t("noProducts")}
                         </div>
                     ) : (
                         <div className="relative group/section">
@@ -144,9 +146,9 @@ export function DashboardClient({
                 {featuredProducts.length > 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-white">Featured Products</h2>
+                            <h2 className="text-xl font-semibold text-white">{t("featuredProducts")}</h2>
                             <Link href="/marketplace/products" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
-                                View all
+                                {t("viewAll")}
                             </Link>
                         </div>
                         <div className="relative group/section">
@@ -183,9 +185,9 @@ export function DashboardClient({
                 {featuredCompanies.length > 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-semibold text-white">Featured Companies</h2>
+                            <h2 className="text-xl font-semibold text-white">{t("featuredCompanies")}</h2>
                             <Link href="/companies" className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
-                                View all
+                                {t("viewAll")}
                             </Link>
                         </div>
                         <div className="relative group/section">
@@ -236,17 +238,17 @@ export function DashboardClient({
                 {/* Media Services Section */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-white">Media Services</h2>
+                        <h2 className="text-xl font-semibold text-white">{t("mediaServices")}</h2>
                         <Link
                             href="/marketplace/services"
                             className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
                         >
-                            View all
+                            {t("viewAll")}
                         </Link>
                     </div>
                     {latestServices.length === 0 ? (
                         <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center text-gray-400">
-                            No services listed yet.
+                            {t("noServices")}
                         </div>
                     ) : (
                         <div className="relative group/section">
@@ -285,17 +287,17 @@ export function DashboardClient({
                 {/* Latest Blog Posts Section */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-white">Latest Blog Posts</h2>
+                        <h2 className="text-xl font-semibold text-white">{t("latestBlogPosts")}</h2>
                         <Link
                             href="/blog"
                             className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
                         >
-                            View all
+                            {t("viewAll")}
                         </Link>
                     </div>
                     {latestBlogPosts.length === 0 ? (
                         <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center text-gray-400">
-                            No posts published yet.
+                            {t("noPosts")}
                         </div>
                     ) : (
                         <div className="relative group/section">
@@ -338,7 +340,7 @@ export function DashboardClient({
                                             )}
                                             <div className="flex items-center gap-2 pt-1 mt-auto text-[11px] text-gray-500">
                                                 <span className="truncate">
-                                                    {post.author?.full_name ?? post.author?.username ?? "Author"}
+                                                    {post.author?.full_name ?? post.author?.username ?? t("author")}
                                                 </span>
                                                 {post.published_at && (
                                                     <span className="whitespace-nowrap">· {format(new Date(post.published_at), "MMM d")}</span>
@@ -372,7 +374,7 @@ export function DashboardClient({
 
                 {/* Placeholder for more items to come */}
                 <div className="py-8 text-center">
-                    <p className="text-gray-500 text-sm">You&apos;ve reached the end for now. Check back later for more updates!</p>
+                    <p className="text-gray-500 text-sm">{t("endOfFeed")}</p>
                 </div>
             </div>
 

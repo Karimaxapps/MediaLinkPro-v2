@@ -1,15 +1,12 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { formatDistanceToNow } from "date-fns";
 import { Briefcase, ExternalLink, Plus, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { listJobsForOrg, listRecentApplicationsForOrg } from "@/features/jobs/server/actions";
-import {
-  APPLICATION_STATUS_COLORS,
-  APPLICATION_STATUS_LABELS,
-  JOB_STATUS_LABELS,
-} from "@/features/jobs/types";
+import { APPLICATION_STATUS_COLORS } from "@/features/jobs/types";
 import { UsagePill } from "@/components/subscription/usage-pill";
 import type { Quota } from "@/features/billing/server/usage";
 
@@ -20,7 +17,8 @@ type Props = {
 };
 
 export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
-  const [jobs, applications] = await Promise.all([
+  const [t, jobs, applications] = await Promise.all([
+    getTranslations("jobs"),
     listJobsForOrg(orgId),
     listRecentApplicationsForOrg(orgId, 8),
   ]);
@@ -34,11 +32,12 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
         <div>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Briefcase className="h-4 w-4 text-[var(--brand)]" />
-            Jobs & Applications
+            {t("jobsAndApplications")}
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
-            {jobs.length} posting{jobs.length !== 1 ? "s" : ""} · {openJobs.length} open ·{" "}
-            {totalApplications} application{totalApplications !== 1 ? "s" : ""}
+            {t("postingCount", { count: jobs.length })} · {openJobs.length}{" "}
+            {t("jobStatuses.open").toLowerCase()} ·{" "}
+            {t("applicationCount", { count: totalApplications })}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -47,7 +46,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
               variant="outline"
               className="bg-transparent border-white/10 text-white hover:bg-white/10 text-xs"
             >
-              Manage all
+              {t("manageAll")}
             </Button>
           </Link>
           {jobsQuota && <UsagePill quota={jobsQuota} noun="job" />}
@@ -57,13 +56,13 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
               className="bg-[var(--brand)] text-black font-medium text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-3.5 w-3.5 mr-1" />
-              Post a job
+              {t("postAJob")}
             </Button>
           ) : (
             <Link href="/jobs/new">
               <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium text-xs">
                 <Plus className="h-3.5 w-3.5 mr-1" />
-                Post a job
+                {t("postAJob")}
               </Button>
             </Link>
           )}
@@ -74,12 +73,10 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
         {/* Recent jobs */}
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-            Recent postings
+            {t("recentPostings")}
           </h3>
           {jobs.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">
-              No job postings yet. Click &quot;Post a job&quot; to publish your first opening.
-            </p>
+            <p className="text-sm text-gray-400 py-4 text-center">{t("noPostingsYet")}</p>
           ) : (
             <div className="space-y-2">
               {jobs.slice(0, 5).map((job) => (
@@ -102,11 +99,13 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                               : "bg-[var(--brand)]/15 text-[var(--brand)]"
                         }`}
                       >
-                        {JOB_STATUS_LABELS[job.status]}
+                        {t(`jobStatuses.${job.status}`)}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 mt-0.5">
-                      Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                      {t("postedRelative", {
+                        time: formatDistanceToNow(new Date(job.created_at), { addSuffix: true }),
+                      })}
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-gray-400 shrink-0">
@@ -122,10 +121,10 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
         {/* Recent applications */}
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-            Recent applications
+            {t("recentApplications")}
           </h3>
           {applications.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">No applications received yet.</p>
+            <p className="text-sm text-gray-400 py-4 text-center">{t("noApplicationsReceived")}</p>
           ) : (
             <div className="space-y-2">
               {applications.map((app) => {
@@ -140,7 +139,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                     <Avatar className="h-9 w-9 border border-white/10 shrink-0">
                       <AvatarImage
                         src={profile?.avatar_url ?? undefined}
-                        alt={profile?.full_name ?? "Applicant"}
+                        alt={profile?.full_name ?? t("applicant")}
                       />
                       <AvatarFallback className="bg-[var(--brand-secondary)]/20 text-[var(--brand-secondary)] text-xs">
                         {(profile?.full_name ?? "?").substring(0, 2).toUpperCase()}
@@ -148,7 +147,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate group-hover:text-[var(--brand)]">
-                        {profile?.full_name ?? "Anonymous applicant"}
+                        {profile?.full_name ?? t("anonymousApplicant")}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {job?.title ?? "—"} ·{" "}
@@ -163,7 +162,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                         backgroundColor: `${APPLICATION_STATUS_COLORS[app.status]}1a`,
                       }}
                     >
-                      {APPLICATION_STATUS_LABELS[app.status]}
+                      {t(`appStatuses.${app.status}`)}
                     </span>
                   </Link>
                 );
@@ -177,7 +176,7 @@ export async function CompanyJobsWidget({ orgId, orgSlug, jobsQuota }: Props) {
                 className="text-xs text-gray-400 hover:text-[var(--brand)] inline-flex items-center gap-1"
               >
                 <ExternalLink className="h-3 w-3" />
-                Open in jobs management
+                {t("openInJobsManagement")}
               </Link>
             </div>
           )}

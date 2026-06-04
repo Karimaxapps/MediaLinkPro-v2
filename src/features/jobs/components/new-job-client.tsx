@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ import { JOB_TYPE_LABELS, type JobType } from "../types";
 type Org = { id: string; name: string; slug: string };
 
 export function NewJobClient({ organizations }: { organizations: Org[] }) {
+  const t = useTranslations("jobs");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState({
@@ -39,7 +41,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
     e.preventDefault();
 
     if (!form.title || !form.organization_id) {
-      toast.error("Please fill in all required fields");
+      toast.error(t("toastFillRequired"));
       return;
     }
 
@@ -66,10 +68,10 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
       });
 
       if (result.success) {
-        toast.success("Job posted!");
+        toast.success(t("toastJobPosted"));
         router.push("/jobs/manage");
       } else {
-        toast.error(result.error ?? "Failed to post job");
+        toast.error(result.error ?? t("toastPostFailed"));
       }
     });
   };
@@ -81,14 +83,12 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
         className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
       >
         <ArrowLeft className="mr-1.5 h-4 w-4" />
-        Back to manage jobs
+        {t("backToManage")}
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Post a job</h1>
-        <p className="text-sm text-gray-400">
-          Only organizations with an active company profile can publish openings.
-        </p>
+        <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{t("postAJob")}</h1>
+        <p className="text-sm text-gray-400">{t("postJobSubtitle")}</p>
       </div>
 
       <form
@@ -97,7 +97,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
       >
         {organizations.length > 1 && (
           <div className="space-y-2">
-            <Label className="text-gray-300">Company *</Label>
+            <Label className="text-gray-300">{t("companyRequired")}</Label>
             <select
               value={form.organization_id}
               onChange={(e) => update("organization_id", e.target.value)}
@@ -113,11 +113,11 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
         )}
 
         <div className="space-y-2">
-          <Label className="text-gray-300">Job title *</Label>
+          <Label className="text-gray-300">{t("jobTitleRequired")}</Label>
           <Input
             value={form.title}
             onChange={(e) => update("title", e.target.value)}
-            placeholder="Senior Broadcast Engineer"
+            placeholder={t("jobTitlePlaceholder")}
             className="bg-black/20 border-white/10 text-white"
             required
           />
@@ -125,25 +125,25 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">Job type *</Label>
+            <Label className="text-gray-300">{t("jobTypeRequired")}</Label>
             <select
               value={form.job_type}
               onChange={(e) => update("job_type", e.target.value as JobType)}
               className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none [&>option]:bg-[#1F1F1F] [&>option]:text-white"
             >
-              {Object.entries(JOB_TYPE_LABELS).map(([key, label]) => (
+              {(Object.keys(JOB_TYPE_LABELS) as JobType[]).map((key) => (
                 <option key={key} value={key}>
-                  {label}
+                  {t(`jobTypes.${key}`)}
                 </option>
               ))}
             </select>
           </div>
           <div className="space-y-2">
-            <Label className="text-gray-300">Department</Label>
+            <Label className="text-gray-300">{t("department")}</Label>
             <Input
               value={form.department}
               onChange={(e) => update("department", e.target.value)}
-              placeholder="Engineering, Production, Sales..."
+              placeholder={t("departmentPlaceholder")}
               className="bg-black/20 border-white/10 text-white"
             />
           </div>
@@ -158,17 +158,17 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             className="h-4 w-4 rounded border-white/20 bg-black/20"
           />
           <Label htmlFor="is_remote" className="text-gray-300 cursor-pointer">
-            Remote role
+            {t("remoteRole")}
           </Label>
         </div>
 
         {!form.is_remote && (
           <div className="space-y-2">
-            <Label className="text-gray-300">Location</Label>
+            <Label className="text-gray-300">{t("location")}</Label>
             <Input
               value={form.location}
               onChange={(e) => update("location", e.target.value)}
-              placeholder="Dubai, UAE"
+              placeholder={t("locationPlaceholder")}
               className="bg-black/20 border-white/10 text-white"
             />
           </div>
@@ -176,7 +176,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">Salary min</Label>
+            <Label className="text-gray-300">{t("salaryMin")}</Label>
             <Input
               type="number"
               min="0"
@@ -187,7 +187,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-gray-300">Salary max</Label>
+            <Label className="text-gray-300">{t("salaryMax")}</Label>
             <Input
               type="number"
               min="0"
@@ -198,28 +198,28 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-gray-300">Currency</Label>
+            <Label className="text-gray-300">{t("currency")}</Label>
             <Input
               value={form.currency}
               onChange={(e) => update("currency", e.target.value)}
-              placeholder="USD"
+              placeholder={t("currencyPlaceholder")}
               className="bg-black/20 border-white/10 text-white"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label className="text-gray-300">Required skills (comma separated)</Label>
+          <Label className="text-gray-300">{t("skillsLabel")}</Label>
           <Input
             value={form.skills}
             onChange={(e) => update("skills", e.target.value)}
-            placeholder="OB production, Vision mixing, EVS"
+            placeholder={t("skillsPlaceholder")}
             className="bg-black/20 border-white/10 text-white"
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="text-gray-300">Expires at (optional)</Label>
+          <Label className="text-gray-300">{t("expiresOptional")}</Label>
           <Input
             type="datetime-local"
             value={form.expires_at}
@@ -229,15 +229,13 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-gray-300">Description</Label>
+          <Label className="text-gray-300">{t("description")}</Label>
           <RichTextEditor
             value={form.description}
             onChange={(value) => update("description", value)}
-            placeholder="Responsibilities, requirements, team, perks..."
+            placeholder={t("descriptionPlaceholder")}
           />
-          <p className="text-xs text-gray-500">
-            Use the toolbar to format with headings, bold, italics, lists, and quotes.
-          </p>
+          <p className="text-xs text-gray-500">{t("descriptionHint")}</p>
         </div>
 
         <div className="flex gap-3 pt-2">
@@ -246,7 +244,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
             disabled={isPending}
             className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
           >
-            {isPending ? "Posting..." : "Publish job"}
+            {isPending ? t("posting") : t("publishJob")}
           </Button>
           <Link href="/jobs/manage">
             <Button
@@ -254,7 +252,7 @@ export function NewJobClient({ organizations }: { organizations: Org[] }) {
               variant="outline"
               className="bg-transparent border-white/10 text-white hover:bg-white/10"
             >
-              Cancel
+              {t("cancel")}
             </Button>
           </Link>
         </div>

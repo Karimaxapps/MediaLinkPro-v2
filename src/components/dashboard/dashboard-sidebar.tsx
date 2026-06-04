@@ -1,6 +1,7 @@
 "use client";
 
 import { Building2, User, ArrowRight, Zap, Rocket, TrendingUp, Crown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,61 +17,32 @@ import type { ReactNode } from "react";
 // ─── Plan upgrade promo config ────────────────────────────────────────────────
 
 type UpgradePromo = {
-  badge: string;
+  // Translation key under the `dashboard.promos` namespace
+  key: "free" | "individualPro" | "orgFree" | "orgGrowth";
   Icon: React.ElementType;
-  title: string;
-  description: string;
-  price: string;
-  cta: string;
   href: string;
 };
 
 const UPGRADE_PROMOS: Record<PlanId, UpgradePromo | null> = {
-  free: {
-    badge: "Go Pro",
-    Icon: Zap,
-    title: "Unlock Your Full Potential",
-    description: "Unlimited connections, initiate conversations & list your expert services.",
-    price: "From $4.99 / month",
-    cta: "Upgrade to Verified Pro",
-    href: "/billing",
-  },
-  individual_pro: {
-    badge: "For Companies",
-    Icon: Rocket,
-    title: "Grow Your Business",
-    description: "Full company profile, product listings, job posts & events — all in one place.",
-    price: "From $199 / month",
-    cta: "Start an Org Plan",
-    href: "/billing",
-  },
-  org_free: {
-    badge: "Scale Up",
-    Icon: TrendingUp,
-    title: "Unlock Org Growth",
-    description: "10 product listings, 5 team seats, advanced analytics & $50/mo ad credits.",
-    price: "From $199 / month",
-    cta: "Upgrade to Org Growth",
-    href: "/billing",
-  },
-  org_growth: {
-    badge: "Enterprise",
-    Icon: Crown,
-    title: "Go Enterprise",
-    description: "Unlimited products, dedicated account manager & featured placement on landing.",
-    price: "Custom pricing",
-    cta: "Contact Sales",
-    href: "/billing",
-  },
+  free: { key: "free", Icon: Zap, href: "/billing" },
+  individual_pro: { key: "individualPro", Icon: Rocket, href: "/billing" },
+  org_free: { key: "orgFree", Icon: TrendingUp, href: "/billing" },
+  org_growth: { key: "orgGrowth", Icon: Crown, href: "/billing" },
   // Top-tier — no upgrade to show
   org_enterprise: null,
 };
 
 function PlanUpgradeCard({ plan }: { plan?: PlanId }) {
+  const t = useTranslations("dashboard");
   const promo = plan ? UPGRADE_PROMOS[plan] : UPGRADE_PROMOS["free"];
   if (!promo) return null;
 
-  const { badge, Icon, title, description, price, cta, href } = promo;
+  const { key, Icon, href } = promo;
+  const badge = t(`promos.${key}.badge`);
+  const title = t(`promos.${key}.title`);
+  const description = t(`promos.${key}.description`);
+  const price = t(`promos.${key}.price`);
+  const cta = t(`promos.${key}.cta`);
 
   return (
     <Card className="bg-gradient-to-br from-[var(--brand)] to-[#B5964A] border-none text-black overflow-hidden relative">
@@ -141,6 +113,7 @@ export function DashboardSidebar({
   userPlan,
   recommendedConnections,
 }: DashboardSidebarProps) {
+  const t = useTranslations("dashboard");
   return (
     <aside className="space-y-6">
       {/* Upcoming Event */}
@@ -161,13 +134,13 @@ export function DashboardSidebar({
           <CardTitle className="text-sm font-semibold flex items-center justify-between">
             <span className="flex items-center">
               <Building2 className="mr-2 h-4 w-4 text-[var(--brand)]" />
-              Latest joined companies
+              {t("latestJoinedCompanies")}
             </span>
             <Link
               href="/connect/solution-providers"
               className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
-              View all
+              {t("viewAll")}
             </Link>
           </CardTitle>
         </CardHeader>
@@ -214,13 +187,13 @@ export function DashboardSidebar({
           <CardTitle className="text-sm font-semibold flex items-center justify-between">
             <span className="flex items-center">
               <User className="mr-2 h-4 w-4 text-[var(--brand)]" />
-              Latest Professionals
+              {t("latestProfessionals")}
             </span>
             <Link
               href="/connect/media-professionals"
               className="text-xs text-gray-400 hover:text-gray-200 transition-colors"
             >
-              View all
+              {t("viewAll")}
             </Link>
           </CardTitle>
         </CardHeader>
@@ -242,7 +215,7 @@ export function DashboardSidebar({
                   {user.full_name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {user.job_title || "Media Professional"}
+                  {user.job_title || t("mediaProfessional")}
                 </p>
               </div>
             </Link>

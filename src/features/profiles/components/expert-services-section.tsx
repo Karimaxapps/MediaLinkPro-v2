@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ export function ExpertServicesSection({
     hourlyRate: number | null;
     isOwner: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [services, setServices] = useState(initialServices);
     const [showForm, setShowForm] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -31,7 +33,7 @@ export function ExpertServicesSection({
 
     const handleCreate = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.title.trim()) return toast.error("Title is required");
+        if (!form.title.trim()) return toast.error(t("titleRequired"));
 
         startTransition(async () => {
             const result = await createExpertService({
@@ -41,26 +43,26 @@ export function ExpertServicesSection({
                 duration_minutes: form.duration_minutes ? Number(form.duration_minutes) : undefined,
             });
             if (result.success) {
-                toast.success("Service added");
+                toast.success(t("serviceAdded"));
                 setForm({ title: "", description: "", price: "", duration_minutes: "" });
                 setShowForm(false);
                 // Optimistic: add a placeholder until refresh
                 window.location.reload();
             } else {
-                toast.error(result.error ?? "Failed to add service");
+                toast.error(result.error ?? t("failedAddService"));
             }
         });
     };
 
     const handleDelete = (id: string) => {
-        if (!confirm("Delete this service?")) return;
+        if (!confirm(t("confirmDeleteService"))) return;
         startTransition(async () => {
             const result = await deleteExpertService(id);
             if (result.success) {
                 setServices((s) => s.filter((x) => x.id !== id));
-                toast.success("Service deleted");
+                toast.success(t("serviceDeleted"));
             } else {
-                toast.error(result.error ?? "Failed to delete");
+                toast.error(result.error ?? t("failedDelete"));
             }
         });
     };
@@ -72,8 +74,8 @@ export function ExpertServicesSection({
                     <div className="flex items-center gap-3">
                         <DollarSign className="h-6 w-6 text-[var(--brand)]" />
                         <div>
-                            <div className="text-xs uppercase tracking-wide text-gray-400">Hourly Rate</div>
-                            <div className="text-2xl font-bold text-white">${hourlyRate}/hr</div>
+                            <div className="text-xs uppercase tracking-wide text-gray-400">{t("hourlyRate")}</div>
+                            <div className="text-2xl font-bold text-white">{t("perHr", { rate: hourlyRate })}</div>
                         </div>
                     </div>
                 </div>
@@ -86,7 +88,7 @@ export function ExpertServicesSection({
                         className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                         <Plus className="mr-1.5 h-4 w-4" />
-                        Add Service
+                        {t("addService")}
                     </Button>
                 </div>
             )}
@@ -97,17 +99,17 @@ export function ExpertServicesSection({
                     className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-5"
                 >
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Title *</Label>
+                        <Label className="text-gray-300">{t("titleStar")}</Label>
                         <Input
                             value={form.title}
                             onChange={(e) => setForm({ ...form, title: e.target.value })}
-                            placeholder="1-hour consultation"
+                            placeholder={t("consultationPlaceholder")}
                             className="bg-black/20 border-white/10 text-white"
                             required
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Description</Label>
+                        <Label className="text-gray-300">{t("description")}</Label>
                         <Textarea
                             value={form.description}
                             onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -117,7 +119,7 @@ export function ExpertServicesSection({
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
-                            <Label className="text-gray-300">Price (USD)</Label>
+                            <Label className="text-gray-300">{t("priceUsd")}</Label>
                             <Input
                                 type="number"
                                 min="0"
@@ -127,7 +129,7 @@ export function ExpertServicesSection({
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-gray-300">Duration (min)</Label>
+                            <Label className="text-gray-300">{t("durationMin")}</Label>
                             <Input
                                 type="number"
                                 min="1"
@@ -139,7 +141,7 @@ export function ExpertServicesSection({
                     </div>
                     <div className="flex gap-2">
                         <Button type="submit" disabled={isPending} className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
-                            {isPending ? "Saving..." : "Save Service"}
+                            {isPending ? t("saving") : t("saveService")}
                         </Button>
                         <Button
                             type="button"
@@ -147,7 +149,7 @@ export function ExpertServicesSection({
                             onClick={() => setShowForm(false)}
                             className="border-white/10 hover:bg-white/10"
                         >
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </div>
                 </form>
@@ -157,7 +159,7 @@ export function ExpertServicesSection({
                 <div className="text-center py-12 bg-white/5 rounded-lg border border-dashed border-white/10">
                     <Briefcase className="mx-auto h-10 w-10 text-gray-600 mb-2" />
                     <p className="text-gray-400">
-                        {isOwner ? "Add your first service offering." : "No services listed yet."}
+                        {isOwner ? t("addFirstService") : t("noServices")}
                     </p>
                 </div>
             ) : (
@@ -189,7 +191,7 @@ export function ExpertServicesSection({
                                 {svc.duration_minutes && (
                                     <div className="flex items-center gap-1 text-xs text-gray-400">
                                         <Clock className="h-3.5 w-3.5" />
-                                        {svc.duration_minutes} min
+                                        {t("minutesShort", { count: svc.duration_minutes })}
                                     </div>
                                 )}
                             </div>

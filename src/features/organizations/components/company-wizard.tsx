@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -46,31 +47,32 @@ import { cn } from "@/lib/utils";
 const steps = [
   {
     id: "identity",
-    title: "Company Identity",
-    description: "Basic information about your company",
+    titleKey: "form.stepIdentityTitle",
+    descKey: "form.stepIdentityDesc",
     icon: Building2,
   },
   {
     id: "activity",
-    title: "Activity & Description",
-    description: "What does your company do?",
+    titleKey: "form.stepActivityTitle",
+    descKey: "form.stepActivityDesc",
     icon: FileText,
   },
   {
     id: "contact",
-    title: "Contact Details",
-    description: "How can people reach you?",
+    titleKey: "form.stepContactTitle",
+    descKey: "form.stepContactDesc",
     icon: Phone,
   },
   {
     id: "social",
-    title: "Social accounts",
-    description: "Connect your social accounts",
+    titleKey: "form.stepSocialTitle",
+    descKey: "form.stepSocialDesc",
     icon: Share2,
   },
-];
+] as const;
 
 export function CompanyWizard({ userId }: { userId: string }) {
+  const t = useTranslations("companies");
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [completed, setCompleted] = React.useState(false); // Success state
@@ -165,10 +167,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
         setCompleted(true);
         toast.success(result.message);
       } else {
-        toast.error(result.error || "Failed to create company");
+        toast.error(result.error || t("form.failedCreate"));
       }
     } catch (error) {
-      toast.error("An unexpected error occurred");
+      toast.error(t("form.unexpectedError"));
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -184,11 +186,8 @@ export function CompanyWizard({ userId }: { userId: string }) {
           </div>
         </div>
         <div className="space-y-4">
-          <h2 className="text-3xl font-bold">Welcome, {companyName}!</h2>
-          <p className="text-gray-400 max-w-md mx-auto">
-            Your company profile has been created successfully. You can now start adding products,
-            receiving requests, and sharing your company services with the world.
-          </p>
+          <h2 className="text-3xl font-bold">{t("form.welcomeName", { name: companyName })}</h2>
+          <p className="text-gray-400 max-w-md mx-auto">{t("form.profileCreatedDesc")}</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
@@ -196,14 +195,14 @@ export function CompanyWizard({ userId }: { userId: string }) {
             className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
             onClick={() => router.push(`/companies/${watch("slug")}`)}
           >
-            Go to Company Profile
+            {t("form.goToProfile")}
           </Button>
           <Button
             size="lg"
             className="bg-white text-black hover:bg-gray-200"
             onClick={() => router.push(`/companies/${watch("slug")}/products/new`)}
           >
-            Add your first product
+            {t("form.addFirstProduct")}
           </Button>
         </div>
       </div>
@@ -257,7 +256,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                     isActive ? "text-[var(--brand)]" : "text-gray-500"
                   )}
                 >
-                  {step.title}
+                  {t(step.titleKey)}
                 </span>
               </div>
             );
@@ -272,9 +271,9 @@ export function CompanyWizard({ userId }: { userId: string }) {
               <CurrentStepIcon className="w-6 h-6 text-[var(--brand)]" />
             </div>
             <div>
-              <CardTitle className="text-xl">{steps[currentStep].title}</CardTitle>
+              <CardTitle className="text-xl">{t(steps[currentStep].titleKey)}</CardTitle>
               <CardDescription className="text-gray-400">
-                {steps[currentStep].description}
+                {t(steps[currentStep].descKey)}
               </CardDescription>
             </div>
           </div>
@@ -298,11 +297,11 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">
-                      Company Name <span className="text-red-500">*</span>
+                      {t("form.companyName")} <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="name"
-                      placeholder="Acme Inc."
+                      placeholder={t("form.namePlaceholder")}
                       className="bg-black/20"
                       {...register("name")}
                     />
@@ -311,7 +310,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
 
                   <div className="space-y-2">
                     <Label htmlFor="slug">
-                      Company Slug <span className="text-red-500">*</span>
+                      {t("form.companySlug")} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
@@ -319,7 +318,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                       </span>
                       <Input
                         id="slug"
-                        placeholder="acme-inc"
+                        placeholder={t("form.slugPlaceholder")}
                         className="pl-6 bg-black/20"
                         {...register("slug")}
                         onChange={(e) => {
@@ -333,10 +332,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tagline">Tagline</Label>
+                  <Label htmlFor="tagline">{t("form.tagline")}</Label>
                   <Input
                     id="tagline"
-                    placeholder="Innovation for the future"
+                    placeholder={t("form.taglinePlaceholder")}
                     className="bg-black/20"
                     {...register("tagline")}
                   />
@@ -344,7 +343,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
 
                 <div className="space-y-2">
                   <Label htmlFor="type">
-                    Company Type <span className="text-red-500">*</span>
+                    {t("form.companyType")} <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     onValueChange={(val: string) => {
@@ -358,7 +357,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                     defaultValue={watch("type")}
                   >
                     <SelectTrigger className="bg-black/20 border-white/10">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t("form.selectType")} />
                     </SelectTrigger>
                     <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
                       {ORG_TYPES.map((type) => (
@@ -379,7 +378,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 {watch("type") === "Broadcaster" && (
                   <div className="space-y-2">
                     <Label htmlFor="broadcaster_type">
-                      Broadcaster Type <span className="text-red-500">*</span>
+                      {t("form.broadcasterType")} <span className="text-red-500">*</span>
                     </Label>
                     <Select
                       onValueChange={(val: string) =>
@@ -390,7 +389,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                       defaultValue={watch("broadcaster_type")}
                     >
                       <SelectTrigger className="bg-black/20 border-white/10">
-                        <SelectValue placeholder="Television or Radio?" />
+                        <SelectValue placeholder={t("form.televisionOrRadio")} />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
                         {BROADCASTER_TYPES.map((bt) => (
@@ -413,7 +412,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 {/* Broadcaster genre — shown only when type = Broadcaster */}
                 {watch("type") === "Broadcaster" && (
                   <div className="space-y-2">
-                    <Label htmlFor="broadcaster_genre">Genre</Label>
+                    <Label htmlFor="broadcaster_genre">{t("form.genre")}</Label>
                     <Select
                       onValueChange={(val: string) =>
                         setValue("broadcaster_genre", val as (typeof BROADCASTER_GENRES)[number], {
@@ -423,7 +422,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                       defaultValue={watch("broadcaster_genre")}
                     >
                       <SelectTrigger className="bg-black/20 border-white/10">
-                        <SelectValue placeholder="e.g. News, Sports, Entertainment…" />
+                        <SelectValue placeholder={t("form.genrePlaceholder")} />
                       </SelectTrigger>
                       <SelectContent className="bg-[#1A1F26] border-white/10 text-white">
                         {BROADCASTER_GENRES.map((g) => (
@@ -450,7 +449,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="main_activity">
-                    Main Activity <span className="text-red-500">*</span>
+                    {t("form.mainActivity")} <span className="text-red-500">*</span>
                   </Label>
                   <MainActivitySelect
                     orgType={watch("type")}
@@ -467,10 +466,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Company Description</Label>
+                  <Label htmlFor="description">{t("form.companyDescription")}</Label>
                   <Textarea
                     id="description"
-                    placeholder="Tell us about your company..."
+                    placeholder={t("form.describeCompanyPlaceholder")}
                     className="bg-black/20 min-h-[150px]"
                     {...register("description")}
                   />
@@ -484,11 +483,11 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="website">
-                      Website <span className="text-red-500">*</span>
+                      {t("form.website")} <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="website"
-                      placeholder="https://example.com"
+                      placeholder={t("form.websitePlaceholderEx")}
                       className="bg-black/20"
                       {...register("website")}
                     />
@@ -498,11 +497,11 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="contact_email">Contact Email</Label>
+                    <Label htmlFor="contact_email">{t("form.contactEmail")}</Label>
                     <Input
                       id="contact_email"
                       type="email"
-                      placeholder="contact@example.com"
+                      placeholder={t("form.emailPlaceholder")}
                       className="bg-black/20"
                       {...register("contact_email")}
                     />
@@ -514,10 +513,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">{t("form.phone")}</Label>
                     <Input
                       id="phone"
-                      placeholder="+1 234 567 890"
+                      placeholder={t("form.phonePlaceholderWizard")}
                       className="bg-black/20"
                       {...register("phone")}
                     />
@@ -525,7 +524,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
 
                   <div className="space-y-2">
                     <Label htmlFor="country">
-                      HQ Country <span className="text-red-500">*</span>
+                      {t("form.hqCountry")} <span className="text-red-500">*</span>
                     </Label>
                     <CountrySelect
                       value={watch("country")}
@@ -538,10 +537,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address">{t("form.address")}</Label>
                   <Textarea
                     id="address"
-                    placeholder="Headquarters address..."
+                    placeholder={t("form.addressPlaceholder")}
                     className="bg-black/20"
                     {...register("address")}
                   />
@@ -554,10 +553,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="linkedin_url">LinkedIn</Label>
+                    <Label htmlFor="linkedin_url">{t("form.linkedin")}</Label>
                     <Input
                       id="linkedin_url"
-                      placeholder="https://linkedin.com/company/..."
+                      placeholder={t("form.linkedinPlaceholder")}
                       className="bg-black/20"
                       {...register("linkedin_url")}
                     />
@@ -567,10 +566,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="x_url">X (Twitter)</Label>
+                    <Label htmlFor="x_url">{t("form.xTwitter")}</Label>
                     <Input
                       id="x_url"
-                      placeholder="https://x.com/..."
+                      placeholder={t("form.xPlaceholder")}
                       className="bg-black/20"
                       {...register("x_url")}
                     />
@@ -578,10 +577,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="facebook_url">Facebook</Label>
+                    <Label htmlFor="facebook_url">{t("form.facebook")}</Label>
                     <Input
                       id="facebook_url"
-                      placeholder="https://facebook.com/..."
+                      placeholder={t("form.facebookPlaceholder")}
                       className="bg-black/20"
                       {...register("facebook_url")}
                     />
@@ -591,10 +590,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="instagram_url">Instagram</Label>
+                    <Label htmlFor="instagram_url">{t("form.instagram")}</Label>
                     <Input
                       id="instagram_url"
-                      placeholder="https://instagram.com/..."
+                      placeholder={t("form.instagramPlaceholder")}
                       className="bg-black/20"
                       {...register("instagram_url")}
                     />
@@ -604,10 +603,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="tiktok_url">TikTok</Label>
+                    <Label htmlFor="tiktok_url">{t("form.tiktok")}</Label>
                     <Input
                       id="tiktok_url"
-                      placeholder="https://tiktok.com/@..."
+                      placeholder={t("form.tiktokPlaceholder")}
                       className="bg-black/20"
                       {...register("tiktok_url")}
                     />
@@ -617,10 +616,10 @@ export function CompanyWizard({ userId }: { userId: string }) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="youtube_url">YouTube</Label>
+                    <Label htmlFor="youtube_url">{t("form.youtube")}</Label>
                     <Input
                       id="youtube_url"
-                      placeholder="https://youtube.com/@..."
+                      placeholder={t("form.youtubePlaceholder")}
                       className="bg-black/20"
                       {...register("youtube_url")}
                     />
@@ -641,7 +640,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
               className="text-gray-400 hover:text-white"
             >
               <ChevronLeft className="w-4 h-4 mr-2" />
-              Back
+              {t("form.back")}
             </Button>
 
             {currentStep < steps.length - 1 ? (
@@ -649,7 +648,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 onClick={nextStep}
                 className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
               >
-                Next Step
+                {t("form.nextStep")}
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
@@ -658,7 +657,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
                 disabled={isSubmitting}
                 className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold min-w-[120px]"
               >
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save & Finish"}
+                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : t("form.saveFinish")}
               </Button>
             )}
           </div>

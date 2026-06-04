@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, Sparkles, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,24 +15,8 @@ interface CompanyAutofillBannerProps {
 
 type State = "idle" | "loading" | "success" | "error";
 
-const FIELD_LABELS: Record<string, string> = {
-  name: "name",
-  description: "description",
-  tagline: "tagline",
-  website: "website",
-  contact_email: "email",
-  phone: "phone",
-  country: "country",
-  address: "address",
-  linkedin_url: "LinkedIn",
-  x_url: "X/Twitter",
-  facebook_url: "Facebook",
-  instagram_url: "Instagram",
-  youtube_url: "YouTube",
-  tiktok_url: "TikTok",
-};
-
 export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBannerProps) {
+  const t = useTranslations("companies");
   const [url, setUrl] = React.useState("");
   const [state, setState] = React.useState<State>("idle");
   const [errorMsg, setErrorMsg] = React.useState("");
@@ -58,7 +43,7 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
       const json = await res.json();
 
       if (!res.ok || json.error) {
-        setErrorMsg(json.error ?? "Failed to fetch website info");
+        setErrorMsg(json.error ?? t("failedFetch"));
         setState("error");
         return;
       }
@@ -78,7 +63,7 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
       onImport(data, fields);
       setState("success");
     } catch {
-      setErrorMsg("Could not reach the website. Check your URL and try again.");
+      setErrorMsg(t("couldNotReach"));
       setState("error");
     }
   };
@@ -89,23 +74,24 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
 
   if (state === "success") {
     const labels = foundFields
-      .map((f) => FIELD_LABELS[f])
+      .map((f) => t(`fieldLabels.${f}`))
       .filter(Boolean)
       .slice(0, 6);
+    const fieldsStr =
+      labels.join(", ") +
+      (foundFields.length > 6 ? ` ${t("andMore", { count: foundFields.length - 6 })}` : "");
 
     return (
       <div className="mb-6 flex items-start gap-3 rounded-lg border border-green-500/20 bg-green-500/5 px-4 py-3">
         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-400" />
         <p className="text-sm text-green-300">
-          <span className="font-medium">Imported from {importedDomain}</span>
-          {labels.length > 0 && (
-            <> — {labels.join(", ")}{foundFields.length > 6 ? ` and ${foundFields.length - 6} more` : ""} pre-filled. Review below.</>
-          )}
+          <span className="font-medium">{t("importedFrom", { domain: importedDomain })}</span>
+          {labels.length > 0 && t("prefilledReview", { fields: fieldsStr })}
         </p>
         <button
           onClick={onDismiss}
           className="ml-auto shrink-0 text-gray-500 hover:text-gray-300"
-          aria-label="Dismiss"
+          aria-label={t("dismiss")}
         >
           <X className="h-4 w-4" />
         </button>
@@ -123,31 +109,26 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-[var(--brand)]" />
-          <span className="text-sm font-medium text-gray-200">
-            Import from your website
-          </span>
+          <span className="text-sm font-medium text-gray-200">{t("importFromWebsite")}</span>
           <span className="rounded-full bg-[var(--brand)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--brand)]">
-            optional
+            {t("optional")}
           </span>
         </div>
         <button
           onClick={onDismiss}
           className="text-gray-600 hover:text-gray-400 transition-colors"
-          aria-label="Skip auto-fill"
+          aria-label={t("skipAutofill")}
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      <p className="mb-3 text-xs text-gray-500">
-        Enter your company website and we&apos;ll pre-fill what we can find — name,
-        description, contact info and social links.
-      </p>
+      <p className="mb-3 text-xs text-gray-500">{t("autofillDesc")}</p>
 
       <div className="flex gap-2">
         <Input
           type="url"
-          placeholder="https://yourcompany.com"
+          placeholder={t("websitePlaceholder")}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -164,7 +145,7 @@ export function CompanyAutofillBanner({ onImport, onDismiss }: CompanyAutofillBa
           {state === "loading" ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            "Auto-fill"
+            t("autofill")
           )}
         </Button>
       </div>

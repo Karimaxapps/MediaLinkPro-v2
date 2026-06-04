@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null }: Props) {
+  const t = useTranslations("jobs");
   const [selectedTypes, setSelectedTypes] = useState<JobType[]>([]);
   const [remoteFilter, setRemoteFilter] = useState<boolean | null>(null);
   // `canPost` is kept for backward compat but the unified gate below drives
@@ -46,32 +48,30 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
     return result;
   }, [jobs, selectedTypes, remoteFilter]);
 
-  const jobTypes = Object.entries(JOB_TYPE_LABELS) as [JobType, string][];
+  const jobTypeKeys = Object.keys(JOB_TYPE_LABELS) as JobType[];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Jobs</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{t("title")}</h1>
           <p className="text-sm text-gray-400">
-            Openings from broadcasters, production companies, and solution providers.
-            <span className="text-gray-500 ml-2">
-              {filtered.length} role{filtered.length !== 1 ? "s" : ""}
-            </span>
+            {t("listSubtitle")}
+            <span className="text-gray-500 ml-2">{t("roleCount", { count: filtered.length })}</span>
           </p>
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
           <Link href="/jobs/my-applications">
             <Button className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium whitespace-nowrap">
-              My applications
+              {t("myApplications")}
             </Button>
           </Link>
           <CreateGate
             noun="job"
             nounPlural="jobs"
             href="/jobs/new"
-            label="Post a job"
+            label={t("postAJob")}
             hasOrg={hasOrg}
             quota={jobsQuota}
           />
@@ -82,10 +82,10 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4">
         <div className="flex items-center gap-2 text-sm text-gray-400">
           <Filter className="h-4 w-4" />
-          <span>Type:</span>
+          <span>{t("typeFilter")}</span>
         </div>
         <div className="flex flex-wrap gap-2">
-          {jobTypes.map(([key, label]) => {
+          {jobTypeKeys.map((key) => {
             const active = selectedTypes.includes(key);
             return (
               <button
@@ -102,7 +102,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
                     : undefined
                 }
               >
-                {label}
+                {t(`jobTypes.${key}`)}
               </button>
             );
           })}
@@ -120,7 +120,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
             }`}
           >
             <Globe className="h-3.5 w-3.5" />
-            Remote
+            {t("remote")}
           </button>
           <button
             onClick={() => setRemoteFilter(remoteFilter === false ? null : false)}
@@ -131,7 +131,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
             }`}
           >
             <MapPin className="h-3.5 w-3.5" />
-            On-site
+            {t("onSite")}
           </button>
         </div>
 
@@ -141,7 +141,7 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
             className="ml-auto flex items-center gap-1 px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
           >
             <X className="h-3.5 w-3.5" />
-            Clear
+            {t("clear")}
           </button>
         )}
       </div>
@@ -156,13 +156,9 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
       ) : (
         <EmptyState
           icon={Briefcase}
-          title="No jobs match your filters"
-          description={
-            hasFilters
-              ? "Try clearing filters or broadening the search."
-              : "No openings yet. Check back soon or post one yourself if you own a company profile."
-          }
-          actionLabel={hasFilters ? "Clear filters" : undefined}
+          title={t("noMatchTitle")}
+          description={hasFilters ? t("noMatchFiltered") : t("noMatchEmpty")}
+          actionLabel={hasFilters ? t("clearFilters") : undefined}
           onAction={hasFilters ? clear : undefined}
         />
       )}
@@ -171,8 +167,9 @@ export function JobsListClient({ jobs, canPost, hasOrg = false, jobsQuota = null
 }
 
 function JobCard({ job }: { job: Job }) {
+  const t = useTranslations("jobs");
   const color = JOB_TYPE_COLORS[job.job_type];
-  const salary = formatSalary(job);
+  const salary = formatSalary(job, t);
   return (
     <Link
       href={`/jobs/${job.organizations?.slug ?? "co"}/${job.slug}`}
@@ -201,17 +198,17 @@ function JobCard({ job }: { job: Job }) {
               className="px-2 py-0.5 rounded text-xs font-medium flex-shrink-0"
               style={{ backgroundColor: `${color}20`, color }}
             >
-              {JOB_TYPE_LABELS[job.job_type]}
+              {t(`jobTypes.${job.job_type}`)}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
             <span className="flex items-center gap-1">
               <Building2 className="h-3.5 w-3.5" />
-              {job.organizations?.name ?? "Unknown"}
+              {job.organizations?.name ?? t("unknown")}
             </span>
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5" />
-              {job.is_remote ? "Remote" : job.location || "Unspecified"}
+              {job.is_remote ? t("remote") : job.location || t("unspecified")}
             </span>
             {salary && <span className="text-[var(--brand)]">{salary}</span>}
           </div>
@@ -220,9 +217,7 @@ function JobCard({ job }: { job: Job }) {
           )}
           <div className="flex items-center justify-between pt-1 text-xs text-gray-500">
             <span>{formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
-            <span>
-              {job.application_count} applicant{job.application_count !== 1 ? "s" : ""}
-            </span>
+            <span>{t("applicantCount", { count: job.application_count })}</span>
           </div>
         </div>
       </div>
@@ -230,14 +225,14 @@ function JobCard({ job }: { job: Job }) {
   );
 }
 
-function formatSalary(job: Job): string | null {
+function formatSalary(job: Job, t: ReturnType<typeof useTranslations<"jobs">>): string | null {
   if (!job.salary_min && !job.salary_max) return null;
   const currency = job.currency ?? "USD";
   const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
   if (job.salary_min && job.salary_max)
     return `${currency} ${fmt(job.salary_min)} – ${fmt(job.salary_max)}`;
   if (job.salary_min) return `${currency} ${fmt(job.salary_min)}+`;
-  if (job.salary_max) return `Up to ${currency} ${fmt(job.salary_max)}`;
+  if (job.salary_max) return t("salaryUpTo", { value: `${currency} ${fmt(job.salary_max)}` });
   return null;
 }
 

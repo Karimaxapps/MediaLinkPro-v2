@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -32,6 +33,7 @@ export function MainActivitySelect({
   itemClassName,
   inputClassName,
 }: Props) {
+  const t = useTranslations("companies");
   const options = orgType ? (MAIN_ACTIVITIES_BY_TYPE[orgType] ?? []) : [];
 
   const valueInOptions = options.includes(value);
@@ -64,7 +66,7 @@ export function MainActivitySelect({
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="e.g. Video Production, Broadcast Technology…"
+        placeholder={t("activityPlaceholder")}
         className={inputClassName}
       />
     );
@@ -74,7 +76,7 @@ export function MainActivitySelect({
     <div className="space-y-2">
       <Select value={selectValue} onValueChange={handleSelectChange}>
         <SelectTrigger className={triggerClassName}>
-          <SelectValue placeholder="Select main activity…" />
+          <SelectValue placeholder={t("selectActivity")} />
         </SelectTrigger>
         <SelectContent className={`max-h-64 ${contentClassName ?? ""}`}>
           {options.map((opt) => (
@@ -83,7 +85,7 @@ export function MainActivitySelect({
             </SelectItem>
           ))}
           <SelectItem value={OTHER} className={itemClassName}>
-            Other…
+            {t("other")}
           </SelectItem>
         </SelectContent>
       </Select>
@@ -92,7 +94,7 @@ export function MainActivitySelect({
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Describe your main activity…"
+          placeholder={t("describeActivity")}
           className={inputClassName}
           autoFocus
         />

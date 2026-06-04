@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Camera, Loader2, Building2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { uploadOrgLogoAction } from "@/features/organizations/server/stub-actions";
 
@@ -18,6 +19,7 @@ export function AdminLogoUpload({
   onUploadSuccess,
   className,
 }: AdminLogoUploadProps) {
+  const t = useTranslations("companies");
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,7 +28,7 @@ export function AdminLogoUpload({
     if (!file) return;
 
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      toast.error("Only JPG, PNG, and WebP files are supported");
+      toast.error(t("adminLogoFormatError"));
       return;
     }
 
@@ -36,9 +38,9 @@ export function AdminLogoUpload({
       formData.append("file", file);
       const result = await uploadOrgLogoAction(formData);
       if (!result.success) {
-        toast.error(result.error ?? "Upload failed");
+        toast.error(result.error ?? t("uploadFailed"));
       } else {
-        toast.success("Logo uploaded");
+        toast.success(t("logoUploaded"));
         onUploadSuccess(result.url!);
       }
     } finally {
@@ -86,16 +88,14 @@ export function AdminLogoUpload({
         {isUploading ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Uploading…
+            {t("uploading")}
           </>
         ) : (
-          "Upload Logo"
+          t("uploadLogo")
         )}
       </Button>
 
-      <p className="text-xs text-gray-500 text-center">
-        300 × 300 px recommended. JPG, PNG, WebP supported. Max 5 MB.
-      </p>
+      <p className="text-xs text-gray-500 text-center">{t("adminLogoHint")}</p>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { BadgeCheck, MapPin } from "lucide-react";
 import type { FeaturedByTypeOrg } from "@/features/organizations/server/actions";
 import { FollowButton } from "@/features/organizations/components/follow-button";
@@ -15,9 +16,10 @@ interface Props {
  * Mirrors the design with: pill, bookmark, diagonal-stripe cover, logo,
  * tagline, featured products grid, HQ row, followed-by avatars + CTA.
  */
-export function FeaturedProviderCard({ org }: Props) {
+export async function FeaturedProviderCard({ org }: Props) {
+    const t = await getTranslations("companies");
     // Show the exact main_activity value from the DB (no shortening).
-    const activityLabel = org.main_activity?.trim() || "Featured";
+    const activityLabel = org.main_activity?.trim() || t("featured");
 
     return (
         <div className="relative flex flex-col rounded-2xl border border-white/10 bg-[#0F0F10] overflow-hidden hover:border-[var(--brand)]/40 transition-colors">
@@ -45,13 +47,13 @@ export function FeaturedProviderCard({ org }: Props) {
                     {org.plan === "org_enterprise" && (
                         <BadgeCheck
                             className="h-4 w-4 text-[var(--brand)] shrink-0"
-                            aria-label="Enterprise plan"
+                            aria-label={t("enterprisePlan")}
                         />
                     )}
                     {org.plan === "org_growth" && (
                         <BadgeCheck
                             className="h-4 w-4 text-blue-400 shrink-0"
-                            aria-label="Growth plan"
+                            aria-label={t("growthPlan")}
                         />
                     )}
                 </Link>
@@ -81,7 +83,7 @@ export function FeaturedProviderCard({ org }: Props) {
                     below it lines up across cards regardless of product count. */}
                 <div className="space-y-2">
                     <p className="text-sm font-semibold text-gray-300">
-                        Featured products
+                        {t("featuredProducts")}
                     </p>
                     {org.products.length > 0 ? (
                         <div className="grid grid-cols-2 gap-2">
@@ -132,7 +134,7 @@ export function FeaturedProviderCard({ org }: Props) {
                     sits at the same position across cards. */}
                 <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-3.5 w-3.5 text-gray-500" />
-                    <span className="text-xs font-medium text-gray-500">HQ</span>
+                    <span className="text-xs font-medium text-gray-500">{t("hq")}</span>
                     <span className="text-white">{org.country ?? "—"}</span>
                 </div>
 
@@ -140,7 +142,7 @@ export function FeaturedProviderCard({ org }: Props) {
                     aligns across cards regardless of how much content is above. */}
                 <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-white/5">
                     <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-xs font-medium text-gray-500">Followed by</span>
+                        <span className="text-xs font-medium text-gray-500">{t("followedBy")}</span>
                         {org.followers_preview.length > 0 ? (
                             <div className="flex -space-x-2">
                                 {org.followers_preview.slice(0, 3).map((f, i) => (
@@ -156,7 +158,7 @@ export function FeaturedProviderCard({ org }: Props) {
                                         {f.avatar_url ? (
                                             <Image
                                                 src={f.avatar_url}
-                                                alt={f.full_name ?? "Follower"}
+                                                alt={f.full_name ?? t("follower")}
                                                 width={24}
                                                 height={24}
                                                 className="h-full w-full object-cover"
@@ -174,7 +176,7 @@ export function FeaturedProviderCard({ org }: Props) {
                                 )}
                             </div>
                         ) : (
-                            <span className="text-xs text-gray-500">Be the first</span>
+                            <span className="text-xs text-gray-500">{t("beTheFirst")}</span>
                         )}
                     </div>
                     <FollowButton

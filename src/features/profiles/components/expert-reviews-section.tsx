@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,6 +27,7 @@ export function ExpertReviewsSection({
     isOwner: boolean;
     isAuthenticated: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [reviews] = useState(initialReviews);
     const [showForm, setShowForm] = useState(false);
     const [rating, setRating] = useState(0);
@@ -34,7 +36,7 @@ export function ExpertReviewsSection({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (rating < 1) return toast.error("Please select a rating");
+        if (rating < 1) return toast.error(t("selectRating"));
 
         startTransition(async () => {
             const result = await submitExpertReview({
@@ -43,11 +45,11 @@ export function ExpertReviewsSection({
                 body: body.trim() || undefined,
             });
             if (result.success) {
-                toast.success("Review submitted");
+                toast.success(t("reviewSubmitted"));
                 setShowForm(false);
                 window.location.reload();
             } else {
-                toast.error(result.error ?? "Failed to submit");
+                toast.error(result.error ?? t("failedSubmit"));
             }
         });
     };
@@ -61,13 +63,13 @@ export function ExpertReviewsSection({
                         <span className="text-3xl font-bold text-white">
                             {averageRating > 0 ? averageRating.toFixed(1) : "—"}
                         </span>
-                        <span className="text-sm text-gray-400">out of 5</span>
+                        <span className="text-sm text-gray-400">{t("outOf5")}</span>
                     </div>
                     <div className="mt-1">
                         <StarRating rating={averageRating} size="sm" />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                        {reviewCount} review{reviewCount !== 1 ? "s" : ""}
+                        {t("reviewCount", { count: reviewCount })}
                     </p>
                 </div>
 
@@ -76,7 +78,7 @@ export function ExpertReviewsSection({
                         onClick={() => setShowForm(!showForm)}
                         className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
-                        Write Review
+                        {t("writeReview")}
                     </Button>
                 )}
             </div>
@@ -84,20 +86,20 @@ export function ExpertReviewsSection({
             {showForm && (
                 <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-5">
                     <div>
-                        <div className="text-sm text-gray-300 mb-2">Your rating</div>
+                        <div className="text-sm text-gray-300 mb-2">{t("yourRating")}</div>
                         <StarRating rating={rating} size="lg" interactive onRate={setRating} />
                     </div>
                     <Textarea
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
-                        placeholder="Share your experience working with this expert..."
+                        placeholder={t("reviewPlaceholder")}
                         rows={4}
                         maxLength={1000}
                         className="bg-black/20 border-white/10 text-white"
                     />
                     <div className="flex gap-2">
                         <Button type="submit" disabled={isPending} className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
-                            {isPending ? "Submitting..." : "Submit Review"}
+                            {isPending ? t("submitting") : t("submitReview")}
                         </Button>
                         <Button
                             type="button"
@@ -105,7 +107,7 @@ export function ExpertReviewsSection({
                             onClick={() => setShowForm(false)}
                             className="border-white/10 hover:bg-white/10"
                         >
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </div>
                 </form>
@@ -114,7 +116,7 @@ export function ExpertReviewsSection({
             {reviews.length === 0 ? (
                 <div className="text-center py-12 bg-white/5 rounded-lg border border-dashed border-white/10">
                     <Star className="mx-auto h-10 w-10 text-gray-600 mb-2" />
-                    <p className="text-gray-400">No reviews yet. Be the first to leave one.</p>
+                    <p className="text-gray-400">{t("noReviews")}</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -131,7 +133,7 @@ export function ExpertReviewsSection({
                                     <div className="flex items-center justify-between gap-2">
                                         <div>
                                             <div className="text-sm font-medium text-white">
-                                                {review.reviewer?.full_name ?? review.reviewer?.username ?? "Anonymous"}
+                                                {review.reviewer?.full_name ?? review.reviewer?.username ?? t("anonymous")}
                                             </div>
                                             <div className="text-xs text-gray-500">
                                                 {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
@@ -154,7 +156,7 @@ export function ExpertReviewsSection({
             {!isAuthenticated && (
                 <div className="text-center py-4 text-xs text-gray-500 flex items-center justify-center gap-1">
                     <MessageSquare className="h-3 w-3" />
-                    Sign in to write a review
+                    {t("signInToReview")}
                 </div>
             )}
         </div>

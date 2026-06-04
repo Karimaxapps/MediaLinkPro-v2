@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import {
     Sheet,
@@ -38,6 +39,7 @@ interface CompanyEditFormProps {
 }
 
 export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
+    const t = useTranslations("companies");
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -74,14 +76,14 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
             const result = await updateOrganization(org.id, data);
 
             if (result.success) {
-                toast.success("Company profile updated successfully");
+                toast.success(t("form.profileUpdated"));
                 setOpen(false);
                 router.refresh();
             } else {
-                toast.error(result.error || "Failed to update profile");
+                toast.error(result.error || t("form.failedUpdate"));
             }
         } catch {
-            toast.error("An error occurred");
+            toast.error(t("errorOccurred"));
         } finally {
             setIsLoading(false);
         }
@@ -92,14 +94,14 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
             <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white">
                     <Edit className="h-4 w-4" />
-                    Edit Company
+                    {t("form.editCompany")}
                 </Button>
             </SheetTrigger>
             <SheetContent className="overflow-y-auto w-full sm:max-w-xl bg-black/95 border-white/10 text-white p-6">
                 <SheetHeader>
-                    <SheetTitle className="text-white">Edit Company Profile</SheetTitle>
+                    <SheetTitle className="text-white">{t("form.editCompanyProfile")}</SheetTitle>
                     <SheetDescription className="text-gray-400">
-                        Update your company information and settings.
+                        {t("form.editCompanyDesc")}
                     </SheetDescription>
                 </SheetHeader>
 
@@ -110,7 +112,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium text-gray-200 flex items-center gap-2">
                                 <ImageIcon className="h-4 w-4 text-[var(--brand)]" />
-                                Company Logo
+                                {t("form.companyLogo")}
                             </h3>
                             <div className="bg-white/5 p-4 rounded-lg border border-white/10 flex flex-col items-center">
                                 <AvatarUpload
@@ -122,20 +124,20 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                 />
                                 <input type="hidden" {...form.register('logo_url')} />
                                 <p className="text-xs text-gray-500 mt-2 text-center">
-                                    Recommended: 300x300px. JPG, PNG.
+                                    {t("form.editLogoHint")}
                                 </p>
                             </div>
                         </div>
 
                         {/* Basic Info */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">Basic Info</h3>
+                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">{t("form.basicInfo")}</h3>
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Company Name</FormLabel>
+                                        <FormLabel className="text-gray-300">{t("form.companyName")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                         </FormControl>
@@ -149,7 +151,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="type"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Type</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.type")}</FormLabel>
                                             <Select
                                                 onValueChange={(val) => {
                                                     field.onChange(val);
@@ -162,7 +164,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                                        <SelectValue placeholder="Select type" />
+                                                        <SelectValue placeholder={t("form.selectType")} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="bg-black border-white/10 text-white">
@@ -180,7 +182,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="slug"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">URL Slug</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.urlSlug")}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                             </FormControl>
@@ -198,12 +200,12 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-gray-300">
-                                                Broadcaster Type <span className="text-red-500">*</span>
+                                                {t("form.broadcasterType")} <span className="text-red-500">*</span>
                                             </FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                                        <SelectValue placeholder="Television or Radio?" />
+                                                        <SelectValue placeholder={t("form.televisionOrRadio")} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="bg-black border-white/10 text-white">
@@ -225,11 +227,11 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="broadcaster_genre"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Genre</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.genre")}</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                                        <SelectValue placeholder="e.g. News, Sports, Entertainment…" />
+                                                        <SelectValue placeholder={t("form.genrePlaceholder")} />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="bg-black border-white/10 text-white">
@@ -249,7 +251,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                 name="tagline"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Tagline</FormLabel>
+                                        <FormLabel className="text-gray-300">{t("form.tagline")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                         </FormControl>
@@ -261,13 +263,13 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
 
                         {/* Details */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">Details</h3>
+                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">{t("form.details")}</h3>
                             <FormField
                                 control={form.control}
                                 name="main_activity"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Main Activity</FormLabel>
+                                        <FormLabel className="text-gray-300">{t("form.mainActivity")}</FormLabel>
                                         <FormControl>
                                             <Textarea {...field} className="bg-white/5 border-white/10 text-white h-20 resize-none" />
                                         </FormControl>
@@ -280,7 +282,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">About Us</FormLabel>
+                                        <FormLabel className="text-gray-300">{t("form.aboutUs")}</FormLabel>
                                         <FormControl>
                                             <Textarea {...field} className="bg-white/5 border-white/10 text-white h-32 resize-none" />
                                         </FormControl>
@@ -292,14 +294,14 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
 
                         {/* Contact */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">Contact</h3>
+                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">{t("form.contactSection")}</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
                                     name="website"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Website</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.website")}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                             </FormControl>
@@ -312,7 +314,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="contact_email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Public Email</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.publicEmail")}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                             </FormControl>
@@ -327,7 +329,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Phone</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.phone")}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                             </FormControl>
@@ -340,7 +342,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                     name="country"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-gray-300">Country</FormLabel>
+                                            <FormLabel className="text-gray-300">{t("form.country")}</FormLabel>
                                             <CountrySelect value={field.value} onChange={field.onChange} />
                                             <FormMessage />
                                         </FormItem>
@@ -352,7 +354,7 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
                                 name="address"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-gray-300">Address</FormLabel>
+                                        <FormLabel className="text-gray-300">{t("form.address")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} className="bg-white/5 border-white/10 text-white" />
                                         </FormControl>
@@ -364,33 +366,33 @@ export function CompanyEditForm({ org, currentUserId }: CompanyEditFormProps) {
 
                         {/* Socials */}
                         <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">Socials</h3>
+                            <h3 className="text-sm font-medium text-gray-200 border-b border-white/10 pb-2">{t("form.socials")}</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField control={form.control} name="linkedin_url" render={({ field }) => (
-                                    <FormItem><FormLabel className="text-gray-300">LinkedIn</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel className="text-gray-300">{t("form.linkedin")}</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
                                 )} />
                                 <FormField control={form.control} name="x_url" render={({ field }) => (
-                                    <FormItem><FormLabel className="text-gray-300">X (Twitter)</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel className="text-gray-300">{t("form.xTwitter")}</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
                                 )} />
                                 <FormField control={form.control} name="facebook_url" render={({ field }) => (
-                                    <FormItem><FormLabel className="text-gray-300">Facebook</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel className="text-gray-300">{t("form.facebook")}</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
                                 )} />
                                 <FormField control={form.control} name="instagram_url" render={({ field }) => (
-                                    <FormItem><FormLabel className="text-gray-300">Instagram</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel className="text-gray-300">{t("form.instagram")}</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
                                 )} />
                                 <FormField control={form.control} name="youtube_url" render={({ field }) => (
-                                    <FormItem><FormLabel className="text-gray-300">YouTube</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
+                                    <FormItem><FormLabel className="text-gray-300">{t("form.youtube")}</FormLabel><FormControl><Input {...field} className="bg-white/5 border-white/10 text-white" /></FormControl><FormMessage /></FormItem>
                                 )} />
                             </div>
                         </div>
 
                         <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
                             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="bg-white text-black hover:bg-gray-200 border-transparent">
-                                Cancel
+                                {t("form.cancel")}
                             </Button>
                             <Button type="submit" disabled={isLoading} className="bg-[var(--brand)] text-black hover:bg-[#B5964A]">
                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Save Changes
+                                {t("form.saveChanges")}
                             </Button>
                         </div>
                     </form>
