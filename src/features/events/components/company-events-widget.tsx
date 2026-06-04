@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,10 @@ type Props = {
 };
 
 export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
-  const events = await getOrganizationEvents(orgId);
+  const [t, events] = await Promise.all([
+    getTranslations("events"),
+    getOrganizationEvents(orgId),
+  ]);
   const upcoming = events
     // eslint-disable-next-line react-hooks/purity
     .filter((e) => new Date(e.start_date).getTime() > Date.now())
@@ -25,10 +29,10 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
         <div>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Calendar className="h-4 w-4 text-[var(--brand)]" />
-            Events
+            {t("events")}
           </CardTitle>
           <p className="text-xs text-gray-400 mt-1">
-            {events.length} total · {upcoming.length} upcoming
+            {t("totalUpcoming", { total: events.length, upcoming: upcoming.length })}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -37,14 +41,14 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
               variant="outline"
               className="bg-transparent border-white/10 text-white hover:bg-white/10 text-xs"
             >
-              Browse all
+              {t("browseAll")}
             </Button>
           </Link>
           <CreateGate
             noun="event"
             nounPlural="events"
             href="/events/new"
-            label="Create event"
+            label={t("createEventLower")}
             hasOrg={true}
             quota={eventsQuota}
           />
@@ -53,9 +57,7 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
 
       <CardContent>
         {upcoming.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4 text-center">
-            No upcoming events. Create one to engage your audience.
-          </p>
+          <p className="text-sm text-gray-400 py-4 text-center">{t("noUpcomingCreate")}</p>
         ) : (
           <div className="space-y-2">
             {upcoming.map((e) => (
@@ -77,7 +79,7 @@ export async function CompanyEventsWidget({ orgId, eventsQuota }: Props) {
                   <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
                     {e.is_online ? (
                       <span className="inline-flex items-center gap-1">
-                        <Users className="size-3" /> Online
+                        <Users className="size-3" /> {t("online")}
                       </span>
                     ) : e.location ? (
                       <span className="inline-flex items-center gap-1 truncate">

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Calendar, MapPin, Building2, Users, Video, Globe, Filter, X } from "lucide-react";
 import type { Event } from "../types";
@@ -20,6 +20,7 @@ type Props = {
 };
 
 export function EventsListClient({ events, hasOrg = false, eventsQuota = null }: Props) {
+  const t = useTranslations("events");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [showOnlineOnly, setShowOnlineOnly] = useState<boolean | null>(null);
 
@@ -52,18 +53,18 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
     return result;
   }, [events, selectedTypes, showOnlineOnly]);
 
-  const eventTypes = Object.entries(EVENT_TYPE_LABELS) as [EventType, string][];
+  const eventTypeKeys = Object.keys(EVENT_TYPE_LABELS) as EventType[];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Events</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{t("title")}</h1>
           <p className="text-sm text-gray-400">
-            Discover industry conferences, webinars, workshops, and meetups.
+            {t("listSubtitle")}
             <span className="text-gray-500 ml-2">
-              {filteredEvents.length} event{filteredEvents.length !== 1 ? "s" : ""}
+              {t("eventCount", { count: filteredEvents.length })}
             </span>
           </p>
         </div>
@@ -72,7 +73,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
             noun="event"
             nounPlural="events"
             href="/events/new"
-            label="Create Event"
+            label={t("createEvent")}
             hasOrg={hasOrg}
             quota={eventsQuota}
           />
@@ -83,11 +84,11 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
       <div className="flex flex-wrap items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-lg">
         <div className="flex items-center gap-2 text-sm text-gray-400">
           <Filter className="h-4 w-4" />
-          <span>Type:</span>
+          <span>{t("typeFilter")}</span>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {eventTypes.map(([key, label]) => (
+          {eventTypeKeys.map((key) => (
             <button
               key={key}
               onClick={() => toggleType(key)}
@@ -102,7 +103,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
                   : undefined
               }
             >
-              {label}
+              {t(`eventTypes.${key}`)}
             </button>
           ))}
         </div>
@@ -119,7 +120,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
             }`}
           >
             <Video className="h-3.5 w-3.5" />
-            Online
+            {t("online")}
           </button>
           <button
             onClick={() => setShowOnlineOnly(showOnlineOnly === false ? null : false)}
@@ -130,7 +131,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
             }`}
           >
             <MapPin className="h-3.5 w-3.5" />
-            In-Person
+            {t("inPerson")}
           </button>
         </div>
 
@@ -140,7 +141,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
             className="flex items-center gap-1 ml-auto px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
           >
             <X className="h-3.5 w-3.5" />
-            Clear
+            {t("clear")}
           </button>
         )}
       </div>
@@ -155,13 +156,9 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
       ) : (
         <EmptyState
           icon={Calendar}
-          title="No events found"
-          description={
-            hasActiveFilters
-              ? "Try adjusting your filters or search terms."
-              : "No upcoming events. Check back soon!"
-          }
-          actionLabel={hasActiveFilters ? "Clear Filters" : undefined}
+          title={t("noEventsTitle")}
+          description={hasActiveFilters ? t("noEventsFiltered") : t("noEventsEmpty")}
+          actionLabel={hasActiveFilters ? t("clearFilters") : undefined}
           onAction={hasActiveFilters ? clearFilters : undefined}
         />
       )}
@@ -170,6 +167,7 @@ export function EventsListClient({ events, hasOrg = false, eventsQuota = null }:
 }
 
 function EventCard({ event }: { event: Event }) {
+  const t = useTranslations("events");
   const startDate = new Date(event.start_date);
   const endDate = new Date(event.end_date);
   const isSameDay = startDate.toDateString() === endDate.toDateString();
@@ -203,17 +201,17 @@ function EventCard({ event }: { event: Event }) {
           className="absolute top-3 left-3 px-2.5 py-1 text-xs font-medium rounded-md"
           style={{ backgroundColor: color, color: "#000" }}
         >
-          {EVENT_TYPE_LABELS[event.event_type as EventType]}
+          {t(`eventTypes.${event.event_type}`)}
         </div>
         {event.is_online && (
           <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 text-xs bg-[var(--brand-secondary)] text-white rounded-md">
             <Globe className="h-3 w-3" />
-            Online
+            {t("online")}
           </div>
         )}
         {isPast && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-sm font-medium text-white/70">Past Event</span>
+            <span className="text-sm font-medium text-white/70">{t("pastEvent")}</span>
           </div>
         )}
       </div>
@@ -234,7 +232,7 @@ function EventCard({ event }: { event: Event }) {
           <div className="flex items-center text-sm text-gray-400">
             <MapPin className="mr-2 h-4 w-4 flex-shrink-0" />
             <span className="truncate">
-              {event.is_online ? "Online Event" : event.location || "TBA"}
+              {event.is_online ? t("onlineEvent") : event.location || t("tba")}
             </span>
           </div>
           {event.organizations && (
@@ -248,10 +246,10 @@ function EventCard({ event }: { event: Event }) {
         <div className="flex items-center justify-between pt-2 border-t border-white/10">
           <div className="flex items-center text-xs text-gray-500">
             <Users className="mr-1 h-3.5 w-3.5" />
-            {event.interest_count ?? 0} interested
+            {t("interestedCount", { count: event.interest_count ?? 0 })}
           </div>
           <span className="text-xs text-[var(--brand)] font-medium group-hover:underline">
-            View Details
+            {t("viewDetails")}
           </span>
         </div>
       </div>

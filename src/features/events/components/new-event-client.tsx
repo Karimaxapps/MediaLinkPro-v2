@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -25,6 +26,7 @@ export function NewEventClient({
     organizations: Org[];
     userId: string;
 }) {
+    const t = useTranslations("events");
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState({
@@ -64,7 +66,7 @@ export function NewEventClient({
         e.preventDefault();
 
         if (!form.title || !form.start_date || !form.end_date || !form.organization_id) {
-            toast.error("Please fill in all required fields");
+            toast.error(t("fillRequired"));
             return;
         }
 
@@ -85,10 +87,10 @@ export function NewEventClient({
             });
 
             if (result.success && result.slug) {
-                toast.success("Event created!");
+                toast.success(t("eventCreated"));
                 router.push(`/events/${result.slug}`);
             } else {
-                toast.error(result.error ?? "Failed to create event");
+                toast.error(result.error ?? t("failedCreate"));
             }
         });
     };
@@ -100,18 +102,18 @@ export function NewEventClient({
                 className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
             >
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
-                Back to events
+                {t("backToEvents")}
             </Link>
 
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Create Event</h1>
-                <p className="text-sm text-gray-400">Host a new event for the MediaLinkPro community.</p>
+                <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{t("createEvent")}</h1>
+                <p className="text-sm text-gray-400">{t("createSubtitle")}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-white/10 bg-white/5 p-6">
                 {organizations.length > 1 && (
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Organization *</Label>
+                        <Label className="text-gray-300">{t("organizationReq")}</Label>
                         <select
                             value={form.organization_id}
                             onChange={(e) => update("organization_id", e.target.value)}
@@ -127,38 +129,36 @@ export function NewEventClient({
                 )}
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">Title *</Label>
+                    <Label className="text-gray-300">{t("titleReq")}</Label>
                     <Input
                         value={form.title}
                         onChange={(e) => update("title", e.target.value)}
-                        placeholder="Annual Broadcast Summit 2026"
+                        placeholder={t("titlePlaceholder")}
                         className="bg-black/20 border-white/10 text-white"
                         required
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">Description</Label>
+                    <Label className="text-gray-300">{t("description")}</Label>
                     <RichTextEditor
                         value={form.description}
                         onChange={(value) => update("description", value)}
-                        placeholder="Tell attendees what to expect..."
+                        placeholder={t("descriptionPlaceholder")}
                     />
-                    <p className="text-xs text-gray-500">
-                        Use the toolbar to format with headings, bold, italics, lists, and quotes.
-                    </p>
+                    <p className="text-xs text-gray-500">{t("formatHint")}</p>
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">Event Type *</Label>
+                    <Label className="text-gray-300">{t("eventTypeReq")}</Label>
                     <select
                         value={form.event_type}
                         onChange={(e) => update("event_type", e.target.value as EventType)}
                         className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-white text-sm focus:border-[var(--brand)]/50 outline-none"
                     >
-                        {Object.entries(EVENT_TYPE_LABELS).map(([key, label]) => (
+                        {(Object.keys(EVENT_TYPE_LABELS) as EventType[]).map((key) => (
                             <option key={key} value={key}>
-                                {label}
+                                {t(`eventTypes.${key}`)}
                             </option>
                         ))}
                     </select>
@@ -166,7 +166,7 @@ export function NewEventClient({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Start Date & Time *</Label>
+                        <Label className="text-gray-300">{t("startReq")}</Label>
                         <Input
                             type="datetime-local"
                             value={form.start_date}
@@ -176,7 +176,7 @@ export function NewEventClient({
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-gray-300">End Date & Time *</Label>
+                        <Label className="text-gray-300">{t("endReq")}</Label>
                         <Input
                             type="datetime-local"
                             value={form.end_date}
@@ -196,34 +196,34 @@ export function NewEventClient({
                         className="h-4 w-4 rounded border-white/20 bg-black/20"
                     />
                     <Label htmlFor="is_online" className="text-gray-300 cursor-pointer">
-                        This is an online event
+                        {t("isOnlineEvent")}
                     </Label>
                 </div>
 
                 {form.is_online ? (
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Online URL</Label>
+                        <Label className="text-gray-300">{t("onlineUrl")}</Label>
                         <Input
                             value={form.online_url}
                             onChange={(e) => update("online_url", e.target.value)}
-                            placeholder="https://zoom.us/..."
+                            placeholder={t("onlineUrlPlaceholder")}
                             className="bg-black/20 border-white/10 text-white"
                         />
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        <Label className="text-gray-300">Location</Label>
+                        <Label className="text-gray-300">{t("location")}</Label>
                         <Input
                             value={form.location}
                             onChange={(e) => update("location", e.target.value)}
-                            placeholder="Dubai World Trade Centre, UAE"
+                            placeholder={t("locationPlaceholder")}
                             className="bg-black/20 border-white/10 text-white"
                         />
                     </div>
                 )}
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">Cover Image</Label>
+                    <Label className="text-gray-300">{t("coverImage")}</Label>
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -258,7 +258,7 @@ export function NewEventClient({
                                     ) : (
                                         <ImagePlus className="h-3.5 w-3.5 mr-1.5" />
                                     )}
-                                    Replace
+                                    {t("replace")}
                                 </Button>
                                 <Button
                                     type="button"
@@ -269,7 +269,7 @@ export function NewEventClient({
                                     className="bg-black/60 border-white/20 text-white hover:bg-red-500/20 hover:border-red-500/40"
                                 >
                                     <X className="h-3.5 w-3.5 mr-1.5" />
-                                    Remove
+                                    {t("remove")}
                                 </Button>
                             </div>
                         </div>
@@ -283,14 +283,14 @@ export function NewEventClient({
                             {isUploading ? (
                                 <>
                                     <Loader2 className="h-6 w-6 animate-spin text-[var(--brand)]" />
-                                    <span className="text-sm">Uploading…</span>
+                                    <span className="text-sm">{t("uploading")}</span>
                                 </>
                             ) : (
                                 <>
                                     <ImagePlus className="h-6 w-6 text-[var(--brand)]" />
-                                    <span className="text-sm font-medium">Upload cover image</span>
+                                    <span className="text-sm font-medium">{t("uploadCover")}</span>
                                     <span className="text-xs text-gray-500">
-                                        PNG, JPG, WEBP or GIF · max {MAX_COVER_MB} MB · 16:6 recommended
+                                        {t("coverHint", { max: MAX_COVER_MB })}
                                     </span>
                                 </>
                             )}
@@ -299,30 +299,27 @@ export function NewEventClient({
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">Max Attendees</Label>
+                    <Label className="text-gray-300">{t("maxAttendees")}</Label>
                     <Input
                         type="number"
                         min="1"
                         value={form.max_attendees}
                         onChange={(e) => update("max_attendees", e.target.value)}
-                        placeholder="Unlimited if blank"
+                        placeholder={t("unlimitedBlank")}
                         className="bg-black/20 border-white/10 text-white md:max-w-xs"
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-gray-300">External Registration Link</Label>
+                    <Label className="text-gray-300">{t("externalRegLink")}</Label>
                     <Input
                         type="url"
                         value={form.registration_url}
                         onChange={(e) => update("registration_url", e.target.value)}
-                        placeholder="https://eventbrite.com/e/your-event"
+                        placeholder={t("regUrlPlaceholder")}
                         className="bg-black/20 border-white/10 text-white"
                     />
-                    <p className="text-xs text-gray-500">
-                        Optional. If provided, the &quot;Register Now&quot; button on the event page
-                        will open this URL in a new tab instead of using in-app registration.
-                    </p>
+                    <p className="text-xs text-gray-500">{t("regLinkHint")}</p>
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -331,11 +328,11 @@ export function NewEventClient({
                         disabled={isPending || isUploading}
                         className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
-                        {isPending ? "Creating..." : isUploading ? "Uploading image…" : "Create Event"}
+                        {isPending ? t("creating") : isUploading ? t("uploadingImage") : t("createEvent")}
                     </Button>
                     <Link href="/events">
                         <Button type="button" variant="outline" className="border-white/10 hover:bg-white/10">
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </Link>
                 </div>

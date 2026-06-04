@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { sanitizeHtml } from "@/lib/sanitize";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,7 +21,7 @@ import {
   X,
 } from "lucide-react";
 import type { Event, EventInterest, EventInterestType, EventRegistration } from "../types";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_COLORS, type EventType } from "../types";
+import { EVENT_TYPE_COLORS, type EventType } from "../types";
 import {
   registerForEvent,
   cancelRegistration,
@@ -40,6 +41,7 @@ export function EventDetailsClient({
   initialInterests?: EventInterest[];
   initialMyInterest?: EventInterest | null;
 }) {
+  const t = useTranslations("events");
   const [registration, setRegistration] = useState(initialRegistration);
   const [interests, setInterests] = useState<EventInterest[]>(initialInterests);
   const [myInterest, setMyInterest] = useState<EventInterest | null>(initialMyInterest);
@@ -58,7 +60,7 @@ export function EventDetailsClient({
           setMyInterest(null);
           setInterests((prev) => prev.filter((i) => i.user_id !== myInterest.user_id));
         } else {
-          toast.error(result.error ?? "Failed to update");
+          toast.error(result.error ?? t("failedUpdate"));
         }
       });
       return;
@@ -66,7 +68,7 @@ export function EventDetailsClient({
     startInterestTransition(async () => {
       const result = await setEventInterest(event.id, next);
       if (result.success) {
-        toast.success(next === "going" ? "You're going!" : "Marked as maybe");
+        toast.success(next === "going" ? t("youreGoingExcl") : t("markedMaybe"));
         const updated: EventInterest = {
           id: myInterest?.id ?? "temp",
           event_id: event.id,
@@ -98,7 +100,7 @@ export function EventDetailsClient({
     startTransition(async () => {
       const result = await registerForEvent(event.id);
       if (result.success) {
-        toast.success("You're registered!");
+        toast.success(t("youreRegistered"));
         setRegistration({
           id: "temp",
           event_id: event.id,
@@ -107,7 +109,7 @@ export function EventDetailsClient({
           registered_at: new Date().toISOString(),
         });
       } else {
-        toast.error(result.error ?? "Failed to register");
+        toast.error(result.error ?? t("failedRegister"));
       }
     });
   };
@@ -116,10 +118,10 @@ export function EventDetailsClient({
     startTransition(async () => {
       const result = await cancelRegistration(event.id);
       if (result.success) {
-        toast.success("Registration cancelled");
+        toast.success(t("registrationCancelled"));
         setRegistration(null);
       } else {
-        toast.error(result.error ?? "Failed to cancel");
+        toast.error(result.error ?? t("failedCancel"));
       }
     });
   };
@@ -131,7 +133,7 @@ export function EventDetailsClient({
         className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
       >
         <ArrowLeft className="mr-1.5 h-4 w-4" />
-        Back to events
+        {t("backToEvents")}
       </Link>
 
       {/* Cover */}
@@ -157,16 +159,16 @@ export function EventDetailsClient({
               className="px-2.5 py-1 text-xs font-medium rounded-md"
               style={{ backgroundColor: color, color: "#000" }}
             >
-              {EVENT_TYPE_LABELS[event.event_type as EventType]}
+              {t(`eventTypes.${event.event_type}`)}
             </span>
             {event.is_online && (
               <span className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[var(--brand-secondary)] text-white rounded-md">
                 <Globe className="h-3 w-3" />
-                Online
+                {t("online")}
               </span>
             )}
             {isPast && (
-              <span className="px-2.5 py-1 text-xs bg-gray-700 text-white rounded-md">Past</span>
+              <span className="px-2.5 py-1 text-xs bg-gray-700 text-white rounded-md">{t("past")}</span>
             )}
           </div>
           <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">{event.title}</h1>
@@ -201,7 +203,7 @@ export function EventDetailsClient({
         <div className="lg:col-span-2 space-y-6">
           {event.description && (
             <section className="rounded-xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-lg font-semibold text-white mb-3">About this event</h2>
+              <h2 className="text-lg font-semibold text-white mb-3">{t("aboutEvent")}</h2>
               <div
                 className="text-sm text-gray-300 leading-relaxed [&_p]:my-3 [&_strong]:text-white [&_strong]:font-semibold [&_em]:italic [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1 [&_li]:marker:text-[var(--brand)] [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3 [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description ?? "") }}
@@ -233,12 +235,12 @@ export function EventDetailsClient({
               </div>
               <div className="min-w-0">
                 <div className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">
-                  Organized by
+                  {t("organizedBy")}
                 </div>
                 <div className="text-white font-semibold truncate group-hover:text-[var(--brand)] transition-colors">
                   {event.organizations.name}
                 </div>
-                <div className="text-xs text-gray-500 mt-0.5">View company profile →</div>
+                <div className="text-xs text-gray-500 mt-0.5">{t("viewCompanyProfile")}</div>
               </div>
             </Link>
           )}
@@ -247,7 +249,7 @@ export function EventDetailsClient({
             <div className="flex items-start gap-3">
               <Calendar className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-400">Date</div>
+                <div className="text-sm text-gray-400">{t("date")}</div>
                 <div className="text-white font-medium">
                   {format(startDate, "MMM d, yyyy")}
                   {!isSameDay && ` — ${format(endDate, "MMM d, yyyy")}`}
@@ -258,7 +260,7 @@ export function EventDetailsClient({
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-400">Time</div>
+                <div className="text-sm text-gray-400">{t("time")}</div>
                 <div className="text-white font-medium">
                   {format(startDate, "h:mm a")} — {format(endDate, "h:mm a")}
                 </div>
@@ -268,9 +270,9 @@ export function EventDetailsClient({
             <div className="flex items-start gap-3">
               <MapPin className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div>
-                <div className="text-sm text-gray-400">Location</div>
+                <div className="text-sm text-gray-400">{t("location")}</div>
                 <div className="text-white font-medium">
-                  {event.is_online ? "Online Event" : event.location || "TBA"}
+                  {event.is_online ? t("onlineEvent") : event.location || t("tba")}
                 </div>
                 {event.is_online && event.online_url && registration && (
                   <a
@@ -279,7 +281,7 @@ export function EventDetailsClient({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 mt-1 text-xs text-[var(--brand-secondary)] hover:underline"
                   >
-                    Join link <ExternalLink className="h-3 w-3" />
+                    {t("joinLink")} <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </div>
@@ -288,9 +290,9 @@ export function EventDetailsClient({
             <div className="flex items-start gap-3">
               <Users className="h-5 w-5 text-[var(--brand)] flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-gray-400">Interested</div>
+                <div className="text-sm text-gray-400">{t("interested")}</div>
                 <div className="text-white font-medium">
-                  {interestCount} {interestCount === 1 ? "person" : "people"}
+                  {t("personCount", { count: interestCount })}
                 </div>
                 {interests.length > 0 && (
                   <div className="flex items-center mt-2">
@@ -299,12 +301,12 @@ export function EventDetailsClient({
                         <Link
                           key={i.id}
                           href={i.profiles?.username ? `/profiles/${i.profiles.username}` : "#"}
-                          title={i.profiles?.full_name ?? "Attendee"}
+                          title={i.profiles?.full_name ?? t("attendee")}
                         >
                           <Avatar className="h-7 w-7 border-2 border-[#0B0F14] hover:ring-2 hover:ring-[var(--brand)] transition">
                             <AvatarImage
                               src={i.profiles?.avatar_url ?? undefined}
-                              alt={i.profiles?.full_name ?? "Attendee"}
+                              alt={i.profiles?.full_name ?? t("attendee")}
                             />
                             <AvatarFallback className="bg-[var(--brand-secondary)]/20 text-[var(--brand-secondary)] text-[10px]">
                               {(i.profiles?.full_name ?? "?").substring(0, 2).toUpperCase()}
@@ -314,7 +316,7 @@ export function EventDetailsClient({
                       ))}
                     </div>
                     {interestCount > 5 && (
-                      <span className="ml-2 text-xs text-gray-400">+{interestCount - 5} more</span>
+                      <span className="ml-2 text-xs text-gray-400">{t("moreCount", { count: interestCount - 5 })}</span>
                     )}
                   </div>
                 )}
@@ -336,7 +338,7 @@ export function EventDetailsClient({
                     }
                   >
                     <CheckCircle2 className="mr-1.5 h-4 w-4" />
-                    I&apos;ll go
+                    {t("illGo")}
                   </Button>
                   <Button
                     type="button"
@@ -348,7 +350,7 @@ export function EventDetailsClient({
                         : "w-full bg-transparent border border-white/10 text-white hover:bg-white/10"
                     }
                   >
-                    Maybe
+                    {t("maybe")}
                   </Button>
                 </div>
 
@@ -357,7 +359,7 @@ export function EventDetailsClient({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-green-400">
                       <CheckCircle2 className="h-4 w-4" />
-                      {registration.status === "waitlisted" ? "On waitlist" : "Registered"}
+                      {registration.status === "waitlisted" ? t("onWaitlist") : t("registered")}
                     </div>
                     <Button
                       onClick={handleCancel}
@@ -366,7 +368,7 @@ export function EventDetailsClient({
                       className="w-full bg-transparent border-white/10 text-white hover:bg-white/10"
                     >
                       <X className="mr-1.5 h-4 w-4" />
-                      Cancel Registration
+                      {t("cancelRegistration")}
                     </Button>
                   </div>
                 ) : event.registration_url ? (
@@ -381,7 +383,7 @@ export function EventDetailsClient({
                       className="w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                     >
                       <ExternalLink className="mr-1.5 h-4 w-4" />
-                      Register Now
+                      {t("registerNow")}
                     </Button>
                   </a>
                 ) : (
@@ -390,7 +392,7 @@ export function EventDetailsClient({
                     disabled={isPending}
                     className="w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
                   >
-                    {isFull ? "Join Waitlist" : "Register Now"}
+                    {isFull ? t("joinWaitlist") : t("registerNow")}
                   </Button>
                 )}
               </div>
