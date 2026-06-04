@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ export function FollowButton({
     showCount = false,
     className,
 }: FollowButtonProps) {
+    const t = useTranslations("companies");
     const router = useRouter();
     const [isFollowing, setIsFollowing] = useState(initialFollowing);
     const [count, setCount] = useState(initialCount ?? 0);
@@ -56,10 +58,10 @@ export function FollowButton({
                 // Revert
                 setIsFollowing(!next);
                 setCount((c) => Math.max(0, c + (next ? -1 : 1)));
-                toast.error(result.error || (next ? "Couldn't follow" : "Couldn't unfollow"));
+                toast.error(result.error || (next ? t("couldntFollow") : t("couldntUnfollow")));
                 return;
             }
-            toast.success(next ? "Following" : "Unfollowed");
+            toast.success(next ? t("following") : t("unfollowed"));
             router.refresh();
         });
     };
@@ -84,9 +86,9 @@ export function FollowButton({
             >
                 <Check className={cn("h-3.5 w-3.5", hover && "hidden")} />
                 <span className={cn(hover && "hidden")}>
-                    Following{showCount && count > 0 ? ` · ${formatCount(count)}` : ""}
+                    {t("following")}{showCount && count > 0 ? ` · ${formatCount(count)}` : ""}
                 </span>
-                <span className={cn("hidden", hover && "inline")}>Unfollow</span>
+                <span className={cn("hidden", hover && "inline")}>{t("unfollow")}</span>
             </Button>
         );
     }
@@ -103,7 +105,7 @@ export function FollowButton({
         >
             <Plus className="h-3.5 w-3.5" />
             <span>
-                Follow{showCount && count > 0 ? ` · ${formatCount(count)}` : ""}
+                {t("follow")}{showCount && count > 0 ? ` · ${formatCount(count)}` : ""}
             </span>
         </Button>
     );

@@ -114,7 +114,27 @@
       "Bash(rm -f .git/index.lock && git status --short)",
       "Bash(taskkill //F //IM node.exe //T)",
       "Bash(taskkill //F //IM git.exe)",
-      "Bash(rm -f .git/index.lock)"
+      "Bash(rm -f .git/index.lock)",
+      "Bash(git ls-tree *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(node scripts/create-stripe-prices.mjs)",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__apply_migration",
+      "Bash(awk 'END{print NR}' src/features/admin/server/actions.ts)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' -L http://localhost:3000__TRACKED_VAR__)",
+      "Bash(python -c ' *)",
+      "Bash(node -e ' *)",
+      "Bash(npx eslint *)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(grep -oE '\\(organizations/logos/[^\"]{0,40}|>VZ<|alt=\"Vizrt\"\\)')",
+      "Bash(grep -oE '\\(organizations/logos/[^\"&]{0,40}|>VZ<|alt=\"Vizrt\"\\)')",
+      "Bash(curl -s \"http://localhost:3000/?cb=$\\(date +%s\\)\")",
+      "Bash(grep -oE '\\(organizations/logos/[^\"&]{0,30}|>VZ<|alt=\"Vizrt\"|alt=\"Harmonic\"\\)')",
+      "Bash(curl -s \"http://localhost:3000/?cb=$\\(date +%s%N\\)\")",
+      "Bash(curl -s \"http://localhost:3000/?cb=$\\(date +%s%N\\)\" > /tmp/lp.html; echo \"total <img alt> in trust band region \\(unique alts\\):\"; grep -oE 'alt=\"[^\"]+\"' /tmp/lp.html | sort -u | grep -vE 'MediaLinkPro|Nimbra|Aston|InfinitySet|Member' | wc -l; echo \"--- unique logo image URLs ---\"; grep -oE 'organizations/logos/[^\"&]+' /tmp/lp.html | sort -u | wc -l; echo \"--- which of the 19 brands are MISSING a logo \\(showing abbr fallback\\) ---\"; for b in Vizrt \"Grass Valley\" \"Ross Video\" Blackmagic Harmonic EVS Avid Canon DJI Panasonic Adobe Telestream LiveU Dalet \"Matrox Video\" \"Net Insight\" Brainstorm Maxon Veritone; do if ! grep -q \"alt=\\\\\"$b\\\\\"\" /tmp/lp.html; then echo \"MISSING IMG: $b\"; fi; done; echo \"done\")",
+      "mcp__supabase__generate_typescript_types",
+      "Bash(git reset *)",
+      "Bash(ps -W)"
     ]
   }
 }

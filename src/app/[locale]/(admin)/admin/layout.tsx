@@ -3,7 +3,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight, Palette } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight, Palette, BadgeCheck } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 
 const NAV = [
@@ -13,6 +13,7 @@ const NAV = [
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/ai-tools", label: "AI Tools", icon: Sparkles },
     { href: "/admin/ownership-requests", label: "Ownership Claims", icon: GitMerge },
+    { href: "/admin/verifications", label: "Verifications", icon: BadgeCheck },
     { href: "/admin/reviews", label: "Reviews", icon: Star },
     { href: "/admin/blog", label: "Blog Posts", icon: PenSquare },
     { href: "/admin/ads", label: "Ad Campaigns", icon: Megaphone },

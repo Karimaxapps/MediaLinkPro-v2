@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
-import ReactCountryFlag from "react-country-flag";
+import { Globe } from "lucide-react";
 import { routing, type Locale } from "@/i18n/routing";
 import {
   DropdownMenu,
@@ -13,16 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-/** Maps next-intl locale codes → ISO 3166-1 alpha-2 country codes */
-const LOCALE_COUNTRY: Record<string, string> = {
-  en: "GB",
-  es: "ES",
-  fr: "FR",
-  de: "DE",
-  zh: "CN",
-};
-
-/** Human-readable labels shown as tooltip / aria-label */
+/** Human-readable labels shown in the trigger / dropdown */
 const LOCALE_LABEL: Record<string, string> = {
   en: "English",
   es: "Español",
@@ -31,23 +22,14 @@ const LOCALE_LABEL: Record<string, string> = {
   zh: "中文",
 };
 
-function Flag({ countryCode, size = 22 }: { countryCode: string; size?: number }) {
-  return (
-    <ReactCountryFlag
-      countryCode={countryCode}
-      svg
-      style={{ width: size, height: size, borderRadius: 3, display: "block" }}
-      aria-hidden="true"
-    />
-  );
-}
-
 type Props = {
   /** Optional subset of locales to display. Defaults to all routing.locales. */
   locales?: string[];
+  /** When true, the trigger shows the current language label next to the globe. */
+  showLabel?: boolean;
 };
 
-export function LocaleSwitcher({ locales }: Props) {
+export function LocaleSwitcher({ locales, showLabel = false }: Props) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
@@ -63,9 +45,10 @@ export function LocaleSwitcher({ locales }: Props) {
     return (
       <span
         aria-label={`Language: ${LOCALE_LABEL[locale] ?? locale}`}
-        className="inline-flex h-8 w-8 items-center justify-center px-2"
+        className="inline-flex items-center gap-2 px-2 h-8 text-sm text-gray-400"
       >
-        <Flag countryCode={LOCALE_COUNTRY[locale] ?? "GB"} size={20} />
+        <Globe className="h-4 w-4" />
+        {showLabel && (LOCALE_LABEL[locale] ?? locale)}
       </span>
     );
   }
@@ -99,29 +82,28 @@ export function LocaleSwitcher({ locales }: Props) {
         <Button
           variant="ghost"
           size="sm"
-          className="px-2 bg-transparent hover:bg-white/10 text-white"
+          className="px-2 gap-2 bg-transparent text-gray-400 hover:bg-white/10 hover:text-[var(--brand)]"
           aria-label={`Language: ${LOCALE_LABEL[locale] ?? locale}`}
         >
-          <Flag countryCode={LOCALE_COUNTRY[locale] ?? "GB"} size={20} />
+          <Globe className="h-4 w-4" />
+          {showLabel && <span className="text-sm">{LOCALE_LABEL[locale] ?? locale}</span>}
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         align="end"
-        className="bg-[#1a1a1a] border-white/10 min-w-0 w-14 p-1.5 flex flex-col gap-1"
+        className="bg-[#1a1a1a] border-white/10 min-w-[10rem] p-1.5 flex flex-col gap-1"
       >
         {displayLocales.map((loc) => (
           <DropdownMenuItem
             key={loc}
             onClick={() => switchLocale(loc)}
             title={LOCALE_LABEL[loc] ?? loc}
-            className={`justify-center cursor-pointer rounded-md px-1.5 py-1.5 hover:bg-white/10 focus:bg-white/10 text-white ${
-              loc === locale
-                ? "ring-1 ring-[var(--brand)]/70 bg-white/5"
-                : ""
+            className={`cursor-pointer rounded-md px-2.5 py-1.5 text-sm hover:bg-white/10 focus:bg-white/10 text-white ${
+              loc === locale ? "ring-1 ring-[var(--brand)]/70 bg-white/5" : ""
             }`}
           >
-            <Flag countryCode={LOCALE_COUNTRY[loc] ?? loc.toUpperCase()} size={22} />
+            {LOCALE_LABEL[loc] ?? loc}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

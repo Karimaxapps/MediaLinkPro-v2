@@ -1,18 +1,25 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { listAdminProducts } from "@/features/admin/server/actions";
+import { listAdminProducts, countFeaturedProducts } from "@/features/admin/server/actions";
+import { MAX_FEATURED_PRODUCTS } from "@/features/admin/constants";
 import { AdminProductRow } from "./product-row";
 import { Button } from "@/components/ui/button";
 
 export default async function AdminProductsPage() {
-    const products = await listAdminProducts();
+    const [products, featuredCount] = await Promise.all([
+        listAdminProducts(),
+        countFeaturedProducts(),
+    ]);
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">Products</h1>
-                    <p className="text-sm text-gray-400 mt-1">{products.length} most recent</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                        {products.length} most recent · {featuredCount}/{MAX_FEATURED_PRODUCTS}{" "}
+                        featured
+                    </p>
                 </div>
                 <Link href="/admin/products/new">
                     <Button className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold gap-2">

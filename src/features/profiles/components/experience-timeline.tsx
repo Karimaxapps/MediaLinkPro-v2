@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Briefcase, Plus, Trash2, Building2, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,9 +31,14 @@ interface ExperienceTimelineProps {
     isOwner: boolean;
 }
 
-function formatYearRange(startDate: string, endDate: string | null, isCurrent: boolean): string {
+function formatYearRange(
+    startDate: string,
+    endDate: string | null,
+    isCurrent: boolean,
+    presentLabel: string,
+): string {
     const startYear = new Date(startDate).getFullYear();
-    if (isCurrent || !endDate) return `${startYear} – Present`;
+    if (isCurrent || !endDate) return `${startYear} – ${presentLabel}`;
     const endYear = new Date(endDate).getFullYear();
     if (startYear === endYear) return `${startYear}`;
     return `${startYear} – ${endYear}`;
@@ -43,6 +49,7 @@ function formatMonthYear(d: string): string {
 }
 
 export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineProps) {
+    const t = useTranslations("profiles");
     const [dialogOpen, setDialogOpen] = useState(false);
 
     return (
@@ -52,7 +59,7 @@ export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineP
                     <div className="p-1.5 bg-[var(--brand)]/10 rounded-lg">
                         <Briefcase className="h-4 w-4 text-[var(--brand)]" />
                     </div>
-                    <CardTitle className="text-lg text-white font-bold">Experience</CardTitle>
+                    <CardTitle className="text-lg text-white font-bold">{t("experience")}</CardTitle>
                 </div>
                 {isOwner && (
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -62,7 +69,7 @@ export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineP
                                 className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold h-8"
                             >
                                 <Plus className="h-3.5 w-3.5 mr-1" />
-                                Add
+                                {t("add")}
                             </Button>
                         </DialogTrigger>
                         <AddExperienceDialog onClose={() => setDialogOpen(false)} />
@@ -72,9 +79,7 @@ export function ExperienceTimeline({ experiences, isOwner }: ExperienceTimelineP
             <CardContent>
                 {experiences.length === 0 ? (
                     <div className="text-center py-8 text-gray-500 text-sm">
-                        {isOwner
-                            ? "No experience added yet. Click \"Add\" to share your career story."
-                            : "No experience listed yet."}
+                        {isOwner ? t("noExperienceOwner") : t("noExperienceListed")}
                     </div>
                 ) : (
                     <ol className="relative border-l border-white/10 ml-3 space-y-6">
@@ -95,20 +100,22 @@ function ExperienceItem({
     experience: ProfileExperience;
     isOwner: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [isPending, startTransition] = useTransition();
     const yearRange = formatYearRange(
         experience.start_date,
         experience.end_date,
         experience.is_current,
+        t("present"),
     );
     const monthRange = `${formatMonthYear(experience.start_date)} – ${
         experience.is_current || !experience.end_date
-            ? "Present"
+            ? t("present")
             : formatMonthYear(experience.end_date)
     }`;
 
     function handleDelete() {
-        if (!confirm("Delete this experience entry?")) return;
+        if (!confirm(t("confirmDeleteExperienceEntry"))) return;
         startTransition(async () => {
             await deleteExperience(experience.id);
         });
@@ -126,7 +133,7 @@ function ExperienceItem({
                             {experience.role}
                             {experience.is_current && (
                                 <span className="ml-2 inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[var(--brand)]/15 text-[var(--brand)] rounded">
-                                    Current
+                                    {t("current")}
                                 </span>
                             )}
                         </h4>
@@ -156,7 +163,7 @@ function ExperienceItem({
                             onClick={handleDelete}
                             disabled={isPending}
                             className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md text-gray-500 hover:text-red-400 hover:bg-red-400/10 disabled:opacity-50"
-                            aria-label="Delete experience"
+                            aria-label={t("deleteExperienceAria")}
                         >
                             <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -173,6 +180,7 @@ function ExperienceItem({
 }
 
 function AddExperienceDialog({ onClose }: { onClose: () => void }) {
+    const t = useTranslations("profiles");
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const [isCurrent, setIsCurrent] = useState(false);
@@ -186,7 +194,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
         const description = (formData.get("description") as string)?.trim();
 
         if (!role || !company || !startYearStr) {
-            setError("Job title, company and start year are required.");
+            setError(t("errRequiredFields"));
             return;
         }
 
@@ -195,16 +203,16 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
         const currentYear = new Date().getFullYear();
 
         if (Number.isNaN(startYear) || startYear < 1900 || startYear > currentYear + 1) {
-            setError("Enter a valid start year.");
+            setError(t("errValidStartYear"));
             return;
         }
         if (!isCurrent) {
             if (endYear === null) {
-                setError("Set an end year or check \"I currently work here\".");
+                setError(t("errEndYearOrCurrent"));
                 return;
             }
             if (Number.isNaN(endYear) || endYear < startYear || endYear > currentYear + 1) {
-                setError("End year must be a valid year on or after the start year.");
+                setError(t("errValidEndYear"));
                 return;
             }
         }
@@ -223,7 +231,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                 description: description || undefined,
             });
             if (!result.success) {
-                setError(result.error || "Could not save experience.");
+                setError(result.error || t("errCouldNotSave"));
                 return;
             }
             onClose();
@@ -233,32 +241,32 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
     return (
         <DialogContent className="bg-[#0B0B0B] border-white/10 text-white sm:max-w-[500px]">
             <DialogHeader>
-                <DialogTitle className="text-white">Add Experience</DialogTitle>
+                <DialogTitle className="text-white">{t("addExperience")}</DialogTitle>
                 <DialogDescription className="text-gray-400">
-                    Share a role you've held. Visible on your public profile.
+                    {t("addExperienceDesc")}
                 </DialogDescription>
             </DialogHeader>
             <form action={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="role" className="text-gray-300">
-                        Job title <span className="text-[var(--brand)]">*</span>
+                        {t("jobTitle")} <span className="text-[var(--brand)]">*</span>
                     </Label>
                     <Input
                         id="role"
                         name="role"
-                        placeholder="Senior Producer"
+                        placeholder={t("jobTitlePlaceholder")}
                         required
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-600"
                     />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="company" className="text-gray-300">
-                        Company <span className="text-[var(--brand)]">*</span>
+                        {t("company")} <span className="text-[var(--brand)]">*</span>
                     </Label>
                     <Input
                         id="company"
                         name="company"
-                        placeholder="MediaLinkPro"
+                        placeholder={t("companyPlaceholder")}
                         required
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-600"
                     />
@@ -267,7 +275,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                         <Label htmlFor="start_year" className="text-gray-300">
-                            Start year <span className="text-[var(--brand)]">*</span>
+                            {t("startYear")} <span className="text-[var(--brand)]">*</span>
                         </Label>
                         <Input
                             id="start_year"
@@ -275,14 +283,14 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                             type="number"
                             min={1900}
                             max={new Date().getFullYear() + 1}
-                            placeholder="2020"
+                            placeholder={t("startYearPlaceholder")}
                             required
                             className="bg-white/5 border-white/10 text-white placeholder:text-gray-600"
                         />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="end_year" className="text-gray-300">
-                            End year
+                            {t("endYear")}
                         </Label>
                         <Input
                             id="end_year"
@@ -290,7 +298,7 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                             type="number"
                             min={1900}
                             max={new Date().getFullYear() + 1}
-                            placeholder="2024"
+                            placeholder={t("endYearPlaceholder")}
                             disabled={isCurrent}
                             className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 disabled:opacity-40"
                         />
@@ -303,19 +311,19 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                         onCheckedChange={(v) => setIsCurrent(v === true)}
                         className="border-white/20 data-[state=checked]:bg-[var(--brand)] data-[state=checked]:text-black data-[state=checked]:border-[var(--brand)]"
                     />
-                    <span className="text-sm text-gray-300">I currently work here</span>
+                    <span className="text-sm text-gray-300">{t("currentlyWorkHere")}</span>
                 </label>
 
                 <div className="space-y-2">
                     <Label htmlFor="description" className="text-gray-300">
-                        Short description
+                        {t("shortDescription")}
                     </Label>
                     <Textarea
                         id="description"
                         name="description"
                         rows={3}
                         maxLength={500}
-                        placeholder="What did you do? Key achievements, scope, technologies…"
+                        placeholder={t("experienceDescPlaceholder")}
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 resize-none"
                     />
                 </div>
@@ -333,14 +341,14 @@ function AddExperienceDialog({ onClose }: { onClose: () => void }) {
                         onClick={onClose}
                         className="bg-transparent border-white/10 text-white hover:bg-white/5"
                     >
-                        Cancel
+                        {t("cancel")}
                     </Button>
                     <Button
                         type="submit"
                         disabled={isPending}
                         className="bg-[var(--brand)] hover:bg-[#B5964A] text-black font-semibold"
                     >
-                        {isPending ? "Saving…" : "Save experience"}
+                        {isPending ? t("saving") : t("saveExperience")}
                     </Button>
                 </DialogFooter>
             </form>

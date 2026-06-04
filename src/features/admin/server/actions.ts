@@ -12,6 +12,11 @@ import {
 } from "@/features/ai-tools/schema";
 import type { ActionState } from "@/features/types";
 import type { AdminOwnershipRequest } from "@/features/ownership-requests/types";
+import { MAX_FEATURED_PRODUCTS } from "@/features/admin/constants";
+import type {
+  AdminVerificationRequest,
+  VerificationRequest,
+} from "@/features/verification/types";
 
 /**
  * Verify the current user is a site admin. Throws an error (which
@@ -444,10 +449,58 @@ export async function listAdminProducts(limit: number = 50) {
   const admin = createAdminClient();
   const { data } = await admin
     .from("products")
-    .select("id, name, slug, created_at, status, organization_id, views_count, bookmarks_count")
+    .select(
+      "id, name, slug, created_at, status, organization_id, views_count, bookmarks_count, is_featured" as "id, name, slug, created_at, status, organization_id, views_count, bookmarks_count"
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
   return data ?? [];
+}
+
+/** Number of products currently marked as featured. */
+export async function countFeaturedProducts(): Promise<number> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { count } = await admin
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("is_featured" as never, true);
+  return count ?? 0;
+}
+
+/**
+ * Feature / unfeature a product on the dashboard. Enforces a hard cap of
+ * MAX_FEATURED_PRODUCTS when featuring.
+ */
+export async function toggleProductFeatured(
+  productId: string,
+  featured: boolean
+): Promise<{ success: boolean; error?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  if (featured) {
+    const { count } = await admin
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("is_featured" as never, true);
+    if ((count ?? 0) >= MAX_FEATURED_PRODUCTS) {
+      return {
+        success: false,
+        error: `You can feature up to ${MAX_FEATURED_PRODUCTS} products. Unfeature one first.`,
+      };
+    }
+  }
+
+  const { error } = await admin
+    .from("products")
+    .update({ is_featured: featured, updated_at: new Date().toISOString() } as never)
+    .eq("id", productId);
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/admin/products");
+  revalidatePath("/dashboard");
+  return { success: true };
 }
 
 export async function deleteProductAsAdmin(productId: string) {
@@ -1556,6 +1609,98 @@ export async function deleteAiToolCategory(categoryId: string) {
     .eq("id", categoryId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/ai-tools");
+  return { success: true };
+}
+
+// ─── Identity verification ───────────────────────────────────────────────
+
+export async function listVerificationRequests(): Promise<AdminVerificationRequest[]> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const { data: requests } = await admin
+    .from("verification_requests" as never)
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (!requests?.length) return [];
+
+  const rows = requests as unknown as VerificationRequest[];
+  const userIds = Array.from(new Set(rows.map((r) => r.user_id)));
+
+  const [{ data: profiles }, { data: subs }] = await Promise.all([
+    admin.from("profiles").select("id, full_name, username, avatar_url, country").in("id", userIds),
+    admin.from("subscriptions" as never).select("user_id, plan").in("user_id", userIds),
+  ]);
+
+  type Prof = {
+    id: string;
+    full_name: string | null;
+    username: string | null;
+    avatar_url: string | null;
+    country: string | null;
+  };
+  const profMap = new Map(((profiles ?? []) as Prof[]).map((p) => [p.id, p]));
+  const planMap = new Map(
+    ((subs ?? []) as { user_id: string; plan: string }[]).map((s) => [s.user_id, s.plan])
+  );
+
+  return rows.map((r) => {
+    const p = profMap.get(r.user_id);
+    return {
+      ...r,
+      user_name: p?.full_name ?? p?.username ?? "User",
+      user_username: p?.username ?? null,
+      user_avatar: p?.avatar_url ?? null,
+      user_country: p?.country ?? null,
+      user_plan: planMap.get(r.user_id) ?? "free",
+    };
+  });
+}
+
+export async function resolveVerificationRequest(
+  requestId: string,
+  decision: "approved" | "rejected",
+  adminNote?: string
+): Promise<{ success: boolean; error?: string }> {
+  const { userId } = await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const { data: request } = await admin
+    .from("verification_requests" as never)
+    .select("*")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (!request) return { success: false, error: "Request not found." };
+
+  const req = request as unknown as { user_id: string; status: string };
+  if (req.status !== "pending") {
+    return { success: false, error: "This request has already been resolved." };
+  }
+
+  const resolvedAt = new Date().toISOString();
+  const resolvedBy = userId === "dev-bypass" ? null : userId;
+
+  const { error: reqError } = await admin
+    .from("verification_requests" as never)
+    .update({
+      status: decision,
+      admin_note: adminNote ?? null,
+      resolved_at: resolvedAt,
+      resolved_by: resolvedBy,
+    } as never)
+    .eq("id", requestId);
+  if (reqError) return { success: false, error: reqError.message };
+
+  const { error: profileError } = await admin
+    .from("profiles")
+    .update({
+      verification_status: decision === "approved" ? "verified" : "rejected",
+      verified_at: decision === "approved" ? resolvedAt : null,
+    } as never)
+    .eq("id", req.user_id);
+  if (profileError) return { success: false, error: profileError.message };
+
+  revalidatePath("/admin/verifications");
   return { success: true };
 }
 

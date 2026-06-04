@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: Props) {
+  const t = useTranslations("jobs");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [resumeType, setResumeType] = useState<ResumeType>("link");
@@ -32,11 +34,11 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
 
   const handleUpload = async (file: File) => {
     if (file.type !== "application/pdf") {
-      toast.error("Only PDF files are accepted.");
+      toast.error(t("toastPdfOnly"));
       return;
     }
     if (file.size > 8 * 1024 * 1024) {
-      toast.error("PDF must be under 8MB.");
+      toast.error(t("toastPdfSize"));
       return;
     }
 
@@ -53,9 +55,9 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
       const { data } = supabase.storage.from("resumes").getPublicUrl(path);
       setResumeUrl(data.publicUrl);
       setUploadedFileName(file.name);
-      toast.success("Resume uploaded");
+      toast.success(t("toastResumeUploaded"));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed";
+      const msg = err instanceof Error ? err.message : t("toastUploadFailed");
       toast.error(msg);
     } finally {
       setUploading(false);
@@ -65,9 +67,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!resumeUrl.trim()) {
-      toast.error(
-        resumeType === "link" ? "Please provide a resume URL." : "Please upload a PDF resume."
-      );
+      toast.error(resumeType === "link" ? t("toastProvideUrl") : t("toastUploadPdf"));
       return;
     }
 
@@ -81,11 +81,11 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
       });
 
       if (result.success) {
-        toast.success("Application submitted!");
+        toast.success(t("toastSubmitted"));
         onSuccess();
         router.refresh();
       } else {
-        toast.error(result.error ?? "Failed to submit application");
+        toast.error(result.error ?? t("toastSubmitFailed"));
       }
     });
   };
@@ -95,7 +95,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
       <div className="w-full max-w-lg rounded-xl border border-white/10 bg-[#0B0F14] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">Apply to this role</h2>
+            <h2 className="text-lg font-semibold text-white">{t("applyTitle")}</h2>
             <p className="text-sm text-gray-400 line-clamp-1">{jobTitle}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
@@ -105,7 +105,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">Resume *</Label>
+            <Label className="text-gray-300">{t("resumeRequired")}</Label>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -121,7 +121,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
                 }`}
               >
                 <Link2 className="h-3.5 w-3.5" />
-                Link
+                {t("link")}
               </button>
               <button
                 type="button"
@@ -137,7 +137,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
                 }`}
               >
                 <FileText className="h-3.5 w-3.5" />
-                Upload PDF
+                {t("uploadPdf")}
               </button>
             </div>
 
@@ -145,7 +145,7 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
               <Input
                 value={resumeUrl}
                 onChange={(e) => setResumeUrl(e.target.value)}
-                placeholder="https://drive.google.com/... or https://yourportfolio.com/cv"
+                placeholder={t("resumeUrlPlaceholder")}
                 type="url"
                 className="bg-black/20 border-white/10 text-white"
               />
@@ -153,13 +153,9 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
               <label className="flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed border-white/10 bg-black/20 px-4 py-6 cursor-pointer hover:border-[var(--brand)]/40 hover:bg-white/5 transition-colors">
                 <Upload className="h-5 w-5 text-gray-400" />
                 <span className="text-sm text-gray-300">
-                  {uploading
-                    ? "Uploading..."
-                    : uploadedFileName
-                      ? uploadedFileName
-                      : "Click to upload your PDF resume"}
+                  {uploading ? t("uploading") : uploadedFileName ? uploadedFileName : t("clickToUpload")}
                 </span>
-                <span className="text-xs text-gray-500">PDF only, up to 8MB</span>
+                <span className="text-xs text-gray-500">{t("pdfHint")}</span>
                 <input
                   type="file"
                   accept="application/pdf"
@@ -172,21 +168,21 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-300">Phone (optional)</Label>
+            <Label className="text-gray-300">{t("phoneOptional")}</Label>
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+1 555 000 0000"
+              placeholder={t("phonePlaceholder")}
               className="bg-black/20 border-white/10 text-white"
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-300">Cover letter (optional)</Label>
+            <Label className="text-gray-300">{t("coverLetterOptional")}</Label>
             <Textarea
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
-              placeholder="Tell the company why you're a great fit..."
+              placeholder={t("coverLetterPlaceholder")}
               rows={5}
               className="bg-black/20 border-white/10 text-white"
             />
@@ -199,14 +195,14 @@ export function ApplyJobDialog({ jobId, jobTitle, userId, onClose, onSuccess }: 
               className="bg-transparent border-white/10 text-white hover:bg-white/10"
               onClick={onClose}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               type="submit"
               disabled={isPending || uploading || !resumeUrl.trim()}
               className="bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
             >
-              {isPending ? "Submitting..." : "Submit application"}
+              {isPending ? t("submitting") : t("submitApplication")}
             </Button>
           </div>
         </form>

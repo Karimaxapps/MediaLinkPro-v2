@@ -13,7 +13,6 @@ import {
   Star,
   Send,
   Sparkles,
-  Wifi,
   Clock,
   ArrowRight,
   ScanLine,
@@ -30,6 +29,16 @@ const GOLD_GLOW = "0 0 30px color-mix(in srgb, var(--brand) 18%, transparent)";
 const CARD_BASE =
   "relative overflow-hidden rounded-2xl border border-[var(--brand)]/15 bg-[#0f0f0f] backdrop-blur-sm";
 
+// Real data injected from the server (landing page). Each is optional so the
+// component still renders its polished demo content when no data is provided.
+export type BentoProduct = { name: string; category: string | null; image: string | null };
+export type BentoExpert = {
+  name: string;
+  role: string | null;
+  initials: string;
+  avatar: string | null;
+};
+
 const cardVariants = {
   rest: { y: 0, boxShadow: "0 0 30px color-mix(in srgb, var(--brand) 4%, transparent)" },
   hover: {
@@ -41,31 +50,23 @@ const cardVariants = {
 };
 
 // ─── 1. Product Marketplace (col-span-7) ──────────────────────────────────────
-function ProductMarketplaceTile() {
+function ProductMarketplaceTile({ products: real }: { products?: BentoProduct[] }) {
   const t = useTranslations("bentoGrid");
-  const products = [
-    {
-      name: "Vizrt Live Engine 4K",
-      cat: "Live Production",
-      price: "RFQ",
-      rating: 4.9,
-      verified: true,
-    },
-    {
-      name: "Harmonic VOS360 Cloud",
-      cat: "Cloud Encoding",
-      price: "RFQ",
-      rating: 4.8,
-      verified: true,
-    },
-    {
-      name: "Grass Valley LDX 150",
-      cat: "Studio Camera",
-      price: "RFQ",
-      rating: 4.7,
-      verified: false,
-    },
+  const demo = [
+    { name: "Vizrt Live Engine 4K", cat: "Live Production", rating: 4.9, verified: true },
+    { name: "Harmonic VOS360 Cloud", cat: "Cloud Encoding", rating: 4.8, verified: true },
+    { name: "Grass Valley LDX 150", cat: "Studio Camera", rating: 4.7, verified: false },
   ];
+  // Inject real product image / name / category per slot; fall back to demo copy.
+  const products = demo.map((d, i) => {
+    const r = real?.[i];
+    return {
+      ...d,
+      name: r?.name ?? d.name,
+      cat: r?.category ?? d.cat,
+      image: r?.image ?? null,
+    };
+  });
   return (
     <motion.div
       variants={cardVariants}
@@ -108,15 +109,25 @@ function ProductMarketplaceTile() {
             transition={{ delay: i * 0.08, duration: 0.45 }}
             className="flex items-center gap-3 p-3.5 rounded-xl border border-white/6 bg-white/[0.03] hover:border-white/12 transition-colors group cursor-pointer"
           >
-            <div
-              className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center"
-              style={{
-                background: `linear-gradient(135deg, ${GOLD_15}, rgba(255,255,255,0.04))`,
-                border: `1px solid ${GOLD_20}`,
-              }}
-            >
-              <Radio className="w-5 h-5" style={{ color: GOLD }} />
-            </div>
+            {p.image ? (
+              <div
+                className="w-11 h-11 rounded-lg shrink-0 overflow-hidden bg-white/5"
+                style={{ border: `1px solid ${GOLD_20}` }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div
+                className="w-11 h-11 rounded-lg shrink-0 flex items-center justify-center"
+                style={{
+                  background: `linear-gradient(135deg, ${GOLD_15}, rgba(255,255,255,0.04))`,
+                  border: `1px solid ${GOLD_20}`,
+                }}
+              >
+                <Radio className="w-5 h-5" style={{ color: GOLD }} />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-semibold text-white truncate">{p.name}</span>
@@ -159,32 +170,25 @@ function ProductMarketplaceTile() {
 }
 
 // ─── 2. Expert Directory (col-span-5) ─────────────────────────────────────────
-function ExpertDirectoryTile() {
+function ExpertDirectoryTile({ experts: real }: { experts?: BentoExpert[] }) {
   const t = useTranslations("bentoGrid");
-  const experts = [
-    {
-      initials: "JR",
-      name: "James R.",
-      role: "Broadcast Eng.",
-      skills: ["IP Broadcast", "4K"],
-      bg: "#2a1f0a",
-    },
-    {
-      initials: "SC",
-      name: "Sofia C.",
-      role: "Live Director",
-      skills: ["Live Events", "OB"],
-      bg: "#0a1a2a",
-    },
+  const demo = [
+    { initials: "JR", name: "James R.", role: "Broadcast Eng.", skills: ["IP Broadcast", "4K"], bg: "#2a1f0a" },
+    { initials: "SC", name: "Sofia C.", role: "Live Director", skills: ["Live Events", "OB"], bg: "#0a1a2a" },
     { initials: "AM", name: "Alex M.", role: "DoP", skills: ["Cinema", "HDR"], bg: "#0a2a1a" },
-    {
-      initials: "YK",
-      name: "Yuki K.",
-      role: "Sound Engineer",
-      skills: ["Audio IP", "Dante"],
-      bg: "#1a0a2a",
-    },
+    { initials: "YK", name: "Yuki K.", role: "Sound Engineer", skills: ["Audio IP", "Dante"], bg: "#1a0a2a" },
   ];
+  // Inject real avatar / name / role per slot; fall back to demo copy.
+  const experts = demo.map((d, i) => {
+    const r = real?.[i];
+    return {
+      ...d,
+      name: r?.name ?? d.name,
+      role: r?.role ?? d.role,
+      initials: r?.initials || d.initials,
+      avatar: r?.avatar ?? null,
+    };
+  });
   return (
     <motion.div
       variants={cardVariants}
@@ -213,20 +217,32 @@ function ExpertDirectoryTile() {
       <div className="flex items-center">
         {experts.map((e, i) => (
           <motion.div
-            key={e.initials}
+            key={i}
             whileHover={{ scale: 1.12, zIndex: 10 }}
             className="relative cursor-pointer"
             style={{ marginLeft: i === 0 ? 0 : -12, zIndex: experts.length - i }}
           >
-            <div
-              className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white"
-              style={{
-                background: e.bg,
-                boxShadow: `0 0 0 2px ${GOLD}, 0 0 0 4px color-mix(in srgb, var(--brand) 15%, transparent)`,
-              }}
-            >
-              {e.initials}
-            </div>
+            {e.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={e.avatar}
+                alt={e.name}
+                className="w-11 h-11 rounded-full object-cover"
+                style={{
+                  boxShadow: `0 0 0 2px ${GOLD}, 0 0 0 4px color-mix(in srgb, var(--brand) 15%, transparent)`,
+                }}
+              />
+            ) : (
+              <div
+                className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                style={{
+                  background: e.bg,
+                  boxShadow: `0 0 0 2px ${GOLD}, 0 0 0 4px color-mix(in srgb, var(--brand) 15%, transparent)`,
+                }}
+              >
+                {e.initials}
+              </div>
+            )}
             <div
               className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center"
               style={{ background: GOLD }}
@@ -240,19 +256,29 @@ function ExpertDirectoryTile() {
 
       {/* Expert cards */}
       <div className="space-y-2">
-        {experts.slice(0, 3).map((e) => (
+        {experts.slice(0, 3).map((e, i) => (
           <motion.div
-            key={e.initials}
+            key={i}
             whileHover={{ x: 4 }}
             transition={{ duration: 0.2 }}
             className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/6 hover:border-white/12 cursor-pointer group"
           >
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-              style={{ background: e.bg, boxShadow: `0 0 0 1.5px ${GOLD}` }}
-            >
-              {e.initials}
-            </div>
+            {e.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={e.avatar}
+                alt={e.name}
+                className="w-8 h-8 rounded-full object-cover shrink-0"
+                style={{ boxShadow: `0 0 0 1.5px ${GOLD}` }}
+              />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                style={{ background: e.bg, boxShadow: `0 0 0 1.5px ${GOLD}` }}
+              >
+                {e.initials}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-zinc-300 group-hover:text-[var(--brand)] transition-colors truncate">
                 {e.name} · <span className="font-normal text-zinc-500">{e.role}</span>
@@ -689,7 +715,13 @@ function DirectConnectionTile() {
 }
 
 // ─── Main Bento Grid Export ────────────────────────────────────────────────────
-export function BentoGrid() {
+export function BentoGrid({
+  products,
+  experts,
+}: {
+  products?: BentoProduct[];
+  experts?: BentoExpert[];
+}) {
   const t = useTranslations("bentoGrid");
 
   const stats = [
@@ -703,13 +735,6 @@ export function BentoGrid() {
     <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-24">
       {/* Section header */}
       <div className="text-center mb-14">
-        <div
-          className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full border text-xs font-medium"
-          style={{ borderColor: GOLD_20, color: GOLD, background: GOLD_10 }}
-        >
-          <Wifi className="w-3 h-3" />
-          {t("badge")}
-        </div>
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
           {t("title")} <span style={{ color: GOLD }}>{t("titleHighlight")}</span>
         </h2>
@@ -719,8 +744,8 @@ export function BentoGrid() {
       {/* Bento grid — 12 columns */}
       <div className="grid grid-cols-12 gap-4">
         {/* Row 1 */}
-        <ProductMarketplaceTile />
-        <ExpertDirectoryTile />
+        <ProductMarketplaceTile products={products} />
+        <ExpertDirectoryTile experts={experts} />
 
         {/* Row 2 */}
         <SmartDiscoveryTile />

@@ -15,6 +15,22 @@ export type OrgType = typeof ORG_TYPES[number];
 export const BROADCASTER_TYPES = ["Television", "Radio"] as const;
 export type BroadcasterType = typeof BROADCASTER_TYPES[number];
 
+/** Content genre for broadcasters — powers the Broadcasters filter chips. */
+export const BROADCASTER_GENRES = [
+    "General",
+    "News",
+    "Sports",
+    "Entertainment",
+    "Documentary",
+    "Movies / Film",
+    "Kids / Cartoon",
+    "Music",
+    "Lifestyle",
+    "Education",
+    "Religious",
+] as const;
+export type BroadcasterGenre = typeof BROADCASTER_GENRES[number];
+
 export const MAIN_ACTIVITIES_BY_TYPE: Record<OrgType, string[]> = {
   "Broadcaster": [
     "Television broadcasting",
@@ -191,6 +207,7 @@ export const companyIdentitySchema = z.object({
     tagline: z.string().optional(),
     type: z.enum(ORG_TYPES),
     broadcaster_type: z.enum(BROADCASTER_TYPES).optional(),
+    broadcaster_genre: z.enum(BROADCASTER_GENRES).optional(),
 }).refine(
     (data) => data.type !== "Broadcaster" || !!data.broadcaster_type,
     { message: "Please select a broadcaster type (Television or Radio)", path: ["broadcaster_type"] }

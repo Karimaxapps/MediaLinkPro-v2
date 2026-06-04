@@ -1,7 +1,6 @@
 
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Users, Briefcase, Building2, MapPin } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { getUserVerifiedPlan } from "@/lib/subscription";
@@ -10,7 +9,7 @@ import { Database } from "@/types/supabase";
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 import { ConnectButton } from "@/features/connections/components/connect-button";
-import { getConnectionStatus, getConnectionsCount, ConnectionStatusData } from "@/features/connections/server/actions";
+import { getConnectionStatus } from "@/features/connections/server/actions";
 import { ContactButton } from "@/features/messaging/components/ContactButton";
 
 interface PublicProfileHeaderProps {
@@ -20,9 +19,8 @@ interface PublicProfileHeaderProps {
 export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps) {
     const primaryRole = profile.job_function || "Role not set";
     const department = null;
-    const [connectionStatus, connectionCount, plan] = await Promise.all([
+    const [connectionStatus, plan] = await Promise.all([
         getConnectionStatus(profile.id),
-        getConnectionsCount(profile.id),
         getUserVerifiedPlan(profile.id),
     ]);
 
@@ -61,7 +59,13 @@ export async function PublicProfileHeader({ profile }: PublicProfileHeaderProps)
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
                                 {profile.full_name || "User Name"}
-                                <VerifiedBadge plan={plan} />
+                                <VerifiedBadge
+                                    plan={plan}
+                                    verificationStatus={
+                                        (profile as { verification_status?: string | null })
+                                            .verification_status
+                                    }
+                                />
                             </h1>
                         </div>
 

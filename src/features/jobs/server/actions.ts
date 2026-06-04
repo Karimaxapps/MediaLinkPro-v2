@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { notify } from "@/features/notifications/server/notify";
 import { emailTemplates } from "@/lib/email/templates";
 import { checkOrgPlanLimit, blockedFeatureMessage } from "@/lib/subscription/gate";
+import { getUserUsage } from "@/features/billing/server/usage";
 import {
   APPLICATION_STATUS_LABELS,
   type Job,
@@ -425,6 +426,15 @@ export async function submitApplication(input: {
 
   if (!input.resume_url?.trim()) {
     return { success: false, error: "Please provide a resume link or upload a PDF." };
+  }
+
+  // Enforce the monthly job-application cap (Free 10 / Verified Pro 50).
+  const { jobApplicationsThisMonth } = await getUserUsage(user.id);
+  if (jobApplicationsThisMonth.exhausted) {
+    return {
+      success: false,
+      error: `You've reached your ${jobApplicationsThisMonth.limit} job applications for this month. Upgrade to Verified Pro for 50 per month.`,
+    };
   }
 
   // Load job + org for notification context

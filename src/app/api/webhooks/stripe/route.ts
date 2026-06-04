@@ -120,10 +120,11 @@ export async function POST(request: NextRequest) {
         // is a user or org subscription.
         const { data: row } = await admin
           .from("subscriptions" as never)
-          .select("organization_id")
+          .select("user_id, organization_id")
           .eq("stripe_customer_id", customer)
           .maybeSingle();
-        const isOrg = !!(row as { organization_id?: string | null } | null)?.organization_id;
+        const owner = row as { user_id?: string | null; organization_id?: string | null } | null;
+        const isOrg = !!owner?.organization_id;
 
         await admin
           .from("subscriptions" as never)
@@ -134,6 +135,18 @@ export async function POST(request: NextRequest) {
             cancel_at_period_end: false,
           } as never)
           .eq("stripe_customer_id", customer);
+
+        // Revoke the identity verification when an individual loses Pro. The
+        // badge already hides at render (getUserVerifiedPlan returns null for a
+        // non-active sub), but clearing the status keeps the DB authoritative
+        // and forces re-verification if they resubscribe later.
+        if (!isOrg && owner?.user_id) {
+          await admin
+            .from("profiles")
+            .update({ verification_status: "none", verified_at: null } as never)
+            .eq("id", owner.user_id)
+            .eq("verification_status", "verified");
+        }
         break;
       }
 

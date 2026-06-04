@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { CheckCircle, Clock, XCircle, Mail, Phone, Building2, MessageSquare } from "lucide-react";
@@ -51,6 +52,7 @@ type OrganizationRequest = {
 };
 
 export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
+    const t = useTranslations("companies");
     const [requests, setRequests] = useState<OrganizationRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -61,7 +63,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
             setRequests((data || []) as OrganizationRequest[]);
         } catch (error) {
             console.error("Failed to fetch requests", error);
-            toast.error("Failed to load requests");
+            toast.error(t("failedLoad"));
         } finally {
             setIsLoading(false);
         }
@@ -75,26 +77,26 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
         try {
             const result = await updateRequestStatus(id, newStatus);
             if (result.success) {
-                toast.success(`Request marked as ${newStatus}`);
+                toast.success(t("requestMarkedAs", { status: t(`reqStatuses.${newStatus}`).toLowerCase() }));
                 fetchRequests(); // Refresh list
             } else {
-                toast.error("Failed to update status");
+                toast.error(t("failedUpdateStatus"));
             }
         } catch (error) {
-            toast.error("An error occurred");
+            toast.error(t("errorOccurred"));
         }
     };
 
     if (isLoading) {
-        return <div className="text-gray-400 text-center py-8">Loading requests...</div>;
+        return <div className="text-gray-400 text-center py-8">{t("loadingRequests")}</div>;
     }
 
     if (requests.length === 0) {
         return (
             <EmptyState
                 icon={Mail}
-                title="No Requests Yet"
-                description="When users request a demo or quote for your products, they will appear here."
+                title={t("noRequestsTitle")}
+                description={t("noRequestsDesc")}
             />
         );
     }
@@ -102,19 +104,19 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
     return (
         <Card className="bg-white/5 border-white/10 text-white">
             <CardHeader>
-                <CardTitle>Requests (Demo &amp; Quote)</CardTitle>
-                <CardDescription>Manage incoming demo and quote requests for your products.</CardDescription>
+                <CardTitle>{t("requestsTitle")}</CardTitle>
+                <CardDescription>{t("requestsDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
                         <TableRow className="border-white/10 hover:bg-white/5">
-                            <TableHead className="text-gray-400">Date</TableHead>
-                            <TableHead className="text-gray-400">Type</TableHead>
-                            <TableHead className="text-gray-400">Product</TableHead>
-                            <TableHead className="text-gray-400">Contact</TableHead>
-                            <TableHead className="text-gray-400">Status</TableHead>
-                            <TableHead className="text-right text-gray-400">Actions</TableHead>
+                            <TableHead className="text-gray-400">{t("date")}</TableHead>
+                            <TableHead className="text-gray-400">{t("type")}</TableHead>
+                            <TableHead className="text-gray-400">{t("product")}</TableHead>
+                            <TableHead className="text-gray-400">{t("contact")}</TableHead>
+                            <TableHead className="text-gray-400">{t("status")}</TableHead>
+                            <TableHead className="text-right text-gray-400">{t("actions")}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -132,11 +134,11 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
                                                 : "bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
                                         }
                                     >
-                                        {request.request_type === 'quote' ? 'Quote' : 'Demo'}
+                                        {request.request_type === 'quote' ? t("quote") : t("demo")}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="font-medium text-white">
-                                    {request.products?.name || "Unknown Product"}
+                                    {request.products?.name || t("unknownProduct")}
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex flex-col">
@@ -153,7 +155,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
                                                     "bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20"
                                         }
                                     >
-                                        {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                                        {t(`reqStatuses.${request.status}`)}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -167,7 +169,7 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
                                                 onClick={() => handleStatusUpdate(request.id, 'contacted')}
                                             >
                                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                                Done
+                                                {t("done")}
                                             </Button>
                                         )}
                                     </div>
@@ -182,30 +184,31 @@ export function DemoRequestsList({ organizationId }: DemoRequestsListProps) {
 }
 
 function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
+    const t = useTranslations("companies");
     return (
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 text-gray-400 hover:text-white hover:bg-white/10">
-                    View
+                    {t("view")}
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-[#1F1F1F] border-white/10 text-white sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Request Details</DialogTitle>
+                    <DialogTitle>{t("requestDetails")}</DialogTitle>
                     <DialogDescription className="text-gray-400">
-                        Submitted on {format(new Date(request.created_at), 'PPpp')}
+                        {t("submittedOn", { date: format(new Date(request.created_at), 'PPpp') })}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase">Product</h4>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase">{t("product")}</h4>
                             <p className="text-white font-medium">{request.products?.name}</p>
                         </div>
                         <div className="space-y-1">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase">Status</h4>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase">{t("status")}</h4>
                             <Badge variant="outline" className="border-white/10 text-gray-300">
-                                {request.status}
+                                {t(`reqStatuses.${request.status}`)}
                             </Badge>
                         </div>
                     </div>
@@ -216,7 +219,7 @@ function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
                                 <Building2 className="w-4 h-4 text-[var(--brand)]" />
                             </div>
                             <div>
-                                <h4 className="text-xs font-semibold text-gray-500 uppercase">Contact Info</h4>
+                                <h4 className="text-xs font-semibold text-gray-500 uppercase">{t("contactInfo")}</h4>
                                 <p className="text-white font-medium">{request.contact_name}</p>
                                 {request.company_name && <p className="text-gray-400 text-sm">{request.company_name}</p>}
                             </div>
@@ -246,7 +249,7 @@ function ViewRequestDialog({ request }: { request: OrganizationRequest }) {
                     <div className="space-y-2 pt-2 border-t border-white/10">
                         <div className="flex items-center gap-2">
                             <MessageSquare className="w-4 h-4 text-gray-500" />
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase">Message</h4>
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase">{t("message")}</h4>
                         </div>
                         <div className="bg-white/5 p-3 rounded-lg text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
                             {request.message}

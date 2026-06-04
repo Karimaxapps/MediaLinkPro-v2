@@ -42,13 +42,6 @@ const PLACEMENTS: { value: AdCampaign["placement"]; label: string }[] = [
   { value: "mobile_middle_feed_screen2", label: "📱 Mobile · Middle feed (Screen 2)" },
 ];
 
-const MOBILE_PLACEMENTS: AdCampaign["placement"][] = [
-  "mobile_top_feed_screen1",
-  "mobile_middle_feed_screen2",
-];
-
-const isMobilePlacement = (p: AdCampaign["placement"]) => MOBILE_PLACEMENTS.includes(p);
-
 /** Curated CTA labels available across every placement. */
 const CTA_OPTIONS = [
   "Learn more",
@@ -276,8 +269,8 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.title.trim() || !form.cta_url.trim()) {
-      toast.error("Name, title, and CTA URL are required");
+    if (!form.name.trim() || !form.cta_url.trim()) {
+      toast.error("Name and CTA URL are required");
       return;
     }
     const startsIso = fromLocalInput(form.starts_at);
@@ -416,7 +409,7 @@ export function AdminAdsClient({ campaigns }: { campaigns: AdCampaign[] }) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-300">Headline *</Label>
+            <Label className="text-gray-300">Headline</Label>
             <Input
               value={form.title}
               onChange={(e) => update("title", e.target.value)}
@@ -839,9 +832,6 @@ function OverlayPreview({
         </div>
       )}
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-      <div className="absolute top-2 left-2 text-[9px] uppercase tracking-wider text-white/95 bg-black/50 backdrop-blur px-1.5 py-0.5 rounded">
-        Sponsored
-      </div>
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
         <div className="min-w-0 flex-1 text-white drop-shadow">
           <h4 className="text-sm font-semibold truncate">{title}</h4>
@@ -873,9 +863,6 @@ function StackedPreview({
 }) {
   return (
     <div className="relative rounded-xl border border-[var(--brand)]/30 bg-gradient-to-br from-[var(--brand)]/5 to-white/5 overflow-hidden">
-      <div className="absolute top-2 right-2 z-10 text-[9px] uppercase tracking-wider text-[var(--brand)] bg-black/50 backdrop-blur px-1.5 py-0.5 rounded">
-        Sponsored
-      </div>
       <div className="relative w-full bg-black/40" style={{ aspectRatio: aspect }}>
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

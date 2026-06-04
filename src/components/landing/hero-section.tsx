@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Wifi, Star, Zap, Globe2, Radio, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { TRUST_BAND_LOGOS as LOGOS } from "./trust-band-logos";
 
 // ─── Typewriter hook ──────────────────────────────────────────────────────────
 function useSequenceTypewriter(
@@ -43,17 +44,6 @@ function useSequenceTypewriter(
 
   return { subject: displayed, find: seq?.find ?? "" };
 }
-
-// ─── Trust-band logos (SVG text placeholders) ─────────────────────────────────
-const LOGOS = [
-  { name: "Vizrt", abbr: "VZ" },
-  { name: "Grass Valley", abbr: "GV" },
-  { name: "Ross Video", abbr: "RV" },
-  { name: "Blackmagic", abbr: "BM" },
-  { name: "Harmonic", abbr: "HM" },
-  { name: "EVS", abbr: "EVS" },
-  { name: "Avid", abbr: "AV" },
-];
 
 // ─── Isometric Dashboard Mockup ───────────────────────────────────────────────
 function IsoDashboard() {
@@ -290,7 +280,7 @@ function IsoDashboard() {
 }
 
 // ─── Trust Band ───────────────────────────────────────────────────────────────
-function TrustBand({ label }: { label: string }) {
+function TrustBand({ label, logos = {} }: { label: string; logos?: Record<string, string> }) {
   const items = [...LOGOS, ...LOGOS];
 
   return (
@@ -301,19 +291,29 @@ function TrustBand({ label }: { label: string }) {
       <motion.div
         className="flex items-center gap-12 whitespace-nowrap"
         animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
       >
-        {items.map((logo, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-2 flex-shrink-0 opacity-30 hover:opacity-60 transition-opacity"
-          >
-            <div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
-              <span className="text-[9px] font-bold text-white">{logo.abbr}</span>
+        {items.map((logo, i) => {
+          const logoUrl = logos[logo.slug];
+          return (
+            <div
+              key={i}
+              className="flex items-center gap-2 flex-shrink-0 opacity-40 hover:opacity-80 transition-opacity"
+            >
+              {logoUrl ? (
+                <div className="w-7 h-7 rounded bg-white/95 flex items-center justify-center overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={logoUrl} alt={logo.name} className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
+                  <span className="text-[9px] font-bold text-white">{logo.abbr}</span>
+                </div>
+              )}
+              <span className="text-sm font-semibold text-gray-400 tracking-wide">{logo.name}</span>
             </div>
-            <span className="text-sm font-semibold text-gray-400 tracking-wide">{logo.name}</span>
-          </div>
-        ))}
+          );
+        })}
       </motion.div>
 
       <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center pointer-events-none z-20">
@@ -326,7 +326,7 @@ function TrustBand({ label }: { label: string }) {
 }
 
 // ─── Main Hero ─────────────────────────────────────────────────────────────────
-export function HeroSection() {
+export function HeroSection({ trustLogos }: { trustLogos?: Record<string, string> }) {
   const t = useTranslations("hero");
 
   // Build sequences from translations — stable after first render
@@ -336,9 +336,8 @@ export function HeroSection() {
       { subject: t("seq1Subject"), find: t("seq1Find") },
       { subject: t("seq2Subject"), find: t("seq2Find") },
       { subject: t("seq3Subject"), find: t("seq3Find") },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     ],
-    []
+    [t]
   );
 
   const { subject: subjectText, find: findText } = useSequenceTypewriter(sequences, 65, 1800);
@@ -500,7 +499,7 @@ export function HeroSection() {
       </div>
 
       {/* ── Trust Band ─────────────────────────────────────── */}
-      <TrustBand label={t("trustedBy")} />
+      <TrustBand label={t("trustedBy")} logos={trustLogos} />
     </section>
   );
 }

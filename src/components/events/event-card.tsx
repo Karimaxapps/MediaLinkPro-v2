@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,26 +33,31 @@ function daysUntil(startISO: string): number {
     return Math.round((start - today) / 86_400_000);
 }
 
-function countdownLabel(startISO: string, endISO: string): string {
+function countdownLabel(
+    startISO: string,
+    endISO: string,
+    t: ReturnType<typeof useTranslations<"events">>,
+): string {
     const until = daysUntil(startISO);
-    if (until > 1) return `in ${until} days`;
-    if (until === 1) return "Tomorrow";
-    if (until === 0) return "Today";
+    if (until > 1) return t("inDays", { count: until });
+    if (until === 1) return t("tomorrow");
+    if (until === 0) return t("today");
     // Event has started — show "Happening now" until it ends, else "Ended".
     const end = new Date(endISO).setHours(0, 0, 0, 0);
-    return end >= new Date().setHours(0, 0, 0, 0) ? "Happening now" : "Ended";
+    return end >= new Date().setHours(0, 0, 0, 0) ? t("happeningNow") : t("ended");
 }
 
 const STRIPES =
     "repeating-linear-gradient(45deg, color-mix(in srgb, var(--brand) 7%, transparent) 0px, color-mix(in srgb, var(--brand) 7%, transparent) 3px, transparent 3px, transparent 16px), #15130c";
 
 export function EventCard({ event, isGoing = false, attendees = [] }: EventCardProps) {
+    const t = useTranslations("events");
     const start = new Date(event.start_date);
     const month = format(start, "MMM").toUpperCase();
     const day = format(start, "d");
     const days = durationDays(event.start_date, event.end_date);
-    const countdown = countdownLabel(event.start_date, event.end_date);
-    const locationLabel = event.is_online ? "Online" : event.location || "Location TBA";
+    const countdown = countdownLabel(event.start_date, event.end_date, t);
+    const locationLabel = event.is_online ? t("online") : event.location || t("locationTba");
     const bannerText = [event.title, !event.is_online && event.location]
         .filter(Boolean)
         .join(" · ")
@@ -97,7 +103,7 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
                 {/* Body */}
                 <div className="p-5 space-y-3">
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--brand)]">
-                        Upcoming{isGoing && " · You're going"}
+                        {t("upcoming")}{isGoing && ` · ${t("youreGoing")}`}
                     </p>
 
                     <h3 className="font-serif text-2xl text-white leading-tight group-hover:text-[var(--brand)] transition-colors line-clamp-2">
@@ -107,7 +113,7 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
                     <div className="flex items-center gap-2 text-sm text-gray-400">
                         <Globe className="h-4 w-4 shrink-0" />
                         <span className="truncate">
-                            {locationLabel} · {days} {days === 1 ? "day" : "days"}
+                            {locationLabel} · {t("dayCount", { count: days })}
                         </span>
                     </div>
 
@@ -133,7 +139,7 @@ export function EventCard({ event, isGoing = false, attendees = [] }: EventCardP
                                 ))}
                             </div>
                             {goingCount > 0 && (
-                                <span className="text-sm text-gray-400">+{goingCount} going</span>
+                                <span className="text-sm text-gray-400">{t("goingSuffix", { count: goingCount })}</span>
                             )}
                         </div>
                     )}

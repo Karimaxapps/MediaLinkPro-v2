@@ -1,9 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { formatDistanceToNow } from "date-fns";
 import { Briefcase } from "lucide-react";
 import { listRecentApplicationsForMyOrgs } from "../server/actions";
-import { APPLICATION_STATUS_COLORS, APPLICATION_STATUS_LABELS } from "../types";
+import { APPLICATION_STATUS_COLORS } from "../types";
 
 /**
  * Sidebar widget shown on the dashboard for users who administer at least
@@ -11,7 +12,10 @@ import { APPLICATION_STATUS_COLORS, APPLICATION_STATUS_LABELS } from "../types";
  * job postings. For non-admin users this renders nothing.
  */
 export async function DashboardJobApplicationsWidget({ limit = 5 }: { limit?: number }) {
-  const apps = await listRecentApplicationsForMyOrgs(limit);
+  const [t, apps] = await Promise.all([
+    getTranslations("jobs"),
+    listRecentApplicationsForMyOrgs(limit),
+  ]);
   if (apps.length === 0) return null;
 
   return (
@@ -19,10 +23,10 @@ export async function DashboardJobApplicationsWidget({ limit = 5 }: { limit?: nu
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Briefcase className="h-4 w-4 text-[var(--brand)]" />
-          <h3 className="text-sm font-semibold text-white">Recent applications</h3>
+          <h3 className="text-sm font-semibold text-white">{t("recentApplications")}</h3>
         </div>
         <Link href="/jobs/manage" className="text-xs text-[var(--brand)] hover:underline">
-          Manage
+          {t("manage")}
         </Link>
       </div>
       <div className="space-y-2">
@@ -53,15 +57,15 @@ export async function DashboardJobApplicationsWidget({ limit = 5 }: { limit?: nu
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm text-white truncate">
-                  {applicant?.full_name ?? applicant?.username ?? "Candidate"}
+                  {applicant?.full_name ?? applicant?.username ?? t("candidate")}
                 </div>
-                <div className="text-xs text-gray-500 truncate">{job?.title ?? "Application"}</div>
+                <div className="text-xs text-gray-500 truncate">{job?.title ?? t("application")}</div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span
                     className="px-1.5 py-0.5 rounded text-[10px] font-medium"
                     style={{ backgroundColor: `${color}20`, color }}
                   >
-                    {APPLICATION_STATUS_LABELS[app.status]}
+                    {t(`appStatuses.${app.status}`)}
                   </span>
                   <span className="text-[10px] text-gray-500">
                     {formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}

@@ -5,8 +5,8 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Trash2, ExternalLink, Pencil } from "lucide-react";
-import { deleteProductAsAdmin } from "@/features/admin/server/actions";
+import { Trash2, ExternalLink, Pencil, Star } from "lucide-react";
+import { deleteProductAsAdmin, toggleProductFeatured } from "@/features/admin/server/actions";
 
 type Product = {
     id: string;
@@ -17,11 +17,24 @@ type Product = {
     organization_id: string | null;
     views_count: number | null;
     bookmarks_count: number | null;
+    is_featured?: boolean | null;
 };
 
 export function AdminProductRow({ product }: { product: Product }) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
+    const isFeatured = product.is_featured ?? false;
+
+    const handleToggleFeatured = () => {
+        startTransition(async () => {
+            const result = await toggleProductFeatured(product.id, !isFeatured);
+            if (!result.success) toast.error(result.error ?? "Failed to update");
+            else {
+                toast.success(isFeatured ? "Removed from featured" : "Added to featured");
+                router.refresh();
+            }
+        });
+    };
 
     const handleDelete = () => {
         if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
@@ -52,6 +65,20 @@ export function AdminProductRow({ product }: { product: Product }) {
             </td>
             <td className="p-4 text-right">
                 <div className="flex items-center justify-end gap-1">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className={
+                            isFeatured
+                                ? "text-[var(--brand)] hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
+                                : "text-gray-400 hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
+                        }
+                        disabled={isPending}
+                        onClick={handleToggleFeatured}
+                        title={isFeatured ? "Remove from featured" : "Feature on dashboard"}
+                    >
+                        <Star className={`h-4 w-4 ${isFeatured ? "fill-current" : ""}`} />
+                    </Button>
                     <Link href={`/products/${product.slug}`} target="_blank">
                         <Button
                             variant="ghost"

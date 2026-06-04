@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -41,11 +42,12 @@ export function ProfileCompletionCard({
     score: number;
     fields: CompletionField[];
 }) {
+    const t = useTranslations("profiles");
     if (score === 100) return null;
     return (
         <section className="rounded-xl border border-[var(--brand)]/30 bg-[var(--brand)]/5 p-5">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-white">Profile Strength</h3>
+                <h3 className="text-lg font-semibold text-white">{t("profileStrength")}</h3>
                 <span className="text-2xl font-bold text-[var(--brand)]">{score}%</span>
             </div>
             <div className="h-2 bg-white/5 rounded-full overflow-hidden mb-4">
@@ -79,6 +81,7 @@ export function ExperienceSection({
     items: ProfileExperience[];
     isOwner: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [showForm, setShowForm] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState({
@@ -94,7 +97,7 @@ export function ExperienceSection({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.company || !form.role || !form.start_date) {
-            return toast.error("Company, role, and start date are required");
+            return toast.error(t("companyRoleStartRequired"));
         }
         startTransition(async () => {
             const result = await addExperience({
@@ -107,23 +110,23 @@ export function ExperienceSection({
                 description: form.description || undefined,
             });
             if (result.success) {
-                toast.success("Experience added");
+                toast.success(t("experienceAdded"));
                 setShowForm(false);
                 window.location.reload();
             } else {
-                toast.error(result.error ?? "Failed");
+                toast.error(result.error ?? t("failed"));
             }
         });
     };
 
     const handleDelete = (id: string) => {
-        if (!confirm("Delete this experience?")) return;
+        if (!confirm(t("confirmDeleteExperience"))) return;
         startTransition(async () => {
             const result = await deleteExperience(id);
             if (result.success) {
-                toast.success("Deleted");
+                toast.success(t("deleted"));
                 window.location.reload();
-            } else toast.error(result.error ?? "Failed");
+            } else toast.error(result.error ?? t("failed"));
         });
     };
 
@@ -132,7 +135,7 @@ export function ExperienceSection({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                     <Briefcase className="h-5 w-5 text-[var(--brand)]" />
-                    Work Experience
+                    {t("workExperience")}
                 </h3>
                 {isOwner && (
                     <Button
@@ -142,7 +145,7 @@ export function ExperienceSection({
                         className="border-white/10 hover:bg-white/10"
                     >
                         <Plus className="mr-1 h-3.5 w-3.5" />
-                        Add
+                        {t("add")}
                     </Button>
                 )}
             </div>
@@ -151,7 +154,7 @@ export function ExperienceSection({
                 <form onSubmit={handleSubmit} className="space-y-3 mb-4 rounded-xl border border-white/10 bg-white/5 p-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Company *</Label>
+                            <Label className="text-xs text-gray-400">{t("companyStar")}</Label>
                             <Input
                                 value={form.company}
                                 onChange={(e) => setForm({ ...form, company: e.target.value })}
@@ -160,7 +163,7 @@ export function ExperienceSection({
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Role *</Label>
+                            <Label className="text-xs text-gray-400">{t("roleStar")}</Label>
                             <Input
                                 value={form.role}
                                 onChange={(e) => setForm({ ...form, role: e.target.value })}
@@ -170,7 +173,7 @@ export function ExperienceSection({
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <Label className="text-xs text-gray-400">Location</Label>
+                        <Label className="text-xs text-gray-400">{t("location")}</Label>
                         <Input
                             value={form.location}
                             onChange={(e) => setForm({ ...form, location: e.target.value })}
@@ -179,7 +182,7 @@ export function ExperienceSection({
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Start date *</Label>
+                            <Label className="text-xs text-gray-400">{t("startDateStar")}</Label>
                             <Input
                                 type="date"
                                 value={form.start_date}
@@ -189,7 +192,7 @@ export function ExperienceSection({
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">End date</Label>
+                            <Label className="text-xs text-gray-400">{t("endDate")}</Label>
                             <Input
                                 type="date"
                                 value={form.end_date}
@@ -205,21 +208,21 @@ export function ExperienceSection({
                             checked={form.is_current}
                             onChange={(e) => setForm({ ...form, is_current: e.target.checked })}
                         />
-                        I currently work here
+                        {t("currentlyWorkHere")}
                     </label>
                     <Textarea
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        placeholder="Describe your responsibilities..."
+                        placeholder={t("describeResponsibilities")}
                         rows={3}
                         className="bg-black/20 border-white/10 text-white"
                     />
                     <div className="flex gap-2">
                         <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
-                            Save
+                            {t("save")}
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </div>
                 </form>
@@ -227,7 +230,7 @@ export function ExperienceSection({
 
             {items.length === 0 ? (
                 <p className="text-sm text-gray-500">
-                    {isOwner ? "Add your work history to build credibility." : "No experience listed."}
+                    {isOwner ? t("addWorkHistoryOwner") : t("noExperienceListedShort")}
                 </p>
             ) : (
                 <div className="space-y-4">
@@ -246,7 +249,7 @@ export function ExperienceSection({
                             <div className="text-sm text-[var(--brand)]">{exp.company}</div>
                             <div className="text-xs text-gray-500 mt-0.5">
                                 {format(new Date(exp.start_date), "MMM yyyy")} —{" "}
-                                {exp.is_current ? "Present" : exp.end_date ? format(new Date(exp.end_date), "MMM yyyy") : "—"}
+                                {exp.is_current ? t("present") : exp.end_date ? format(new Date(exp.end_date), "MMM yyyy") : "—"}
                                 {exp.location && ` · ${exp.location}`}
                             </div>
                             {exp.description && (
@@ -269,6 +272,7 @@ export function EducationSection({
     items: ProfileEducation[];
     isOwner: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [showForm, setShowForm] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState({
@@ -281,7 +285,7 @@ export function EducationSection({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.institution) return toast.error("Institution is required");
+        if (!form.institution) return toast.error(t("institutionRequired"));
         startTransition(async () => {
             const result = await addEducation({
                 institution: form.institution,
@@ -291,21 +295,21 @@ export function EducationSection({
                 end_year: form.end_year ? Number(form.end_year) : undefined,
             });
             if (result.success) {
-                toast.success("Education added");
+                toast.success(t("educationAdded"));
                 setShowForm(false);
                 window.location.reload();
-            } else toast.error(result.error ?? "Failed");
+            } else toast.error(result.error ?? t("failed"));
         });
     };
 
     const handleDelete = (id: string) => {
-        if (!confirm("Delete this education entry?")) return;
+        if (!confirm(t("confirmDeleteEducation"))) return;
         startTransition(async () => {
             const result = await deleteEducation(id);
             if (result.success) {
-                toast.success("Deleted");
+                toast.success(t("deleted"));
                 window.location.reload();
-            } else toast.error(result.error ?? "Failed");
+            } else toast.error(result.error ?? t("failed"));
         });
     };
 
@@ -314,7 +318,7 @@ export function EducationSection({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                     <GraduationCap className="h-5 w-5 text-[var(--brand)]" />
-                    Education
+                    {t("education")}
                 </h3>
                 {isOwner && (
                     <Button
@@ -324,7 +328,7 @@ export function EducationSection({
                         className="border-white/10 hover:bg-white/10"
                     >
                         <Plus className="mr-1 h-3.5 w-3.5" />
-                        Add
+                        {t("add")}
                     </Button>
                 )}
             </div>
@@ -332,7 +336,7 @@ export function EducationSection({
             {showForm && (
                 <form onSubmit={handleSubmit} className="space-y-3 mb-4 rounded-xl border border-white/10 bg-white/5 p-4">
                     <div className="space-y-1">
-                        <Label className="text-xs text-gray-400">Institution *</Label>
+                        <Label className="text-xs text-gray-400">{t("institutionStar")}</Label>
                         <Input
                             value={form.institution}
                             onChange={(e) => setForm({ ...form, institution: e.target.value })}
@@ -342,27 +346,27 @@ export function EducationSection({
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Degree</Label>
+                            <Label className="text-xs text-gray-400">{t("degree")}</Label>
                             <Input
                                 value={form.degree}
                                 onChange={(e) => setForm({ ...form, degree: e.target.value })}
-                                placeholder="B.Sc."
+                                placeholder={t("degreePlaceholder")}
                                 className="bg-black/20 border-white/10 text-white"
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Field</Label>
+                            <Label className="text-xs text-gray-400">{t("field")}</Label>
                             <Input
                                 value={form.field}
                                 onChange={(e) => setForm({ ...form, field: e.target.value })}
-                                placeholder="Broadcast Engineering"
+                                placeholder={t("fieldPlaceholder")}
                                 className="bg-black/20 border-white/10 text-white"
                             />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Start year</Label>
+                            <Label className="text-xs text-gray-400">{t("startYear")}</Label>
                             <Input
                                 type="number"
                                 value={form.start_year}
@@ -371,7 +375,7 @@ export function EducationSection({
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">End year</Label>
+                            <Label className="text-xs text-gray-400">{t("endYear")}</Label>
                             <Input
                                 type="number"
                                 value={form.end_year}
@@ -382,10 +386,10 @@ export function EducationSection({
                     </div>
                     <div className="flex gap-2">
                         <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
-                            Save
+                            {t("save")}
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </div>
                 </form>
@@ -393,7 +397,7 @@ export function EducationSection({
 
             {items.length === 0 ? (
                 <p className="text-sm text-gray-500">
-                    {isOwner ? "Share your educational background." : "No education listed."}
+                    {isOwner ? t("shareEducationOwner") : t("noEducationListed")}
                 </p>
             ) : (
                 <div className="space-y-3">
@@ -406,7 +410,7 @@ export function EducationSection({
                                 </div>
                                 {(edu.start_year || edu.end_year) && (
                                     <div className="text-xs text-gray-500 mt-0.5">
-                                        {edu.start_year ?? ""} — {edu.end_year ?? "Present"}
+                                        {edu.start_year ?? ""} — {edu.end_year ?? t("present")}
                                     </div>
                                 )}
                             </div>
@@ -435,6 +439,7 @@ export function PortfolioSection({
     items: ProfilePortfolioItem[];
     isOwner: boolean;
 }) {
+    const t = useTranslations("profiles");
     const [showForm, setShowForm] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState({
@@ -446,7 +451,7 @@ export function PortfolioSection({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.title) return toast.error("Title is required");
+        if (!form.title) return toast.error(t("titleRequired"));
         startTransition(async () => {
             const result = await addPortfolioItem({
                 title: form.title,
@@ -455,21 +460,21 @@ export function PortfolioSection({
                 image_url: form.image_url || undefined,
             });
             if (result.success) {
-                toast.success("Portfolio item added");
+                toast.success(t("portfolioAdded"));
                 setShowForm(false);
                 window.location.reload();
-            } else toast.error(result.error ?? "Failed");
+            } else toast.error(result.error ?? t("failed"));
         });
     };
 
     const handleDelete = (id: string) => {
-        if (!confirm("Delete this portfolio item?")) return;
+        if (!confirm(t("confirmDeletePortfolio"))) return;
         startTransition(async () => {
             const result = await deletePortfolioItem(id);
             if (result.success) {
-                toast.success("Deleted");
+                toast.success(t("deleted"));
                 window.location.reload();
-            } else toast.error(result.error ?? "Failed");
+            } else toast.error(result.error ?? t("failed"));
         });
     };
 
@@ -478,7 +483,7 @@ export function PortfolioSection({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-semibold text-white flex items-center gap-2">
                     <ImageIcon className="h-5 w-5 text-[var(--brand)]" />
-                    Portfolio
+                    {t("portfolio")}
                 </h3>
                 {isOwner && (
                     <Button
@@ -488,7 +493,7 @@ export function PortfolioSection({
                         className="border-white/10 hover:bg-white/10"
                     >
                         <Plus className="mr-1 h-3.5 w-3.5" />
-                        Add
+                        {t("add")}
                     </Button>
                 )}
             </div>
@@ -496,7 +501,7 @@ export function PortfolioSection({
             {showForm && (
                 <form onSubmit={handleSubmit} className="space-y-3 mb-4 rounded-xl border border-white/10 bg-white/5 p-4">
                     <div className="space-y-1">
-                        <Label className="text-xs text-gray-400">Title *</Label>
+                        <Label className="text-xs text-gray-400">{t("titleStarShort")}</Label>
                         <Input
                             value={form.title}
                             onChange={(e) => setForm({ ...form, title: e.target.value })}
@@ -505,7 +510,7 @@ export function PortfolioSection({
                         />
                     </div>
                     <div className="space-y-1">
-                        <Label className="text-xs text-gray-400">Description</Label>
+                        <Label className="text-xs text-gray-400">{t("description")}</Label>
                         <Textarea
                             value={form.description}
                             onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -515,30 +520,30 @@ export function PortfolioSection({
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Project URL</Label>
+                            <Label className="text-xs text-gray-400">{t("projectUrl")}</Label>
                             <Input
                                 value={form.url}
                                 onChange={(e) => setForm({ ...form, url: e.target.value })}
-                                placeholder="https://..."
+                                placeholder={t("urlPlaceholder")}
                                 className="bg-black/20 border-white/10 text-white"
                             />
                         </div>
                         <div className="space-y-1">
-                            <Label className="text-xs text-gray-400">Image URL</Label>
+                            <Label className="text-xs text-gray-400">{t("imageUrl")}</Label>
                             <Input
                                 value={form.image_url}
                                 onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                                placeholder="https://..."
+                                placeholder={t("urlPlaceholder")}
                                 className="bg-black/20 border-white/10 text-white"
                             />
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <Button type="submit" disabled={isPending} size="sm" className="bg-[var(--brand)] text-black hover:bg-[#b5975a]">
-                            Save
+                            {t("save")}
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)} className="border-white/10 hover:bg-white/10">
-                            Cancel
+                            {t("cancel")}
                         </Button>
                     </div>
                 </form>
@@ -546,7 +551,7 @@ export function PortfolioSection({
 
             {items.length === 0 ? (
                 <p className="text-sm text-gray-500">
-                    {isOwner ? "Showcase your best work." : "No portfolio items listed."}
+                    {isOwner ? t("showcaseWorkOwner") : t("noPortfolioListed")}
                 </p>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -583,7 +588,7 @@ export function PortfolioSection({
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-1 mt-3 text-xs text-[var(--brand)] hover:underline"
                                     >
-                                        View <ExternalLink className="h-3 w-3" />
+                                        {t("view")} <ExternalLink className="h-3 w-3" />
                                     </a>
                                 )}
                             </div>

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { ActionState } from "@/features/types";
+import { getUserUsage } from "@/features/billing/server/usage";
 
 export async function createDemoRequest(prevState: ActionState, formData: FormData): Promise<ActionState> {
     const cookieStore = await cookies();
@@ -25,6 +26,19 @@ export async function createDemoRequest(prevState: ActionState, formData: FormDa
             message: "Missing required fields",
             error: "Please fill in all required fields."
         };
+    }
+
+    // Enforce the monthly demo/quote-request cap for logged-in users
+    // (Free 10 / Verified Pro unlimited). Guests are not counted.
+    if (user?.id) {
+        const { demoRequestsThisMonth } = await getUserUsage(user.id);
+        if (demoRequestsThisMonth.exhausted) {
+            return {
+                success: false,
+                message: "Monthly limit reached",
+                error: `You've reached your ${demoRequestsThisMonth.limit} demo/quote requests for this month. Upgrade to Verified Pro for unlimited requests.`,
+            };
+        }
     }
 
     try {

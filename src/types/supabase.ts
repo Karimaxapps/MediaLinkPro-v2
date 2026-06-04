@@ -1717,6 +1717,7 @@ export type Database = {
       organizations: {
         Row: {
           address: string | null
+          broadcaster_genre: string | null
           broadcaster_type: string | null
           claimed_at: string | null
           contact_email: string | null
@@ -1750,6 +1751,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          broadcaster_genre?: string | null
           broadcaster_type?: string | null
           claimed_at?: string | null
           contact_email?: string | null
@@ -1783,6 +1785,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          broadcaster_genre?: string | null
           broadcaster_type?: string | null
           claimed_at?: string | null
           contact_email?: string | null
