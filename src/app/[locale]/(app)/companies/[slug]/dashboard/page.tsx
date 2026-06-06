@@ -12,6 +12,11 @@ import {
 } from "@/features/organizations/server/dashboard-actions";
 import { CompanyJobsWidget } from "@/features/jobs/components/company-jobs-widget";
 import { CompanyEventsWidget } from "@/features/events/components/company-events-widget";
+import { ExhibitorManager } from "@/features/events/components/exhibitor-manager";
+import {
+  getExhibitableEvents,
+  getExhibitorEventsForOrg,
+} from "@/features/events/server/exhibitor-actions";
 import { CompanyBlogWidget } from "@/features/blog/components/company-blog-widget";
 import { DemoRequestsList } from "@/features/organizations/components/demo-requests-list";
 import { getOrgUsage } from "@/features/billing/server/usage";
@@ -31,12 +36,15 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
   }
 
   const { stats, orgId } = statsData;
-  const [activities, products, usage, plan] = await Promise.all([
+  const [activities, products, usage, plan, allEvents, orgExhibitorEvents] = await Promise.all([
     getRecentActivity(orgId),
     getCompanyProductsWithStats(orgId),
     getOrgUsage(orgId),
     getOrgPlan(orgId),
+    getExhibitableEvents(),
+    getExhibitorEventsForOrg(orgId),
   ]);
+  const exhibitorEventIds = orgExhibitorEvents.map((e) => e.id);
 
   return (
     <div className="space-y-8 container mx-auto py-8">
@@ -74,6 +82,12 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
         <Suspense fallback={<TableSkeleton />}>
           <CompanyEventsWidget orgId={orgId} eventsQuota={usage.eventsThisMonth} />
         </Suspense>
+
+        <ExhibitorManager
+          orgId={orgId}
+          allEvents={allEvents}
+          initialSelectedIds={exhibitorEventIds}
+        />
 
         <Suspense fallback={<TableSkeleton />}>
           <CompanyBlogWidget orgId={orgId} blogQuota={usage.blogPostsThisMonth} />

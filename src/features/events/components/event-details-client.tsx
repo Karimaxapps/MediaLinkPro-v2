@@ -19,6 +19,11 @@ import {
   ExternalLink,
   CheckCircle2,
   X,
+  Linkedin,
+  Facebook,
+  Youtube,
+  Twitter,
+  Instagram,
 } from "lucide-react";
 import type { Event, EventInterest, EventInterestType, EventRegistration } from "../types";
 import { EVENT_TYPE_COLORS, type EventType } from "../types";
@@ -28,6 +33,8 @@ import {
   setEventInterest,
   clearEventInterest,
 } from "../server/actions";
+import { addExhibitor, removeExhibitor } from "../server/exhibitor-actions";
+import { Store, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function EventDetailsClient({
@@ -35,18 +42,41 @@ export function EventDetailsClient({
   initialRegistration,
   initialInterests = [],
   initialMyInterest = null,
+  exhibitorOrgs = [],
+  initialExhibitingOrgIds = [],
 }: {
   event: Event;
   initialRegistration: EventRegistration | null;
   initialInterests?: EventInterest[];
   initialMyInterest?: EventInterest | null;
+  exhibitorOrgs?: { id: string; name: string; slug: string; logo_url: string | null }[];
+  initialExhibitingOrgIds?: string[];
 }) {
   const t = useTranslations("events");
   const [registration, setRegistration] = useState(initialRegistration);
   const [interests, setInterests] = useState<EventInterest[]>(initialInterests);
   const [myInterest, setMyInterest] = useState<EventInterest | null>(initialMyInterest);
+  const [exhibitingOrgIds, setExhibitingOrgIds] = useState<string[]>(initialExhibitingOrgIds);
   const [isPending, startTransition] = useTransition();
   const [isInterestPending, startInterestTransition] = useTransition();
+  const [isExhibitPending, startExhibitTransition] = useTransition();
+
+  const handleToggleExhibit = (orgId: string) => {
+    const isExhibiting = exhibitingOrgIds.includes(orgId);
+    startExhibitTransition(async () => {
+      const result = isExhibiting
+        ? await removeExhibitor(event.id, orgId)
+        : await addExhibitor(event.id, orgId);
+      if (result.success) {
+        setExhibitingOrgIds((prev) =>
+          isExhibiting ? prev.filter((id) => id !== orgId) : [...prev, orgId]
+        );
+        toast.success(isExhibiting ? t("exhibitRemoved") : t("exhibitAdded"));
+      } else {
+        toast.error(result.error ?? t("failedUpdate"));
+      }
+    });
+  };
 
   const interestCount =
     interests.length > (event.interest_count ?? 0) ? interests.length : (event.interest_count ?? 0);
@@ -397,7 +427,79 @@ export function EventDetailsClient({
                 )}
               </div>
             )}
+
+            {/* Exhibitor self-registration (company owners) */}
+            {exhibitorOrgs.length > 0 && (
+              <div className="pt-2 border-t border-white/10 space-y-2">
+                <div className="flex items-center gap-1.5 text-sm text-gray-400">
+                  <Store className="h-4 w-4 text-[var(--brand)]" />
+                  {t("exhibitingTitle")}
+                </div>
+                {exhibitorOrgs.map((org) => {
+                  const on = exhibitingOrgIds.includes(org.id);
+                  return (
+                    <Button
+                      key={org.id}
+                      type="button"
+                      onClick={() => handleToggleExhibit(org.id)}
+                      disabled={isExhibitPending}
+                      className={
+                        on
+                          ? "w-full bg-[var(--brand)] hover:bg-[#b5975a] text-black font-medium"
+                          : "w-full bg-transparent border border-white/10 text-white hover:bg-white/10"
+                      }
+                    >
+                      {on ? (
+                        <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                      ) : (
+                        <Plus className="mr-1.5 h-4 w-4" />
+                      )}
+                      {exhibitorOrgs.length > 1
+                        ? on
+                          ? t("exhibitingAsName", { name: org.name })
+                          : org.name
+                        : on
+                          ? t("youreExhibiting")
+                          : t("imExhibiting")}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
           </div>
+
+          {/* Dedicated event social pages */}
+          {(() => {
+            const socials = [
+              { url: event.linkedin_url, Icon: Linkedin, label: "LinkedIn", hover: "hover:text-[#0A66C2]" },
+              { url: event.x_url, Icon: Twitter, label: "X", hover: "hover:text-white" },
+              { url: event.facebook_url, Icon: Facebook, label: "Facebook", hover: "hover:text-[#1877F2]" },
+              { url: event.instagram_url, Icon: Instagram, label: "Instagram", hover: "hover:text-[#E4405F]" },
+              { url: event.youtube_url, Icon: Youtube, label: "YouTube", hover: "hover:text-[#FF0000]" },
+            ].filter((s) => !!s.url);
+            if (socials.length === 0) return null;
+            return (
+              <div className="rounded-xl border border-white/10 bg-white/5 p-5">
+                <div className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                  {t("followThisEvent")}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {socials.map(({ url, Icon, label, hover }) => (
+                    <a
+                      key={label}
+                      href={url!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className={`rounded-lg bg-white/5 p-2 text-gray-400 transition-colors hover:bg-white/10 ${hover}`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </aside>
       </div>
     </div>

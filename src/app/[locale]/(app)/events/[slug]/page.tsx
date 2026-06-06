@@ -6,7 +6,10 @@ import {
     listEventInterests,
     getMyEventInterest,
 } from "@/features/events/server/actions";
+import { getMyExhibitorStateForEvent } from "@/features/events/server/exhibitor-actions";
+import { getEventEditions, canManageEvent } from "@/features/events/server/edition-actions";
 import { EventDetailsClient } from "@/features/events/components/event-details-client";
+import { EventEditions } from "@/features/events/components/event-editions";
 import { JsonLd } from "@/components/seo/json-ld";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -33,11 +36,15 @@ export default async function EventDetailPage({ params }: Props) {
     const event = await getEventBySlug(slug);
     if (!event) notFound();
 
-    const [registration, interests, myInterest] = await Promise.all([
-        getUserRegistration(event.id),
-        listEventInterests(event.id, 20),
-        getMyEventInterest(event.id),
-    ]);
+    const [registration, interests, myInterest, exhibitorState, editions, canManage] =
+        await Promise.all([
+            getUserRegistration(event.id),
+            listEventInterests(event.id, 20),
+            getMyEventInterest(event.id),
+            getMyExhibitorStateForEvent(event.id),
+            getEventEditions(event.id),
+            canManageEvent(event.id),
+        ]);
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -66,7 +73,14 @@ export default async function EventDetailPage({ params }: Props) {
                 initialRegistration={registration}
                 initialInterests={interests}
                 initialMyInterest={myInterest}
+                exhibitorOrgs={exhibitorState.orgs}
+                initialExhibitingOrgIds={exhibitorState.exhibitingOrgIds}
             />
+            {(editions.length > 0 || canManage) && (
+                <div className="mt-6">
+                    <EventEditions eventId={event.id} editions={editions} canManage={canManage} />
+                </div>
+            )}
         </>
     );
 }

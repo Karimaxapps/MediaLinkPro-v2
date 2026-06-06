@@ -5,6 +5,7 @@ import {
 } from "@/features/organizations/server/actions";
 import { getConnectionStatus } from "@/features/connections/server/actions";
 import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
+import { getExhibitorEventsForOrgs } from "@/features/events/server/exhibitor-actions";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 import { FeaturedProviderCard } from "@/features/organizations/components/featured-provider-card";
 import { notFound } from "next/navigation";
@@ -84,7 +85,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
             const orgIds = orgs.map((o) => o.id);
             const cookieStore = await cookies();
             const supabase = createClient(cookieStore);
-            const [followedSet, followersResult] = await Promise.all([
+            const [followedSet, followersResult, exhibitorMap] = await Promise.all([
                 getFollowedOrganizationIds(orgIds),
                 orgIds.length > 0
                     ? supabase
@@ -99,6 +100,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
                               created_at: string;
                           }[],
                       }),
+                getExhibitorEventsForOrgs(orgIds),
             ]);
 
             const counts = new Map<string, number>();
@@ -147,6 +149,11 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
                     profile_id: pid,
                     avatar_url: profileMap.get(pid)?.avatar_url ?? null,
                     full_name: profileMap.get(pid)?.full_name ?? null,
+                })),
+                exhibitorEvents: (exhibitorMap[o.id] ?? []).map((e) => ({
+                    title: e.title,
+                    slug: e.slug,
+                    logo_url: e.logo_url,
                 })),
             }));
         }

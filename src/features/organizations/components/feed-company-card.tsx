@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Building2, Users, Package } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";
+import type { ExhibitorEvent } from "@/features/events/types";
 import { FollowButton } from "@/features/organizations/components/follow-button";
 
 interface FeedCompanyCardProps {
@@ -18,6 +20,7 @@ interface FeedCompanyCardProps {
     followers_count?: number | null;
     products_count?: number | null;
     is_following?: boolean;
+    exhibitorEvents?: Pick<ExhibitorEvent, "title" | "slug" | "logo_url">[];
 }
 
 function formatCount(n: number): string {
@@ -36,6 +39,7 @@ export function FeedCompanyCard({
     followers_count,
     products_count,
     is_following = false,
+    exhibitorEvents = [],
 }: FeedCompanyCardProps) {
     const href = `/companies/${slug}`;
 
@@ -83,6 +87,14 @@ export function FeedCompanyCard({
                     </div>
                     {subtitle && (
                         <p className="text-gray-400 text-sm mt-1 truncate">{subtitle}</p>
+                    )}
+                    {exhibitorEvents.length > 0 && (
+                        <ExhibitorLogos
+                            events={exhibitorEvents}
+                            size="sm"
+                            linked={false}
+                            className="mt-2"
+                        />
                     )}
                 </div>
 

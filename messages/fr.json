@@ -771,7 +771,11 @@
       "editCompanyDesc": "Update your company information and settings.",
       "profileUpdated": "Company profile updated successfully",
       "failedUpdate": "Failed to update profile",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "stepEventsTitle": "Events",
+      "stepEventsDesc": "Select the industry events your company exhibits at.",
+      "eventsHelp": "Pick the trade shows and events your company exhibits at. You can change this later.",
+      "noEventsAvailable": "No events are available to select yet."
     }
   },
   "profiles": {
@@ -979,7 +983,16 @@
       "workshop": "Workshop",
       "meetup": "Meetup",
       "trade_show": "Trade Show"
-    }
+    },
+    "exhibitingTitle": "Exhibiting at this event?",
+    "imExhibiting": "I'm exhibiting at this event",
+    "youreExhibiting": "You're exhibiting",
+    "exhibitingAsName": "{name} — exhibiting",
+    "exhibitAdded": "Marked as exhibiting",
+    "exhibitRemoved": "Removed from exhibitors",
+    "socialPages": "Dedicated event social pages",
+    "socialPagesHint": "Optional. Add social handles created specifically for this event.",
+    "followThisEvent": "Follow this event"
   },
   "connections": {
     "requestSent": "Connection request sent!",
@@ -1011,7 +1024,9 @@
     "descFiltered": "Try a different keyword or clear the filters.",
     "descEmpty": "Try adjusting your search or check back later.",
     "clearFilters": "Clear filters",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "byEvent": "By event",
+    "allShows": "All shows"
   },
   "messaging": {
     "message": "Message",
