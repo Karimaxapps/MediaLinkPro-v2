@@ -131,6 +131,12 @@ export async function createEvent(eventData: {
   cover_image_url?: string;
   max_attendees?: number;
   registration_url?: string;
+  linkedin_url?: string;
+  x_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  tiktok_url?: string;
+  youtube_url?: string;
 }): Promise<{ success: boolean; error?: string; slug?: string }> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);

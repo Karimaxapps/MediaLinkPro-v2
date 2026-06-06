@@ -42,6 +42,12 @@ export function NewEventClient({
         cover_image_url: "",
         max_attendees: "",
         registration_url: "",
+        linkedin_url: "",
+        x_url: "",
+        facebook_url: "",
+        instagram_url: "",
+        tiktok_url: "",
+        youtube_url: "",
     });
 
     const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
@@ -84,6 +90,12 @@ export function NewEventClient({
                 cover_image_url: form.cover_image_url || undefined,
                 max_attendees: form.max_attendees ? Number(form.max_attendees) : undefined,
                 registration_url: form.registration_url.trim() || undefined,
+                linkedin_url: form.linkedin_url.trim() || undefined,
+                x_url: form.x_url.trim() || undefined,
+                facebook_url: form.facebook_url.trim() || undefined,
+                instagram_url: form.instagram_url.trim() || undefined,
+                tiktok_url: form.tiktok_url.trim() || undefined,
+                youtube_url: form.youtube_url.trim() || undefined,
             });
 
             if (result.success && result.slug) {
@@ -320,6 +332,35 @@ export function NewEventClient({
                         className="bg-black/20 border-white/10 text-white"
                     />
                     <p className="text-xs text-gray-500">{t("regLinkHint")}</p>
+                </div>
+
+                {/* Dedicated event social pages */}
+                <div className="space-y-3 pt-2 border-t border-white/10">
+                    <div>
+                        <Label className="text-gray-300">{t("socialPages")}</Label>
+                        <p className="text-xs text-gray-500 mt-0.5">{t("socialPagesHint")}</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {([
+                            ["linkedin_url", "LinkedIn"],
+                            ["x_url", "X (Twitter)"],
+                            ["facebook_url", "Facebook"],
+                            ["instagram_url", "Instagram"],
+                            ["tiktok_url", "TikTok"],
+                            ["youtube_url", "YouTube"],
+                        ] as const).map(([key, label]) => (
+                            <div key={key} className="space-y-2">
+                                <Label className="text-gray-300 text-xs">{label}</Label>
+                                <Input
+                                    type="url"
+                                    value={form[key]}
+                                    onChange={(e) => update(key, e.target.value)}
+                                    placeholder={`https://…`}
+                                    className="bg-black/20 border-white/10 text-white"
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="flex gap-3 pt-2">

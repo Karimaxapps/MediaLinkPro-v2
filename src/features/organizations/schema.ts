@@ -235,9 +235,15 @@ export const companySocialSchema = z.object({
     youtube_url: z.string().url("Invalid URL").optional().or(z.literal("")),
 });
 
+/** Industry events the company exhibits at — selected in the wizard's last step. */
+export const companyEventsSchema = z.object({
+    exhibitEventIds: z.array(z.string()).optional(),
+});
+
 export const companyWizardSchema = companyIdentitySchema
     .merge(companyActivitySchema)
     .merge(companyContactSchema)
-    .merge(companySocialSchema);
+    .merge(companySocialSchema)
+    .merge(companyEventsSchema);
 
 export type CompanyWizardValues = z.infer<typeof companyWizardSchema>;

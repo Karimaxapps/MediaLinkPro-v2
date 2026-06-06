@@ -19,6 +19,8 @@ import {
   Building2,
 } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";
+import { getExhibitorEventsForOrg } from "@/features/events/server/exhibitor-actions";
 import { getOrgVerifiedPlan } from "@/lib/subscription";
 import { EmptyState } from "@/components/ui/empty-state";
 import { createClient } from "@/lib/supabase/server";
@@ -185,11 +187,12 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
     userHasPendingClaim = !!existingClaim;
   }
 
-  const [isFollowing, followerCount, orgPlan, companyJobs] = await Promise.all([
+  const [isFollowing, followerCount, orgPlan, companyJobs, exhibitorEvents] = await Promise.all([
     isFollowingOrganization(org.id),
     getOrganizationFollowerCount(org.id),
     getOrgVerifiedPlan(org.id),
     listOpenJobs({ orgId: org.id }),
+    getExhibitorEventsForOrg(org.id),
   ]);
 
   const jsonLd = {
@@ -251,6 +254,14 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               {followerCount === 1 ? "follower" : "followers"}
             </span>
           </div>
+          {exhibitorEvents.length > 0 && (
+            <div className="flex items-center justify-center md:justify-start gap-2 pt-1">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Exhibits at
+              </span>
+              <ExhibitorLogos events={exhibitorEvents} size="md" />
+            </div>
+          )}
         </div>
 
         {!canEdit && user && (

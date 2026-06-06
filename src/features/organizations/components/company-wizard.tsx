@@ -16,7 +16,10 @@ import {
   Phone,
   Share2,
   CheckCircle2,
+  CalendarDays,
 } from "lucide-react";
+import Image from "next/image";
+import type { ExhibitorEvent } from "@/features/events/types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,9 +72,21 @@ const steps = [
     descKey: "form.stepSocialDesc",
     icon: Share2,
   },
+  {
+    id: "events",
+    titleKey: "form.stepEventsTitle",
+    descKey: "form.stepEventsDesc",
+    icon: CalendarDays,
+  },
 ] as const;
 
-export function CompanyWizard({ userId }: { userId: string }) {
+export function CompanyWizard({
+  userId,
+  exhibitableEvents = [],
+}: {
+  userId: string;
+  exhibitableEvents?: ExhibitorEvent[];
+}) {
   const t = useTranslations("companies");
   const [currentStep, setCurrentStep] = React.useState(0);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -101,6 +116,7 @@ export function CompanyWizard({ userId }: { userId: string }) {
       instagram_url: "",
       tiktok_url: "",
       youtube_url: "",
+      exhibitEventIds: [],
     },
   });
 
@@ -628,6 +644,65 @@ export function CompanyWizard({ userId }: { userId: string }) {
                     )}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Step 5: Events / Exhibiting */}
+            {currentStep === 4 && (
+              <div className="space-y-4">
+                {exhibitableEvents.length === 0 ? (
+                  <p className="text-sm text-gray-400">{t("form.noEventsAvailable")}</p>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-400">{t("form.eventsHelp")}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {exhibitableEvents.map((ev) => {
+                        const selected = (watch("exhibitEventIds") ?? []).includes(ev.id);
+                        return (
+                          <button
+                            key={ev.id}
+                            type="button"
+                            onClick={() => {
+                              const current = watch("exhibitEventIds") ?? [];
+                              setValue(
+                                "exhibitEventIds",
+                                selected
+                                  ? current.filter((id) => id !== ev.id)
+                                  : [...current, ev.id]
+                              );
+                            }}
+                            className={cn(
+                              "flex items-center gap-3 rounded-lg border p-3 text-left transition-all",
+                              selected
+                                ? "border-[var(--brand)] bg-[var(--brand)]/10"
+                                : "border-white/10 bg-black/20 hover:border-white/30"
+                            )}
+                          >
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/5">
+                              {ev.logo_url ? (
+                                <Image
+                                  src={ev.logo_url}
+                                  alt={ev.title}
+                                  width={40}
+                                  height={40}
+                                  className="h-full w-full object-contain"
+                                />
+                              ) : (
+                                <CalendarDays className="h-5 w-5 text-gray-500" />
+                              )}
+                            </span>
+                            <span className="min-w-0 flex-1 truncate text-sm font-medium text-white">
+                              {ev.title}
+                            </span>
+                            {selected && (
+                              <CheckCircle2 className="h-5 w-5 shrink-0 text-[var(--brand)]" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </form>

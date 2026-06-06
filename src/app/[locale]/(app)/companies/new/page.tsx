@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getOrganizations } from "@/features/organizations/server/actions";
+import { getExhibitableEvents } from "@/features/events/server/exhibitor-actions";
 import { Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -55,6 +56,7 @@ export default async function CreateCompanyPage({ searchParams }: Props) {
 
   const { from } = await searchParams;
   const hint = from ? FROM_LABELS[from] : null;
+  const exhibitableEvents = await getExhibitableEvents();
 
   return (
     <div className="container max-w-4xl py-10">
@@ -79,7 +81,7 @@ export default async function CreateCompanyPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <CompanyWizard userId={user.id} />
+      <CompanyWizard userId={user.id} exhibitableEvents={exhibitableEvents} />
     </div>
   );
 }

@@ -9,6 +9,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Briefcase } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
+import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";
+import type { ExhibitorEvent } from "@/features/events/types";
 
 interface ConnectCardProps {
     id: string; // Profile ID for profiles, organization ID for organizations
@@ -33,6 +35,8 @@ interface ConnectCardProps {
         full_name: string | null;
     }[];
     plan?: string | null;
+    /** Industry events this organization exhibits at. Org cards only. */
+    exhibitorEvents?: Pick<ExhibitorEvent, "title" | "slug" | "logo_url">[];
 }
 
 export function ConnectCard({
@@ -44,13 +48,13 @@ export function ConnectCard({
     location,
     slug,
     type,
-    badges = [],
     connectionStatus = 'none',
     requestId,
     isFollowing = false,
     followerCount = 0,
     followersPreview = [],
     plan,
+    exhibitorEvents = [],
 }: ConnectCardProps) {
     const t = useTranslations("companies");
     const href = type === 'organization' ? `/companies/${slug}` : `/profiles/${slug}`;
@@ -104,6 +108,15 @@ export function ConnectCard({
                                     <MapPin className="w-3 h-3 mr-1 shrink-0" />
                                     {location}
                                 </div>
+                            )}
+
+                            {type === "organization" && exhibitorEvents.length > 0 && (
+                                <ExhibitorLogos
+                                    events={exhibitorEvents}
+                                    size="sm"
+                                    linked={false}
+                                    className="mt-2"
+                                />
                             )}
 
                             {type === "organization" && followerCount > 0 && (

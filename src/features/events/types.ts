@@ -36,6 +36,13 @@ export type Event = {
     registration_count: number;
     interest_count: number;
     registration_url: string | null;
+    website_url?: string | null;
+    linkedin_url?: string | null;
+    x_url?: string | null;
+    facebook_url?: string | null;
+    instagram_url?: string | null;
+    tiktok_url?: string | null;
+    youtube_url?: string | null;
     created_at: string;
     updated_at: string;
     organizations?: {
@@ -59,6 +66,21 @@ export type EventRegistration = {
     };
 };
 
+export type EventEdition = {
+    id: string;
+    event_id: string;
+    label: string | null;
+    start_date: string;
+    end_date: string;
+    location: string | null;
+    venue_name: string | null;
+    city: string | null;
+    country: string | null;
+    registration_url: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
 export type EventSpeaker = {
     id: string;
     event_id: string;
@@ -67,6 +89,34 @@ export type EventSpeaker = {
     role: string | null;
     bio: string | null;
     avatar_url: string | null;
+};
+
+// ─── Exhibitors ───────────────────────────────────
+// A company's participation in an event as an exhibitor (distinct from the
+// event host org and from attendee registrations).
+
+export type ExhibitorEvent = {
+    id: string;
+    title: string;
+    slug: string;
+    logo_url: string | null;
+    cover_image_url: string | null;
+};
+
+export type EventExhibitor = {
+    id: string;
+    event_id: string;
+    organization_id: string;
+    created_by: string | null;
+    source: "self" | "import";
+    created_at: string;
+    organizations?: {
+        id: string;
+        name: string;
+        slug: string;
+        logo_url: string | null;
+        country: string | null;
+    };
 };
 
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {

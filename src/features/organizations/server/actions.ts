@@ -244,6 +244,7 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
     instagram_url,
     tiktok_url,
     youtube_url,
+    exhibitEventIds,
   } = validated.data;
 
   // Check availability of slug
@@ -300,6 +301,22 @@ export async function createCompanyWizardAction(data: CompanyWizardValues): Prom
     // cleanup
     await supabase.from("organizations").delete().eq("id", org.id);
     return { error: "Failed to assign ownership: " + memberError.message, success: false };
+  }
+
+  // Record selected industry-event exhibitor participation (best-effort; the
+  // owner membership above satisfies the can_edit_org RLS check).
+  if (exhibitEventIds && exhibitEventIds.length > 0) {
+    const { error: exhibitorError } = await supabase.from("event_exhibitors" as never).insert(
+      exhibitEventIds.map((eventId) => ({
+        event_id: eventId,
+        organization_id: org.id,
+        created_by: user.id,
+        source: "self",
+      })) as never
+    );
+    if (exhibitorError) {
+      console.error("Exhibitor participation insert error:", exhibitorError);
+    }
   }
 
   return { success: true, message: "Company profile created successfully!", org };
