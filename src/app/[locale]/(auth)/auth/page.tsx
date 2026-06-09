@@ -54,18 +54,6 @@ export default async function AuthPage() {
                             {t("tagline")}
                         </p>
                     </div>
-
-                    {/* Feature pills */}
-                    <div className="flex flex-wrap gap-2 pt-2">
-                        {([t("featureTalent"), t("featureBrands"), t("featureEvents"), t("featureAnalytics")] as string[]).map((tag) => (
-                            <span
-                                key={tag}
-                                className="px-3 py-1 rounded-full text-xs font-medium border border-[var(--brand)]/20 text-[var(--brand)]/80 bg-[var(--brand)]/5"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
                 </div>
 
                 {/* Bottom quote */}

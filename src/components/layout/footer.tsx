@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { SocialLinks } from "@/components/layout/social-links";
 
 interface FooterProps {
   isSidebar?: boolean;
@@ -39,6 +40,7 @@ export function Footer({ isSidebar = false }: FooterProps) {
           <Link href="/privacy" className="hover:text-[var(--brand)] transition-colors duration-200">
             {t("privacy")}
           </Link>
+          <SocialLinks />
           <span>
             {t("designedBy") + " "}
             <Link

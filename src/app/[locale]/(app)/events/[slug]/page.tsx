@@ -9,7 +9,6 @@ import {
 import { getMyExhibitorStateForEvent } from "@/features/events/server/exhibitor-actions";
 import { getEventEditions, canManageEvent } from "@/features/events/server/edition-actions";
 import { EventDetailsClient } from "@/features/events/components/event-details-client";
-import { EventEditions } from "@/features/events/components/event-editions";
 import { JsonLd } from "@/components/seo/json-ld";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -75,12 +74,9 @@ export default async function EventDetailPage({ params }: Props) {
                 initialMyInterest={myInterest}
                 exhibitorOrgs={exhibitorState.orgs}
                 initialExhibitingOrgIds={exhibitorState.exhibitingOrgIds}
+                editions={editions}
+                canManageEditions={canManage}
             />
-            {(editions.length > 0 || canManage) && (
-                <div className="mt-6">
-                    <EventEditions eventId={event.id} editions={editions} canManage={canManage} />
-                </div>
-            )}
         </>
     );
 }

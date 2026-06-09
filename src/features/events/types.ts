@@ -32,6 +32,8 @@ export type Event = {
     is_online: boolean;
     online_url: string | null;
     cover_image_url: string | null;
+    logo_url: string | null;
+    promo_video_url: string | null;
     max_attendees: number | null;
     registration_count: number;
     interest_count: number;

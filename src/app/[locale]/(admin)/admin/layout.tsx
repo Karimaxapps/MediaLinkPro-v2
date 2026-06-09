@@ -3,13 +3,14 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
-import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight, Palette, BadgeCheck, Store } from "lucide-react";
+import { LayoutDashboard, Users, Package, Star, ShieldCheck, Megaphone, Globe, PenSquare, Building2, MessageSquare, GitMerge, Sparkles, Bell, ToggleRight, Palette, BadgeCheck, Store, CalendarDays } from "lucide-react";
 import { NotificationsPopover } from "@/components/layout/notifications-popover";
 
 const NAV = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/companies", label: "Companies", icon: Building2 },
+    { href: "/admin/events", label: "Events", icon: CalendarDays },
     { href: "/admin/exhibitors", label: "Exhibitors", icon: Store },
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/ai-tools", label: "AI Tools", icon: Sparkles },

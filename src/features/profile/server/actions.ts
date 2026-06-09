@@ -93,6 +93,16 @@ export async function updateMyProfile(data: ExtendedProfileData) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: 'Not authenticated', success: false };
 
+    // Detect first-time profile completion so we can send a one-off welcome
+    // email. This is "first completion" when the profile had no full_name yet
+    // and this update sets one.
+    const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .maybeSingle();
+    const isFirstCompletion = !existingProfile?.full_name && !!data.full_name;
+
     const dbUpdate: ProfileUpdate = {};
 
     // Standard fields
@@ -147,30 +157,26 @@ export async function updateMyProfile(data: ExtendedProfileData) {
         revalidatePath(`/experts/${data.username}`);
     }
 
+    // Send a one-off welcome email the first time the profile is completed.
+    // Failure here must not block the profile save, so it's best-effort.
+    if (isFirstCompletion && user.email) {
+        const firstName = data.full_name?.split(" ")[0] ?? "there";
+        const tpl = emailTemplates.welcome(firstName);
+        try {
+            await sendEmail({ to: user.email, ...tpl });
+        } catch (emailError) {
+            console.error("Failed to send welcome email:", emailError);
+        }
+    }
+
     return { success: true };
 }
 
-// Keep mostly for compatibility if referenced elsewhere, but update to use new type
+// Backward-compatible wrapper. The welcome-email logic now lives in
+// updateMyProfile (the path the onboarding wizard actually uses), so this
+// simply delegates.
 export async function completeOnboarding(data: ExtendedProfileData) {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
-    // Fetch current profile to detect first-time completion
-    const { data: { user } } = await supabase.auth.getUser();
-    const isFirstCompletion = user ? await (async () => {
-        const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
-        return !data?.full_name;
-    })() : false;
-
-    const result = await updateMyProfile(data);
-
-    if (result.success && isFirstCompletion && user?.email) {
-        const firstName = data.full_name?.split(" ")[0] ?? "there";
-        const tpl = emailTemplates.welcome(firstName);
-        await sendEmail({ to: user.email, ...tpl });
-    }
-
-    return result;
+    return updateMyProfile(data);
 }
 
 export async function getAuthEmail() {

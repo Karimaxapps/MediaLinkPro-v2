@@ -15,10 +15,6 @@
     "subtitle": "连接全球 <strong>48+ 个国家</strong>的广播机构、解决方案提供商、制作人及媒体协会的生态系统——实时互联。",
     "joinNetwork": "加入网络",
     "browseMarketplace": "浏览市场",
-    "statsCategories": "产品类别",
-    "statsMessaging": "即时通讯",
-    "statsNetwork": "全球网络",
-    "onlineNow": "{count} 位专业人士当前在线",
     "trustedBy": "受行业领导者信赖",
     "seq0Subject": "广播机构",
     "seq0Find": "硬件解决方案",
@@ -356,7 +352,19 @@
     "visibilityDesc": "您的公司目前是公开的，所有人均可查看。",
     "makePrivate": "设为私密",
     "companySlug": "公司标识符",
-    "companySlugDesc": "您公司 URL 的唯一标识符。"
+    "companySlugDesc": "您公司 URL 的唯一标识符。",
+    "currentEmail": "Current Email",
+    "newEmail": "New Email",
+    "newEmailDesc": "Enter the new email address you want to use. We will send a confirmation link to verify it.",
+    "updateEmail": "Update Email",
+    "updating": "Updating...",
+    "emailChangeConfirmTitle": "Change your email address?",
+    "emailChangeConfirmDesc": "A confirmation link will be sent to {email}. Your email will only change after you verify it, and you will be signed out and must log in again with your new credentials.",
+    "emailChangeConfirmAction": "Send confirmation",
+    "emailChangeRequested": "Confirmation email sent. Please verify your new address, then log in again.",
+    "emailChangeError": "An error occurred while updating your email.",
+    "cancel": "Cancel",
+    "emailChangeNote": "Changing your email signs you out. You will need to confirm the new address via the verification link we email you, then log back in with your new credentials."
   },
   "support": {
     "title": "帮助与支持",
@@ -992,7 +1000,13 @@
     "exhibitRemoved": "Removed from exhibitors",
     "socialPages": "Dedicated event social pages",
     "socialPagesHint": "Optional. Add social handles created specifically for this event.",
-    "followThisEvent": "Follow this event"
+    "followThisEvent": "Follow this event",
+    "eventLogo": "Event Logo",
+    "uploadLogo": "Upload logo",
+    "eventLogoHint": "Square logo for this event (PNG, JPG or SVG). Shown on the event page and cards.",
+    "promoVideo": "Promo Video (YouTube)",
+    "promoVideoHint": "Paste a YouTube link to feature a promo video on the event page.",
+    "promoVideoTitle": "Promo Video"
   },
   "connections": {
     "requestSent": "Connection request sent!",
