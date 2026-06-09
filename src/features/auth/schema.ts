@@ -14,7 +14,7 @@ export const updatePasswordSchema = z
 export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
 export const updateEmailSchema = z.object({
-    email: z.string().email("Invalid email address"),
+    newEmail: z.string().email("Invalid email address"),
 });
 
 export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;

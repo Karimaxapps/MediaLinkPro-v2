@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { SocialLinks } from "@/components/layout/social-links";
 import { getActiveLanguages } from "@/features/languages/server/queries";
 
 export async function PublicFooter() {
@@ -36,6 +37,7 @@ export async function PublicFooter() {
           <Link href="/privacy" className="hover:text-[var(--brand)] transition-colors duration-200">
             {t("privacy")}
           </Link>
+          <SocialLinks />
           <LocaleSwitcher locales={activeLocales} showLabel />
         </div>
       </div>

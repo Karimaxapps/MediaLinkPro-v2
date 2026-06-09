@@ -885,17 +885,38 @@ export async function revokeOrgGift(
   return revokeGift(ownerId);
 }
 
-export async function listAdminEvents(limit: number = 50) {
+export type AdminEventListItem = {
+  id: string;
+  title: string;
+  slug: string;
+  status: string;
+  event_type: string;
+  start_date: string | null;
+  end_date: string | null;
+  location: string | null;
+  is_online: boolean;
+  cover_image_url: string | null;
+  logo_url: string | null;
+  registration_count: number;
+  interest_count: number;
+  organization_id: string | null;
+  organization_name: string | null;
+  organization_logo: string | null;
+  created_at: string | null;
+};
+
+export async function listAdminEvents(limit: number = 200): Promise<AdminEventListItem[]> {
   await requireSiteAdmin();
   const admin = createAdminClient();
   const { data } = await admin
     .from("events")
     .select(
-      "id, title, slug, status, event_type, start_date, end_date, registration_count, organization_id, created_at"
+      "id, title, slug, status, event_type, start_date, end_date, location, is_online, cover_image_url, logo_url, registration_count, interest_count, organization_id, created_at"
     )
-    .order("created_at", { ascending: false })
+    .order("start_date", { ascending: false })
     .limit(limit);
-  return (data ?? []) as Array<{
+
+  const rows = (data ?? []) as Array<{
     id: string;
     title: string;
     slug: string;
@@ -903,15 +924,124 @@ export async function listAdminEvents(limit: number = 50) {
     event_type: string;
     start_date: string | null;
     end_date: string | null;
-    registration_count: number;
+    location: string | null;
+    is_online: boolean | null;
+    cover_image_url: string | null;
+    logo_url: string | null;
+    registration_count: number | null;
+    interest_count: number | null;
     organization_id: string | null;
     created_at: string | null;
   }>;
+  if (!rows.length) return [];
+
+  const orgIds = Array.from(
+    new Set(rows.map((r) => r.organization_id).filter((v): v is string => !!v))
+  );
+  let orgMap = new Map<string, { name: string; logo_url: string | null }>();
+  if (orgIds.length) {
+    const { data: orgs } = await admin
+      .from("organizations")
+      .select("id, name, logo_url")
+      .in("id", orgIds);
+    orgMap = new Map((orgs ?? []).map((o) => [o.id, { name: o.name, logo_url: o.logo_url }]));
+  }
+
+  return rows.map((r) => {
+    const org = r.organization_id ? orgMap.get(r.organization_id) : undefined;
+    return {
+      id: r.id,
+      title: r.title,
+      slug: r.slug,
+      status: r.status,
+      event_type: r.event_type,
+      start_date: r.start_date,
+      end_date: r.end_date,
+      location: r.location,
+      is_online: r.is_online ?? false,
+      cover_image_url: r.cover_image_url,
+      logo_url: r.logo_url,
+      registration_count: r.registration_count ?? 0,
+      interest_count: r.interest_count ?? 0,
+      organization_id: r.organization_id,
+      organization_name: org?.name ?? null,
+      organization_logo: org?.logo_url ?? null,
+      created_at: r.created_at,
+    };
+  });
+}
+
+/** Full event row for the admin edit form. */
+export async function getAdminEventById(eventId: string) {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin.from("events").select("*").eq("id", eventId).maybeSingle();
+  return (data ?? null) as Record<string, unknown> | null;
+}
+
+export type AdminEventEditFields = {
+  organization_id?: string;
+  title?: string;
+  description?: string | null;
+  event_type?: string;
+  status?: string;
+  start_date?: string;
+  end_date?: string;
+  location?: string | null;
+  is_online?: boolean;
+  online_url?: string | null;
+  cover_image_url?: string | null;
+  logo_url?: string | null;
+  promo_video_url?: string | null;
+  max_attendees?: number | null;
+  registration_url?: string | null;
+  website_url?: string | null;
+  linkedin_url?: string | null;
+  x_url?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  tiktok_url?: string | null;
+  youtube_url?: string | null;
+};
+
+export async function updateEventAsAdmin(
+  eventId: string,
+  data: AdminEventEditFields
+): Promise<{ success: boolean; error?: string; slug?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  if (data.title !== undefined && !data.title.trim()) {
+    return { success: false, error: "Title is required." };
+  }
+  if (data.organization_id !== undefined && !data.organization_id) {
+    return { success: false, error: "An organizing company is required." };
+  }
+
+  const { data: updated, error } = await admin
+    .from("events")
+    .update({ ...data, updated_at: new Date().toISOString() } as never)
+    .eq("id", eventId)
+    .select("slug")
+    .single();
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/admin/events");
+  if (updated?.slug) revalidatePath(`/events/${updated.slug}`);
+  return { success: true, slug: updated?.slug };
 }
 
 export async function deleteEventAsAdmin(eventId: string) {
   await requireSiteAdmin();
   const admin = createAdminClient();
+  // Best-effort cascade for child rows in case the DB lacks ON DELETE CASCADE
+  await Promise.allSettled([
+    admin.from("event_registrations").delete().eq("event_id", eventId as never),
+    admin.from("event_interests" as never).delete().eq("event_id", eventId),
+    admin.from("event_editions" as never).delete().eq("event_id", eventId),
+    admin.from("event_exhibitors" as never).delete().eq("event_id", eventId),
+  ]);
   const { error } = await admin.from("events").delete().eq("id", eventId);
   if (error) return { success: false, error: error.message };
   revalidatePath("/admin/events");

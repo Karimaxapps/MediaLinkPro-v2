@@ -129,6 +129,8 @@ export async function createEvent(eventData: {
   is_online?: boolean;
   online_url?: string;
   cover_image_url?: string;
+  logo_url?: string;
+  promo_video_url?: string;
   max_attendees?: number;
   registration_url?: string;
   linkedin_url?: string;

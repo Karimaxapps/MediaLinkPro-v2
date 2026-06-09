@@ -1,7 +1,6 @@
 'use server';
 
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { updatePasswordSchema, updateEmailSchema } from "@/features/auth/schema";
 import { ActionState } from "@/features/types";
@@ -48,7 +47,7 @@ export async function updateEmail(prevState: ActionState, formData: FormData): P
     }
 
     const rawData = {
-        email: formData.get('email'),
+        newEmail: formData.get('newEmail'),
     };
 
     const validated = updateEmailSchema.safeParse(rawData);
@@ -58,26 +57,26 @@ export async function updateEmail(prevState: ActionState, formData: FormData): P
         return { error: 'Invalid data: ' + errorMessage, success: false };
     }
 
-    // Use service role key for admin updates
-    const supabaseAdmin = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false,
-            }
-        }
-    );
+    if (validated.data.newEmail.toLowerCase() === (user.email ?? '').toLowerCase()) {
+        return { error: 'The new email matches your current email.', success: false };
+    }
 
-    const { error } = await supabaseAdmin.auth.admin.updateUserById(
-        user.id,
-        { email: validated.data.email, email_confirm: true }
-    );
+    // Trigger a confirmation email to the new address. Supabase keeps the old
+    // email active until the user clicks the verification link, so this does
+    // NOT change the email immediately — it sends the confirmation flow.
+    const { error } = await supabase.auth.updateUser({
+        email: validated.data.newEmail,
+    });
 
     if (error) {
         return { error: 'Email update failed: ' + error.message, success: false };
     }
 
-    return { success: true, message: 'Email updated successfully!' };
+    // Sign the user out so they re-authenticate after confirming the change.
+    await supabase.auth.signOut();
+
+    return {
+        success: true,
+        message: 'Confirmation email sent. Please verify your new address, then log in again.',
+    };
 }

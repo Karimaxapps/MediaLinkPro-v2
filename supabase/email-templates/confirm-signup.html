@@ -1,0 +1,88 @@
+<!--
+  MediaLinkPro — Supabase "Confirm signup" email.
+  Matches the in-app welcome email design (src/lib/email/templates.ts).
+
+  HOW TO USE:
+  Supabase Dashboard → Authentication → Emails → "Confirm signup"
+  → paste this HTML into the message body and save.
+
+  Placeholders ({{ .ConfirmationURL }}, {{ .SiteURL }}) are filled by Supabase.
+  Asset URLs are absolute (https://medialinkpro.net/...) so they load in mail
+  clients — make sure logo.png and brand/social/*.png are deployed there.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+  <title>Confirm your email</title>
+  <style>
+    body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+    a[x-apple-data-detectors] { color:inherit !important; text-decoration:none !important; }
+    .ml-btn:hover { background:#B5964A !important; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#0B0F14;color:#e5e7eb;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B0F14;padding:40px 20px;">
+    <tr><td align="center">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#111827;border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;max-width:560px;">
+
+        <!-- Header -->
+        <tr><td style="padding:24px 32px;border-bottom:1px solid rgba(198,168,94,0.25);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                  <td style="padding-right:10px;"><img src="https://medialinkpro.net/logo.png" width="30" height="30" alt="MediaLinkPro" style="display:block;border:0;border-radius:7px;"></td>
+                  <td style="color:#ffffff;font-size:18px;font-weight:700;letter-spacing:0.02em;">MediaLink<span style="color:#C6A85E;">Pro</span></td>
+                </tr></table>
+              </td>
+              <td align="right" style="color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;">The Media Network</td>
+            </tr>
+          </table>
+        </td></tr>
+
+        <!-- Hero -->
+        <tr><td bgcolor="#C6A85E" style="background:#C6A85E;background:linear-gradient(135deg,#D9BE76 0%,#C6A85E 55%,#9C7E3A 100%);padding:36px 32px;">
+          <h1 style="margin:0;color:#1a1308;font-size:26px;font-weight:800;line-height:1.25;letter-spacing:-0.01em;">Confirm your email</h1>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="padding:32px;">
+          <div style="color:#d1d5db;font-size:15px;line-height:1.7;">
+            Welcome to MediaLinkPro — you're one step away from joining the network for media professionals, products, and organisations.<br/><br/>
+            Click the button below to confirm your email address and activate your account. This link expires in <strong style="color:#ffffff;font-weight:600;">24 hours</strong>.
+          </div>
+          <div style="margin-top:28px;">
+            <a href="{{ .ConfirmationURL }}" class="ml-btn" style="display:inline-block;background:#C6A85E;color:#000000;padding:13px 28px;text-decoration:none;border-radius:8px;font-weight:700;font-size:15px;">Confirm my email</a>
+          </div>
+          <p style="margin:28px 0 0;color:#94a3b8;font-size:13px;line-height:1.7;">
+            If you didn't create a MediaLinkPro account, you can safely ignore this email.
+          </p>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:24px 32px;border-top:1px solid rgba(255,255,255,0.08);">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding-bottom:14px;">
+              <span style="color:#9ca3af;font-size:13px;font-weight:600;vertical-align:middle;margin-right:10px;">Follow us</span>
+              <a href="https://www.linkedin.com/showcase/medialinkpro/" style="text-decoration:none;display:inline-block;margin-right:8px;"><img src="https://medialinkpro.net/brand/social/linkedin.png" width="28" height="28" alt="LinkedIn" style="display:inline-block;border:0;border-radius:50%;"></a>
+              <a href="https://x.com/medialinkpro_" style="text-decoration:none;display:inline-block;margin-right:8px;"><img src="https://medialinkpro.net/brand/social/x.png" width="28" height="28" alt="X" style="display:inline-block;border:0;border-radius:50%;"></a>
+              <a href="https://www.facebook.com/medialinkpro/" style="text-decoration:none;display:inline-block;margin-right:8px;"><img src="https://medialinkpro.net/brand/social/facebook.png" width="28" height="28" alt="Facebook" style="display:inline-block;border:0;border-radius:50%;"></a>
+            </td></tr>
+            <tr><td style="color:#6b7280;font-size:12px;line-height:1.6;">
+              This email was sent to confirm your signup at <a href="{{ .SiteURL }}" style="color:#C6A85E;text-decoration:none;">medialinkpro.net</a>.
+            </td></tr>
+            <tr><td style="padding-top:10px;color:#4b5563;font-size:11px;line-height:1.6;">
+              MediaLinkPro — The Media Network for broadcast &amp; production professionals.
+            </td></tr>
+          </table>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

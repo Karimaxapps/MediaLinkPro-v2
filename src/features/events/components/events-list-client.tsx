@@ -177,7 +177,7 @@ function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="group block rounded-xl border border-white/10 bg-white/5 hover:bg-white/[0.07] transition-all overflow-hidden"
+      className="group relative block rounded-xl border border-white/10 bg-white/5 hover:bg-white/[0.07] transition-all overflow-hidden"
     >
       {/* Cover image or colored banner */}
       <div className="h-32 relative overflow-hidden">
@@ -216,7 +216,19 @@ function EventCard({ event }: { event: Event }) {
         )}
       </div>
 
-      <div className="p-4 space-y-3">
+      {event.logo_url && (
+        <div className="absolute left-4 top-[6.5rem] z-10 h-12 w-12 rounded-lg overflow-hidden bg-[#121212] border border-white/15 shadow-lg flex items-center justify-center p-1">
+          <Image
+            src={event.logo_url}
+            alt={`${event.title} logo`}
+            width={48}
+            height={48}
+            className="h-full w-full object-contain"
+          />
+        </div>
+      )}
+
+      <div className={`p-4 space-y-3 ${event.logo_url ? "pt-7" : ""}`}>
         <h3 className="font-semibold text-white group-hover:text-[var(--brand)] transition-colors line-clamp-2">
           {event.title}
         </h3>
@@ -237,8 +249,21 @@ function EventCard({ event }: { event: Event }) {
           </div>
           {event.organizations && (
             <div className="flex items-center text-sm text-gray-400">
-              <Building2 className="mr-2 h-4 w-4 flex-shrink-0" />
-              <span className="truncate">{event.organizations.name}</span>
+              {event.organizations.logo_url ? (
+                <Image
+                  src={event.organizations.logo_url}
+                  alt={event.organizations.name}
+                  title={event.organizations.name}
+                  width={80}
+                  height={20}
+                  className="h-5 w-auto max-w-[120px] object-contain"
+                />
+              ) : (
+                <>
+                  <Building2 className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{event.organizations.name}</span>
+                </>
+              )}
             </div>
           )}
         </div>

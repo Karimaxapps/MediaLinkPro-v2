@@ -13,7 +13,6 @@ import {
   MapPin,
   Building2,
   Users,
-  Globe,
   Clock,
   ArrowLeft,
   ExternalLink,
@@ -25,8 +24,15 @@ import {
   Twitter,
   Instagram,
 } from "lucide-react";
-import type { Event, EventInterest, EventInterestType, EventRegistration } from "../types";
+import type { Event, EventInterest, EventInterestType, EventRegistration, EventEdition } from "../types";
 import { EVENT_TYPE_COLORS, type EventType } from "../types";
+import { EventEditions } from "./event-editions";
+
+/** Extract an 11-char YouTube video id from any common YouTube URL form. */
+function getYouTubeId(url: string): string | null {
+  const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+  return match && match[2].length === 11 ? match[2] : null;
+}
 import {
   registerForEvent,
   cancelRegistration,
@@ -44,6 +50,8 @@ export function EventDetailsClient({
   initialMyInterest = null,
   exhibitorOrgs = [],
   initialExhibitingOrgIds = [],
+  editions = [],
+  canManageEditions = false,
 }: {
   event: Event;
   initialRegistration: EventRegistration | null;
@@ -51,6 +59,8 @@ export function EventDetailsClient({
   initialMyInterest?: EventInterest | null;
   exhibitorOrgs?: { id: string; name: string; slug: string; logo_url: string | null }[];
   initialExhibitingOrgIds?: string[];
+  editions?: EventEdition[];
+  canManageEditions?: boolean;
 }) {
   const t = useTranslations("events");
   const [registration, setRegistration] = useState(initialRegistration);
@@ -124,6 +134,7 @@ export function EventDetailsClient({
   const isSameDay = startDate.toDateString() === endDate.toDateString();
   const isPast = endDate < new Date();
   const color = EVENT_TYPE_COLORS[event.event_type as EventType] || "var(--brand)";
+  const promoVideoId = getYouTubeId(event.promo_video_url ?? "");
   const isFull = event.max_attendees != null && event.registration_count >= event.max_attendees;
 
   const handleRegister = () => {
@@ -182,50 +193,6 @@ export function EventDetailsClient({
             style={{ background: `linear-gradient(135deg, ${color}30, ${color}05)` }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-          <div className="flex items-center gap-2 mb-3">
-            <span
-              className="px-2.5 py-1 text-xs font-medium rounded-md"
-              style={{ backgroundColor: color, color: "#000" }}
-            >
-              {t(`eventTypes.${event.event_type}`)}
-            </span>
-            {event.is_online && (
-              <span className="flex items-center gap-1 px-2.5 py-1 text-xs bg-[var(--brand-secondary)] text-white rounded-md">
-                <Globe className="h-3 w-3" />
-                {t("online")}
-              </span>
-            )}
-            {isPast && (
-              <span className="px-2.5 py-1 text-xs bg-gray-700 text-white rounded-md">{t("past")}</span>
-            )}
-          </div>
-          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">{event.title}</h1>
-          {event.organizations && (
-            <Link
-              href={`/companies/${event.organizations.slug}`}
-              className="inline-flex items-center gap-2 mt-1 group"
-            >
-              <div className="h-6 w-6 rounded-full overflow-hidden bg-white/10 border border-white/20 flex-shrink-0 flex items-center justify-center">
-                {event.organizations.logo_url ? (
-                  <Image
-                    src={event.organizations.logo_url}
-                    alt={event.organizations.name}
-                    width={24}
-                    height={24}
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <Building2 className="h-3 w-3 text-gray-400" />
-                )}
-              </div>
-              <span className="text-sm text-gray-300 group-hover:text-[var(--brand)] transition-colors">
-                {event.organizations.name}
-              </span>
-            </Link>
-          )}
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -238,6 +205,20 @@ export function EventDetailsClient({
                 className="text-sm text-gray-300 leading-relaxed [&_p]:my-3 [&_strong]:text-white [&_strong]:font-semibold [&_em]:italic [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 [&_ol]:space-y-1 [&_li]:marker:text-[var(--brand)] [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--brand)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-400 [&_blockquote]:my-3 [&_a]:text-[var(--brand)] [&_a]:underline [&_a]:underline-offset-2 [&_code]:bg-black/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description ?? "") }}
               />
+            </section>
+          )}
+
+          {promoVideoId && (
+            <section className="rounded-xl border border-white/10 bg-white/5 p-6">
+              <div className="relative w-full overflow-hidden rounded-lg aspect-video bg-black">
+                <iframe
+                  src={`https://www.youtube.com/embed/${promoVideoId}`}
+                  title={t("promoVideoTitle")}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full"
+                />
+              </div>
             </section>
           )}
         </div>
@@ -267,7 +248,7 @@ export function EventDetailsClient({
                 <div className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">
                   {t("organizedBy")}
                 </div>
-                <div className="text-white font-semibold truncate group-hover:text-[var(--brand)] transition-colors">
+                <div className="text-white font-semibold break-words group-hover:text-[var(--brand)] transition-colors">
                   {event.organizations.name}
                 </div>
                 <div className="text-xs text-gray-500 mt-0.5">{t("viewCompanyProfile")}</div>
@@ -500,6 +481,10 @@ export function EventDetailsClient({
               </div>
             );
           })()}
+
+          {(editions.length > 0 || canManageEditions) && (
+            <EventEditions eventId={event.id} editions={editions} canManage={canManageEditions} />
+          )}
         </aside>
       </div>
     </div>

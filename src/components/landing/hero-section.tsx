@@ -464,27 +464,6 @@ export function HeroSection({ trustLogos }: { trustLogos?: Record<string, string
             </Link>
           </motion.div>
 
-          {/* Micro stats */}
-          <motion.div variants={itemVariants} className="flex items-center gap-6 flex-wrap">
-            {[
-              { val: "16+", labelKey: "statsCategories" as const },
-              { val: "Real-time", labelKey: "statsMessaging" as const },
-              { val: "Global", labelKey: "statsNetwork" as const },
-            ].map((s) => (
-              <div key={s.labelKey} className="flex flex-col">
-                <span className="text-lg font-extrabold text-white leading-none">{s.val}</span>
-                <span className="text-xs text-gray-500 mt-0.5">{t(s.labelKey)}</span>
-              </div>
-            ))}
-            <div className="h-8 w-px bg-white/10 hidden sm:block" />
-            <div className="flex items-center gap-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
-              </span>
-              <span className="text-xs text-gray-400">{t("onlineNow", { count: 847 })}</span>
-            </div>
-          </motion.div>
         </motion.div>
 
         {/* RIGHT: Isometric Dashboard Mockup */}

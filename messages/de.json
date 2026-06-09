@@ -15,10 +15,6 @@
     "subtitle": "Ein globales Ökosystem, das <strong>48+ Länder</strong> von Sendern, Lösungsanbietern, Produzenten und Medienverbänden verbindet — in Echtzeit.",
     "joinNetwork": "Netzwerk Beitreten",
     "browseMarketplace": "Marketplace Erkunden",
-    "statsCategories": "Kategorien",
-    "statsMessaging": "Kommunikation",
-    "statsNetwork": "Globales Netz",
-    "onlineNow": "{count} Fachleute jetzt online",
     "trustedBy": "Vertraut von Branchenführern",
     "seq0Subject": "Sender",
     "seq0Find": "Hardware-Lösungen",
@@ -356,7 +352,19 @@
     "visibilityDesc": "Ihr Unternehmen ist derzeit öffentlich und für alle sichtbar.",
     "makePrivate": "Privat machen",
     "companySlug": "Unternehmens-Slug",
-    "companySlugDesc": "Der eindeutige Bezeichner für Ihre Unternehmens-URL."
+    "companySlugDesc": "Der eindeutige Bezeichner für Ihre Unternehmens-URL.",
+    "currentEmail": "Current Email",
+    "newEmail": "New Email",
+    "newEmailDesc": "Enter the new email address you want to use. We will send a confirmation link to verify it.",
+    "updateEmail": "Update Email",
+    "updating": "Updating...",
+    "emailChangeConfirmTitle": "Change your email address?",
+    "emailChangeConfirmDesc": "A confirmation link will be sent to {email}. Your email will only change after you verify it, and you will be signed out and must log in again with your new credentials.",
+    "emailChangeConfirmAction": "Send confirmation",
+    "emailChangeRequested": "Confirmation email sent. Please verify your new address, then log in again.",
+    "emailChangeError": "An error occurred while updating your email.",
+    "cancel": "Cancel",
+    "emailChangeNote": "Changing your email signs you out. You will need to confirm the new address via the verification link we email you, then log back in with your new credentials."
   },
   "support": {
     "title": "Hilfe & Support",
@@ -992,7 +1000,13 @@
     "exhibitRemoved": "Removed from exhibitors",
     "socialPages": "Dedicated event social pages",
     "socialPagesHint": "Optional. Add social handles created specifically for this event.",
-    "followThisEvent": "Follow this event"
+    "followThisEvent": "Follow this event",
+    "eventLogo": "Event Logo",
+    "uploadLogo": "Upload logo",
+    "eventLogoHint": "Square logo for this event (PNG, JPG or SVG). Shown on the event page and cards.",
+    "promoVideo": "Promo Video (YouTube)",
+    "promoVideoHint": "Paste a YouTube link to feature a promo video on the event page.",
+    "promoVideoTitle": "Promo Video"
   },
   "connections": {
     "requestSent": "Connection request sent!",

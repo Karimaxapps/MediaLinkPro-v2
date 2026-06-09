@@ -40,8 +40,10 @@ export function NewEventClient({
         is_online: false,
         online_url: "",
         cover_image_url: "",
+        logo_url: "",
         max_attendees: "",
         registration_url: "",
+        promo_video_url: "",
         linkedin_url: "",
         x_url: "",
         facebook_url: "",
@@ -60,12 +62,26 @@ export function NewEventClient({
         onSuccess: (url) => update("cover_image_url", url),
     });
 
+    const logoInputRef = useRef<HTMLInputElement>(null);
+    const { uploadImage: uploadLogo, isUploading: isUploadingLogo } = useImageUpload({
+        userId,
+        bucket: "events",
+        onSuccess: (url) => update("logo_url", url),
+    });
+
     const handleCoverFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         // Reset input so re-selecting the same file still triggers onChange
         e.target.value = "";
         if (!file) return;
         await uploadImage(file, "covers");
+    };
+
+    const handleLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        await uploadLogo(file, "logos");
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -88,8 +104,10 @@ export function NewEventClient({
                 is_online: form.is_online,
                 online_url: form.online_url || undefined,
                 cover_image_url: form.cover_image_url || undefined,
+                logo_url: form.logo_url || undefined,
                 max_attendees: form.max_attendees ? Number(form.max_attendees) : undefined,
                 registration_url: form.registration_url.trim() || undefined,
+                promo_video_url: form.promo_video_url.trim() || undefined,
                 linkedin_url: form.linkedin_url.trim() || undefined,
                 x_url: form.x_url.trim() || undefined,
                 facebook_url: form.facebook_url.trim() || undefined,
@@ -235,6 +253,67 @@ export function NewEventClient({
                 )}
 
                 <div className="space-y-2">
+                    <Label className="text-gray-300">{t("eventLogo")}</Label>
+                    <input
+                        ref={logoInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        className="hidden"
+                        onChange={handleLogoFile}
+                        disabled={isUploadingLogo}
+                    />
+                    <div className="flex items-center gap-4">
+                        <div className="h-20 w-20 shrink-0 rounded-xl overflow-hidden border border-white/10 bg-black/20 flex items-center justify-center">
+                            {form.logo_url ? (
+                                <Image
+                                    src={form.logo_url}
+                                    alt="Event logo"
+                                    width={80}
+                                    height={80}
+                                    className="h-full w-full object-contain"
+                                    unoptimized
+                                />
+                            ) : (
+                                <ImagePlus className="h-6 w-6 text-gray-600" />
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => logoInputRef.current?.click()}
+                                    disabled={isUploadingLogo}
+                                    className="bg-transparent border-white/10 text-gray-200 hover:bg-white/10"
+                                >
+                                    {isUploadingLogo ? (
+                                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                                    ) : (
+                                        <ImagePlus className="h-3.5 w-3.5 mr-1.5" />
+                                    )}
+                                    {form.logo_url ? t("replace") : t("uploadLogo")}
+                                </Button>
+                                {form.logo_url && (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => update("logo_url", "")}
+                                        disabled={isUploadingLogo}
+                                        className="bg-transparent border-white/10 hover:bg-red-500/10 hover:border-red-500/40 text-gray-300"
+                                    >
+                                        <X className="h-3.5 w-3.5 mr-1.5" />
+                                        {t("remove")}
+                                    </Button>
+                                )}
+                            </div>
+                            <p className="text-xs text-gray-500">{t("eventLogoHint")}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-2">
                     <Label className="text-gray-300">{t("coverImage")}</Label>
                     <input
                         ref={fileInputRef}
@@ -334,6 +413,18 @@ export function NewEventClient({
                     <p className="text-xs text-gray-500">{t("regLinkHint")}</p>
                 </div>
 
+                <div className="space-y-2">
+                    <Label className="text-gray-300">{t("promoVideo")}</Label>
+                    <Input
+                        type="url"
+                        value={form.promo_video_url}
+                        onChange={(e) => update("promo_video_url", e.target.value)}
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        className="bg-black/20 border-white/10 text-white"
+                    />
+                    <p className="text-xs text-gray-500">{t("promoVideoHint")}</p>
+                </div>
+
                 {/* Dedicated event social pages */}
                 <div className="space-y-3 pt-2 border-t border-white/10">
                     <div>
@@ -372,7 +463,7 @@ export function NewEventClient({
                         {isPending ? t("creating") : isUploading ? t("uploadingImage") : t("createEvent")}
                     </Button>
                     <Link href="/events">
-                        <Button type="button" variant="outline" className="border-white/10 hover:bg-white/10">
+                        <Button type="button" variant="outline" className="bg-transparent border-white/10 text-gray-200 hover:bg-white/10">
                             {t("cancel")}
                         </Button>
                     </Link>
