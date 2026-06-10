@@ -90,12 +90,16 @@ interface EventAttendee {
   full_name: string | null;
 }
 
+interface SidebarEventItem {
+  event: Event;
+  isGoing: boolean;
+  attendees: EventAttendee[];
+}
+
 interface DashboardSidebarProps {
   latestCompanies: Company[];
   latestUsers: SidebarUser[];
-  upcomingEvent?: Event | null;
-  eventIsGoing?: boolean;
-  eventAttendees?: EventAttendee[];
+  sidebarEvents?: SidebarEventItem[];
   adSlot?: ReactNode;
   userPlan?: PlanId;
   recommendedConnections?: ReactNode;
@@ -106,9 +110,7 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({
   latestCompanies,
   latestUsers,
-  upcomingEvent,
-  eventIsGoing,
-  eventAttendees,
+  sidebarEvents = [],
   adSlot,
   userPlan,
   recommendedConnections,
@@ -116,14 +118,15 @@ export function DashboardSidebar({
   const t = useTranslations("dashboard");
   return (
     <aside className="space-y-6">
-      {/* Upcoming Event */}
-      {upcomingEvent && (
+      {/* Featured / upcoming events */}
+      {sidebarEvents.map(({ event, isGoing, attendees }) => (
         <EventCard
-          event={upcomingEvent}
-          isGoing={eventIsGoing}
-          attendees={eventAttendees}
+          key={event.id}
+          event={event}
+          isGoing={isGoing}
+          attendees={attendees}
         />
-      )}
+      ))}
 
       {/* Sponsored ad — below upcoming event */}
       {adSlot}

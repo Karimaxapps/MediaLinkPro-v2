@@ -49,9 +49,7 @@ export function DashboardClient({
     featuredCompanies = [],
     latestCompanies,
     latestUsers,
-    upcomingEvent,
-    eventIsGoing,
-    eventAttendees,
+    sidebarEvents = [],
     latestBlogPosts = [],
     featuredAiTools = [],
     heroBanner,
@@ -67,9 +65,11 @@ export function DashboardClient({
     featuredCompanies?: FeedCompany[],
     latestCompanies: FeedCompany[],
     latestUsers: FeedUser[],
-    upcomingEvent?: Event | null,
-    eventIsGoing?: boolean,
-    eventAttendees?: { avatar_url: string | null; full_name: string | null }[],
+    sidebarEvents?: {
+        event: Event,
+        isGoing: boolean,
+        attendees: { avatar_url: string | null; full_name: string | null }[],
+    }[],
     latestBlogPosts?: BlogPost[],
     featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
@@ -384,9 +384,7 @@ export function DashboardClient({
                 <DashboardSidebar
                     latestCompanies={latestCompanies}
                     latestUsers={latestUsers}
-                    upcomingEvent={upcomingEvent}
-                    eventIsGoing={eventIsGoing}
-                    eventAttendees={eventAttendees}
+                    sidebarEvents={sidebarEvents}
                     adSlot={sidebarAd}
                     userPlan={userPlan}
                     recommendedConnections={recommendedConnections}

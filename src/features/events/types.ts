@@ -38,6 +38,7 @@ export type Event = {
     registration_count: number;
     interest_count: number;
     registration_url: string | null;
+    is_featured?: boolean;
     website_url?: string | null;
     linkedin_url?: string | null;
     x_url?: string | null;

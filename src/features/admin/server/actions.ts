@@ -899,6 +899,7 @@ export type AdminEventListItem = {
   logo_url: string | null;
   registration_count: number;
   interest_count: number;
+  is_featured: boolean;
   organization_id: string | null;
   organization_name: string | null;
   organization_logo: string | null;
@@ -911,7 +912,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
   const { data } = await admin
     .from("events")
     .select(
-      "id, title, slug, status, event_type, start_date, end_date, location, is_online, cover_image_url, logo_url, registration_count, interest_count, organization_id, created_at"
+      "id, title, slug, status, event_type, start_date, end_date, location, is_online, cover_image_url, logo_url, registration_count, interest_count, is_featured, organization_id, created_at"
     )
     .order("start_date", { ascending: false })
     .limit(limit);
@@ -930,6 +931,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
     logo_url: string | null;
     registration_count: number | null;
     interest_count: number | null;
+    is_featured: boolean | null;
     organization_id: string | null;
     created_at: string | null;
   }>;
@@ -963,6 +965,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
       logo_url: r.logo_url,
       registration_count: r.registration_count ?? 0,
       interest_count: r.interest_count ?? 0,
+      is_featured: r.is_featured ?? false,
       organization_id: r.organization_id,
       organization_name: org?.name ?? null,
       organization_logo: org?.logo_url ?? null,
@@ -1030,6 +1033,26 @@ export async function updateEventAsAdmin(
   revalidatePath("/admin/events");
   if (updated?.slug) revalidatePath(`/events/${updated.slug}`);
   return { success: true, slug: updated?.slug };
+}
+
+/** Toggle whether an event is featured in the dashboard feed sidebar. */
+export async function setEventFeaturedAsAdmin(
+  eventId: string,
+  featured: boolean
+): Promise<{ success: boolean; error?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("events")
+    .update({ is_featured: featured, updated_at: new Date().toISOString() } as never)
+    .eq("id", eventId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/admin/events");
+  revalidatePath("/dashboard");
+  return { success: true };
 }
 
 export async function deleteEventAsAdmin(eventId: string) {

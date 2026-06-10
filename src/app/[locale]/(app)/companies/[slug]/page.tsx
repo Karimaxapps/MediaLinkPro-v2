@@ -17,10 +17,17 @@ import {
   Instagram,
   Briefcase,
   Building2,
+  Calendar,
+  Plus,
+  Video,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";
 import { getExhibitorEventsForOrg } from "@/features/events/server/exhibitor-actions";
+import { getOrganizationEvents } from "@/features/events/server/actions";
+import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS, type Event } from "@/features/events/types";
 import { getOrgVerifiedPlan } from "@/lib/subscription";
 import { EmptyState } from "@/components/ui/empty-state";
 import { createClient } from "@/lib/supabase/server";
@@ -187,13 +194,15 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
     userHasPendingClaim = !!existingClaim;
   }
 
-  const [isFollowing, followerCount, orgPlan, companyJobs, exhibitorEvents] = await Promise.all([
-    isFollowingOrganization(org.id),
-    getOrganizationFollowerCount(org.id),
-    getOrgVerifiedPlan(org.id),
-    listOpenJobs({ orgId: org.id }),
-    getExhibitorEventsForOrg(org.id),
-  ]);
+  const [isFollowing, followerCount, orgPlan, companyJobs, exhibitorEvents, companyEvents] =
+    await Promise.all([
+      isFollowingOrganization(org.id),
+      getOrganizationFollowerCount(org.id),
+      getOrgVerifiedPlan(org.id),
+      listOpenJobs({ orgId: org.id }),
+      getExhibitorEventsForOrg(org.id),
+      getOrganizationEvents(org.id),
+    ]);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -306,6 +315,12 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               >
                 Jobs
               </TabsTrigger>
+              <TabsTrigger
+                value="events"
+                className="text-white data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black"
+              >
+                Events & Workshops
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="mt-6 space-y-6">
@@ -325,6 +340,10 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
             <TabsContent value="jobs" className="mt-6">
               <CompanyJobsTab jobs={companyJobs} orgName={org.name} orgSlug={org.slug} />
+            </TabsContent>
+
+            <TabsContent value="events" className="mt-6">
+              <CompanyEventsTab events={companyEvents} orgName={org.name} canEdit={canEdit} />
             </TabsContent>
           </Tabs>
         </div>
@@ -576,6 +595,161 @@ function CompanyJobCard({ job, orgSlug }: { job: Job; orgSlug: string }) {
             <span>Posted {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
             <span className="inline-flex items-center gap-1 font-medium text-[var(--brand)]">
               View role
+              <ExternalLink className="h-3 w-3" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function CompanyEventsTab({
+  events,
+  orgName,
+  canEdit,
+}: {
+  events: Event[];
+  orgName: string;
+  canEdit: boolean;
+}) {
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
+  const upcoming = events
+    .filter((e) => new Date(e.end_date ?? e.start_date).getTime() >= now)
+    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+  const past = events
+    .filter((e) => new Date(e.end_date ?? e.start_date).getTime() < now)
+    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
+
+  return (
+    <div className="space-y-6">
+      {canEdit && (
+        <div className="flex justify-end">
+          <Button
+            asChild
+            size="sm"
+            className="bg-[#C6A85E] text-black hover:bg-[#B5964A] font-semibold"
+          >
+            <Link href="/events/new">
+              <Plus className="mr-1.5 h-4 w-4" />
+              Create Event or Workshop
+            </Link>
+          </Button>
+        </div>
+      )}
+
+      {events.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title="No events or workshops"
+          description={`${orgName} has no upcoming events or workshops listed on MediaLinkPro.`}
+        />
+      ) : (
+        <>
+          {upcoming.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Upcoming
+              </h3>
+              {upcoming.map((event) => (
+                <CompanyEventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
+          {past.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Past
+              </h3>
+              {past.map((event) => (
+                <CompanyEventCard key={event.id} event={event} isPast />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function CompanyEventCard({ event, isPast = false }: { event: Event; isPast?: boolean }) {
+  const color = EVENT_TYPE_COLORS[event.event_type];
+  const start = new Date(event.start_date);
+  const end = new Date(event.end_date ?? event.start_date);
+  const sameDay = format(start, "yyyy-MM-dd") === format(end, "yyyy-MM-dd");
+  const dateLabel = sameDay
+    ? format(start, "MMM d, yyyy")
+    : `${format(start, "MMM d")} – ${format(end, "MMM d, yyyy")}`;
+
+  return (
+    <Link
+      href={`/events/${event.slug}`}
+      className={`group block rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/[0.07] ${
+        isPast ? "opacity-60 hover:opacity-100" : ""
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        {event.logo_url ? (
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/20 p-0.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={event.logo_url}
+              alt={`${event.title} logo`}
+              className="h-full w-full object-contain"
+            />
+          </div>
+        ) : (
+          <div className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center rounded-lg border border-white/10 bg-[var(--brand)]/10 text-[var(--brand)]">
+            <span className="text-[9px] font-semibold uppercase leading-none">
+              {format(start, "MMM")}
+            </span>
+            <span className="mt-0.5 text-sm font-bold leading-none">{format(start, "d")}</span>
+          </div>
+        )}
+        <div className="min-w-0 flex-1 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1">
+              <h3 className="line-clamp-2 font-semibold text-white transition-colors group-hover:text-[var(--brand)]">
+                {event.title}
+              </h3>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {dateLabel}
+                </span>
+                {event.is_online ? (
+                  <span className="flex items-center gap-1">
+                    <Video className="h-3.5 w-3.5" />
+                    Online
+                  </span>
+                ) : event.location ? (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {event.location}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+            <span
+              className="flex-shrink-0 rounded px-2 py-0.5 text-xs font-medium"
+              style={{ backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`, color }}
+            >
+              {EVENT_TYPE_LABELS[event.event_type]}
+            </span>
+          </div>
+
+          {event.description && (
+            <p className="line-clamp-2 text-sm text-gray-400">{stripHtml(event.description)}</p>
+          )}
+
+          <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              {(event.interest_count + event.registration_count).toLocaleString()} interested
+            </span>
+            <span className="inline-flex items-center gap-1 font-medium text-[var(--brand)]">
+              View event
               <ExternalLink className="h-3 w-3" />
             </span>
           </div>
