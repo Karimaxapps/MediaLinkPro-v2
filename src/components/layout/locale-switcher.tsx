@@ -20,6 +20,7 @@ const LOCALE_LABEL: Record<string, string> = {
   fr: "Français",
   de: "Deutsch",
   zh: "中文",
+  ja: "日本語",
 };
 
 type Props = {
@@ -63,14 +64,10 @@ export function LocaleSwitcher({ locales, showLabel = false }: Props) {
 
     // Strip the current locale prefix (if any) from the pathname
     const strippedPath =
-      pathname.replace(
-        new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`),
-        ""
-      ) || "/";
+      pathname.replace(new RegExp(`^/(${routing.locales.join("|")})(?=/|$)`), "") || "/";
 
     // English (default) has no prefix; all other locales get /{locale}/...
-    const newPath =
-      next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
+    const newPath = next === routing.defaultLocale ? strippedPath : `/${next}${strippedPath}`;
 
     // eslint-disable-next-line react-hooks/immutability
     window.location.href = newPath;

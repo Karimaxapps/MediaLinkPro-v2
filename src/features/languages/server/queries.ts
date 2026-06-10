@@ -14,11 +14,48 @@ export type Language = {
 
 /** Fallback language list derived from routing config (used before migration runs). */
 const FALLBACK_LOCALE_META: Record<string, Omit<Language, "code" | "sort_order">> = {
-  en: { name: "English", native_name: "English", country_code: "GB", is_active: true, is_default: true },
-  es: { name: "Spanish", native_name: "Español", country_code: "ES", is_active: true, is_default: false },
-  fr: { name: "French", native_name: "Français", country_code: "FR", is_active: true, is_default: false },
-  de: { name: "German", native_name: "Deutsch", country_code: "DE", is_active: true, is_default: false },
-  zh: { name: "Chinese", native_name: "中文", country_code: "CN", is_active: true, is_default: false },
+  en: {
+    name: "English",
+    native_name: "English",
+    country_code: "GB",
+    is_active: true,
+    is_default: true,
+  },
+  es: {
+    name: "Spanish",
+    native_name: "Español",
+    country_code: "ES",
+    is_active: true,
+    is_default: false,
+  },
+  fr: {
+    name: "French",
+    native_name: "Français",
+    country_code: "FR",
+    is_active: true,
+    is_default: false,
+  },
+  de: {
+    name: "German",
+    native_name: "Deutsch",
+    country_code: "DE",
+    is_active: true,
+    is_default: false,
+  },
+  zh: {
+    name: "Chinese",
+    native_name: "中文",
+    country_code: "CN",
+    is_active: true,
+    is_default: false,
+  },
+  ja: {
+    name: "Japanese",
+    native_name: "日本語",
+    country_code: "JP",
+    is_active: true,
+    is_default: false,
+  },
 };
 
 function buildFallback(): Language[] {
