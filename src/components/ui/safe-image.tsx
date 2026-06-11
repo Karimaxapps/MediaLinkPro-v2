@@ -36,6 +36,15 @@ function isTrustedRemote(src: ImageProps["src"]): boolean {
  * continue to be optimized normally.
  */
 export function SafeImage(props: ImageProps) {
+  // `next/image` throws ("Failed to parse src") on strings that aren't a URL
+  // or absolute path — e.g. free-text DB fields with garbage in them. Render
+  // nothing instead of crashing the page.
+  if (
+    typeof props.src === "string" &&
+    !/^(https?:\/\/|\/|data:|blob:)/i.test(props.src.trim())
+  ) {
+    return null;
+  }
   // Untrusted remote → always unoptimized (secure). Trusted/local → honor any
   // explicit `unoptimized` the caller passed.
   const unoptimized = Boolean(props.unoptimized) || !isTrustedRemote(props.src);

@@ -5,7 +5,6 @@ import { getOrgUsage } from "@/features/billing/server/usage";
 import { JobsListClient } from "@/features/jobs/components/jobs-list-client";
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
-import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
 export const metadata: Metadata = {
   title: "Jobs",
@@ -32,8 +31,8 @@ export default async function JobsPage() {
         />
       </div>
       <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-4">
-        {sidebarAd ? <SponsoredCard placement="jobs_sidebar" /> : <AdPlaceholder height={260} />}
-        {secondaryAd ? <SponsoredCard placement="sidebar" minHeight={200} /> : <AdPlaceholder height={200} />}
+        {sidebarAd && <SponsoredCard ad={sidebarAd} />}
+        {secondaryAd && <SponsoredCard ad={secondaryAd} minHeight={200} />}
       </aside>
     </div>
   );

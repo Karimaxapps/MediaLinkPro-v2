@@ -6,9 +6,8 @@ import {
 import { getConnectionStatus } from "@/features/connections/server/actions";
 import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 import { getExhibitorEventsForOrgs } from "@/features/events/server/exhibitor-actions";
-import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
-import { getActiveAdsForPlacement } from "@/features/advertising/server/actions";
+import { getActiveAdForPlacement, type AdPlacement } from "@/features/advertising/server/actions";
 import { FeaturedProviderCard } from "@/features/organizations/components/featured-provider-card";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -27,6 +26,16 @@ const categoryToDbType: Record<string, string> = {
     'solution-providers': 'Solution Provider',
     'production-companies': 'Production / Post-production',
     'media-associations': 'Media Association'
+};
+
+// Each Connect page has its own ad placement so admins can target a specific
+// listing page from /admin/ads.
+const categoryToAdPlacement: Record<string, AdPlacement> = {
+    'broadcasters': 'connect_broadcasters',
+    'solution-providers': 'connect_solution_providers',
+    'production-companies': 'connect_production_companies',
+    'media-associations': 'connect_media_associations',
+    'media-professionals': 'connect_media_professionals'
 };
 
 const categoryTitles: Record<string, string> = {
@@ -54,7 +63,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     let type: 'organization' | 'profile' = 'organization';
     const dbType = categoryToDbType[category];
     const featuredOrgs = dbType ? await getFeaturedOrganizationsByType(dbType, 2) : [];
-    const sidebarAds = await getActiveAdsForPlacement("sidebar", 2);
+    const sidebarAd = await getActiveAdForPlacement(categoryToAdPlacement[category]);
 
     if (category === 'media-professionals') {
         const cookieStore = await cookies();
@@ -202,13 +211,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
 
                 {/* Sidebar */}
                 <div className="lg:col-span-1 sticky top-4 space-y-6">
-                    {Array.from({ length: 2 }).map((_, i) =>
-                        sidebarAds[i] ? (
-                            <SponsoredCard key={sidebarAds[i].id} ad={sidebarAds[i]} minHeight={300} />
-                        ) : (
-                            <AdPlaceholder key={`ad-placeholder-${i}`} height={300} />
-                        )
-                    )}
+                    {sidebarAd && <SponsoredCard ad={sidebarAd} minHeight={300} />}
                 </div>
             </div>
         </div>

@@ -6,6 +6,14 @@ import { type NextRequest, NextResponse } from "next/server";
 const handleI18n = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
+  // 0. Reject requests to the literal "[locale]" route template immediately.
+  //    Next dev's server-action forwarding sometimes targets the template URL
+  //    (e.g. POST /[locale]/dashboard); letting it through hangs the render
+  //    worker for minutes per request and starves the dev server.
+  if (request.nextUrl.pathname.startsWith("/[locale]")) {
+    return new NextResponse(null, { status: 404 });
+  }
+
   // 1. Run Supabase session refresh + auth guards
   const supabaseResponse = await updateSession(request);
 
