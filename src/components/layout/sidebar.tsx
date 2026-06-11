@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { sidebarNav } from "@/config/nav";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { MarqueeText } from "@/components/ui/marquee-text";

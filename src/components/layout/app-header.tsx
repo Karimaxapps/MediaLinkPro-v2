@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { MobileSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
 import { Input } from "@/components/ui/input";

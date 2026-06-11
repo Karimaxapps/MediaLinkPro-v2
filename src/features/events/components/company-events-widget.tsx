@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { getTranslations } from "next-intl/server";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users } from "lucide-react";

@@ -7,6 +7,8 @@ import { getConnectionStatus } from "@/features/connections/server/actions";
 import { getFollowedOrganizationIds } from "@/features/organizations/server/follow-actions";
 import { getExhibitorEventsForOrgs } from "@/features/events/server/exhibitor-actions";
 import { AdPlaceholder } from "@/components/ads/ad-placeholder";
+import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
+import { getActiveAdsForPlacement } from "@/features/advertising/server/actions";
 import { FeaturedProviderCard } from "@/features/organizations/components/featured-provider-card";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -52,6 +54,7 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
     let type: 'organization' | 'profile' = 'organization';
     const dbType = categoryToDbType[category];
     const featuredOrgs = dbType ? await getFeaturedOrganizationsByType(dbType, 2) : [];
+    const sidebarAds = await getActiveAdsForPlacement("sidebar", 2);
 
     if (category === 'media-professionals') {
         const cookieStore = await cookies();
@@ -199,8 +202,13 @@ export default async function ConnectPage({ params }: ConnectPageProps) {
 
                 {/* Sidebar */}
                 <div className="lg:col-span-1 sticky top-4 space-y-6">
-                    <AdPlaceholder height={300} />
-                    <AdPlaceholder height={300} />
+                    {Array.from({ length: 2 }).map((_, i) =>
+                        sidebarAds[i] ? (
+                            <SponsoredCard key={sidebarAds[i].id} ad={sidebarAds[i]} minHeight={300} />
+                        ) : (
+                            <AdPlaceholder key={`ad-placeholder-${i}`} height={300} />
+                        )
+                    )}
                 </div>
             </div>
         </div>

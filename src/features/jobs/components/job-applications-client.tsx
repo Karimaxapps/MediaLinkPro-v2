@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

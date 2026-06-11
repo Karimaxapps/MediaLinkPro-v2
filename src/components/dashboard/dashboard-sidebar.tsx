@@ -3,7 +3,7 @@
 import { Building2, User, ArrowRight, Zap, Rocket, TrendingUp, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,6 +101,7 @@ interface DashboardSidebarProps {
   latestUsers: SidebarUser[];
   sidebarEvents?: SidebarEventItem[];
   adSlot?: ReactNode;
+  adSlotBottom?: ReactNode;
   userPlan?: PlanId;
   recommendedConnections?: ReactNode;
 }
@@ -112,6 +113,7 @@ export function DashboardSidebar({
   latestUsers,
   sidebarEvents = [],
   adSlot,
+  adSlotBottom,
   userPlan,
   recommendedConnections,
 }: DashboardSidebarProps) {
@@ -230,7 +232,7 @@ export function DashboardSidebar({
       <PlanUpgradeCard plan={userPlan} />
 
       {/* Ads Banner */}
-      <AdPlaceholder height={300} />
+      {adSlotBottom ?? <AdPlaceholder height={300} />}
 
     </aside>
   );

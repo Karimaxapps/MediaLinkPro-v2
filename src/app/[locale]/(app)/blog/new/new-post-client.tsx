@@ -49,7 +49,7 @@ export function NewBlogPostClient({ linkableProducts, organizationId, organizati
         return;
       }
       toast.success(status === "published" ? "Post published" : "Draft saved");
-      router.push(status === "published" ? `/blog/${result.slug}` : "/blog/my-posts");
+      router.push(status === "published" ? `/blog/feed/${result.slug}` : "/blog/my-posts");
     });
   };
 

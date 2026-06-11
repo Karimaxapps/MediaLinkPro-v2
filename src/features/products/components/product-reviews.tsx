@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import Link from "next/link";
 import { StarRating } from "./star-rating";
 import { ReviewForm } from "./review-form";
@@ -49,6 +49,10 @@ export function ProductReviews({ productId, isAuthenticated, isOwner }: ProductR
     }, [productId, isAuthenticated]);
 
     useEffect(() => {
+        // loadData is async; its setState calls run after an await, not
+        // synchronously within the effect, so the cascading-render concern
+        // doesn't apply here.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         loadData();
     }, [loadData]);
 

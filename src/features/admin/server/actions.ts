@@ -158,10 +158,12 @@ export async function listAdminUsers(
 
   const search = (filters.search ?? "").trim();
 
-  // Base profile query (search + ordering)
+  // Base profile query (search + ordering). `email` is mirrored onto profiles
+  // by the handle_new_user trigger, so we read it here instead of paging all of
+  // auth.users (which capped at 1000 and dropped emails past that).
   let query = admin
     .from("profiles")
-    .select("id, username, full_name, avatar_url, city, country, created_at")
+    .select("id, username, full_name, avatar_url, city, country, created_at, email")
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -226,24 +228,12 @@ export async function listAdminUsers(
     );
   }
 
-  // Fetch emails from auth.users (service role only)
-  const emailMap = new Map<string, string>();
-  try {
-    const { data: authData } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const idSet = new Set(ids);
-    for (const u of authData?.users ?? []) {
-      if (idSet.has(u.id) && u.email) emailMap.set(u.id, u.email);
-    }
-  } catch {
-    // Non-fatal â€” email just won't show if this fails
-  }
-
   // Merge
   const merged: AdminUser[] = profiles.map((r) => {
     const sub = subMap.get(r.id);
     return {
       id: r.id,
-      email: emailMap.get(r.id) ?? null,
+      email: (r as { email?: string | null }).email ?? null,
       username: r.username,
       full_name: r.full_name,
       avatar_url: r.avatar_url,

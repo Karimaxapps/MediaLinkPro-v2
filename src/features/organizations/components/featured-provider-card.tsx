@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { BadgeCheck, MapPin } from "lucide-react";

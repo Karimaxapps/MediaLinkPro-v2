@@ -46,7 +46,7 @@ export function MyPostActions({
     return (
         <div className="flex items-center gap-1 flex-shrink-0">
             {status === "published" && (
-                <Link href={`/blog/${slug}`}>
+                <Link href={`/blog/feed/${slug}`}>
                     <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
                         <Eye className="h-4 w-4" />
                     </Button>

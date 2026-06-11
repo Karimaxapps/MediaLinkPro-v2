@@ -1,22 +1,29 @@
 import Link from "next/link";
-import Image from "next/image";
-import { getActiveAdForPlacement, trackImpression, type AdPlacement } from "../server/actions";
+import Image from "@/components/ui/safe-image";
+import { getActiveAdForPlacement, trackImpression, type AdCampaign, type AdPlacement } from "../server/actions";
 
 /**
  * Async server component that renders an active sponsored ad for a given
  * placement. Records impression on render and generates a click-tracking link.
  * Returns null when no active ads are available.
+ *
+ * Pass an explicit `ad` to render a specific campaign (e.g. when a parent has
+ * already fetched several distinct ads for side-by-side slots); otherwise the
+ * card picks a random active ad for the placement itself.
  */
 export async function SponsoredCard({
     placement,
     category,
     minHeight = 196,
+    ad: providedAd,
 }: {
-    placement: AdPlacement;
+    placement?: AdPlacement;
     category?: string;
     minHeight?: number;
+    ad?: AdCampaign;
 }) {
-    const ad = await getActiveAdForPlacement(placement, category);
+    const ad =
+        providedAd ?? (placement ? await getActiveAdForPlacement(placement, category) : null);
     if (!ad) return null;
 
     // Fire-and-forget impression tracking
@@ -34,6 +41,7 @@ export async function SponsoredCard({
                     src={ad.image_url}
                     alt={ad.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 360px"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
             )}

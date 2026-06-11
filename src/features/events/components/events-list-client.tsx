@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { format } from "date-fns";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Calendar, MapPin, Building2, Users, Video, Globe, Filter, X } from "lucide-react";

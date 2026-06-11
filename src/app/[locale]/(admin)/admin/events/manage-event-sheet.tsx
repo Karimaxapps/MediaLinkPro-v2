@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { toast } from "sonner";
 import { ExternalLink, ImagePlus, Loader2, X } from "lucide-react";
 import {

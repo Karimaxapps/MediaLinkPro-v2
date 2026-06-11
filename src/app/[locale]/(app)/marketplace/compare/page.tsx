@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, XCircle, Eye, Bookmark, Tag, Building2 } from "lucide-react";
 

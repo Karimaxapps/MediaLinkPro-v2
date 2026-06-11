@@ -3,7 +3,7 @@
 import { useRef, RefObject } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { ChevronLeft, ChevronRight, Eye, PenSquare } from "lucide-react";
 import { format } from "date-fns";
 import { ProductCard } from "@/features/products/components/product-card";
@@ -309,7 +309,7 @@ export function DashboardClient({
                                 {latestBlogPosts.map((post) => (
                                     <Link
                                         key={post.id}
-                                        href={`/blog/${post.slug}`}
+                                        href={`/blog/feed/${post.slug}`}
                                         className="w-[240px] sm:w-[260px] snap-start shrink-0 group rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:border-[var(--brand)]/50 transition-all duration-300 flex flex-col"
                                     >
                                         {post.cover_image_url ? (

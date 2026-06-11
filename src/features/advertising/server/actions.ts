@@ -95,6 +95,21 @@ export async function getActiveAdForPlacement(
     placement: AdPlacement,
     category?: string
 ): Promise<AdCampaign | null> {
+    const ads = await getActiveAdsForPlacement(placement, 1, category);
+    return ads[0] ?? null;
+}
+
+/**
+ * Returns up to `count` *distinct* active ads for a placement, randomly
+ * rotated. Use this (instead of calling getActiveAdForPlacement multiple
+ * times) when a page renders several ad slots side-by-side — independent
+ * single-ad lookups each pick randomly and can collide on the same ad.
+ */
+export async function getActiveAdsForPlacement(
+    placement: AdPlacement,
+    count: number,
+    category?: string
+): Promise<AdCampaign[]> {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
@@ -106,7 +121,7 @@ export async function getActiveAdForPlacement(
         .eq("placement", placement)
         .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
         .or(`ends_at.is.null,ends_at.gte.${nowIso}`)
-        .limit(10);
+        .limit(20);
 
     if (category) {
         query = query.or(`target_category.is.null,target_category.eq.${category}`);
@@ -114,10 +129,14 @@ export async function getActiveAdForPlacement(
 
     const { data } = await query;
     const ads = (data ?? []) as unknown as AdCampaign[];
-    if (ads.length === 0) return null;
 
-    // Simple random rotation
-    return ads[Math.floor(Math.random() * ads.length)];
+    // Shuffle (Fisher–Yates) then take the first `count` — guarantees the
+    // returned ads are distinct.
+    for (let i = ads.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ads[i], ads[j]] = [ads[j], ads[i]];
+    }
+    return ads.slice(0, Math.max(0, count));
 }
 
 export async function createCampaign(input: {

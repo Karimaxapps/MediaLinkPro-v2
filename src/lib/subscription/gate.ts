@@ -54,42 +54,72 @@ export const FEATURE_LABELS: Record<FeatureKey, string> = {
   ad_credits: "Use Ad Credits",
 };
 
+type SubscriptionPlanRow = {
+  plan?: string | null;
+  gifted_until?: string | null;
+  stripe_subscription_id?: string | null;
+  status?: string | null;
+};
+
 /**
- * Resolve a user's current plan. Returns 'free' if the user has no row.
+ * Resolve the *effective* plan for a subscription row, treating `gifted_until`
+ * as authoritative.
  *
- * Note: when a gift is active, the `plan` column already reflects the gifted
- * plan (set by the admin tooling), so no separate handling is needed here.
+ * A gift sets `plan` to the gifted tier and `gifted_until` to an expiry date.
+ * Once that date passes the gift no longer applies, so we fall back to the
+ * underlying Stripe-backed plan when one is still active, or to the free tier
+ * otherwise. (A daily pg_cron sweep also resets lapsed gift rows so the DB
+ * stays consistent, but this read-time guard keeps entitlements correct in
+ * between sweeps.)
+ */
+function resolveEffectivePlan(row: SubscriptionPlanRow | null, freeTier: PlanId): PlanId {
+  const plan = row?.plan;
+  if (!plan || !PLAN_HIERARCHY.includes(plan as PlanId)) return freeTier;
+
+  if (row?.gifted_until) {
+    const giftActive = new Date(row.gifted_until).getTime() > Date.now();
+    if (!giftActive) {
+      // Keep the plan only if a live Stripe subscription backs it (its `plan`
+      // is maintained by the Stripe webhook); otherwise drop to the free tier.
+      const hasActiveStripeSub =
+        !!row.stripe_subscription_id &&
+        (row.status === "active" || row.status === "trialing");
+      return hasActiveStripeSub ? (plan as PlanId) : freeTier;
+    }
+  }
+
+  return plan as PlanId;
+}
+
+/**
+ * Resolve a user's current plan. Returns 'free' if the user has no row or a
+ * lapsed gift with no active paid subscription.
  */
 export async function getUserPlan(userId: string): Promise<PlanId> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("subscriptions" as never)
-    .select("plan")
+    .select("plan, gifted_until, stripe_subscription_id, status")
     .eq("user_id", userId)
     .maybeSingle();
 
-  const plan = (data as { plan?: string } | null)?.plan;
-  if (!plan) return "free";
-
-  return PLAN_HIERARCHY.includes(plan as PlanId) ? (plan as PlanId) : "free";
+  return resolveEffectivePlan(data as SubscriptionPlanRow | null, "free");
 }
 
 /**
  * Resolve an organization's current plan. Returns 'org_free' if no row exists
- * (e.g. the trigger hasn't fired yet for an org created before this code shipped).
+ * (e.g. the trigger hasn't fired yet for an org created before this code shipped)
+ * or a lapsed gift with no active paid subscription.
  */
 export async function getOrgPlan(orgId: string): Promise<PlanId> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("subscriptions" as never)
-    .select("plan")
+    .select("plan, gifted_until, stripe_subscription_id, status")
     .eq("organization_id", orgId)
     .maybeSingle();
 
-  const plan = (data as { plan?: string } | null)?.plan;
-  if (!plan) return "org_free";
-
-  return PLAN_HIERARCHY.includes(plan as PlanId) ? (plan as PlanId) : "org_free";
+  return resolveEffectivePlan(data as SubscriptionPlanRow | null, "org_free");
 }
 
 /**

@@ -6,7 +6,7 @@ import { ConnectionStatus } from "@/features/connections/server/actions";
 import { FollowButton } from "@/features/organizations/components/follow-button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { MapPin, Briefcase } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";
