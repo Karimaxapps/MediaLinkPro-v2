@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
     // Strip non-default locale prefix (es, fr, de, zh) so path comparisons
     // work regardless of which locale is active. English has no prefix ("as-needed").
     const { pathname } = request.nextUrl;
-    const localeMatch = pathname.match(/^\/(es|fr|de|zh)(\/|$)/);
+    const localeMatch = pathname.match(/^\/(es|fr|de|zh|ja)(\/|$)/);
     const localePrefix = localeMatch ? `/${localeMatch[1]}` : "";
     const cleanPath = localeMatch ? pathname.slice(localeMatch[1].length + 1) || "/" : pathname;
 
@@ -67,6 +67,13 @@ export async function updateSession(request: NextRequest) {
     );
 
     if (isAppRoute && !user) {
+        // Never redirect server-action POSTs: it breaks Next's action-response
+        // forwarding and leaves requests hung until the server restarts
+        // (https://github.com/vercel/next.js/discussions/64993). Actions do
+        // their own auth checks and return empty results instead.
+        if (request.headers.get("next-action")) {
+            return response;
+        }
         const url = request.nextUrl.clone();
         url.pathname = `${localePrefix}/auth`;
         return NextResponse.redirect(url);

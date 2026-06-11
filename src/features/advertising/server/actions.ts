@@ -40,6 +40,11 @@ const createCampaignSchema = z.object({
         "dashboard_hero_banner",
         "mobile_top_feed_screen1",
         "mobile_middle_feed_screen2",
+        "connect_broadcasters",
+        "connect_solution_providers",
+        "connect_production_companies",
+        "connect_media_associations",
+        "connect_media_professionals",
     ]),
     target_category: z.string().trim().max(60).optional(),
 });
@@ -53,7 +58,12 @@ export type AdPlacement =
     | "job_details_sidebar"
     | "dashboard_hero_banner"
     | "mobile_top_feed_screen1"
-    | "mobile_middle_feed_screen2";
+    | "mobile_middle_feed_screen2"
+    | "connect_broadcasters"
+    | "connect_solution_providers"
+    | "connect_production_companies"
+    | "connect_media_associations"
+    | "connect_media_professionals";
 
 export type AdCampaign = {
     id: string;

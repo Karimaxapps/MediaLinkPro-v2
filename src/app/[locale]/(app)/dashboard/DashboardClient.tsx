@@ -54,6 +54,7 @@ export function DashboardClient({
     featuredAiTools = [],
     heroBanner,
     sidebarAd,
+    sidebarAdBottom,
     sidebarExtras,
     recommendedConnections,
 }: {
@@ -74,6 +75,7 @@ export function DashboardClient({
     featuredAiTools?: AiTool[],
     heroBanner?: ReactNode,
     sidebarAd?: ReactNode,
+    sidebarAdBottom?: ReactNode,
     sidebarExtras?: ReactNode,
     recommendedConnections?: ReactNode,
 }) {
@@ -386,6 +388,7 @@ export function DashboardClient({
                     latestUsers={latestUsers}
                     sidebarEvents={sidebarEvents}
                     adSlot={sidebarAd}
+                    adSlotBottom={sidebarAdBottom}
                     userPlan={userPlan}
                     recommendedConnections={recommendedConnections}
                 />

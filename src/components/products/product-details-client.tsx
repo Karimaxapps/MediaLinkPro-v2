@@ -1398,12 +1398,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                     </div>
                                 </CardContent>
                             </Card>
-                        ) : (
-                            <div className="bg-white/5 border border-dashed border-white/10 rounded-xl p-6 flex flex-col items-center justify-center text-center h-[300px] sticky top-24">
-                                <span className="text-white/20 font-medium">Advertisement Space</span>
-                                <span className="text-white/10 text-sm mt-1">300 x 300</span>
-                            </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div >

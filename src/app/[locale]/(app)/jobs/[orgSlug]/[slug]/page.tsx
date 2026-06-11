@@ -8,7 +8,6 @@ import { getJobBySlug, getMyApplicationForJob } from "@/features/jobs/server/act
 import { JobDetailsClient } from "@/features/jobs/components/job-details-client";
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
-import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 import { JsonLd } from "@/components/seo/json-ld";
 import { absoluteUrl, SITE_URL } from "@/lib/seo";
 
@@ -110,11 +109,7 @@ export default async function JobDetailPage({ params }: Props) {
           />
         </div>
         <aside className="lg:col-span-3 self-start lg:sticky lg:top-24">
-          {sidebarAd ? (
-            <SponsoredCard placement="job_details_sidebar" />
-          ) : (
-            <AdPlaceholder height={520} />
-          )}
+          {sidebarAd && <SponsoredCard ad={sidebarAd} />}
         </aside>
       </div>
     </div>

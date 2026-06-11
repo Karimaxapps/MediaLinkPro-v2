@@ -2,7 +2,6 @@ import { getPublicEvents } from "@/features/events/server/actions";
 import { EventsListClient } from "@/features/events/components/events-list-client";
 import { SponsoredCard } from "@/features/advertising/components/sponsored-card";
 import { getActiveAdForPlacement } from "@/features/advertising/server/actions";
-import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 import { getMyPrimaryOrg } from "@/features/organizations/server/actions";
 import { getOrgUsage } from "@/features/billing/server/usage";
 import type { Metadata } from "next";
@@ -32,7 +31,7 @@ export default async function EventsPage() {
         />
       </div>
       <aside className="lg:col-span-3 lg:sticky lg:top-4">
-        {sidebarAd ? <SponsoredCard placement="events_sidebar" /> : <AdPlaceholder height={520} />}
+        {sidebarAd && <SponsoredCard ad={sidebarAd} />}
       </aside>
     </div>
   );

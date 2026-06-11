@@ -30,14 +30,21 @@ import {
 } from "@/features/admin/server/ads";
 import type { AdCampaign } from "@/features/advertising/server/actions";
 
+// Labels name the exact page(s) where each placement is rendered — keep in
+// sync with the pages that call SponsoredCard / getActiveAd(s)ForPlacement.
 const PLACEMENTS: { value: AdCampaign["placement"]; label: string }[] = [
-  { value: "dashboard_hero_banner", label: "Feed banner (below Latest Products)" },
-  { value: "jobs_sidebar", label: "Jobs sidebar" },
-  { value: "job_details_sidebar", label: "Job detail sidebar" },
-  { value: "events_sidebar", label: "Events sidebar" },
-  { value: "sidebar", label: "Dashboard sidebar" },
-  { value: "feed", label: "Dashboard sidebar (below Event card)" },
-  { value: "marketplace", label: "Marketplace" },
+  { value: "dashboard_hero_banner", label: "Dashboard feed · banner below Latest Products" },
+  { value: "jobs_sidebar", label: "Jobs listing page · sidebar" },
+  { value: "job_details_sidebar", label: "Job details page · sidebar" },
+  { value: "events_sidebar", label: "Events page · sidebar" },
+  { value: "sidebar", label: "Dashboard & Jobs pages · sidebar" },
+  { value: "connect_broadcasters", label: "Connect · Broadcasters page · sidebar" },
+  { value: "connect_solution_providers", label: "Connect · Solution Providers page · sidebar" },
+  { value: "connect_production_companies", label: "Connect · Production Companies page · sidebar" },
+  { value: "connect_media_associations", label: "Connect · Media Associations page · sidebar" },
+  { value: "connect_media_professionals", label: "Connect · Media Professionals page · sidebar" },
+  { value: "feed", label: "Dashboard · sidebar below Event card" },
+  { value: "marketplace", label: "Marketplace · Products & Services pages" },
   { value: "mobile_top_feed_screen1", label: "📱 Mobile · Top feed (Screen 1)" },
   { value: "mobile_middle_feed_screen2", label: "📱 Mobile · Middle feed (Screen 2)" },
 ];
@@ -91,7 +98,42 @@ const PLACEMENT_SPECS: Record<
     aspect: "5 / 2",
     recommendedRes: "800 × 320 px · 5:2 (image area only)",
     layout: "stacked",
-    caption: "Sidebar card on the dashboard. Image on top, text + CTA below.",
+    caption: "Sidebar card on the Dashboard and Jobs pages. Image on top, text + CTA below.",
+  },
+  connect_broadcasters: {
+    previewWidth: 280,
+    aspect: "5 / 2",
+    recommendedRes: "800 × 320 px · 5:2 (image area only)",
+    layout: "stacked",
+    caption: "Sidebar card on the Connect · Broadcasters listing page.",
+  },
+  connect_solution_providers: {
+    previewWidth: 280,
+    aspect: "5 / 2",
+    recommendedRes: "800 × 320 px · 5:2 (image area only)",
+    layout: "stacked",
+    caption: "Sidebar card on the Connect · Solution Providers listing page.",
+  },
+  connect_production_companies: {
+    previewWidth: 280,
+    aspect: "5 / 2",
+    recommendedRes: "800 × 320 px · 5:2 (image area only)",
+    layout: "stacked",
+    caption: "Sidebar card on the Connect · Production Companies listing page.",
+  },
+  connect_media_associations: {
+    previewWidth: 280,
+    aspect: "5 / 2",
+    recommendedRes: "800 × 320 px · 5:2 (image area only)",
+    layout: "stacked",
+    caption: "Sidebar card on the Connect · Media Associations listing page.",
+  },
+  connect_media_professionals: {
+    previewWidth: 280,
+    aspect: "5 / 2",
+    recommendedRes: "800 × 320 px · 5:2 (image area only)",
+    layout: "stacked",
+    caption: "Sidebar card on the Connect · Media Professionals listing page.",
   },
   jobs_sidebar: {
     previewWidth: 280,

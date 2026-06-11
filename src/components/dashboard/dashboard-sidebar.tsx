@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EventCard } from "@/components/events/event-card";
-import { AdPlaceholder } from "@/components/ads/ad-placeholder";
 
 import type { Event } from "@/features/events/types";
 import type { PlanId } from "@/lib/stripe/plans";
@@ -232,7 +231,7 @@ export function DashboardSidebar({
       <PlanUpgradeCard plan={userPlan} />
 
       {/* Ads Banner */}
-      {adSlotBottom ?? <AdPlaceholder height={300} />}
+      {adSlotBottom}
 
     </aside>
   );
