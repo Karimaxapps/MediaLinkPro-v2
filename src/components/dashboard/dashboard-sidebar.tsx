@@ -3,7 +3,7 @@
 import { Building2, User, ArrowRight, Zap, Rocket, TrendingUp, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,13 +90,18 @@ interface EventAttendee {
   full_name: string | null;
 }
 
+interface SidebarEventItem {
+  event: Event;
+  isGoing: boolean;
+  attendees: EventAttendee[];
+}
+
 interface DashboardSidebarProps {
   latestCompanies: Company[];
   latestUsers: SidebarUser[];
-  upcomingEvent?: Event | null;
-  eventIsGoing?: boolean;
-  eventAttendees?: EventAttendee[];
+  sidebarEvents?: SidebarEventItem[];
   adSlot?: ReactNode;
+  adSlotBottom?: ReactNode;
   userPlan?: PlanId;
   recommendedConnections?: ReactNode;
 }
@@ -106,24 +111,24 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({
   latestCompanies,
   latestUsers,
-  upcomingEvent,
-  eventIsGoing,
-  eventAttendees,
+  sidebarEvents = [],
   adSlot,
+  adSlotBottom,
   userPlan,
   recommendedConnections,
 }: DashboardSidebarProps) {
   const t = useTranslations("dashboard");
   return (
     <aside className="space-y-6">
-      {/* Upcoming Event */}
-      {upcomingEvent && (
+      {/* Featured / upcoming events */}
+      {sidebarEvents.map(({ event, isGoing, attendees }) => (
         <EventCard
-          event={upcomingEvent}
-          isGoing={eventIsGoing}
-          attendees={eventAttendees}
+          key={event.id}
+          event={event}
+          isGoing={isGoing}
+          attendees={attendees}
         />
-      )}
+      ))}
 
       {/* Sponsored ad — below upcoming event */}
       {adSlot}
@@ -227,7 +232,7 @@ export function DashboardSidebar({
       <PlanUpgradeCard plan={userPlan} />
 
       {/* Ads Banner */}
-      <AdPlaceholder height={300} />
+      {adSlotBottom ?? <AdPlaceholder height={300} />}
 
     </aside>
   );

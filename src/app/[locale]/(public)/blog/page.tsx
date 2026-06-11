@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { BLUR_DATA_URL } from "@/lib/image";
 import { format } from "date-fns";
 import { PenSquare, Eye, Heart } from "lucide-react";

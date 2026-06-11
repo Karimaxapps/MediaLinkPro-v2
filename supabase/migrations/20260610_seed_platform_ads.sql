@@ -1,0 +1,183 @@
+-- Seed "house" ad campaigns that fill the previously-empty Advertisement
+-- placeholders with real items already living on the platform: upcoming events,
+-- products, media services and AI tools. These render through SponsoredCard for
+-- the placements that currently have no active campaign.
+--
+-- Notes:
+--   * advertiser_id is borrowed from the oldest existing campaign so these rows
+--     belong to the same (admin) advertiser and pass RLS / FK constraints in any
+--     environment — no hard-coded user UUID.
+--   * cta_url points at the in-app detail pages on the production domain (the
+--     /api/ads/click redirect only accepts absolute http(s) URLs).
+--   * Existing campaigns are left untouched. Re-running is safe: each row is
+--     keyed on its unique `name` and skipped if already present.
+
+INSERT INTO public.ad_campaigns
+    (advertiser_id, name, title, body, cta_label, cta_url, image_url, placement, status)
+SELECT
+    adv.id, v.name, v.title, v.body, v.cta_label, v.cta_url, v.image_url, v.placement, 'active'
+FROM
+    (SELECT advertiser_id AS id FROM public.ad_campaigns ORDER BY created_at ASC LIMIT 1) adv,
+    (VALUES
+        -- ── Events sidebar — upcoming industry events ────────────────────────
+        ('Platform Ad — IBC Show 2026 (events_sidebar)',
+         'IBC Show 2026',
+         'Amsterdam · 12–16 Sep 2026 — the world''s media, entertainment & technology show.',
+         'View event',
+         'https://medialinkpro.net/events/ibc-show-2026',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/events/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/covers/covers_1781043173936.jpg',
+         'events_sidebar'),
+        ('Platform Ad — NAB Show New York 2026 (events_sidebar)',
+         'NAB Show New York 2026',
+         'New York · 21–22 Oct 2026 — where media, entertainment and technology meet on the East Coast.',
+         'View event',
+         'https://medialinkpro.net/events/nab-show-new-york-2026',
+         'https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?w=1200&auto=format&fit=crop',
+         'events_sidebar'),
+        ('Platform Ad — Inter-BEE (events_sidebar)',
+         'Inter-BEE',
+         'Chiba, Japan · 18–20 Nov 2026 — Asia''s premier professional AV & broadcast expo.',
+         'View event',
+         'https://medialinkpro.net/events/inter-bee-2025',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/events/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/covers/covers_1781042617193.png',
+         'events_sidebar'),
+
+        -- ── Marketplace — products, services & AI tools ──────────────────────
+        ('Platform Ad — Sony VENICE 2 (marketplace)',
+         'Sony VENICE 2',
+         'Full-frame cinema camera with 8.6K sensor, dual base ISO and anamorphic de-squeeze.',
+         'Explore product',
+         'https://medialinkpro.net/products/sony-venice-2',
+         'https://images.unsplash.com/photo-1617839625591-e5a789593135?w=1200&auto=format&fit=crop',
+         'marketplace'),
+        ('Platform Ad — TVU One (marketplace)',
+         'TVU One',
+         'Portable IP live transmitter for newsgathering over bonded cellular, Wi-Fi and satellite.',
+         'Explore product',
+         'https://medialinkpro.net/products/tvu-one',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/products/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/product-gallery/product-gallery_1780442474718.jpg',
+         'marketplace'),
+        ('Platform Ad — Avid Media Composer (marketplace)',
+         'Avid Media Composer',
+         'The industry-standard non-linear editor for film, episodic TV, news and documentary.',
+         'Explore product',
+         'https://medialinkpro.net/products/avid-media-composer',
+         'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&auto=format&fit=crop',
+         'marketplace'),
+        ('Platform Ad — VOS360 Media SaaS (marketplace)',
+         'VOS360 Media SaaS',
+         'Cloud-native platform for live linear playout, OTT streaming and VOD delivery at scale.',
+         'Explore service',
+         'https://medialinkpro.net/products/vos360-media-saas-platform',
+         'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&auto=format&fit=crop',
+         'marketplace'),
+        ('Platform Ad — ILM Visual Effects (marketplace)',
+         'Visual Effects Production by ILM',
+         'Full-service VFX — concept and previs through final composited deliverables.',
+         'Explore service',
+         'https://medialinkpro.net/products/ilm-visual-effects-production',
+         'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&auto=format&fit=crop',
+         'marketplace'),
+        ('Platform Ad — OpenAI Sora (marketplace)',
+         'OpenAI Sora',
+         'Generate realistic video with motion, dialogue, music and sound effects.',
+         'Try the tool',
+         'https://medialinkpro.net/ai-tools/openai-sora',
+         'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1600&auto=format&fit=crop',
+         'marketplace'),
+
+        -- ── Jobs list sidebar ────────────────────────────────────────────────
+        ('Platform Ad — TVU One (jobs_sidebar)',
+         'TVU One',
+         'Go live from anywhere — IP transmission built for live news and sports.',
+         'Explore product',
+         'https://medialinkpro.net/products/tvu-one',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/products/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/product-gallery/product-gallery_1780442474718.jpg',
+         'jobs_sidebar'),
+        ('Platform Ad — Media Technology Consulting (jobs_sidebar)',
+         'Media Technology Consulting',
+         'End-to-end consulting and system integration for broadcast, OTT and media companies.',
+         'Explore service',
+         'https://medialinkpro.net/products/media-technology-consulting-integration',
+         'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80',
+         'jobs_sidebar'),
+        ('Platform Ad — Midjourney (jobs_sidebar)',
+         'Midjourney',
+         'High-quality AI image generation for art direction, concept work and campaigns.',
+         'Try the tool',
+         'https://medialinkpro.net/ai-tools/midjourney',
+         'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1600&auto=format&fit=crop',
+         'jobs_sidebar'),
+
+        -- ── Job details sidebar ──────────────────────────────────────────────
+        ('Platform Ad — Shure SM7B (job_details_sidebar)',
+         'Shure SM7B',
+         'The gold-standard cardioid dynamic mic for voiceover, podcast and broadcast.',
+         'Explore product',
+         'https://medialinkpro.net/products/shure-sm7b',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/products/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/product-gallery/product-gallery_1779532082867.jpg',
+         'job_details_sidebar'),
+        ('Platform Ad — ILM Visual Effects (job_details_sidebar)',
+         'Visual Effects Production by ILM',
+         'Full-service VFX for feature film, streaming and immersive.',
+         'Explore service',
+         'https://medialinkpro.net/products/ilm-visual-effects-production',
+         'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&auto=format&fit=crop',
+         'job_details_sidebar'),
+        ('Platform Ad — Adobe Firefly (job_details_sidebar)',
+         'Adobe Firefly',
+         'Adobe''s generative AI studio for images, video, audio, vectors and production.',
+         'Try the tool',
+         'https://medialinkpro.net/ai-tools/adobe-firefly',
+         'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1600&auto=format&fit=crop',
+         'job_details_sidebar'),
+
+        -- ── Generic sidebar (connect pages + dashboard) ──────────────────────
+        ('Platform Ad — Sony VENICE 2 (sidebar)',
+         'Sony VENICE 2',
+         'Full-frame 8.6K cinematic imaging — the benchmark camera for film and high-end TV.',
+         'Explore product',
+         'https://medialinkpro.net/products/sony-venice-2',
+         'https://images.unsplash.com/photo-1617839625591-e5a789593135?w=1200&auto=format&fit=crop',
+         'sidebar'),
+        ('Platform Ad — OpenAI Sora (sidebar)',
+         'OpenAI Sora',
+         'Turn text into realistic video with motion, dialogue and sound.',
+         'Try the tool',
+         'https://medialinkpro.net/ai-tools/openai-sora',
+         'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1600&auto=format&fit=crop',
+         'sidebar'),
+        ('Platform Ad — IBC Show 2026 (sidebar)',
+         'IBC Show 2026',
+         'Amsterdam · 12–16 Sep 2026 — connect with the global media-tech community.',
+         'View event',
+         'https://medialinkpro.net/events/ibc-show-2026',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/events/b713cc88-78fa-472a-bb8a-46eef3c1d5ea/covers/covers_1781043173936.jpg',
+         'sidebar'),
+        ('Platform Ad — Google Flow (sidebar)',
+         'Google Flow',
+         'Google''s AI filmmaking tool built for Veo, Imagen and Gemini.',
+         'Try the tool',
+         'https://medialinkpro.net/ai-tools/google-flow',
+         'https://ejuqifpwfrtiwyzeytax.supabase.co/storage/v1/object/public/organizations/ai-tools/google-flow/cover_1779713654640.png',
+         'sidebar'),
+
+        -- ── Mobile in-feed (screen 2) ────────────────────────────────────────
+        ('Platform Ad — Sony VENICE 2 (mobile_middle_feed_screen2)',
+         'Sony VENICE 2',
+         'Full-frame 8.6K cinema camera — dual base ISO, anamorphic de-squeeze.',
+         'Explore product',
+         'https://medialinkpro.net/products/sony-venice-2',
+         'https://images.unsplash.com/photo-1617839625591-e5a789593135?w=1200&auto=format&fit=crop',
+         'mobile_middle_feed_screen2'),
+        ('Platform Ad — Avid Media Composer (mobile_middle_feed_screen2)',
+         'Avid Media Composer',
+         'The industry-standard editor for film, TV, news and documentary.',
+         'Explore product',
+         'https://medialinkpro.net/products/avid-media-composer',
+         'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&auto=format&fit=crop',
+         'mobile_middle_feed_screen2')
+    ) AS v(name, title, body, cta_label, cta_url, image_url, placement)
+WHERE NOT EXISTS (
+    SELECT 1 FROM public.ad_campaigns ac WHERE ac.name = v.name
+);

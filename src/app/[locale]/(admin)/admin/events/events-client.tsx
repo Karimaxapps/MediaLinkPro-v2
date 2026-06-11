@@ -6,9 +6,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarDays, ExternalLink, Pencil, Search, Trash2, Users, Building2 } from "lucide-react";
+import { CalendarDays, ExternalLink, Pencil, Search, Star, Trash2, Users, Building2 } from "lucide-react";
 import {
     deleteEventAsAdmin,
+    setEventFeaturedAsAdmin,
     type AdminEventListItem,
 } from "@/features/admin/server/actions";
 import { ManageEventSheet, type OrgOption } from "./manage-event-sheet";
@@ -59,7 +60,9 @@ export function AdminEventsClient({
                     e.title.toLowerCase().includes(q) ||
                     (e.organization_name ?? "").toLowerCase().includes(q) ||
                     (e.location ?? "").toLowerCase().includes(q);
-                const matchStatus = statusFilter === "all" || e.status === statusFilter;
+                const matchStatus =
+                    statusFilter === "all" ||
+                    (statusFilter === "featured" ? e.is_featured : e.status === statusFilter);
                 return matchQ && matchStatus;
             }),
         [events, query, statusFilter]
@@ -67,8 +70,27 @@ export function AdminEventsClient({
 
     const counts = useMemo(() => {
         const by = (s: string) => events.filter((e) => e.status === s).length;
-        return { all: events.length, published: by("published"), draft: by("draft"), cancelled: by("cancelled") };
+        return {
+            all: events.length,
+            published: by("published"),
+            draft: by("draft"),
+            cancelled: by("cancelled"),
+            featured: events.filter((e) => e.is_featured).length,
+        };
     }, [events]);
+
+    const handleToggleFeatured = (e: AdminEventListItem) => {
+        const next = !e.is_featured;
+        startTransition(async () => {
+            const result = await setEventFeaturedAsAdmin(e.id, next);
+            if (!result.success) {
+                toast.error(result.error ?? "Failed to update featured status");
+                return;
+            }
+            setEvents((prev) => prev.map((x) => (x.id === e.id ? { ...x, is_featured: next } : x)));
+            toast.success(next ? "Event featured on the feed" : "Event removed from the feed");
+        });
+    };
 
     const handleDelete = (e: AdminEventListItem) => {
         if (!confirm(`Delete event "${e.title}"? This permanently removes it and its registrations. This cannot be undone.`))
@@ -108,12 +130,13 @@ export function AdminEventsClient({
                 </div>
 
                 {/* Stat / status filter cards */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                     {[
                         { key: "all", label: "Total", count: counts.all },
                         { key: "published", label: "Published", count: counts.published },
                         { key: "draft", label: "Draft", count: counts.draft },
                         { key: "cancelled", label: "Cancelled", count: counts.cancelled },
+                        { key: "featured", label: "Featured on feed", count: counts.featured },
                     ].map((s) => (
                         <button
                             key={s.key}
@@ -243,6 +266,25 @@ export function AdminEventsClient({
                                         {/* Actions */}
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-1">
+                                                <button
+                                                    onClick={() => handleToggleFeatured(e)}
+                                                    disabled={isPending}
+                                                    className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${
+                                                        e.is_featured
+                                                            ? "text-[var(--brand)] hover:text-[var(--brand)] bg-[var(--brand)]/10"
+                                                            : "text-gray-400 hover:text-[var(--brand)] hover:bg-[var(--brand)]/10"
+                                                    }`}
+                                                    title={
+                                                        e.is_featured
+                                                            ? "Remove from feed sidebar"
+                                                            : "Feature in feed sidebar"
+                                                    }
+                                                >
+                                                    <Star
+                                                        className="h-4 w-4"
+                                                        fill={e.is_featured ? "currentColor" : "none"}
+                                                    />
+                                                </button>
                                                 <button
                                                     onClick={() => {
                                                         setSelected(e);

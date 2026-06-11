@@ -158,10 +158,12 @@ export async function listAdminUsers(
 
   const search = (filters.search ?? "").trim();
 
-  // Base profile query (search + ordering)
+  // Base profile query (search + ordering). `email` is mirrored onto profiles
+  // by the handle_new_user trigger, so we read it here instead of paging all of
+  // auth.users (which capped at 1000 and dropped emails past that).
   let query = admin
     .from("profiles")
-    .select("id, username, full_name, avatar_url, city, country, created_at")
+    .select("id, username, full_name, avatar_url, city, country, created_at, email")
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -226,24 +228,12 @@ export async function listAdminUsers(
     );
   }
 
-  // Fetch emails from auth.users (service role only)
-  const emailMap = new Map<string, string>();
-  try {
-    const { data: authData } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const idSet = new Set(ids);
-    for (const u of authData?.users ?? []) {
-      if (idSet.has(u.id) && u.email) emailMap.set(u.id, u.email);
-    }
-  } catch {
-    // Non-fatal â€” email just won't show if this fails
-  }
-
   // Merge
   const merged: AdminUser[] = profiles.map((r) => {
     const sub = subMap.get(r.id);
     return {
       id: r.id,
-      email: emailMap.get(r.id) ?? null,
+      email: (r as { email?: string | null }).email ?? null,
       username: r.username,
       full_name: r.full_name,
       avatar_url: r.avatar_url,
@@ -899,6 +889,7 @@ export type AdminEventListItem = {
   logo_url: string | null;
   registration_count: number;
   interest_count: number;
+  is_featured: boolean;
   organization_id: string | null;
   organization_name: string | null;
   organization_logo: string | null;
@@ -911,7 +902,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
   const { data } = await admin
     .from("events")
     .select(
-      "id, title, slug, status, event_type, start_date, end_date, location, is_online, cover_image_url, logo_url, registration_count, interest_count, organization_id, created_at"
+      "id, title, slug, status, event_type, start_date, end_date, location, is_online, cover_image_url, logo_url, registration_count, interest_count, is_featured, organization_id, created_at"
     )
     .order("start_date", { ascending: false })
     .limit(limit);
@@ -930,6 +921,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
     logo_url: string | null;
     registration_count: number | null;
     interest_count: number | null;
+    is_featured: boolean | null;
     organization_id: string | null;
     created_at: string | null;
   }>;
@@ -963,6 +955,7 @@ export async function listAdminEvents(limit: number = 200): Promise<AdminEventLi
       logo_url: r.logo_url,
       registration_count: r.registration_count ?? 0,
       interest_count: r.interest_count ?? 0,
+      is_featured: r.is_featured ?? false,
       organization_id: r.organization_id,
       organization_name: org?.name ?? null,
       organization_logo: org?.logo_url ?? null,
@@ -1030,6 +1023,26 @@ export async function updateEventAsAdmin(
   revalidatePath("/admin/events");
   if (updated?.slug) revalidatePath(`/events/${updated.slug}`);
   return { success: true, slug: updated?.slug };
+}
+
+/** Toggle whether an event is featured in the dashboard feed sidebar. */
+export async function setEventFeaturedAsAdmin(
+  eventId: string,
+  featured: boolean
+): Promise<{ success: boolean; error?: string }> {
+  await requireSiteAdmin();
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("events")
+    .update({ is_featured: featured, updated_at: new Date().toISOString() } as never)
+    .eq("id", eventId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/admin/events");
+  revalidatePath("/dashboard");
+  return { success: true };
 }
 
 export async function deleteEventAsAdmin(eventId: string) {

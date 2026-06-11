@@ -2,19 +2,22 @@ import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createHash } from "node:crypto";
+import { checkRateLimit } from "@/lib/rate-limit";
 
-// Module-level rate limit store: "ip:productId" -> [timestamps]
-const rateLimitStore = new Map<string, number[]>();
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 
-function checkRateLimit(key: string): boolean {
-  const now = Date.now();
-  const timestamps = (rateLimitStore.get(key) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  if (timestamps.length >= RATE_LIMIT_MAX) return false;
-  timestamps.push(now);
-  rateLimitStore.set(key, timestamps);
-  return true;
+/**
+ * IP addresses are personal data; we never store them raw. Persist a salted
+ * SHA-256 hash instead — enough to spot abuse/repeat patterns without keeping
+ * the underlying PII. Set SCAN_IP_SALT in env so hashes aren't reversible via a
+ * rainbow table of the (small) IPv4 space.
+ */
+function hashIp(ip: string | null): string | null {
+  if (!ip) return null;
+  const salt = process.env.SCAN_IP_SALT ?? "";
+  return createHash("sha256").update(`${salt}:${ip}`).digest("hex");
 }
 
 /**
@@ -45,7 +48,7 @@ async function trackScan(
   if (fetchError || !product) return null;
 
   // Rate-limit per IP + product so repeat opens don't inflate counts.
-  if (checkRateLimit(`${ip ?? "unknown"}:${productId}`)) {
+  if (await checkRateLimit(`scan:${ip ?? "unknown"}:${productId}`, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS)) {
     try {
       const { error: rpcError } = await supabase.rpc("increment_product_qr_scans", {
         product_id: productId,
@@ -55,7 +58,7 @@ async function trackScan(
       const { error: logError } = await supabase.from("product_scans").insert({
         product_id: productId,
         scanner_id: user?.id || null, // Null for anonymous
-        ip_address: ip,
+        ip_address: hashIp(ip), // salted hash, never the raw IP
         user_agent: userAgent,
       });
       if (logError) console.error("Failed to log scan:", logError);

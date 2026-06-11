@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";

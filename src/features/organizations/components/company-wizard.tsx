@@ -18,7 +18,7 @@ import {
   CheckCircle2,
   CalendarDays,
 } from "lucide-react";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import type { ExhibitorEvent } from "@/features/events/types";
 
 import { Button } from "@/components/ui/button";

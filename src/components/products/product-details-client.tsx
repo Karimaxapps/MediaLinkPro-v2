@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { BLUR_DATA_URL } from "@/lib/image";
 import { AddResourceDialog } from "@/features/products/components/add-resource-dialog";
 import { EditResourceDialog } from "@/features/products/components/edit-resource-dialog";
@@ -1319,7 +1319,7 @@ export function ProductDetailsClient({ product, user, userProfile, isOwner = fal
                                         {relatedPosts.map((post: any) => (
                                             <Link
                                                 key={post.id}
-                                                href={`/blog/${post.slug}`}
+                                                href={`/blog/feed/${post.slug}`}
                                                 className="group snap-start shrink-0 w-[220px] rounded-xl border border-white/10 bg-black/20 overflow-hidden hover:border-[var(--brand)]/40 transition-colors"
                                             >
                                                 <div className="relative aspect-video w-full bg-[var(--brand)]/10">

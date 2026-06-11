@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Building2, Users, Package } from "lucide-react";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { ExhibitorLogos } from "@/components/ui/exhibitor-logos";

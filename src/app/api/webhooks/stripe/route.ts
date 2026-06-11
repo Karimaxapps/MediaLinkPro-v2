@@ -104,6 +104,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 
+  // Idempotency: Stripe retries and can re-deliver events. Record the event id
+  // and skip if we've already handled it. A unique-violation means duplicate.
+  const dedupe = createAdminClient();
+  const { error: dedupeError } = await dedupe
+    .from("stripe_events" as never)
+    .insert({ id: event.id, type: event.type } as never);
+  if (dedupeError) {
+    if ((dedupeError as { code?: string }).code === "23505") {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    // Don't drop the event on an unexpected dedupe error — log and continue.
+    console.error("[stripe webhook] dedupe insert failed", dedupeError);
+  }
+
   try {
     switch (event.type) {
       case "customer.subscription.created":

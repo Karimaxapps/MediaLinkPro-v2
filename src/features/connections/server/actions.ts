@@ -5,6 +5,14 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { notify } from "@/features/notifications/server/notify";
 import { emailTemplates } from "@/lib/email/templates";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { isUuid } from "@/lib/utils";
+import { toUserError } from "@/features/types";
+
+// Cap how many new connection requests a single user can fire per hour. Each
+// request also dispatches an email, so this doubles as an email-bomb / cost
+// guard. Enforced with the durable, multi-instance limiter.
+const CONNECTION_REQUESTS_PER_HOUR = 30;
 
 export async function sendConnectionRequest(recipientId: string) {
     const cookieStore = await cookies();
@@ -13,7 +21,20 @@ export async function sendConnectionRequest(recipientId: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: 'Not authenticated', success: false };
 
+    if (!isUuid(recipientId)) return { error: 'Invalid recipient', success: false };
     if (user.id === recipientId) return { error: 'Cannot connect to yourself', success: false };
+
+    const allowed = await checkRateLimit(
+        `conn-req:${user.id}`,
+        CONNECTION_REQUESTS_PER_HOUR,
+        60 * 60 * 1000
+    );
+    if (!allowed) {
+        return {
+            error: "You're sending connection requests too quickly. Please try again later.",
+            success: false,
+        };
+    }
 
     const { data: senderProfile } = await supabase
         .from('profiles')
@@ -32,8 +53,7 @@ export async function sendConnectionRequest(recipientId: string) {
         });
 
     if (error) {
-        console.error("Error sending connection request:", error);
-        return { error: `Failed to send request: ${error.message || JSON.stringify(error)}`, success: false };
+        return { error: toUserError(error, "Failed to send request."), success: false };
     }
 
     // Create notification + optional email via central helper
@@ -152,6 +172,9 @@ export async function getConnectionStatus(targetUserId: string): Promise<Connect
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { status: 'none' };
 
+    // Validate before interpolating into the PostgREST .or() filter string.
+    if (!isUuid(targetUserId)) return { status: 'none' };
+
     const { data, error } = await supabase
         .from('connections')
         .select('*')
@@ -173,6 +196,8 @@ export async function getConnectionStatus(targetUserId: string): Promise<Connect
 export async function getConnectionsCount(userId: string) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
+
+    if (!isUuid(userId)) return 0;
 
     const { count, error } = await supabase
         .from('connections')

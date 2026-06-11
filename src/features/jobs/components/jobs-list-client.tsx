@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";

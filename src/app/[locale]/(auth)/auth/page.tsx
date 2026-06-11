@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { AuthTabs } from "./auth-tabs";
 import { getTranslations } from "next-intl/server";
 

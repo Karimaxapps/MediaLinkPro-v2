@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/utils";
+import { toUserError } from "@/features/types";
 
 export async function fetchUnreadMessageCount() {
   const cookieStore = await cookies();
@@ -16,33 +18,16 @@ export async function fetchUnreadMessageCount() {
     return 0;
   }
 
-  // 1. Get all conversations the user is a part of (personal or as an org)
-  // We can just rely on the existing fetchConversations logic, or write a count query
-  // To be efficient, let's just use the `conversations` function.
-  const { data: convs } = await supabase.from("conversations").select(`
-            id
-        `);
-
-  if (!convs || convs.length === 0) return 0;
-
-  // 2. Count unread messages in those conversations where the sender is not the user
-  // (In a true production app with complex RLS, this might be simpler if RLS allowed direct message counting,
-  // but we can query explicitly)
-  const convIds = convs.map((c) => c.id);
-
-  const { count, error } = await supabase
-    .from("messages")
-    .select("*", { count: "exact", head: true })
-    .in("conversation_id", convIds)
-    .eq("is_read", false)
-    .neq("sender_profile_id", user.id);
+  // Single scoped aggregate via a SECURITY DEFINER RPC — avoids fetching every
+  // conversation id and running an unbounded IN (...) count.
+  const { data, error } = await supabase.rpc("get_unread_message_count" as never);
 
   if (error) {
     console.error("Error fetching unread count:", error);
     return 0;
   }
 
-  return count || 0;
+  return (data as number | null) ?? 0;
 }
 
 export async function fetchConversations() {
@@ -85,6 +70,9 @@ export async function fetchConversations() {
     )
     // Order by updated_at on the conversations table
     .order("updated_at", { ascending: false })
+    // Bound the result — most recent 50 threads. (Full cursor pagination is a
+    // follow-up; this caps the previously-unbounded fan-out.)
+    .limit(50)
     // Limit last_message to 1
     .limit(1, { foreignTable: "messages" })
     .order("created_at", { ascending: false, foreignTable: "messages" });
@@ -190,7 +178,8 @@ export async function sendMessage(formData: FormData) {
       .find((pid): pid is string => !!pid && pid !== user.id);
 
     let isConnected = false;
-    if (otherProfileId) {
+    // Guard the ids before interpolating into the PostgREST .or() filter.
+    if (otherProfileId && isUuid(otherProfileId) && isUuid(user.id)) {
       const { data: conn } = await supabase
         .from("connections")
         .select("id")
@@ -226,8 +215,15 @@ export async function sendMessage(formData: FormData) {
   });
 
   if (error) {
-    console.error("Error sending message:", error);
-    return { error: error.message };
+    // The DB quota trigger raises check_violation if the 3-message cap is hit
+    // via a path that skipped the in-action check above.
+    if (error.code === "P0001" || error.message?.includes("message quota")) {
+      return {
+        error:
+          "You've reached the 3-message limit for this conversation. Please wait for a reply before sending more.",
+      };
+    }
+    return { error: toUserError(error, "Failed to send message.") };
   }
 
   // also bump conversation updated_at
@@ -298,8 +294,7 @@ export async function startConversation(
     .insert({ id: newConversationId });
 
   if (convError) {
-    console.error("Error creating conversation:", convError);
-    return { error: convError.message || "Failed to create conversation" };
+    return { error: toUserError(convError, "Failed to create conversation.") };
   }
 
   // 2. Add participants
@@ -316,8 +311,7 @@ export async function startConversation(
   const { error: partError } = await supabase.from("conversation_participants").insert([p1, p2]);
 
   if (partError) {
-    console.error("Error adding participants:", partError);
-    return { error: partError.message };
+    return { error: toUserError(partError, "Failed to start the conversation.") };
   }
 
   revalidatePath("/messages");

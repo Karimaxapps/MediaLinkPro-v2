@@ -101,6 +101,27 @@ export async function getUpcomingEvents(limit: number = 5): Promise<Event[]> {
   return getPublicEvents({ upcoming: true, limit });
 }
 
+/** Admin-curated events highlighted in the dashboard feed sidebar. */
+export async function getFeaturedEvents(limit: number = 2): Promise<Event[]> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("*, organizations(id, name, slug, logo_url)")
+    .eq("status", "published")
+    .eq("is_featured" as never, true)
+    .gte("end_date", new Date().toISOString())
+    .order("start_date", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error fetching featured events:", error);
+    return [];
+  }
+  return data ?? [];
+}
+
 export async function getOrganizationEvents(orgId: string): Promise<Event[]> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);

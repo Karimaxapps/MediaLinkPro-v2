@@ -76,7 +76,7 @@ export async function CompanyBlogWidget({ orgId, blogQuota }: Props) {
             {posts.map((p) => (
               <Link
                 key={p.id}
-                href={`/blog/${p.slug}`}
+                href={`/blog/feed/${p.slug}`}
                 className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.02] p-3 hover:bg-white/[0.05] transition-colors"
               >
                 <div className="flex-1 min-w-0">

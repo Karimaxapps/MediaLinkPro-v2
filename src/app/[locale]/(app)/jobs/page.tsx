@@ -13,10 +13,11 @@ export const metadata: Metadata = {
 };
 
 export default async function JobsPage() {
-  const [jobs, org, sidebarAd] = await Promise.all([
+  const [jobs, org, sidebarAd, secondaryAd] = await Promise.all([
     listOpenJobs({ limit: 100 }),
     getMyPrimaryOrg(),
     getActiveAdForPlacement("jobs_sidebar"),
+    getActiveAdForPlacement("sidebar"),
   ]);
   const usage = org ? await getOrgUsage(org.id) : null;
 
@@ -32,7 +33,7 @@ export default async function JobsPage() {
       </div>
       <aside className="lg:col-span-3 space-y-4 lg:sticky lg:top-4">
         {sidebarAd ? <SponsoredCard placement="jobs_sidebar" /> : <AdPlaceholder height={260} />}
-        <AdPlaceholder height={200} />
+        {secondaryAd ? <SponsoredCard placement="sidebar" minHeight={200} /> : <AdPlaceholder height={200} />}
       </aside>
     </div>
   );

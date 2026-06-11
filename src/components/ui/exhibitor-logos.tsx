@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { cn } from "@/lib/utils";
 import type { ExhibitorEvent } from "@/features/events/types";
 

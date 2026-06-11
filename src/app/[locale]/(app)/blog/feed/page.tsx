@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { format } from "date-fns";
 import { PenSquare, Eye, Heart } from "lucide-react";
 import { listPublishedPosts } from "@/features/blog/server/actions";
@@ -53,7 +53,7 @@ export default async function DashboardBlogFeedPage() {
           {posts.map((post) => (
             <Link
               key={post.id}
-              href={`/blog/${post.slug}`}
+              href={`/blog/feed/${post.slug}`}
               className="group rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:bg-white/[0.07] hover:border-white/20 transition-all duration-200"
             >
               {post.cover_image_url ? (

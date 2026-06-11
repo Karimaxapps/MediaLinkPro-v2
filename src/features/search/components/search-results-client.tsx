@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/safe-image";
 import { Package, Building2, User, Award, SearchX } from "lucide-react";
 import type { SearchResults } from "@/features/search/server/actions";
 
