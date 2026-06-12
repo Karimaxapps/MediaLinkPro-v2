@@ -517,6 +517,76 @@ export async function submitApplication(input: {
   return { success: true };
 }
 
+/**
+ * Resolve a viewable URL for an application's resume. PDF resumes live in the
+ * private `resumes` bucket, so they are served via short-lived signed URLs;
+ * link resumes are returned as-is. RLS on job_applications (applicant or org
+ * reviewer) and on storage.objects authorizes the caller.
+ */
+export async function getResumeViewUrl(
+  applicationId: string
+): Promise<{ url?: string; error?: string }> {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "You must be logged in." };
+
+  const { data } = await supabase
+    .from("job_applications" as never)
+    .select("resume_url, resume_type")
+    .eq("id", applicationId)
+    .maybeSingle();
+
+  const application = data as unknown as {
+    resume_url: string;
+    resume_type: ResumeType;
+  } | null;
+  if (!application?.resume_url) return { error: "Application not found." };
+
+  if (application.resume_type !== "pdf") {
+    return { url: application.resume_url };
+  }
+
+  const path = resumeStoragePath(application.resume_url);
+  if (!path) return { url: application.resume_url };
+
+  const { data: signed, error } = await supabase.storage
+    .from("resumes")
+    .createSignedUrl(path, 60 * 60);
+
+  if (error || !signed?.signedUrl) {
+    console.error("[jobs] getResumeViewUrl sign error:", error?.message);
+    return { error: "Could not open this resume." };
+  }
+  return { url: signed.signedUrl };
+}
+
+/**
+ * Stored resume_url values are full storage URLs (public-style, kept for
+ * backwards compatibility with rows created before the bucket went private).
+ * Extract the object path within the `resumes` bucket.
+ */
+function resumeStoragePath(value: string): string | null {
+  for (const marker of [
+    "/storage/v1/object/public/resumes/",
+    "/storage/v1/object/sign/resumes/",
+    "/storage/v1/object/resumes/",
+  ]) {
+    const index = value.indexOf(marker);
+    if (index >= 0) {
+      const path = value.slice(index + marker.length).split("?")[0];
+      return decodeURIComponent(path);
+    }
+  }
+  if (!/^https?:\/\//i.test(value)) {
+    return value.replace(/^resumes\//, "");
+  }
+  return null;
+}
+
 export async function updateApplicationStatus(
   applicationId: string,
   status: JobApplicationStatus

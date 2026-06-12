@@ -8,8 +8,9 @@ import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Briefcase, Building2, CalendarClock, FileText, Link2, MessageSquare } from "lucide-react";
+import { Briefcase, Building2, CalendarClock, MessageSquare } from "lucide-react";
 import { withdrawApplication } from "../server/actions";
+import { ResumeLink } from "./resume-link";
 import { APPLICATION_STATUS_COLORS, type JobApplication } from "../types";
 
 export function MyApplicationsClient({ applications }: { applications: JobApplication[] }) {
@@ -117,19 +118,11 @@ function ApplicationRow({ application }: { application: JobApplication }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <a
-          href={application.resume_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
-        >
-          {application.resume_type === "pdf" ? (
-            <FileText className="h-4 w-4 text-[var(--brand)]" />
-          ) : (
-            <Link2 className="h-4 w-4 text-[var(--brand)]" />
-          )}
-          {t("viewYourResume")}
-        </a>
+        <ResumeLink
+          applicationId={application.id}
+          resumeType={application.resume_type}
+          label={t("viewYourResume")}
+        />
         {application.interview_scheduled_at && (
           <div className="flex items-center gap-2 rounded-md border border-[#8b5cf6]/40 bg-[#8b5cf6]/10 px-3 py-2 text-gray-200">
             <CalendarClock className="h-4 w-4 text-[#8b5cf6]" />
