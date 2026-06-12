@@ -141,6 +141,22 @@ Your journey starts on the dashboard.`,
       label: "Open conversation",
     }),
   }),
+  requestInterest: (senderName: string, requestTitle: string, reviewUrl: string) => ({
+    subject: `New interest in your request: ${requestTitle}`,
+    html: wrap(
+      "New interest in your request",
+      `<strong>${senderName}</strong> is interested in <strong>${requestTitle}</strong> and sent you a pitch.`,
+      { url: reviewUrl, label: "Review interest" }
+    ),
+  }),
+  requestInterestAccepted: (requestTitle: string, conversationUrl: string) => ({
+    subject: `Your interest in "${requestTitle}" was accepted`,
+    html: wrap(
+      "Interest accepted",
+      `The owner of <strong>${requestTitle}</strong> accepted your interest and started a conversation with you.`,
+      { url: conversationUrl, label: "Open conversation" }
+    ),
+  }),
   jobApplication: (applicantName: string, jobTitle: string, reviewUrl: string) => ({
     subject: `New application: ${jobTitle}`,
     html: wrap(

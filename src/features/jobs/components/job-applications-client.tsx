@@ -15,8 +15,6 @@ import {
   ArrowLeft,
   CalendarClock,
   CheckCircle2,
-  FileText,
-  Link2,
   Mail,
   MessageSquare,
   Users,
@@ -24,6 +22,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { replyToApplication, scheduleInterview, updateApplicationStatus } from "../server/actions";
+import { ResumeLink } from "./resume-link";
 import {
   APPLICATION_STATUS_COLORS,
   APPLICATION_STATUS_LABELS,
@@ -198,19 +197,11 @@ function ApplicationCard({ application }: { application: JobApplication }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-        <a
-          href={application.resume_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
-        >
-          {application.resume_type === "pdf" ? (
-            <FileText className="h-4 w-4 text-[var(--brand)]" />
-          ) : (
-            <Link2 className="h-4 w-4 text-[var(--brand)]" />
-          )}
-          {t("openResume")}
-        </a>
+        <ResumeLink
+          applicationId={application.id}
+          resumeType={application.resume_type}
+          label={t("openResume")}
+        />
         {application.phone && (
           <div className="flex items-center gap-2 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-gray-300">
             <Mail className="h-4 w-4 text-[var(--brand)]" />

@@ -11,6 +11,7 @@ import {
   getCompanyProductsWithStats,
 } from "@/features/organizations/server/dashboard-actions";
 import { CompanyJobsWidget } from "@/features/jobs/components/company-jobs-widget";
+import { CompanyRequestsWidget } from "@/features/requests-market/components/company-requests-widget";
 import { CompanyEventsWidget } from "@/features/events/components/company-events-widget";
 import { ExhibitorManager } from "@/features/events/components/exhibitor-manager";
 import {
@@ -77,6 +78,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ slug
 
         <Suspense fallback={<TableSkeleton />}>
           <CompanyJobsWidget orgId={orgId} orgSlug={slug} jobsQuota={usage.jobsThisMonth} />
+        </Suspense>
+
+        <Suspense fallback={<TableSkeleton />}>
+          <CompanyRequestsWidget orgId={orgId} requestsQuota={usage.requestsThisMonth} />
         </Suspense>
 
         <Suspense fallback={<TableSkeleton />}>

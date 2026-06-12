@@ -19,6 +19,7 @@ export type OrgUsage = {
   jobsThisMonth: Quota;
   eventsThisMonth: Quota;
   blogPostsThisMonth: Quota;
+  requestsThisMonth: Quota;
 };
 
 function buildQuota(
@@ -53,7 +54,7 @@ export async function getOrgUsage(orgId: string): Promise<OrgUsage> {
   const limits = getPlanById(planId).limits;
   const monthStart = startOfMonthISO();
 
-  const [productCount, jobCount, eventCount, blogCount] = await Promise.all([
+  const [productCount, jobCount, eventCount, blogCount, requestCount] = await Promise.all([
     admin
       .from("products" as never)
       .select("id", { count: "exact", head: true })
@@ -73,6 +74,11 @@ export async function getOrgUsage(orgId: string): Promise<OrgUsage> {
       .select("id", { count: "exact", head: true })
       .eq("organization_id", orgId)
       .gte("created_at", monthStart),
+    admin
+      .from("market_requests" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+      .gte("created_at", monthStart),
   ]);
 
   return {
@@ -80,6 +86,7 @@ export async function getOrgUsage(orgId: string): Promise<OrgUsage> {
     jobsThisMonth: buildQuota(jobCount.count ?? 0, limits.jobPostsPerMonth, "month"),
     eventsThisMonth: buildQuota(eventCount.count ?? 0, limits.eventsPerMonth, "month"),
     blogPostsThisMonth: buildQuota(blogCount.count ?? 0, limits.blogPostsPerMonth, "month"),
+    requestsThisMonth: buildQuota(requestCount.count ?? 0, limits.marketRequestsPerMonth, "month"),
   };
 }
 
@@ -87,6 +94,8 @@ export type UserUsage = {
   jobApplicationsThisMonth: Quota;
   demoRequestsThisMonth: Quota;
   expertListings: Quota; // total cap on product_experts rows
+  requestsThisMonth: Quota; // personal market requests posted
+  requestInterestsThisMonth: Quota; // interests sent (any acting identity)
 };
 
 /**
@@ -100,7 +109,7 @@ export async function getUserUsage(userId: string): Promise<UserUsage> {
   const limits = getPlanById(planId).limits;
   const monthStart = startOfMonthISO();
 
-  const [appCount, demoCount, expertCount] = await Promise.all([
+  const [appCount, demoCount, expertCount, requestCount, interestCount] = await Promise.all([
     admin
       .from("job_applications" as never)
       .select("id", { count: "exact", head: true })
@@ -115,6 +124,17 @@ export async function getUserUsage(userId: string): Promise<UserUsage> {
       .from("product_experts" as never)
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId),
+    admin
+      .from("market_requests" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("posted_by", userId)
+      .is("organization_id", null)
+      .gte("created_at", monthStart),
+    admin
+      .from("market_request_interests" as never)
+      .select("id", { count: "exact", head: true })
+      .eq("profile_id", userId)
+      .gte("created_at", monthStart),
   ]);
 
   return {
@@ -125,5 +145,11 @@ export async function getUserUsage(userId: string): Promise<UserUsage> {
     ),
     demoRequestsThisMonth: buildQuota(demoCount.count ?? 0, limits.demoRequestsPerMonth, "month"),
     expertListings: buildQuota(expertCount.count ?? 0, limits.expertProductListings, "lifetime"),
+    requestsThisMonth: buildQuota(requestCount.count ?? 0, limits.marketRequestsPerMonth, "month"),
+    requestInterestsThisMonth: buildQuota(
+      interestCount.count ?? 0,
+      limits.requestInterestsPerMonth,
+      "month"
+    ),
   };
 }

@@ -12,7 +12,10 @@ export type PlanLimits = {
   jobApplicationsPerMonth: number | "unlimited";
   demoRequestsPerMonth: number | "unlimited";
   expertProductListings: number | "unlimited";
+  requestInterestsPerMonth: number | "unlimited";
   verifiedBadge: boolean;
+  // Requests Market posts (counted per user for personal posts, per org for org posts):
+  marketRequestsPerMonth: number | "unlimited";
   // Org-track caps:
   products: number | "unlimited";
   demoQuoteRequestsPerProductPerMonth: number | "unlimited";
@@ -69,6 +72,7 @@ export const PLANS: Plan[] = [
       "10 job applications per month",
       "10 product demo/quote requests per month",
       "List yourself as expert on 1 product",
+      "2 market requests & 5 interests per month",
       "Receive & reply to messages",
       "Bookmark listings",
     ],
@@ -77,7 +81,9 @@ export const PLANS: Plan[] = [
       jobApplicationsPerMonth: 10,
       demoRequestsPerMonth: 10,
       expertProductListings: 1,
+      requestInterestsPerMonth: 5,
       verifiedBadge: false,
+      marketRequestsPerMonth: 2,
       products: 0,
       demoQuoteRequestsPerProductPerMonth: 0,
       jobPostsPerMonth: 0,
@@ -115,6 +121,7 @@ export const PLANS: Plan[] = [
       "50 job applications per month",
       "Unlimited product demo/quote requests",
       "List yourself as expert on up to 20 products",
+      "10 market requests & 50 interests per month",
       "Priority placement in Connect discovery",
     ],
     limits: {
@@ -122,7 +129,9 @@ export const PLANS: Plan[] = [
       jobApplicationsPerMonth: 50,
       demoRequestsPerMonth: "unlimited",
       expertProductListings: 20,
+      requestInterestsPerMonth: 50,
       verifiedBadge: true,
+      marketRequestsPerMonth: 10,
       products: 0,
       demoQuoteRequestsPerProductPerMonth: 0,
       jobPostsPerMonth: 0,
@@ -162,6 +171,7 @@ export const PLANS: Plan[] = [
       "5 job posts per month",
       "1 event per month",
       "2 blog posts per month",
+      "5 market requests per month",
       "Standard analytics dashboard",
       "Owner seat only (no team seats)",
     ],
@@ -170,7 +180,9 @@ export const PLANS: Plan[] = [
       jobApplicationsPerMonth: "unlimited",
       demoRequestsPerMonth: "unlimited",
       expertProductListings: "unlimited",
+      requestInterestsPerMonth: 15,
       verifiedBadge: true,
+      marketRequestsPerMonth: 5,
       products: 3,
       demoQuoteRequestsPerProductPerMonth: 5,
       jobPostsPerMonth: 5,
@@ -208,6 +220,7 @@ export const PLANS: Plan[] = [
       "20 job posts per month",
       "5 events per month",
       "7 blog posts per month",
+      "20 market requests per month",
       "5 team seats",
       "Advanced analytics with charts",
       "Featured in Connect discovery",
@@ -218,7 +231,9 @@ export const PLANS: Plan[] = [
       jobApplicationsPerMonth: "unlimited",
       demoRequestsPerMonth: "unlimited",
       expertProductListings: "unlimited",
+      requestInterestsPerMonth: "unlimited",
       verifiedBadge: true,
+      marketRequestsPerMonth: 20,
       products: 10,
       demoQuoteRequestsPerProductPerMonth: 50,
       jobPostsPerMonth: 20,
@@ -253,7 +268,7 @@ export const PLANS: Plan[] = [
     stripePriceIdAnnual: process.env.NEXT_PUBLIC_STRIPE_PRICE_ORG_ENTERPRISE_ANNUAL ?? null,
     features: [
       "Unlimited products, demo requests & jobs",
-      "Unlimited events & blog posts",
+      "Unlimited events, blog posts & market requests",
       "15 team seats",
       "Up to 3 organization brand profiles",
       "Advanced analytics with data export",
@@ -269,7 +284,9 @@ export const PLANS: Plan[] = [
       jobApplicationsPerMonth: "unlimited",
       demoRequestsPerMonth: "unlimited",
       expertProductListings: "unlimited",
+      requestInterestsPerMonth: "unlimited",
       verifiedBadge: true,
+      marketRequestsPerMonth: "unlimited",
       products: "unlimited",
       demoQuoteRequestsPerProductPerMonth: "unlimited",
       jobPostsPerMonth: "unlimited",
